@@ -184,10 +184,13 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
   return (
     <div 
-      className={`transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'relative w-full h-full'}`}
-      style={!isFullscreen ? { minHeight: '300px' } : {}}
+      className={`transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-50 bg-white' : ''}`}
+      style={!isFullscreen ? { width: '100%', height: '100%', position: 'relative', minHeight: '300px' } : {}}
     >
-      <div ref={mapContainer} className="absolute inset-0" />
+      <div 
+        ref={mapContainer} 
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} 
+      />
       
       {/* Top Left: Clear Selection (only visible when a route is isolated) */}
       {selectedRoute && (
