@@ -2,23 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #F8FAFC;
-  --foreground: #0F172A;
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    --primary: 171 77% 35%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    
+    --radius: 0.5rem;
+  }
+
+  body {
+    @apply bg-brand-slate-50 text-brand-slate-900 antialiased selection:bg-brand-teal-500/30;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+
+  .command-card {
+    @apply glass-panel rounded-xl transition-all duration-300 hover:border-brand-teal-600/30;
+  }
+
+  .status-indicator {
+    @apply h-2 w-2 rounded-full;
+  }
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  @apply bg-transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
+  @apply bg-brand-slate-200 rounded-full hover:bg-brand-slate-300 transition-colors;
 }

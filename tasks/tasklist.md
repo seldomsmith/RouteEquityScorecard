@@ -8,10 +8,10 @@
 
 ## Phase 2: Golden Record & Elite Frontend
 - [x] Establish "Golden Record" schema and sample data <!-- id: 4 -->
-- [ ] Initialize Next.js project with Tailwind CSS <!-- id: 5 -->
-- [ ] Set up "Command Centre" design system in `index.css` <!-- id: 11 -->
-- [ ] Integrate DuckDB-Wasm for high-performance data querying <!-- id: 7 -->
-- [ ] Implement Interactive Spatial Intelligence Map (Mapbox GL JS) <!-- id: 6 -->
+- [x] Initialize Next.js project with Tailwind CSS <!-- id: 5 -->
+- [x] Set up "Command Centre" design system in `index.css` <!-- id: 11 -->
+- [x] Integrate DuckDB-Wasm for high-performance data querying <!-- id: 7 -->
+- [/] Implement Interactive Spatial Intelligence Map (Mapbox GL JS) <!-- id: 6 -->
 
 ## Phase 3: Analytical & Explainer Components
 - [ ] Develop SHAP Waterfall Panel for route insights <!-- id: 9 -->
