@@ -6,6 +6,8 @@ import { useRouteStore } from '@/store/routeStore';
 import { Map } from '@/components/map/Map';
 import { EquityQuadrant, RoutePoint } from '@/components/charts/EquityQuadrant';
 
+import { Sidebar } from '@/components/Sidebar';
+
 export const CommandCentre = () => {
   const { db, isInitializing, error } = useDuckDB();
   const weights = useRouteStore((state) => state.weights);
@@ -85,29 +87,37 @@ export const CommandCentre = () => {
   }, [db]);
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Top Banner Status */}
-      <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
-        <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
-        <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
-          {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
-        </span>
+    <div className="w-full h-full flex">
+      {/* Sidebar: Controls & Route List */}
+      <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
+        <Sidebar routes={routeData} />
       </div>
 
-      <div className="flex-1 relative">
-        <Map systemPopServed={systemPopServed} />
-      </div>
-      
-      <div className="h-1/3 border-t border-white/20 glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative">
-        <div className="command-card bg-brand-slate-50/50 flex flex-col items-center justify-center p-4">
-            <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-2">Equity Dissemination Matrix</span>
-            <div className="text-xs text-brand-slate-400">Awaiting Spatial Selection...</div>
+      {/* Main Content Area */}
+      <div className="flex-1 h-full flex flex-col relative">
+        {/* Top Banner Status */}
+        <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
+          <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
+          <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
+            {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
+          </span>
         </div>
-        <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-            <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Ridership-Equity Quadrant</span>
-            <div className="flex-1 min-h-0">
-              <EquityQuadrant data={routeData} />
-            </div>
+
+        <div className="flex-1 relative">
+          <Map systemPopServed={systemPopServed} />
+        </div>
+        
+        <div className="h-1/3 border-t border-white/20 glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative">
+          <div className="command-card bg-brand-slate-50/50 flex flex-col items-center justify-center p-4">
+              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-2">Equity Dissemination Matrix</span>
+              <div className="text-xs text-brand-slate-400">Awaiting Spatial Selection...</div>
+          </div>
+          <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
+              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Ridership-Equity Quadrant</span>
+              <div className="flex-1 min-h-0">
+                <EquityQuadrant data={routeData} />
+              </div>
+          </div>
         </div>
       </div>
     </div>
