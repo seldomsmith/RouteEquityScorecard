@@ -19,10 +19,27 @@ export const Map = ({ systemPopServed }: MapProps) => {
     // 1. If we already have a map, don't build a second one
     if (map.current || !mapContainer.current) return;
 
-    // 2. Initialize the map
+    // 2. Initialize the map with OpenStreetMap tiles to bypass firewalls
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11', // or 'mapbox://styles/mapbox/satellite-v9'
+      style: {
+        version: 8,
+        sources: {
+          'raster-tiles': {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [{
+          id: 'simple-tiles',
+          type: 'raster',
+          source: 'raster-tiles',
+          minzoom: 0,
+          maxzoom: 22
+        }]
+      },
       center: [-113.4938, 53.5461], // Edmonton
       zoom: 11,
       projection: { name: 'mercator' } // Mercator is more stable for WebGL 1

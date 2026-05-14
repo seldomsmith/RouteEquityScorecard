@@ -35,7 +35,7 @@ export const CommandCentre = () => {
             SELECT SUM(da.pop) as total_pop 
             FROM (
               SELECT UNNEST(da_metadata) as da 
-              FROM read_json_auto('data.json')
+              FROM network_data
             )
           `);
           
