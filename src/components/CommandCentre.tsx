@@ -30,12 +30,20 @@ export const CommandCentre = () => {
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
-          // ⚡ REFINED ENGINE QUERY: Extracting population from the JSON object
+          // ⚡ REFINED ENGINE QUERY: Extracting unique population from nested route data
           const result = await conn.query(`
-            SELECT SUM(da.pop) as total_pop 
+            SELECT SUM(unnested_da.pop) as total_pop 
             FROM (
-              SELECT UNNEST(da_metadata) as da 
-              FROM network_data
+              SELECT DISTINCT
+                unnested_da.da_id,
+                unnested_da.pop
+              FROM (
+                SELECT UNNEST(route.da_metadata) as unnested_da 
+                FROM (
+                  SELECT UNNEST(routes) as route 
+                  FROM network_data
+                )
+              )
             )
           `);
           
