@@ -21,10 +21,12 @@ export const CommandCentre = () => {
           const response = await fetch('/data/golden_route_record.json');
           const jsonData = await response.json();
           
-          // Insert into DuckDB
+          // Insert into DuckDB using 'God Mode' auto-inference
           await db.registerFileText('data.json', JSON.stringify(jsonData));
           const conn = await db.connect();
-          await conn.insertJSONFromPath('data.json', { name: 'network_data' });
+          
+          // Create the table directly from the JSON file using auto-detection
+          await conn.query(`CREATE TABLE network_data AS SELECT * FROM read_json_auto('data.json')`);
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
