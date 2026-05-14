@@ -7,6 +7,7 @@ import { useRouteStore } from '@/store/routeStore';
 import { EquityQuadrant, RoutePoint } from '@/components/charts/EquityQuadrant';
 import { ShapWaterfall } from '@/components/charts/ShapWaterfall';
 import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMatrix';
+import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
@@ -178,6 +179,15 @@ export const CommandCentre = () => {
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
           <EquityMatrix routes={matrixData} />
+          
+          {/* Aggregate Distribution Panel */}
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <div className="mb-2">
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">System-Wide Health Diagnostics</h2>
+              <p className="text-xs text-slate-500">Aggregate performance distribution across the network.</p>
+            </div>
+            <NetworkDistribution data={routeData} />
+          </div>
         </div>
       </div>
     </div>

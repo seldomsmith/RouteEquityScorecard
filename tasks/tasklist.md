@@ -12,13 +12,19 @@
 - [x] Set up "Command Centre" design system in `index.css` <!-- id: 11 -->
 - [x] Integrate DuckDB-Wasm for high-performance data querying <!-- id: 7 -->
 - [x] Convert Golden Record to Apache Parquet for high-speed cold starts <!-- id: 16 -->
-- [/] Implement Interactive Spatial Intelligence Map (Mapbox GL JS) <!-- id: 6 -->
+- [x] Implement Interactive Spatial Intelligence Map (Mapbox GL JS) <!-- id: 6 -->
 
 ## Phase 3: Analytical & Explainer Components
-- [ ] Develop SHAP Waterfall Panel for route insights <!-- id: 9 -->
-- [ ] Create Equity-Ridership Scatterplot (Quadrant Chart) <!-- id: 12 -->
-- [ ] Implement Equity Dissemination Matrix <!-- id: 13 -->
-- [ ] Build Narrative Briefing Generator <!-- id: 14 -->
+- [x] Develop SHAP Waterfall Panel for route insights <!-- id: 9 -->
+- [x] Create Equity-Ridership Scatterplot (Quadrant Chart) <!-- id: 12 -->
+- [x] Implement Equity Dissemination Matrix <!-- id: 13 -->
+- [x] Build Narrative Briefing Generator <!-- id: 14 -->
+
+## Phase 3.5: UI Polish & Aggregate Reporting
+- [ ] Add Map Fullscreen Toggle <!-- id: 17 -->
+- [ ] Add "Clear Selection" overlay button to Map <!-- id: 18 -->
+- [ ] Build Aggregate Distribution Panel (Bell curve & Grade table) <!-- id: 19 -->
+- [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20 -->
 
 ## Phase 4: Data Pipeline & Integration (Future)
 - [ ] Decide on R5 Data Pipeline migration vs. pre-processing <!-- id: 15 -->
