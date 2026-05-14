@@ -37,10 +37,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route }) => {
     value: Number((route as any)[p.key]) || 0,
   }));
 
-  // Fixed scale: pillar scores range 0-100 across the entire network.
-  // This ensures bars are directly comparable between routes.
+  // Fixed scale: pillar scores are z-score normalized (mean=50, SD=20, clamped 0-100).
+  // Composite uses sigmoid transform (range ~4-100).
   const PILLAR_MAX = 100;
-  const COMPOSITE_MAX = 70; // Global max composite is 66.9, rounded to 70
+  const COMPOSITE_MAX = 100;
 
   return (
     <div className="flex flex-col h-full px-2 py-1">
