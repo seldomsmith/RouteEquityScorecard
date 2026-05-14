@@ -35,6 +35,20 @@ The REI is a normalized 0–100 score built on four additive pillars. To ensure 
 
 *The weighting of these REI factors is to be customizable.*
 
+### Scoring Calibration Logic
+
+To ensure the distribution of scores reflects genuine policy intent rather than mathematical volatility (e.g., volume bias in raw POI counts or ratio instability in low-frequency routes), the Scorecard's mathematical engine applies a rigorous normalization pipeline:
+
+1. **Unified Index (Z-Score Normalization)**: Raw scores for each pillar are normalized to a standard distribution (where 50 represents the network mean and 20 represents one standard deviation). This prevents "pillar dilution," where a route with a very high raw score in one area mathematically drowns out its performance in others.
+2. **Sigmoid Distribution (S-Curve)**: Our scoring engine utilizes a sigmoid distribution function to ensure that 'Essential Lifelines' are statistically distinct from 'Standard Coverage' routes, providing planners with an unambiguous hierarchy of network criticality. This compresses the "average" routes into a tighter band and stretches the critical lifelines to the extremes.
+
+**Future Methodological Refinements (PhD-Level Calibration)**
+As the engine matures, the raw formulas defining the four pillars will transition to the following refined logic:
+- **Pillar 1 (Vulnerability)**: Cap scores at the 95th percentile to prevent extreme outliers from skewing the network mean.
+- **Pillar 2 (Temporal Resilience)**: Replace the basic night-to-peak ratio with a `Service Retention Delta` using a saturation function: `Score = 100 × tanh(Trips_night / Trips_peak × K)`. This caps scores naturally and solves low-frequency volatility.
+- **Pillar 3 (Monopoly)**: Switch to a `Redundancy Index` measuring desert risk directly: `1 - (Alternative_Capacity / Route_Capacity)`.
+- **Pillar 4 (Opportunity)**: Replace raw counts with `Access Density` to eliminate hub-and-spoke volumetric bias. Formula: `Σ (POI_i × Weight_i) / Length_route × Log(Ridership + 1)`. This rewards routes that are target-rich relative to their operational cost.
+
 ## Visualization: Interactive Spatial Intelligence Map
 The primary interface is a minimalist, interactive map built on Mapbox GL JS, designed to help planners "see" the skeleton of the transit system—distinguishing between vital infrastructure and fragile segments. The map features a white, minimalist background with the Edmonton street grid.
 
