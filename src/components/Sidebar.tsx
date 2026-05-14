@@ -8,11 +8,11 @@ interface SidebarProps {
   routes: RoutePoint[];
 }
 
-const WEIGHT_LABELS: Record<string, { label: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability', color: '#EF4444' },
-  resilience:    { label: 'Temporal Risk', color: '#F59E0B' },
-  monopoly:      { label: 'Monopoly',      color: '#8B5CF6' },
-  opportunity:   { label: 'Opportunity',   color: '#10B981' },
+const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
+  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#EF4444' },
+  resilience:    { label: 'Temporal Risk',   desc: 'Off-peak service reliability',   color: '#F59E0B' },
+  monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#8B5CF6' },
+  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#10B981' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -41,20 +41,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         </p>
       </div>
 
-      {/* Weight Sliders */}
+      {/* Weight Sliders — Zero-Sum System */}
       <div className="p-4 border-b border-slate-100">
-        <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-          Policy Weights
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Policy Weights
+          </h2>
+          <button
+            onClick={() => {
+              setWeight('vulnerability' as any, 35);
+              // The zero-sum logic will auto-adjust, but we set defaults directly
+              setTimeout(() => {
+                setWeight('resilience' as any, 25);
+                setTimeout(() => {
+                  setWeight('monopoly' as any, 25);
+                }, 0);
+              }, 0);
+            }}
+            className="text-[9px] font-semibold text-brand-teal-600 hover:text-brand-teal-700 uppercase tracking-wider"
+          >
+            Reset
+          </button>
+        </div>
         <div className="space-y-3">
-          {Object.entries(WEIGHT_LABELS).map(([key, { label, color }]) => {
+          {Object.entries(WEIGHT_LABELS).map(([key, { label, desc, color }]) => {
             const val = weights[key as keyof typeof weights];
             return (
               <div key={key}>
-                <div className="flex justify-between items-center mb-1">
+                <div className="flex justify-between items-center mb-0.5">
                   <span className="text-[11px] font-semibold text-slate-600">{label}</span>
                   <span className="text-[11px] font-mono font-bold text-slate-800">{val}%</span>
                 </div>
+                <p className="text-[9px] text-slate-400 mb-1">{desc}</p>
                 <input
                   type="range"
                   min={0}
@@ -72,8 +90,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
             );
           })}
         </div>
-        <div className={`mt-2 text-[10px] font-mono text-center ${totalWeight === 100 ? 'text-emerald-600' : 'text-red-500 font-bold'}`}>
-          Total: {totalWeight}%{totalWeight !== 100 ? ' ← Must equal 100%' : ' ✓'}
+        <div className="mt-2 text-[10px] font-mono text-center text-emerald-600">
+          Total: {totalWeight}% ✓
         </div>
       </div>
 

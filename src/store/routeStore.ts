@@ -40,9 +40,36 @@ export const useRouteStore = create<RouteState>((set) => ({
   
   removedRoutes: [],
   
-  setWeight: (key, value) => set((state) => ({
-    weights: { ...state.weights, [key]: value }
-  })),
+  setWeight: (key, value) => set((state) => {
+    const clamped = Math.min(Math.max(Math.round(value), 0), 100);
+    const others = (Object.keys(state.weights) as Array<keyof typeof state.weights>)
+      .filter((k) => k !== key);
+    
+    const remaining = 100 - clamped;
+    const otherTotal = others.reduce((sum, k) => sum + state.weights[k], 0);
+    
+    const newWeights = { ...state.weights, [key]: clamped };
+    
+    if (otherTotal === 0) {
+      // Edge case: all others are 0, distribute equally
+      others.forEach((k) => { newWeights[k] = Math.round(remaining / others.length); });
+    } else {
+      // Proportionally redistribute remaining budget
+      let distributed = 0;
+      others.forEach((k, i) => {
+        if (i === others.length - 1) {
+          // Last one gets the remainder to avoid rounding drift
+          newWeights[k] = remaining - distributed;
+        } else {
+          const share = Math.round((state.weights[k] / otherTotal) * remaining);
+          newWeights[k] = share;
+          distributed += share;
+        }
+      });
+    }
+    
+    return { weights: newWeights };
+  }),
   
   setSelectedRoute: (routeId) => set({ selectedRoute: routeId }),
   setHoveredRoute: (routeId) => set({ hoveredRoute: routeId }),
