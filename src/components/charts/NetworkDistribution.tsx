@@ -34,11 +34,16 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
     }));
 
     data.forEach(route => {
-      const score = Math.max(0, Math.min(100, route.composite_score));
+      const rawScore = Number(route.composite_score) || 0;
+      const score = Math.max(0, Math.min(100, rawScore));
       let binIndex = Math.floor(score / 5);
       if (binIndex > 20) binIndex = 20;
-      bins[binIndex].count += 1;
-      bins[binIndex].routes.push(route.short_name);
+      if (binIndex < 0 || Number.isNaN(binIndex)) binIndex = 0;
+      
+      if (bins[binIndex]) {
+        bins[binIndex].count += 1;
+        bins[binIndex].routes.push(route.short_name);
+      }
     });
 
     return bins;
@@ -58,17 +63,20 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
 
     data.forEach(route => {
       const s = summary.find(x => x.grade === route.grade);
+      const score = Number(route.composite_score) || 0;
       if (s) {
         s.count += 1;
-        s.minScore = Math.min(s.minScore, route.composite_score);
-        s.maxScore = Math.max(s.maxScore, route.composite_score);
+        s.minScore = Math.min(s.minScore, score);
+        s.maxScore = Math.max(s.maxScore, score);
       }
     });
 
     return summary.map(s => ({
       ...s,
       percentage: ((s.count / data.length) * 100).toFixed(1),
-      range: s.count > 0 ? `${s.minScore.toFixed(1)} - ${s.maxScore.toFixed(1)}` : 'N/A'
+      range: s.count > 0 && !Number.isNaN(s.minScore) && !Number.isNaN(s.maxScore) 
+        ? `${s.minScore.toFixed(1)} - ${s.maxScore.toFixed(1)}` 
+        : 'N/A'
     }));
   }, [data]);
 
