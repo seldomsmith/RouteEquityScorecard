@@ -17,16 +17,16 @@ export const CommandCentre = () => {
         try {
           console.log("🚀 Ingesting Golden Record into DuckDB...");
           
-          // Fetch the JSON data
-          const response = await fetch('/data/golden_route_record.json');
-          const jsonData = await response.json();
+          // Fetch the high-speed Parquet data
+          const response = await fetch('/data/golden_route_record.parquet');
+          const buffer = await response.arrayBuffer();
           
-          // Insert into DuckDB using 'God Mode' auto-inference
-          await db.registerFileText('data.json', JSON.stringify(jsonData));
+          // Insert into DuckDB memory
+          await db.registerFileBuffer('data.parquet', new Uint8Array(buffer));
           const conn = await db.connect();
           
-          // Create the table directly from the JSON file using auto-detection
-          await conn.query(`CREATE TABLE network_data AS SELECT * FROM read_json_auto('data.json')`);
+          // Create the table directly from the Parquet file
+          await conn.query(`CREATE TABLE network_data AS SELECT * FROM read_parquet('data.parquet')`);
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
