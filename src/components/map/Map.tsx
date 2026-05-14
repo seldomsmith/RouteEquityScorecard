@@ -46,8 +46,8 @@ export const Map = ({ systemPopServed }: MapProps) => {
   }, []);
 
   return (
-    <div className="w-full h-full relative">
-      <div ref={mapContainer} className="absolute inset-0" />
+    <div className="w-full h-full relative border-2 border-blue-500/50">
+      <div ref={mapContainer} className="absolute inset-0 bg-slate-100" />
       <div className="absolute top-6 right-6 z-10 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Population Served</p>
           <p className="text-3xl font-black text-slate-900 tabular-nums">

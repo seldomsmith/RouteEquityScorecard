@@ -30,10 +30,13 @@ export const CommandCentre = () => {
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
-          // ⚡ TEST THE ENGINE: Query the UNIQUE total population from da_metadata
+          // ⚡ REFINED ENGINE QUERY: Extracting population from the JSON object
           const result = await conn.query(`
             SELECT SUM(da.pop) as total_pop 
-            FROM (SELECT UNNEST(da_metadata) as da FROM network_data)
+            FROM (
+              SELECT UNNEST(da_metadata) as da 
+              FROM read_json_auto('data.json')
+            )
           `);
           
           const pop = result.toArray()[0].total_pop;
