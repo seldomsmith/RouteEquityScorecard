@@ -11,7 +11,7 @@
 - [x] Initialize Next.js project with Tailwind CSS <!-- id: 5 -->
 - [x] Set up "Command Centre" design system in `index.css` <!-- id: 11 -->
 - [x] Integrate DuckDB-Wasm for high-performance data querying <!-- id: 7 -->
-- [ ] Convert Golden Record to Apache Parquet for high-speed cold starts <!-- id: 16 -->
+- [x] Convert Golden Record to Apache Parquet for high-speed cold starts <!-- id: 16 -->
 - [/] Implement Interactive Spatial Intelligence Map (Mapbox GL JS) <!-- id: 6 -->
 
 ## Phase 3: Analytical & Explainer Components
