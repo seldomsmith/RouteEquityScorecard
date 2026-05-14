@@ -13,6 +13,11 @@ export interface RoutePoint {
   grade: string;
   composite_score: number;
   total_pop_served: number;
+  pillar_1: number;
+  pillar_2: number;
+  pillar_3: number;
+  pillar_4: number;
+  coords: number[][];  // [[lat, lng], ...]
 }
 
 interface EquityQuadrantProps {
@@ -20,11 +25,11 @@ interface EquityQuadrantProps {
 }
 
 const GRADE_COLORS: Record<string, string> = {
-  A: '#10B981', // Emerald
-  B: '#3B82F6', // Blue
-  C: '#F59E0B', // Amber
-  D: '#F97316', // Orange
-  E: '#EF4444', // Red
+  A: '#10B981',
+  B: '#3B82F6',
+  C: '#F59E0B',
+  D: '#F97316',
+  E: '#EF4444',
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -60,7 +65,6 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
     );
   }
 
-  // Calculate medians for quadrant lines
   const sortedPop = [...data].sort((a, b) => a.total_pop_served - b.total_pop_served);
   const sortedScore = [...data].sort((a, b) => a.composite_score - b.composite_score);
   const medianPop = sortedPop[Math.floor(sortedPop.length / 2)].total_pop_served;
