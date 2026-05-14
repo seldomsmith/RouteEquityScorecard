@@ -160,7 +160,7 @@ export const CommandCentre = () => {
         </div>
         
         {/* Analytical Panels Row */}
-        <div className="glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative" style={{ minHeight: '280px' }}>
+        <div className="glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative" style={{ minHeight: '400px' }}>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
               <div className="flex-1 min-h-0">
