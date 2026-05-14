@@ -37,7 +37,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route }) => {
     value: Number((route as any)[p.key]) || 0,
   }));
 
-  const maxVal = Math.max(...pillarValues.map((p) => p.value), route.composite_score, 1);
+  // Fixed scale: pillar scores range 0-100 across the entire network.
+  // This ensures bars are directly comparable between routes.
+  const PILLAR_MAX = 100;
+  const COMPOSITE_MAX = 70; // Global max composite is 66.9, rounded to 70
 
   return (
     <div className="flex flex-col h-full px-2 py-1">
@@ -58,7 +61,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route }) => {
               <div
                 className="h-full rounded-full transition-all duration-500 ease-out"
                 style={{
-                  width: `${Math.max((p.value / maxVal) * 100, 2)}%`,
+                  width: `${Math.max((p.value / PILLAR_MAX) * 100, 2)}%`,
                   backgroundColor: p.color,
                   opacity: 0.85,
                 }}
@@ -77,7 +80,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route }) => {
             <div
               className="h-full rounded-full transition-all duration-500 ease-out"
               style={{
-                width: `${Math.max((route.composite_score / maxVal) * 100, 2)}%`,
+                width: `${Math.max((route.composite_score / COMPOSITE_MAX) * 100, 2)}%`,
                 background: 'linear-gradient(90deg, #0F766E, #14B8A6)',
               }}
             />
