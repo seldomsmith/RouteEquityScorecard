@@ -19,27 +19,10 @@ export const Map = ({ systemPopServed }: MapProps) => {
     // 1. If we already have a map, don't build a second one
     if (map.current || !mapContainer.current) return;
 
-    // 2. Initialize the map with OpenStreetMap tiles to bypass firewalls
+    // 2. Initialize the map — Mapbox styles work from Codespace (not behind corp firewall)
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          'raster-tiles': {
-            type: 'raster',
-            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution: '© OpenStreetMap contributors'
-          }
-        },
-        layers: [{
-          id: 'simple-tiles',
-          type: 'raster',
-          source: 'raster-tiles',
-          minzoom: 0,
-          maxzoom: 22
-        }]
-      },
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [-113.4938, 53.5461], // Edmonton
       zoom: 11,
       projection: { name: 'mercator' } // Mercator is more stable for WebGL 1
@@ -63,8 +46,8 @@ export const Map = ({ systemPopServed }: MapProps) => {
   }, []);
 
   return (
-    <div className="w-full h-full relative border-2 border-blue-500/50">
-      <div ref={mapContainer} className="absolute inset-0 bg-slate-100" />
+    <div className="w-full h-full relative">
+      <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute top-6 right-6 z-10 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Population Served</p>
           <p className="text-3xl font-black text-slate-900 tabular-nums">
