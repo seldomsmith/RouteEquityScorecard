@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useDuckDB } from '@/hooks/useDuckDB';
 import { useRouteStore } from '@/store/routeStore';
-import { Map } from '@/components/map/Map';
 import { EquityQuadrant, RoutePoint } from '@/components/charts/EquityQuadrant';
-
 import { Sidebar } from '@/components/Sidebar';
+
+// Dynamic import with SSR disabled — Mapbox GL requires window/document
+const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
 export const CommandCentre = () => {
   const { db, isInitializing, error } = useDuckDB();

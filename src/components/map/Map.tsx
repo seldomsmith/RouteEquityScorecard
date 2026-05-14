@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -11,32 +11,39 @@ interface MapProps {
   systemPopServed: number | null;
 }
 
-export const Map = ({ systemPopServed }: MapProps) => {
+const MapInner = ({ systemPopServed }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
-    // 1. If we already have a map, don't build a second one
-    if (map.current || !mapContainer.current) return;
+    console.log('🗺️ Map useEffect fired. Container:', mapContainer.current);
+    
+    if (map.current || !mapContainer.current) {
+      console.log('🗺️ Map skipped — already exists or no container');
+      return;
+    }
 
-    // 2. Initialize the map — Mapbox styles work from Codespace (not behind corp firewall)
+    console.log('🗺️ Initializing Mapbox GL...');
+    
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
       center: [-113.4938, 53.5461], // Edmonton
       zoom: 11,
-      projection: { name: 'mercator' } // Mercator is more stable for WebGL 1
+      projection: { name: 'mercator' }
     });
 
-    // 3. The Race-Condition Fix: Force the map to recalculate its canvas size
-    // a split second after it mounts so it doesn't render "0px by 0px"
     map.current.on('load', () => {
+      console.log('🗺️ ✅ Mapbox tiles loaded successfully!');
       setTimeout(() => {
         map.current?.resize();
       }, 100);
     });
 
-    // 4. Cleanup function: Destroy the map instance perfectly
+    map.current.on('error', (e: any) => {
+      console.error('🗺️ ❌ Mapbox error:', e);
+    });
+
     return () => {
       if (map.current) {
         map.current.remove();
@@ -57,3 +64,5 @@ export const Map = ({ systemPopServed }: MapProps) => {
     </div>
   );
 };
+
+export default MapInner;
