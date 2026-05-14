@@ -30,14 +30,14 @@ export const CommandCentre = () => {
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
-          // ⚡ TEST THE ENGINE: Query the total population served
+          // ⚡ TEST THE ENGINE: Query the UNIQUE total population from da_metadata
           const result = await conn.query(`
-            SELECT SUM(route.total_pop_served) as total_pop 
-            FROM (SELECT UNNEST(routes) as route FROM network_data)
+            SELECT SUM(da.pop) as total_pop 
+            FROM (SELECT UNNEST(da_metadata) as da FROM network_data)
           `);
           
           const pop = result.toArray()[0].total_pop;
-          console.log(`📊 Engine Query Result -> Total System Pop Served: ${pop}`);
+          console.log(`📊 Engine Query Result -> Total Unique System Pop: ${pop}`);
           setSystemPopServed(Number(pop));
           
           await conn.close();
