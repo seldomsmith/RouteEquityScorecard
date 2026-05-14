@@ -32,7 +32,7 @@ export const CommandCentre = () => {
 
           // ⚡ ENGINE QUERY: Unique population served (de-duplicated by DA id)
           const result = await conn.query(`
-            SELECT SUM(sub.pop) as total_pop FROM (
+            SELECT CAST(SUM(sub.pop) AS INTEGER) as total_pop FROM (
               SELECT DISTINCT da.id, da.pop FROM (
                 SELECT UNNEST(route.da_metadata) as da FROM (
                   SELECT UNNEST(routes) as route FROM network_data
