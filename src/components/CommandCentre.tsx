@@ -6,9 +6,9 @@ import { useDuckDB } from '@/hooks/useDuckDB';
 import { useRouteStore } from '@/store/routeStore';
 import { EquityQuadrant, RoutePoint } from '@/components/charts/EquityQuadrant';
 import { ShapWaterfall } from '@/components/charts/ShapWaterfall';
+import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMatrix';
 import { Sidebar } from '@/components/Sidebar';
 
-// Dynamic import with SSR disabled — Mapbox GL requires window/document
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
 export const CommandCentre = () => {
@@ -18,6 +18,7 @@ export const CommandCentre = () => {
 
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [routeData, setRouteData] = React.useState<RoutePoint[]>([]);
+  const [matrixData, setMatrixData] = React.useState<RouteWithDAs[]>([]);
 
   useEffect(() => {
     if (db) {
@@ -34,7 +35,7 @@ export const CommandCentre = () => {
           await conn.query(`CREATE TABLE network_data AS SELECT * FROM read_parquet('data.parquet')`);
           console.log("✅ Golden Record secured in 'network_data' table.");
 
-          // ⚡ QUERY 1: Unique population served
+          // ⚡ QUERY 1: Unique population
           const popResult = await conn.query(`
             SELECT CAST(SUM(sub.pop) AS INTEGER) as total_pop FROM (
               SELECT DISTINCT da.id, da.pop FROM (
@@ -44,11 +45,9 @@ export const CommandCentre = () => {
               ) t2
             ) sub
           `);
-          const popVal = popResult.toArray()[0].total_pop;
-          console.log('📊 Engine -> Total Unique Pop Served:', popVal);
-          setSystemPopServed(Number(popVal));
+          setSystemPopServed(Number(popResult.toArray()[0].total_pop));
 
-          // ⚡ QUERY 2: Full route data (including coords and pillar scores)
+          // ⚡ QUERY 2: Full route data with coords, pillars, and da_metadata
           const routeResult = await conn.query(`
             SELECT 
               route.route_id,
@@ -61,15 +60,16 @@ export const CommandCentre = () => {
               CAST(route.pillar_2_temporal AS DOUBLE) as pillar_2,
               CAST(route.pillar_3_monopoly AS DOUBLE) as pillar_3,
               CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
-              route.coords
+              route.coords,
+              route.da_metadata
             FROM (
               SELECT UNNEST(routes) as route FROM network_data
             ) t1
           `);
 
           const rows = routeResult.toArray();
-          const routes: RoutePoint[] = rows.map((row: any) => {
-            // Convert coords from Arrow format
+          const routes: RouteWithDAs[] = rows.map((row: any) => {
+            // Parse coords
             let coords: number[][] = [];
             try {
               const rawCoords = row.coords;
@@ -85,6 +85,23 @@ export const CommandCentre = () => {
               console.warn('Could not parse coords for route', row.route_id);
             }
 
+            // Parse da_metadata
+            let da_data: DaInfo[] = [];
+            try {
+              const rawDa = row.da_metadata;
+              if (rawDa && rawDa.toArray) {
+                da_data = rawDa.toArray().map((d: any) => ({
+                  id: String(d.id || ''),
+                  pop: Number(d.pop || 0),
+                  low_income_pct: Number(d.low_income_pct || 0),
+                  minority_pct: Number(d.minority_pct || 0),
+                  senior_pct: Number(d.senior_pct || 0),
+                }));
+              }
+            } catch (e) {
+              console.warn('Could not parse da_metadata for route', row.route_id);
+            }
+
             return {
               route_id: String(row.route_id),
               name: String(row.name),
@@ -97,11 +114,13 @@ export const CommandCentre = () => {
               pillar_3: Number(row.pillar_3),
               pillar_4: Number(row.pillar_4),
               coords,
+              da_data,
             };
           });
           
-          console.log(`📊 Engine -> ${routes.length} routes loaded (with coords & pillars)`);
+          console.log(`📊 Engine -> ${routes.length} routes loaded (coords + pillars + DA metadata)`);
           setRouteData(routes);
+          setMatrixData(routes);
           
           await conn.close();
         } catch (err) {
@@ -122,23 +141,26 @@ export const CommandCentre = () => {
         <Sidebar routes={routeData} />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 h-full flex flex-col relative">
-        {/* Engine Status */}
-        <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
-          <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
-          <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
-            {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
-          </span>
-        </div>
+      {/* Main Content — scrollable */}
+      <div className="flex-1 h-full overflow-y-auto custom-scrollbar">
+        {/* Fixed-height top section */}
+        <div className="relative" style={{ height: '65vh', minHeight: '500px' }}>
+          {/* Engine Status */}
+          <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
+            <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
+              {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
+            </span>
+          </div>
 
-        {/* Map */}
-        <div className="flex-1 relative">
-          <Map systemPopServed={systemPopServed} routes={routeData} />
+          {/* Map */}
+          <div className="w-full h-full">
+            <Map systemPopServed={systemPopServed} routes={routeData} />
+          </div>
         </div>
         
-        {/* Bottom Panels */}
-        <div className="h-1/3 border-t border-white/20 glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative">
+        {/* Analytical Panels Row */}
+        <div className="glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative" style={{ minHeight: '200px' }}>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
               <div className="flex-1 min-h-0">
@@ -151,6 +173,11 @@ export const CommandCentre = () => {
                 <EquityQuadrant data={routeData} />
               </div>
           </div>
+        </div>
+
+        {/* Equity Dissemination Matrix — Full Width */}
+        <div className="p-4">
+          <EquityMatrix routes={matrixData} />
         </div>
       </div>
     </div>
