@@ -30,17 +30,25 @@ export const CommandCentre = () => {
           
           console.log("✅ Golden Record secured in 'network_data' table.");
 
-          // ⚡ REFINED ENGINE QUERY: Counting total routes assessed
+          // ⚡ REFINED ENGINE QUERY: Extracting unique population from nested route data
           const result = await conn.query(`
-            SELECT COUNT(*) as total_routes 
+            SELECT SUM(unnested_da.pop) as total_pop 
             FROM (
-              SELECT UNNEST(routes) as route 
-              FROM network_data
+              SELECT DISTINCT
+                unnested_da.id,
+                unnested_da.pop
+              FROM (
+                SELECT UNNEST(route.da_metadata) as unnested_da 
+                FROM (
+                  SELECT UNNEST(routes) as route 
+                  FROM network_data
+                )
+              )
             )
           `);
           
-          const val = result.toArray()[0].total_routes;
-          console.log(`📊 Engine Query Result -> Total Routes Assessed: ${val}`);
+          const val = result.toArray()[0].total_pop;
+          console.log(`📊 Engine Query Result -> Total Unique Population: ${val}`);
           setSystemPopServed(Number(val));
           
           await conn.close();
