@@ -53,8 +53,8 @@ const MapInner = ({ systemPopServed }: MapProps) => {
   }, []);
 
   return (
-    <div className="w-full h-full relative">
-      <div ref={mapContainer} className="absolute inset-0" />
+    <div style={{ width: '100%', height: '100%', position: 'relative', minHeight: '300px' }}>
+      <div ref={mapContainer} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       <div className="absolute top-6 right-6 z-10 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Population Served</p>
           <p className="text-3xl font-black text-slate-900 tabular-nums">
