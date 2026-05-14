@@ -42,14 +42,40 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route }) => {
   const PILLAR_MAX = 100;
   const COMPOSITE_MAX = 100;
 
+  // 🤖 Narrative Briefing Generator
+  const generateNarrative = () => {
+    const sorted = [...pillarValues].sort((a, b) => b.value - a.value);
+    const strongest = sorted[0];
+    const weakest = sorted[sorted.length - 1];
+
+    let prefix = '';
+    if (route.grade === 'A') prefix = "An Essential Lifeline corridor";
+    else if (route.grade === 'B') prefix = "A high-performing equity corridor";
+    else if (route.grade === 'C') prefix = "A standard coverage route";
+    else if (route.grade === 'D') prefix = "A below-average equity contributor";
+    else prefix = "A low-impact equity route";
+
+    let explanation = `driven primarily by strong ${strongest.label}`;
+    if (weakest.value < 40) {
+      explanation += `, but constrained by limited ${weakest.label}`;
+    }
+
+    return `${prefix}, ${explanation}.`;
+  };
+
   return (
     <div className="flex flex-col h-full px-2 py-1">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${GRADE_BG[route.grade] || 'bg-slate-100 text-slate-600'}`}>
-          {route.grade}
-        </span>
-        <span className="text-xs font-bold text-slate-800 truncate">{route.short_name} — {route.name}</span>
+      <div className="flex flex-col gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${GRADE_BG[route.grade] || 'bg-slate-100 text-slate-600'}`}>
+            {route.grade}
+          </span>
+          <span className="text-xs font-bold text-slate-800 truncate">{route.short_name} — {route.name}</span>
+        </div>
+        <p className="text-[10px] leading-snug text-slate-500 italic border-l-2 border-brand-teal-400 pl-2">
+          "{generateNarrative()}"
+        </p>
       </div>
 
       {/* Pillar Bars */}
