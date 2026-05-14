@@ -20,8 +20,13 @@ export const useDuckDB = () => {
         // Select a bundle based on browser checks
         const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
 
+        // Bypass Cross-Origin Worker Security Errors by wrapping the CDN URL in a local Blob
+        const workerURL = URL.createObjectURL(
+          new Blob([`importScripts("${bundle.mainWorker!}");`], { type: 'text/javascript' })
+        );
+
         // Instantiate the async version of DuckDB-wasm
-        const worker = new Worker(bundle.mainWorker!);
+        const worker = new Worker(workerURL);
         const logger = new duckdb.ConsoleLogger();
         const newDb = new duckdb.AsyncDuckDB(logger, worker);
         
