@@ -10,6 +10,10 @@ export interface DaInfo {
   low_income_pct: number;
   minority_pct: number;
   senior_pct: number;
+  lone_parent_pct?: number;
+  recent_immigrant_pct?: number;
+  youth_pct?: number;
+  vulnerability_index?: number;
 }
 
 export interface RouteWithDAs extends RoutePoint {
@@ -20,13 +24,16 @@ interface MatrixProps {
   routes: RouteWithDAs[];
 }
 
-type MetricKey = 'composite' | 'low_income_pct' | 'minority_pct' | 'senior_pct';
+type MetricKey = 'composite' | 'low_income_pct' | 'minority_pct' | 'senior_pct' | 'lone_parent_pct' | 'recent_immigrant_pct' | 'youth_pct';
 
 const METRICS: { key: MetricKey; label: string; color: string }[] = [
-  { key: 'composite',       label: 'All Factors',       color: '#0F766E' },
-  { key: 'low_income_pct',  label: 'Low Income',        color: '#EF4444' },
-  { key: 'minority_pct',    label: 'Visible Minority',  color: '#F59E0B' },
-  { key: 'senior_pct',      label: 'Seniors',           color: '#8B5CF6' },
+  { key: 'composite',             label: 'Continuous index V_i', color: '#0F766E' },
+  { key: 'low_income_pct',        label: 'Low Income',           color: '#EF4444' },
+  { key: 'minority_pct',          label: 'Visible Minority',     color: '#F59E0B' },
+  { key: 'senior_pct',            label: 'Seniors',              color: '#8B5CF6' },
+  { key: 'lone_parent_pct',       label: 'Lone Parents',         color: '#EC4899' },
+  { key: 'recent_immigrant_pct',  label: 'Recent Immigrants',    color: '#10B981' },
+  { key: 'youth_pct',             label: 'Youth (15-24)',        color: '#6366F1' },
 ];
 
 const GRADE_COLORS: Record<string, string> = {
@@ -35,9 +42,9 @@ const GRADE_COLORS: Record<string, string> = {
 
 function getMetricValue(da: DaInfo, metric: MetricKey): number {
   if (metric === 'composite') {
-    return (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
+    return da.vulnerability_index !== undefined ? da.vulnerability_index : (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
   }
-  return da[metric];
+  return da[metric] || 0;
 }
 
 // Map a value 0-100 to opacity 0.15-1.0
@@ -227,12 +234,31 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
               <span className="font-mono text-right">{hoveredDa.da.id}</span>
               <span>Population</span>
               <span className="font-mono text-right">{hoveredDa.da.pop.toLocaleString()}</span>
+              
+              <div className="col-span-2 border-t border-slate-100 my-1"></div>
+              
+              <span className="font-semibold text-brand-slate-700">Transit Vulnerability (V_i)</span>
+              <span className="font-semibold text-teal-700 text-right">
+                {(hoveredDa.da.vulnerability_index !== undefined ? hoveredDa.da.vulnerability_index : (hoveredDa.da.low_income_pct + hoveredDa.da.minority_pct + hoveredDa.da.senior_pct) / 3).toFixed(1)}
+              </span>
+              
               <span>Low Income</span>
               <span className="font-mono text-right">{hoveredDa.da.low_income_pct.toFixed(1)}%</span>
-              <span>Minority</span>
+              <span>Visible Minority</span>
               <span className="font-mono text-right">{hoveredDa.da.minority_pct.toFixed(1)}%</span>
               <span>Seniors</span>
               <span className="font-mono text-right">{hoveredDa.da.senior_pct.toFixed(1)}%</span>
+              
+              {hoveredDa.da.lone_parent_pct !== undefined && (
+                <>
+                  <span>Lone Parents</span>
+                  <span className="font-mono text-right">{(hoveredDa.da.lone_parent_pct || 0).toFixed(1)}%</span>
+                  <span>Recent Immigrants</span>
+                  <span className="font-mono text-right">{(hoveredDa.da.recent_immigrant_pct || 0).toFixed(1)}%</span>
+                  <span>Youth (15-24)</span>
+                  <span className="font-mono text-right">{(hoveredDa.da.youth_pct || 0).toFixed(1)}%</span>
+                </>
+              )}
             </div>
           </div>
         )}

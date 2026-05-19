@@ -168,7 +168,7 @@ def main():
     # === SAVE ===
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f)
-    print(f"\n✅ JSON saved.")
+    print(f"\n[SUCCESS] JSON saved.")
     
     parquet_path = 'public/data/golden_route_record.parquet'
     df = pd.DataFrame([data])
@@ -176,7 +176,7 @@ def main():
     
     json_size = os.path.getsize(path) / (1024 * 1024)
     parquet_size = os.path.getsize(parquet_path) / (1024 * 1024)
-    print(f"✅ Parquet saved. JSON: {json_size:.2f} MB -> Parquet: {parquet_size:.2f} MB")
+    print(f"[SUCCESS] Parquet saved. JSON: {json_size:.2f} MB -> Parquet: {parquet_size:.2f} MB")
     
     print("\n" + "=" * 60)
     print("REFINEMENT COMPLETE")

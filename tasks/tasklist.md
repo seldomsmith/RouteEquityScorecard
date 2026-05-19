@@ -46,7 +46,14 @@
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
 
-## Phase 4: Data Pipeline & Integration (Future)
+## Phase 4: Empirically Weighted Transit Vulnerability Index [COMPLETE]
+- [x] Acquire and copy raw demographics.csv into workspace data directory <!-- id: 33, priority: critical -- >
+- [x] Create scripts/update_vulnerability_index.py (PCA, Z-Score, Spatial decay) <!-- id: 34, priority: critical -- >
+- [x] Run scripts/update_vulnerability_index.py to rebuild golden_route_record <!-- id: 35, priority: critical -- >
+- [x] Run scripts/refine_scoring.py to re-grade and standardize scores <!-- id: 36, priority: critical -- >
+- [x] Verify scoring parity, SHAPWaterfall baseline, and frontend reactive rendering <!-- id: 37, priority: critical -- >
+
+## Phase 4.5: Data Pipeline & Integration (Future)
 - [ ] Integrate additional vulnerability groups (e.g., "New Immigrants") into the data pipeline and scoring model <!-- id: 31, priority: high -->
 - [ ] Decide on R5 Data Pipeline migration vs. pre-processing <!-- id: 15 -->
 - [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->

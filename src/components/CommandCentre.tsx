@@ -101,6 +101,10 @@ export const CommandCentre = () => {
                   low_income_pct: Number(d.low_income_pct || 0),
                   minority_pct: Number(d.minority_pct || 0),
                   senior_pct: Number(d.senior_pct || 0),
+                  lone_parent_pct: Number(d.lone_parent_pct || 0),
+                  recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
+                  youth_pct: Number(d.youth_pct || 0),
+                  vulnerability_index: Number(d.vulnerability_index || 0),
                 }));
               }
             } catch (e) {
