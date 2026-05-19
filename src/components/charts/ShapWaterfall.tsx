@@ -26,9 +26,25 @@ const GRADE_BG: Record<string, string> = {
  * Positive contributions render in emerald; negative in rose.
  */
 export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [width, setWidth] = React.useState(310);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        if (entry.contentRect.width) {
+          setWidth(entry.contentRect.width);
+        }
+      }
+    });
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
   if (!route) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-xs text-brand-slate-400">
+      <div ref={containerRef} className="flex flex-col items-center justify-center h-full text-xs text-brand-slate-400 w-full">
         <span className="text-lg mb-1">📊</span>
         Select a route to see its score breakdown
       </div>
@@ -63,12 +79,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
   const maxVal = Math.min(100, Math.max(...allValues) + 5);
   const range = maxVal - minVal || 1;
 
-  // Chart dimensions
-  const BAR_HEIGHT = 20;
-  const ROW_HEIGHT = 28;
+  // Chart dimensions — responsive calculations
+  const BAR_HEIGHT = 18;
+  const ROW_HEIGHT = 24;
   const LABEL_W = 80;
-  const VALUE_W = 40;
-  const CHART_W = 180; // pixel width of the bar area
+  const VALUE_W = 45;
+  const rightPadding = 12;
+  // Dynamic CHART_W guarantees no horizontal scrollbars on shrink
+  const CHART_W = Math.max(100, width - LABEL_W - VALUE_W - rightPadding - 8);
 
   const toPixel = (val: number) => ((val - minVal) / range) * CHART_W;
 
@@ -100,7 +118,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
   };
 
   return (
-    <div className="flex flex-col h-full px-1 py-1">
+    <div ref={containerRef} className="flex flex-col h-full px-1 py-1 w-full overflow-hidden">
       {/* Header */}
       <div className="flex flex-col gap-1.5 mb-2">
         <div className="flex items-center gap-2">
@@ -115,9 +133,9 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
       </div>
 
       {/* Waterfall Chart */}
-      <div className="flex-1 flex flex-col justify-center">
+      <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-hidden">
         <svg
-          width={LABEL_W + CHART_W + VALUE_W + 10}
+          width="100%"
           height={(shap.length + 3) * ROW_HEIGHT}
           className="block overflow-visible"
         >
@@ -275,10 +293,15 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
       </div>
 
       {/* Sigmoid callout */}
-      <div className="mt-1 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
+      <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
         <span>σ midpoint: {networkStats.sigmoidMidpoint.toFixed(1)} · steepness: {networkStats.sigmoidSteepness.toFixed(3)}</span>
         <span className="font-mono">Quintile: {networkStats.quintileCuts.map((c) => c.toFixed(0)).join(' | ')}</span>
       </div>
+
+      {/* Explanatory Footnote */}
+      <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
+        <strong>How to read this:</strong> This waterfall chart decomposes the route's raw score starting from the Edmonton network baseline (50.0). Each bar shows the dynamic SHAP contribution of a pillar ($\phi_j = w_j \times (score_j - \mu_j)$). Positive contributions (emerald) push the raw score up, while negative contributions (rose) pull it down. The <strong>FINAL</strong> score is computed by passing the raw sum through the calibration sigmoid curve, yielding the final grade quintile (A–E).
+      </p>
     </div>
   );
 };
