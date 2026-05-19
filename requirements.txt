@@ -1,0 +1,13 @@
+dash
+pandas
+gunicorn
+plotly
+numpy
+geopandas
+scikit-learn
+scipy
+pyproj
+shapely
+fiona
+rtree
+pyarrow

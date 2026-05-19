@@ -1,0 +1,1413 @@
+/* ============================================================
+   Edmonton Transit Equity Dashboard
+   "River Valley" Light Theme
+   Inspired by Edmonton's River Valley - forest greens, misty 
+   mountains, golden sun
+   ============================================================ */
+
+/* ---- Google Fonts ---- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* ---- CSS Custom Properties (River Valley - Default Theme) ---- */
+:root {
+  /* Backgrounds */
+  --bg-primary: #f0f9f4;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1a5c3a;
+  --bg-sidebar-hover: #237a4d;
+  --bg-sidebar-active: #145030;
+  --bg-header: linear-gradient(135deg, #43b692, #2d8f6f);
+
+  /* Green Scale (River Valley palette) */
+  --green-50: #f0f9f4;
+  --green-100: #e6f5ec;
+  --green-200: #b2dfcc;
+  --green-300: #7ecbaa;
+  --green-400: #43b692;
+  --green-500: #2d8f6f;
+  --green-600: #246b55;
+  --green-700: #1a5c3a;
+  --green-800: #1a3c2e;
+  --green-900: #0d3b22;
+
+  /* Accents */
+  --sun-gold: #f5c542;
+  --sun-cream: #fef9e7;
+  --amber-warning: #e8a735;
+  --coral-alert: #e05c5c;
+  --sky-blue: #5bb5d5;
+  --emerald-brand: #43b692;
+
+  /* Text */
+  --text-primary: #1a3a2a;
+  --text-secondary: #5a7a6a;
+  --text-on-dark: #f1f5f9;
+  --text-on-green: #ffffff;
+
+  /* Borders & Shadows */
+  --border: rgba(26, 58, 42, 0.12);
+  --border-light: rgba(26, 58, 42, 0.06);
+  --shadow-sm: 0 1px 2px rgba(26, 58, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(26, 58, 42, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(26, 58, 42, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(26, 58, 42, 0.1);
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Transitions */
+  --transition: all 0.2s ease;
+}
+
+/* ---- Reset & Base ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  /* Task: Full kill on autoscrolling/jumping */
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+body {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  color: var(--green-900);
+  line-height: 1.3;
+}
+
+/* ---- App Layout ---- */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+/* ---- Sidebar ---- */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  color: var(--text-on-dark);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+  overflow-y: auto;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.1); /* Added subtle shadow to separate from content */
+}
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--sun-gold);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.sidebar-subtitle {
+  font-size: 0.75rem;
+  color: var(--green-200);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.sidebar-nav {
+  padding: 16px 0;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green-300);
+  padding: 12px 24px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  color: var(--green-200);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: #ffffff;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-left-color: var(--emerald-brand);
+}
+
+.nav-item-icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  /* Task 11: render emoji icons in grayscale for a clean, modern sidebar */
+  filter: grayscale(100%) brightness(1.6) opacity(0.85);
+}
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.68rem;
+  color: var(--green-300);
+  line-height: 1.6;
+}
+
+/* Task 21: subtle divider between nav sections */
+.nav-section-label {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Main Content ---- */
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background: var(--bg-primary);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+
+/* ---- Header ---- */
+.header {
+  background: var(--bg-header);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  color: var(--text-on-green);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(26, 92, 58, 0.15);
+}
+
+.header-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.header-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+/* ---- Page Content ---- */
+.page-content {
+  padding: 32px 48px; /* Increased padding for better breathing room */
+  width: 100%;
+  max-width: none;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--green-900);
+  margin-bottom: 4px;
+}
+
+.page-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+/* ---- KPI Cards ---- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--green-400);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.kpi-card.warning {
+  border-top-color: var(--amber-warning);
+}
+
+.kpi-card.alert {
+  border-top-color: var(--coral-alert);
+}
+
+.kpi-card.gold {
+  border-top-color: var(--sun-gold);
+}
+
+.kpi-card.blue {
+  border-top-color: var(--sky-blue);
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-family: "Inter", sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--green-900);
+  line-height: 1.1;
+}
+
+.kpi-value.green {
+  color: var(--green-600);
+}
+.kpi-value.amber {
+  color: var(--amber-warning);
+}
+.kpi-value.coral {
+  color: var(--coral-alert);
+}
+.kpi-value.gold {
+  color: var(--sun-gold);
+}
+.kpi-value.blue {
+  color: var(--sky-blue);
+}
+
+.kpi-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-change.positive {
+  color: var(--green-600);
+}
+.kpi-change.negative {
+  color: var(--coral-alert);
+}
+
+.kpi-icon {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 1.5rem;
+  opacity: 0.15;
+  color: var(--green-600);
+}
+
+/* ---- Cards / Panels ---- */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--green-900);
+}
+
+.card-body {
+  padding: 20px 24px;
+}
+
+/* ---- Grid Layouts ---- */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.grid-2col-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.grid-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.grid-5col {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.grid-6col {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+/* ---- Map Container ---- */
+.map-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.map-controls {
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Fix for map "drifting" or "continual scrolling" issue: 
+   Kill all transitions on the map and its immediate parents.
+   CSS transitions interfere with Plotly's internal resize/centering logic. */
+#main-map, 
+#equity-map,
+#strategy-map,
+#strategy-routes-map,
+#dest-map,
+#routes-map,
+#defense-map,
+#main-map .js-plotly-plot, 
+#equity-map .js-plotly-plot,
+#strategy-map .js-plotly-plot,
+#strategy-routes-map .js-plotly-plot,
+#dest-map .js-plotly-plot,
+#routes-map .js-plotly-plot,
+#defense-map .js-plotly-plot,
+.map-container,
+.main-content,
+.main-content *,
+.tab-content,
+.page-content,
+.dcc-loading {
+  transition: none !important;
+  /* Prevent browser from 'anchoring' scroll to moving elements */
+  overflow-anchor: none !important;
+  /* Task: Full kill on accidental layout shifts triggering scrolls */
+  scroll-snap-type: none !important;
+  /* Fix: Stop browser trying to scroll to focused graphs */
+  scroll-margin: 0 !important;
+}
+
+#main-map, 
+#equity-map,
+#strategy-map,
+#strategy-routes-map,
+#dest-map,
+#routes-map,
+#defense-map {
+  contain: layout paint;
+  /* Ensure a minimum height so layout doesn't collapse during loading */
+  min-height: 400px;
+  position: relative; /* Context for absolute children */
+}
+
+/* Force absolute containment on the maplibre canvas elements to break 
+   infinite ResizeObserver loops in responsive/flex containers. */
+.map-container .js-plotly-plot,
+.js-plotly-plot .maplibregl-map-container,
+.js-plotly-plot canvas.maplibregl-canvas {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure parents of the absolute canvas preserve height and provide sizing context */
+.map-container .js-plotly-plot {
+  position: relative !important;
+}
+
+
+
+/* Prevent graphs from focusing and jumping the page */
+.js-plotly-plot:focus {
+  outline: none !important;
+}
+
+#tab-content {
+  min-height: 100vh;
+  /* Prevent height jumps during tab switching */
+  contain: layout;
+  overflow-anchor: none !important;
+}
+
+
+html {
+  scroll-padding-top: var(--header-height);
+}
+
+.map-controls label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ---- Dropdown Styling ---- */
+.Select-control {
+  border-color: var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--bg-card) !important;
+}
+
+.Select-value-label {
+  color: var(--text-primary) !important;
+  font-size: 0.875rem !important;
+}
+
+.dash-dropdown .Select-menu-outer {
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ---- Data Table ---- */
+.dash-table-container .dash-spreadsheet-container {
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+
+.dash-table-container .dash-header {
+  background: var(--green-100) !important;
+  color: var(--green-900) !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dash-table-container .dash-cell {
+  font-size: 0.85rem !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dash-table-container .dash-cell:hover {
+  background: var(--green-50) !important;
+}
+
+/* ---- Detail Panel ---- */
+.detail-panel {
+  background: var(--green-50);
+  border: 1px solid var(--green-200);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin-top: 16px;
+  animation: slideUp 0.3s ease;
+}
+
+.detail-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--green-800);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.detail-stat {
+  background: var(--bg-card);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.detail-stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.detail-stat-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--green-800);
+  margin-top: 2px;
+}
+
+/* ---- Progress / Score Bars ---- */
+.score-bar {
+  height: 8px;
+  background: var(--green-100);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-400), var(--green-800));
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-bar-fill.warning {
+  background: linear-gradient(90deg, var(--amber-warning), var(--coral-alert));
+}
+
+/* ---- Comparison Cards ---- */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.comparison-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--green-200);
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.comparison-card:hover {
+  border-color: var(--green-400);
+  box-shadow: var(--shadow-md);
+}
+
+.comparison-card.selected {
+  border-color: var(--green-600);
+  box-shadow: 0 0 0 3px rgba(45, 143, 111, 0.15);
+}
+
+/* ---- Metric Tags ---- */
+.metric-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.metric-tag.excellent {
+  background: var(--green-100);
+  color: var(--green-800);
+}
+
+.metric-tag.good {
+  background: #e6f7ed;
+  color: var(--green-700);
+}
+
+.metric-tag.moderate {
+  background: var(--sun-cream);
+  color: var(--amber-warning);
+}
+
+.metric-tag.poor {
+  background: #fce8e8;
+  color: var(--coral-alert);
+}
+
+/* ---- Animations ---- */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: slideUp 0.4s ease forwards;
+}
+
+/* ---- Methodology Page ---- */
+.methodology-section {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.methodology-section h3 {
+  font-size: 1.1rem;
+  color: var(--green-800);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-200);
+}
+
+.methodology-section p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.formula-block {
+  background: var(--green-50);
+  border: 1px solid var(--green-200);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--green-900);
+  margin: 12px 0;
+  overflow-x: auto;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+  }
+  .sidebar .nav-item span,
+  .sidebar-logo span,
+  .sidebar-subtitle,
+  .nav-section-label,
+  .sidebar-footer {
+    display: none;
+  }
+  .main-content {
+    margin-left: 60px;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+  .page-content {
+    padding: 16px;
+  }
+}
+
+/* ---- Plotly Chart Overrides ---- */
+.js-plotly-plot .plotly .main-svg {
+  border-radius: var(--radius-md);
+}
+
+/* ---- Scrollbar Styling ---- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--green-50);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--green-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green-500);
+}
+
+/* ---- Tab Transition ---- */
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ============================================================
+   Task 7 / Task 9: Modal overlay (Learn More & Direct Access info)
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 30, 18, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 1px var(--border);
+  padding: 32px 36px;
+  max-width: 640px;
+  width: 92vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--green-900);
+  margin-bottom: 4px;
+  padding-right: 32px;
+}
+
+.modal-card .modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--green-100);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--green-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-weight: 700;
+}
+
+.modal-close-btn:hover {
+  background: var(--green-200);
+  transform: scale(1.1);
+}
+
+.modal-metric-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modal-metric-item:last-child {
+  border-bottom: none;
+}
+
+.modal-metric-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--green-800);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-metric-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.modal-formula {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  background: var(--green-50);
+  border: 1px solid var(--green-200);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  color: var(--green-800);
+  margin-top: 6px;
+  display: inline-block;
+}
+
+/* Task 9: Small (?) info button next to Direct Access label */
+.info-btn {
+  background: transparent;
+  border: 1.5px solid var(--green-300);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--green-600);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  vertical-align: middle;
+  transition: var(--transition);
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.info-btn:hover {
+  background: var(--green-100);
+  border-color: var(--green-500);
+  color: var(--green-800);
+  transform: scale(1.15);
+}
+
+/* Learn More button (Task 7) */
+.learn-more-btn {
+  background: transparent;
+  border: 1.5px solid var(--green-400);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--green-700);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.learn-more-btn:hover {
+  background: var(--green-100);
+  border-color: var(--green-600);
+  color: var(--green-900);
+}
+
+/* Task 7: metric explainer strip below controls bar */
+.metric-explainer-strip {
+  padding: 8px 24px;
+  background: var(--green-50);
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 3px solid var(--green-300);
+  animation: fadeIn 0.2s ease;
+}
+
+/* ============================================================
+   Toolbar Redesign (Compact 1-Row Architecture)
+   ============================================================ */
+
+.toolbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 12px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 4px 12px rgba(26, 58, 42, 0.04);
+  flex-wrap: nowrap;
+  position: relative;
+  z-index: 10;
+}
+
+.toolbar-left,
+.toolbar-center,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Icon Button */
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+.icon-btn:hover {
+  background: var(--green-100);
+  color: var(--green-800);
+}
+.small-icon {
+  font-size: 0.9rem;
+  background: var(--green-50);
+  border: 1px solid var(--border-light);
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+}
+
+/* Segmented Control */
+.segmented-control {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+}
+/* We target the label inside the Dash dcc.Checklist */
+.segmented-control label {
+  padding: 6px 14px;
+  margin: 0 !important;
+  border-right: 1px solid var(--border);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+}
+.segmented-control label:last-child {
+  border-right: none;
+}
+.segmented-control label:hover {
+  background: var(--green-50);
+}
+.segmented-control input[type="checkbox"] {
+  display: none;
+}
+.segmented-control label:has(input:checked) {
+  background: var(--green-100);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.direct-access-seg label {
+  font-size: 1rem;
+}
+
+.segmented-control.vertical-segmented {
+  flex-direction: column;
+}
+.segmented-control.vertical-segmented label {
+  border-right: none;
+  border-bottom: 1px solid var(--border);
+  justify-content: flex-start;
+  padding: 8px 16px;
+  font-size: 13px !important;
+}
+.segmented-control.vertical-segmented label:last-child {
+  border-bottom: none;
+}
+.segmented-control.vertical-segmented label:first-child {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.segmented-control.vertical-segmented label:last-child {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+
+/* Pill Toggle (Radio Items) */
+.pill-toggle {
+  display: flex;
+  background: var(--green-50);
+  border-radius: 20px;
+  padding: 4px;
+}
+.pill-toggle label {
+  margin: 0 !important;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+.pill-toggle input[type="radio"] {
+  display: none;
+}
+.pill-toggle label:has(input:checked) {
+  background: white;
+  box-shadow: var(--shadow-sm);
+  color: var(--green-900);
+}
+
+/* Filters Popover */
+.filter-details-container {
+  position: relative;
+}
+.filter-summary-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  list-style: none; /* removes default arrow */
+  transition: var(--transition);
+}
+.filter-summary-btn::-webkit-details-marker {
+  display: none;
+}
+.filter-summary-btn:hover {
+  background: var(--green-50);
+  color: var(--green-900);
+}
+.filter-details-container[open] .filter-summary-btn {
+  background: var(--green-100);
+  color: var(--green-900);
+  border-color: var(--green-300);
+}
+
+.filter-popover-content {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 20px;
+  width: 320px;
+  z-index: 1000;
+  animation: slideUp 0.15s ease-out;
+}
+
+/* Zen / Reset Buttons */
+.reset-btn {
+  background: var(--coral-alert);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.reset-btn:hover {
+  background: #c54949;
+}
+
+.zen-btn {
+  background: var(--green-900);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.zen-btn:hover {
+  background: #082917;
+}
+
+/* Compact slider - for inline use inside toolbar */
+.compact-slider {
+  padding: 0 !important;
+}
+.compact-slider .rc-slider {
+  margin: 0;
+}
+.compact-slider .rc-slider-mark {
+  font-size: 0.7rem;
+}
+
+/* Toolbar vertical divider shorthand */
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+/* Segmented control: tighten label padding in toolbar context */
+.toolbar-container .segmented-control label {
+  padding: 5px 11px;
+  font-size: 0.82rem;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Pill toggle: clean font */
+.pill-toggle label {
+  font-family: "Inter", system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* Zen btn: never wrap */
+.zen-btn {
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Password Screen Polish
+   ============================================================ */
+#password-input {
+  width: 100%;
+  padding: 25px 30px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e0e0e0 !important;
+  font-size: 1.5rem !important;
+  letter-spacing: 0.8em !important;
+  text-align: center !important;
+  margin-bottom: 30px !important;
+  transition: all 0.3s ease !important;
+  background-color: white !important;
+  box-sizing: border-box !important;
+}
+
+#password-input:focus {
+  border-color: var(--emerald-brand) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(67, 182, 146, 0.15) !important;
+}
+
+/* Override Chrome/Edge Autofill light-blue background to remove the "inner box" */
+#password-input:-webkit-autofill,
+#password-input:-webkit-autofill:hover,
+#password-input:-webkit-autofill:focus,
+#password-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 100px white inset !important;
+  -webkit-text-fill-color: black !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+#submit-password {
+  height: 60px !important;
+  font-size: 1.15rem !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ============================================================
+   Zen Mode Glassmorphism Components
+   ============================================================ */
+.zen-floating-panel {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  /* Padding is now controlled by child divs (frozen header + scrollable body) */
+  padding: 0 !important;
+  /* Height/overflow controlled by inline style from Python — don't override */
+  max-height: unset;
+  overflow: visible;
+}
+
+/* Scrollbar inside the detail panel body */
+.zen-floating-panel > div:last-child::-webkit-scrollbar {
+  width: 4px;
+}
+.zen-floating-panel > div:last-child::-webkit-scrollbar-track {
+  background: transparent;
+}
+.zen-floating-panel > div:last-child::-webkit-scrollbar-thumb {
+  background: var(--green-300);
+  border-radius: 4px;
+}
+
+.zen-legend-floating {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  max-width: 280px;
+}
+
+/* ============================================================
+   Zen Mode Layout Overrides
+   ============================================================ */
+.zen-view-mode {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  background: white !important;
+  overflow: hidden !important;
+}
+
+.zen-view-mode .tab-content,
+.zen-view-mode .map-container,
+.zen-view-mode .page-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure Plotly graphs in Zen Mode take full container space */
+.zen-view-mode .js-plotly-plot,
+.zen-view-mode .plotly {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.zen-view-mode .page-title,
+.zen-view-mode .page-description,
+.zen-view-mode .metric-explainer-strip {
+  display: none !important;
+}

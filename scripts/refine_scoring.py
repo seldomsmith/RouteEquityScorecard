@@ -16,10 +16,10 @@ import os
 import pandas as pd
 
 WEIGHTS = {
-    'pillar_1_vulnerability': 0.35,
-    'pillar_2_temporal': 0.25,
-    'pillar_3_monopoly': 0.25,
-    'pillar_4_opportunity': 0.15,
+    'pillar_1_vulnerability': 0.15,
+    'pillar_2_temporal': 0.40,
+    'pillar_3_monopoly': 0.10,
+    'pillar_4_opportunity': 0.35,
 }
 
 PILLAR_KEYS = list(WEIGHTS.keys())
