@@ -18,3 +18,12 @@
 - **Terminal Encoding Safety (CP1252 / Unicode Emojis)**: Under standard Windows environments, python print statements containing emoji characters or non-ASCII symbols can trigger a fatal `UnicodeEncodeError` due to default console encoding (typically CP1252). Avoid printing emojis or special mathematical symbols directly in print statements; instead, use clean ASCII brackets (e.g. `[SUCCESS]` or `[1/5]`).
 - **Census Data Scaling (Percentage vs. Counts)**: Census dissemination area profiles might contain absolute counts represented as floating-point numbers due to statistical perturbations or suppression logic (e.g. `seniors = 5.7` or `22.2` in a DA). Always double check the column statistics and ranges relative to total population before assuming a column is pre-calculated as a percentage, as naively scaling or misinterpreting count columns will skew standardizations.
 
+## Update GitHub Protocol
+Whenever the USER requests an update to GitHub (e.g., "Update Github" or "Sync to remote"), the agent must execute the following 5-step protocol:
+1. **Status Inspection**: Run `git status` to identify modified, added, or deleted files.
+2. **Clean Staging**: Stage the changes using `git add .` to gather all edits.
+3. **Elite Commit Message Formulation**: Generate a precise, professional, and descriptive commit message that summarizes the logical changes (e.g. `feat: implement UTM spatial decay re-scoring pipeline`). Avoid generic or short messages.
+4. **Push Execution**: Execute a push to the active branch (`git push origin <branch_name>`).
+5. **Confirmation Summary**: Print the commit hash, modified files, and push confirmation in a concise markdown table or list for the USER.
+
+
