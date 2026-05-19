@@ -24,9 +24,22 @@
 - [x] Add Map Fullscreen Toggle <!-- id: 17 -->
 - [x] Add "Clear Selection" overlay button to Map <!-- id: 18 -->
 - [x] Build Aggregate Distribution Panel (Bell curve & Grade table) <!-- id: 19 -->
-- [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20 -->
-- [ ] Add Grade-level Route Isolation (Select all "A" routes to map) <!-- id: 21, priority: high -->
-- [ ] Add DA Vulnerability Heatmap overlay when a route is isolated (Pre-task: load da_boundaries_simple.geojson into Mapbox) <!-- id: 22, priority: high -->
+- [x] Ensure System-Wide Synchronization <!-- id: 30, priority: critical -->
+  - [x] Implement reactive scoring pipeline in frontend (`useReactiveScoring.ts` — composite → sigmoid → quintile → SHAP)
+  - [x] Connect dynamic data source to Map layer (`source.setData()` hot-swap in `Map.tsx`)
+  - [x] Update Sidebar, EquityQuadrant, and NetworkDistribution to consume the dynamic, synchronized route data (via `CommandCentre.tsx` rewire)
+  - [x] Rewrite ShapWaterfall to draw a true mathematical waterfall chart starting from city-wide baseline of 50.0 and illustrating positive/negative SHAP adjustments
+- [x] Standardize Strategic Default Weights <!-- id: 32, priority: critical -->
+  - [x] Implement `setWeights` in `src/store/routeStore.ts` and update default state to 15/40/10/35
+  - [x] Update **Reset** button handler in `src/components/Sidebar.tsx` to use the new atomic `setWeights` action
+  - [x] Verify slider behaviors, reset behavior, and visual scorecard synchronization
+- [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
+  - [ ] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
+- [ ] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
+  - [ ] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
+- [ ] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
+  - [ ] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
+  - [ ] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
 - [ ] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
 - [ ] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
@@ -34,10 +47,12 @@
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
 
 ## Phase 4: Data Pipeline & Integration (Future)
+- [ ] Integrate additional vulnerability groups (e.g., "New Immigrants") into the data pipeline and scoring model <!-- id: 31, priority: high -->
 - [ ] Decide on R5 Data Pipeline migration vs. pre-processing <!-- id: 15 -->
 - [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->
 - [ ] Finalize PostGIS/Python backend if needed <!-- id: 10 -->
 
 ## Phase 5: PhD-Level Research & Analytics
-- [ ] Ensure dynamic weight changes actively recalculate and alter Quintile distributions across the network <!-- id: 28, priority: high -->
+- [x] Ensure dynamic weight changes actively recalculate and alter Quintile distributions across the network <!-- id: 28, priority: high -->
 - [ ] Draft the core findings for the Route Equity Research Report <!-- id: 29 -->
+

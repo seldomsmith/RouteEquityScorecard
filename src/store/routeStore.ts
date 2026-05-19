@@ -19,6 +19,7 @@ interface RouteState {
   
   // Actions
   setWeight: (key: keyof RouteState['weights'], value: number) => void;
+  setWeights: (weights: RouteState['weights']) => void;
   setSelectedRoute: (routeId: string | null) => void;
   setHoveredRoute: (routeId: string | null) => void;
   setSelectedDa: (daId: string | null) => void;
@@ -28,10 +29,10 @@ interface RouteState {
 
 export const useRouteStore = create<RouteState>((set) => ({
   weights: {
-    vulnerability: 35,
-    resilience: 25,
-    monopoly: 25,
-    opportunity: 15,
+    vulnerability: 15,
+    resilience: 40,
+    monopoly: 10,
+    opportunity: 35,
   },
   
   selectedRoute: null,
@@ -70,6 +71,8 @@ export const useRouteStore = create<RouteState>((set) => ({
     
     return { weights: newWeights };
   }),
+  
+  setWeights: (weights) => set({ weights }),
   
   setSelectedRoute: (routeId) => set({ selectedRoute: routeId }),
   setHoveredRoute: (routeId) => set({ hoveredRoute: routeId }),

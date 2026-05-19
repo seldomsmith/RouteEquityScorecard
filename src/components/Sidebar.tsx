@@ -26,6 +26,7 @@ const GRADE_DOT: Record<string, string> = {
 export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
+  const setWeights = useRouteStore((s) => s.setWeights);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
 
@@ -49,14 +50,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
           </h2>
           <button
             onClick={() => {
-              setWeight('vulnerability' as any, 35);
-              // The zero-sum logic will auto-adjust, but we set defaults directly
-              setTimeout(() => {
-                setWeight('resilience' as any, 25);
-                setTimeout(() => {
-                  setWeight('monopoly' as any, 25);
-                }, 0);
-              }, 0);
+              setWeights({
+                vulnerability: 15,
+                resilience: 40,
+                monopoly: 10,
+                opportunity: 35,
+              });
             }}
             className="text-[9px] font-semibold text-brand-teal-600 hover:text-brand-teal-700 uppercase tracking-wider"
           >

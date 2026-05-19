@@ -15,14 +15,13 @@ The report must rigorously defend the statistical normalization pipeline.
 A core component of the report will investigate **Policy Sensitivity**. When planners shift the weights (e.g., prioritizing *Temporal Resilience* over *Vulnerability Density*), how elastic is the network? 
 
 **Research Questions:**
+- **System-Wide Synchronization:** How does a shift in policy weight ripples through the entire analytical suite? The report will document the real-time interaction between weights and the *Score Breakdown*, *Quadrant Chart*, and *Bell Curve*.
 - **Quintile Migration:** When weights shift, do routes migrate smoothly across quintiles (e.g., A to B), or are there "cliff effects" where an 'A' route suddenly drops to a 'D'?
 - **The Invulnerable Core:** Are there routes that remain Grade 'A' *regardless* of how the weights are distributed? These represent the absolute most critical infrastructure in the city.
-- **The Volatile Middle:** Which routes are highly sensitive to weight changes? (e.g., Routes that only score well if 'Monopoly' is weighted highly).
-
-> **Current Technical Note:** We need to ensure that the frontend React dashboard actively recalculates the relative Quintile thresholds (A-E) dynamically on the fly when the user moves a slider, rather than just changing the composite score against static thresholds. This allows the user to see the true relative distribution shift in real-time.
 
 ## 4. Visualizing Spatial Vulnerability
 The report will heavily feature the outputs of the planned **DA Vulnerability Heatmap**.
+- **Expanded Vulnerability Dimensions:** Incorporate additional demographic groups, specifically **"New Immigrants"**, into the vulnerability density model to identify emerging transit needs.
 - **Contextualizing Routes:** By mapping a route alongside the specific DA polygons it touches, we can analyze the "catchment inequality." For example, does a route serve high-vulnerability DAs on its northern leg but low-vulnerability DAs on its southern leg? 
 - **The Dissemination Matrix:** Analyzing the dot-matrix heatmap to show how equity is distributed *along* a route, not just *by* the route.
 

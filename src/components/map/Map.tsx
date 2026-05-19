@@ -160,6 +160,39 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     }
   }, [routes, setSelectedRoute]);
 
+  // ⚡ Reactive GeoJSON update — hot-swap route data when weights change
+  // This runs AFTER initial setup (routesAdded.current === true) and only
+  // updates the GeoJSON source data, not the layers or event handlers.
+  useEffect(() => {
+    if (!map.current || !routesAdded.current || !routes.length) return;
+
+    try {
+      const source = map.current.getSource('routes') as mapboxgl.GeoJSONSource;
+      if (!source) return;
+
+      const features = routes
+        .filter((r) => r.coords && r.coords.length > 1)
+        .map((r) => ({
+          type: 'Feature' as const,
+          properties: {
+            route_id: r.route_id,
+            name: r.name,
+            short_name: r.short_name,
+            grade: r.grade,
+            composite_score: r.composite_score,
+          },
+          geometry: {
+            type: 'LineString' as const,
+            coordinates: r.coords.map((c) => [c[1], c[0]]),
+          },
+        }));
+
+      source.setData({ type: 'FeatureCollection', features });
+    } catch (e) {
+      // Source might not exist yet during initial load
+    }
+  }, [routes]);
+
   // Update highlight when selectedRoute changes
   useEffect(() => {
     if (!map.current || !routesAdded.current) return;

@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useDuckDB } from '@/hooks/useDuckDB';
 import { useRouteStore } from '@/store/routeStore';
+import { useReactiveScoring } from '@/hooks/useReactiveScoring';
 import { EquityQuadrant, RoutePoint } from '@/components/charts/EquityQuadrant';
 import { ShapWaterfall } from '@/components/charts/ShapWaterfall';
 import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMatrix';
@@ -18,8 +19,11 @@ export const CommandCentre = () => {
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
 
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
-  const [routeData, setRouteData] = React.useState<RoutePoint[]>([]);
-  const [matrixData, setMatrixData] = React.useState<RouteWithDAs[]>([]);
+  const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
+
+  // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP
+  // every time weights change. Pure math on 235 routes = microseconds.
+  const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights);
 
   useEffect(() => {
     if (db) {
@@ -120,8 +124,7 @@ export const CommandCentre = () => {
           });
           
           console.log(`📊 Engine -> ${routes.length} routes loaded (coords + pillars + DA metadata)`);
-          setRouteData(routes);
-          setMatrixData(routes);
+          setBaseRoutes(routes);
           
           await conn.close();
         } catch (err) {
@@ -133,13 +136,13 @@ export const CommandCentre = () => {
     }
   }, [db]);
 
-  const selectedRouteData = routeData.find((r) => r.route_id === selectedRoute) || null;
+  const selectedRouteData = scoredRoutes.find((r) => r.route_id === selectedRoute) || null;
 
   return (
     <div className="w-full h-full flex">
       {/* Sidebar */}
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
-        <Sidebar routes={routeData} />
+        <Sidebar routes={scoredRoutes} />
       </div>
 
       {/* Main Content — scrollable */}
@@ -156,7 +159,7 @@ export const CommandCentre = () => {
 
           {/* Map */}
           <div className="w-full h-full">
-            <Map systemPopServed={systemPopServed} routes={routeData} />
+            <Map systemPopServed={systemPopServed} routes={scoredRoutes} />
           </div>
         </div>
         
@@ -165,20 +168,20 @@ export const CommandCentre = () => {
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
               <div className="flex-1 min-h-0">
-                <ShapWaterfall route={selectedRouteData} />
+                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} />
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Ridership-Equity Quadrant</span>
               <div className="flex-1 min-h-0">
-                <EquityQuadrant data={routeData} />
+                <EquityQuadrant data={scoredRoutes} />
               </div>
           </div>
         </div>
 
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
-          <EquityMatrix routes={matrixData} />
+          <EquityMatrix routes={scoredRoutes} />
           
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
@@ -186,7 +189,7 @@ export const CommandCentre = () => {
               <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">System-Wide Health Diagnostics</h2>
               <p className="text-xs text-slate-500">Aggregate performance distribution across the network.</p>
             </div>
-            <NetworkDistribution data={routeData} />
+            <NetworkDistribution data={scoredRoutes} />
           </div>
         </div>
       </div>
