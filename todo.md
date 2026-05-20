@@ -44,5 +44,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Implemented atomic `setWeights` action in the state store (`src/store/routeStore.ts`) to concurrently apply state updates without zero-sum racing or rounding drift.
   - Set baseline starting weights in the Zustand store to the new strategic defaults: Vulnerability (15%), Temporal Risk (40%), Monopoly (10%), and Opportunity (35%).
   - Integrated the atomic `setWeights` updater into the Sidebar component (`src/components/Sidebar.tsx`), removing sequential timeouts and enabling one-click standardized baseline restoration.
+- **Population Equity & Dashboard Polish**:
+  - Replaced `"Ridership"` with `"Population"` in the title of the quadrant scatterplot in `src/components/CommandCentre.tsx`.
+  - Standardized the X and Y axes domains (`[0, xMax]` and `[0, 100]`) and the vertical/horizontal crosshair reference lines in `src/components/charts/EquityQuadrant.tsx` using a system-wide unfiltered baseline (`allRoutes`) so they remain mathematically constant when filtering grades.
+  - Connected the global `selectedRoute` state and `setSelectedRoute` actions to the scatterplot dots, enabling dynamic highlighting (opacity `1.0`, radius `6px`, dark borders) for the isolated route, and dimming (opacity `0.15`, radius `3px`) for other routes.
+  - Enabled direct double-sided interactive clicking on scatterplot dots to select, toggle, and isolate routes globally across the map and sidebar.
+  - Removed the `Pillar Score Dispersion (Boxplot Spread)` card visual and its unused `useMemo` math calculations from `src/components/charts/NetworkDistribution.tsx` for a clean diagnostics panel layout.
+  - Renamed the first button in the Equity Dissemination Matrix metrics from `"Continuous index V_i"` to `"Composite Vulnerability Score"`.
 
 

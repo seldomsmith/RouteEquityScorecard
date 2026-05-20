@@ -25,7 +25,7 @@ interface MatrixProps {
 }
 
 export const METRICS: { key: MetricKey; label: string; color: string }[] = [
-  { key: 'composite',             label: 'Continuous index V_i', color: '#0F766E' },
+  { key: 'composite',             label: 'Composite Vulnerability Score', color: '#0F766E' },
   { key: 'low_income_pct',        label: 'Low Income',           color: '#EF4444' },
   { key: 'minority_pct',          label: 'Visible Minority',     color: '#F59E0B' },
   { key: 'senior_pct',            label: 'Seniors',              color: '#8B5CF6' },

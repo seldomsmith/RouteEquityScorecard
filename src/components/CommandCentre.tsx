@@ -184,9 +184,9 @@ export const CommandCentre = () => {
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Ridership-Equity Quadrant</span>
+              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Population-Equity Quadrant</span>
               <div className="flex-1 min-h-0">
-                <EquityQuadrant data={filteredRoutes} />
+                <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
               </div>
           </div>
         </div>

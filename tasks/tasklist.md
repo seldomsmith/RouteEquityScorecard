@@ -48,6 +48,13 @@
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
 
+## Phase 3.6: Quadrant & Diagnostics Dashboard Polish [COMPLETE]
+- [x] Update title of quadrant scatterplot to "Population-Equity Quadrant" <!-- id: 40, priority: high -->
+- [x] Standardize and lock X and Y axes domains and reference lines dynamically from overall network statistics <!-- id: 41, priority: high -->
+- [x] Implement two-way route isolation sync on the quadrant scatterplot (dim non-selected routes, highlight selected, and allow click interaction) <!-- id: 42, priority: critical -->
+- [x] Remove "Pillar Score Dispersion (Boxplot Spread)" visualization and clean up unused calculations <!-- id: 43, priority: medium -->
+- [x] Rename the continuous index button in the Dissemination Matrix to "Composite Vulnerability Score" <!-- id: 44, priority: high -->
+
 ## Phase 4: Empirically Weighted Transit Vulnerability Index [COMPLETE]
 - [x] Acquire and copy raw demographics.csv into workspace data directory <!-- id: 33, priority: critical -- >
 - [x] Create scripts/update_vulnerability_index.py (PCA, Z-Score, Spatial decay) <!-- id: 34, priority: critical -- >
