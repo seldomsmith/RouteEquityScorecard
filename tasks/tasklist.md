@@ -33,15 +33,15 @@
   - [x] Implement `setWeights` in `src/store/routeStore.ts` and update default state to 15/40/10/35
   - [x] Update **Reset** button handler in `src/components/Sidebar.tsx` to use the new atomic `setWeights` action
   - [x] Verify slider behaviors, reset behavior, and visual scorecard synchronization
-- [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
-  - [ ] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
+- [x] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
+  - [x] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
 - [x] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
   - [x] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
 - [x] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
   - [x] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
   - [x] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
-- [ ] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
-- [ ] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
+- [x] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
+- [x] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->

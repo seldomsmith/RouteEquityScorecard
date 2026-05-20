@@ -1,12 +1,22 @@
 # Active Todo & Review Dashboard
 
 ## Active Goal
-Establish system-wide synchronization and advanced spatial diagnostics for the Route Equity Scorecard.
+Refining analytical modeling, service impact simulations, and advanced research reporting.
 
 ## Sprint Backlog
-### Phase 3.5: Elite UI/UX Polish
-1. **Pillar Boxplot/Spread Panel** [MEDIUM]
-   - Visualizing distribution spread for each of the four equity pillars
+### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
+1. **SHAP Waterfall Micro-Animations** [LOW]
+   - Integrate Framer Motion spring physics to animate the SHAP waterfall bar adjustments fluidly when weights are dragged.
+
+### Phase 4.5: Simulation & Data Pipeline
+2. **Service Impact Simulation (Draft Mode)** [HIGH]
+   - Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory.
+3. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
+   - Formulate integration steps for PostGIS/Python or R5 routing configurations.
+
+### Phase 5: PhD-Level Research Reporting
+4. **Draft Route Equity Research Report** [HIGH]
+   - Author a comprehensive, high-fidelity report detailing transit equity scores, demographic correlations, and policy recommendations.
 
 ---
 
