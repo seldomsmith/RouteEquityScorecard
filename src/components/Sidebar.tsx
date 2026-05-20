@@ -93,6 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                   type="range"
                   min={0}
                   max={100}
+                  step={5}
                   value={val}
                   onChange={(e) =>
                     setWeight(key as keyof typeof weights, Number(e.target.value))

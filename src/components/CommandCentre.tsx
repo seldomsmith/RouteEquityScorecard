@@ -10,6 +10,8 @@ import { ShapWaterfall } from '@/components/charts/ShapWaterfall';
 import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMatrix';
 import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
+import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
+
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -203,6 +205,7 @@ export const CommandCentre = () => {
           </div>
         </div>
       </div>
+      <SpotlightSearch routes={scoredRoutes} />
     </div>
   );
 };

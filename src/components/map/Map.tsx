@@ -21,6 +21,44 @@ interface MapProps {
   routes: RoutePoint[];
 }
 
+function getFeatureCenter(feature: any): [number, number] | null {
+  if (!feature || !feature.geometry) return null;
+  const { type, coordinates } = feature.geometry;
+  let sumLng = 0;
+  let sumLat = 0;
+  let count = 0;
+
+  const processRing = (ring: any) => {
+    if (!Array.isArray(ring)) return;
+    ring.forEach((coord) => {
+      if (Array.isArray(coord) && coord.length >= 2) {
+        sumLng += coord[0];
+        sumLat += coord[1];
+        count++;
+      }
+    });
+  };
+
+  if (type === 'Polygon') {
+    coordinates.forEach(processRing);
+  } else if (type === 'MultiPolygon') {
+    coordinates.forEach((polygon: any) => {
+      if (Array.isArray(polygon)) {
+        polygon.forEach(processRing);
+      }
+    });
+  } else if (type === 'Point') {
+    if (Array.isArray(coordinates) && coordinates.length >= 2) {
+      return [coordinates[0], coordinates[1]];
+    }
+  }
+
+  if (count > 0) {
+    return [sumLng / count, sumLat / count];
+  }
+  return null;
+}
+
 const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -29,6 +67,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const selectedGrade = useRouteStore((s) => s.selectedGrade);
   const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
+  const selectedDa = useRouteStore((s) => s.selectedDa);
+  const setSelectedDa = useRouteStore((s) => s.setSelectedDa);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
@@ -120,6 +160,33 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           ],
           'fill-opacity': 0.55,
           'fill-outline-color': 'rgba(255, 255, 255, 0.4)',
+        },
+      });
+
+      // Add Selected DA source and layers for highlight & visual pop
+      map.current!.addSource('selected-da', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+
+      map.current!.addLayer({
+        id: 'selected-da-fill',
+        type: 'fill',
+        source: 'selected-da',
+        paint: {
+          'fill-color': '#F59E0B', // Amber color fill
+          'fill-opacity': 0.25,
+        },
+      });
+
+      map.current!.addLayer({
+        id: 'selected-da-highlight',
+        type: 'line',
+        source: 'selected-da',
+        paint: {
+          'line-color': '#D97706', // Strong amber stroke outline
+          'line-width': 4.5,
+          'line-opacity': 0.95,
         },
       });
 
@@ -284,6 +351,49 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     }
   }, [selectedRoute]);
 
+  // ⚡ Reactive DA zoom and highlight - triggers Mapbox flyTo when selectedDa changes
+  useEffect(() => {
+    if (!map.current || !routesAdded.current || !daGeoJson) return;
+
+    try {
+      const source = map.current.getSource('selected-da') as mapboxgl.GeoJSONSource;
+      if (!source) return;
+
+      if (!selectedDa) {
+        // Clear highlight if no DA is selected
+        source.setData({ type: 'FeatureCollection', features: [] });
+        return;
+      }
+
+      // Find the selected DA feature
+      const feature = daGeoJson.features.find((f: any) => f.properties?.DAUID === selectedDa);
+      if (!feature) {
+        console.warn(`DA ${selectedDa} feature not found in geojson`);
+        return;
+      }
+
+      // Update the geojson source to draw the highlight
+      source.setData({
+        type: 'FeatureCollection',
+        features: [feature]
+      });
+
+      // Calculate centroid/center of the selected DA
+      const center = getFeatureCenter(feature);
+      if (center) {
+        console.log(`🗺️ Flying to selected DA ${selectedDa} center:`, center);
+        map.current.flyTo({
+          center,
+          zoom: 14.5,
+          essential: true,
+          duration: 2000, // Smooth 2s transition
+        });
+      }
+    } catch (e) {
+      console.warn("Could not update selected DA highlight or flyTo", e);
+    }
+  }, [selectedDa, daGeoJson]);
+
   // ⚡ Reactive DA Heatmap overlay — updates DA geometry highlighting when a route is isolated
   useEffect(() => {
     if (!map.current || !routesAdded.current || !daGeoJson) return;
@@ -354,22 +464,40 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} 
       />
       
-      {/* Top Left: Clear Selection (only visible when a route is isolated) */}
-      {selectedRoute && (
-        <button
-          onClick={() => setSelectedRoute(null)}
-          className="absolute top-6 left-6 z-10 bg-brand-rose-500 hover:bg-brand-rose-600 text-white rounded-full p-2 shadow-lg transition-transform hover:scale-105 flex items-center justify-center group"
-          title="Clear Route Selection"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-          <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-bold text-xs pl-0 group-hover:pl-2">
-            Clear Selection
-          </span>
-        </button>
-      )}
+      {/* Top Left: Clear Selections (Route and/or DA) */}
+      <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
+        {selectedRoute && (
+          <button
+            onClick={() => setSelectedRoute(null)}
+            className="bg-brand-rose-500 hover:bg-brand-rose-600 text-white rounded-full p-2 shadow-lg transition-transform hover:scale-105 flex items-center justify-center group self-start"
+            title="Clear Route Selection"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-bold text-xs pl-0 group-hover:pl-2">
+              Clear Route Selection
+            </span>
+          </button>
+        )}
+
+        {selectedDa && (
+          <button
+            onClick={() => setSelectedDa(null)}
+            className="bg-amber-500 hover:bg-amber-600 text-white rounded-full p-2 shadow-lg transition-transform hover:scale-105 flex items-center justify-center group self-start"
+            title="Clear DA Selection"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-bold text-xs pl-0 group-hover:pl-2">
+              Clear DA {selectedDa}
+            </span>
+          </button>
+        )}
+      </div>
 
       {/* Top Right: Stats & Fullscreen Toggle */}
       <div className="absolute top-6 right-6 z-10 flex flex-col items-end gap-2">

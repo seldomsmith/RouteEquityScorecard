@@ -45,33 +45,65 @@ export const useRouteStore = create<RouteState>((set) => ({
   removedRoutes: [],
   
   setWeight: (key, value) => set((state) => {
-    const clamped = Math.min(Math.max(Math.round(value), 0), 100);
+    const STEP = 5;
+    const TOTAL_STEPS = 20; // 100% / 5%
+
+    // Convert new value to integer steps
+    const targetSteps = Math.min(Math.max(Math.round(value / STEP), 0), TOTAL_STEPS);
+    const remainingSteps = TOTAL_STEPS - targetSteps;
+
     const others = (Object.keys(state.weights) as Array<keyof typeof state.weights>)
       .filter((k) => k !== key);
-    
-    const remaining = 100 - clamped;
-    const otherTotal = others.reduce((sum, k) => sum + state.weights[k], 0);
-    
-    const newWeights = { ...state.weights, [key]: clamped };
-    
-    if (otherTotal === 0) {
-      // Edge case: all others are 0, distribute equally
-      others.forEach((k) => { newWeights[k] = Math.round(remaining / others.length); });
+
+    // Convert current other weights to steps
+    const otherSteps = others.map((k) => ({
+      key: k,
+      steps: Math.round(state.weights[k] / STEP)
+    }));
+
+    const otherTotalSteps = otherSteps.reduce((sum, item) => sum + item.steps, 0);
+
+    const newWeights = { ...state.weights, [key]: targetSteps * STEP };
+
+    if (otherTotalSteps === 0) {
+      // Distribute remaining steps equally among others
+      const baseShare = Math.floor(remainingSteps / others.length);
+      const extraSteps = remainingSteps % others.length;
+
+      others.forEach((k, idx) => {
+        const share = baseShare + (idx < extraSteps ? 1 : 0);
+        newWeights[k] = share * STEP;
+      });
     } else {
-      // Proportionally redistribute remaining budget
-      let distributed = 0;
-      others.forEach((k, i) => {
-        if (i === others.length - 1) {
-          // Last one gets the remainder to avoid rounding drift
-          newWeights[k] = remaining - distributed;
-        } else {
-          const share = Math.round((state.weights[k] / otherTotal) * remaining);
-          newWeights[k] = share;
-          distributed += share;
-        }
+      // Proportional allocation using the Largest Remainder Method (Hamilton Method)
+      const allocations = otherSteps.map((item) => {
+        const ideal = (item.steps / otherTotalSteps) * remainingSteps;
+        const floor = Math.floor(ideal);
+        const remainder = ideal - floor;
+        return {
+          key: item.key,
+          allocated: floor,
+          remainder
+        };
+      });
+
+      const allocatedTotal = allocations.reduce((sum, a) => sum + a.allocated, 0);
+      const leftover = remainingSteps - allocatedTotal;
+
+      // Sort allocations by remainder descending
+      allocations.sort((a, b) => b.remainder - a.remainder);
+
+      // Distribute leftover steps
+      for (let i = 0; i < leftover; i++) {
+        allocations[i].allocated += 1;
+      }
+
+      // Convert back to percentages
+      allocations.forEach((a) => {
+        newWeights[a.key] = a.allocated * STEP;
       });
     }
-    
+
     return { weights: newWeights };
   }),
   
