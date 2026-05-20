@@ -13,9 +13,11 @@ Refining analytical modeling, service impact simulations, and advanced research 
    - Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory.
 3. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
+4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
+   - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
 ### Phase 5: PhD-Level Research Reporting
-4. **Draft Route Equity Research Report** [HIGH]
+5. **Draft Route Equity Research Report** [HIGH]
    - Author a comprehensive, high-fidelity report detailing transit equity scores, demographic correlations, and policy recommendations.
 
 ---

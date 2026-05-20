@@ -43,6 +43,7 @@
 - [x] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
 - [x] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
+- [ ] Design and Implement "Policy Sensitivity Explorer" UI Tab (interactive OLS driver scatterplots and dynamic simplex terrain) <!-- id: 38, priority: future -->
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
 
