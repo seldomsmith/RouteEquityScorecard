@@ -9,6 +9,9 @@
 ### Process
 - **Plan Mode**: Always initialize `tasks/tasklist.md` before starting non-trivial work.
 
+### UI/UX Design
+- **Semantic Color Isolation**: Input controls (such as weight sliders) must not borrow high-contrast color palettes reserved for qualitative maps, grades, or indicators (e.g., emerald/blue/amber/orange/red grades). Reusing categorical colors on inputs causes cognitive confusion. Instead, style input elements with a premium neutral medium gray (e.g., slate-500 `#64748B`) and a high-contrast black thumb dot to decouple controls from data indicators.
+
 ### Architecture
 - **Immutable Base vs. Dynamic Computed Data**: The pillar scores (z-score normalized) are immutable and loaded once from Parquet. The composite score, sigmoid, grade, and SHAP contributions are *derived* values that must be recomputed when weights change. Separating `baseRoutes` (immutable) from `scoredRoutes` (derived via `useReactiveScoring`) is the key architectural insight.
 - **Single Source of Truth**: `useReactiveScoring` is the only place that computes scores. `CommandCentre` calls it once and passes the result down. No component should independently compute or store scores.

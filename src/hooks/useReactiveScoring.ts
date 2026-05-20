@@ -53,7 +53,7 @@ export interface NetworkStats {
 
 const PILLAR_MAP = [
   { key: 'pillar_1', storeKey: 'vulnerability', label: 'Vulnerability',  color_pos: '#10B981', color_neg: '#F43F5E' },
-  { key: 'pillar_2', storeKey: 'resilience',    label: 'Temporal Risk',  color_pos: '#10B981', color_neg: '#F43F5E' },
+  { key: 'pillar_2', storeKey: 'resilience',    label: 'Off Peak Service',  color_pos: '#10B981', color_neg: '#F43F5E' },
   { key: 'pillar_3', storeKey: 'monopoly',      label: 'Monopoly',      color_pos: '#10B981', color_neg: '#F43F5E' },
   { key: 'pillar_4', storeKey: 'opportunity',    label: 'Opportunity',   color_pos: '#10B981', color_neg: '#F43F5E' },
 ] as const;

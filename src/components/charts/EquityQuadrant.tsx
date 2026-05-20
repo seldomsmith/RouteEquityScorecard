@@ -18,6 +18,17 @@ export interface RoutePoint {
   pillar_3: number;
   pillar_4: number;
   coords: number[][];  // [[lat, lng], ...]
+  da_data?: {
+    id: string;
+    pop: number;
+    low_income_pct: number;
+    minority_pct: number;
+    senior_pct: number;
+    lone_parent_pct?: number;
+    recent_immigrant_pct?: number;
+    youth_pct?: number;
+    vulnerability_index?: number;
+  }[];
 }
 
 interface EquityQuadrantProps {

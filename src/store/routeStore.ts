@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+export type MetricKey = 'composite' | 'low_income_pct' | 'minority_pct' | 'senior_pct' | 'lone_parent_pct' | 'recent_immigrant_pct' | 'youth_pct';
+
 interface RouteState {
   // Analytical Weights
   weights: {
@@ -14,6 +16,7 @@ interface RouteState {
   hoveredRoute: string | null;
   selectedDa: string | null;
   selectedGrade: string | null;
+  activeMetric: MetricKey;
   
   // Simulation State
   removedRoutes: string[];
@@ -25,6 +28,7 @@ interface RouteState {
   setHoveredRoute: (routeId: string | null) => void;
   setSelectedDa: (daId: string | null) => void;
   setSelectedGrade: (grade: string | null) => void;
+  setActiveMetric: (metric: MetricKey) => void;
   toggleRemovedRoute: (routeId: string) => void;
   resetSimulation: () => void;
 }
@@ -41,6 +45,7 @@ export const useRouteStore = create<RouteState>((set) => ({
   hoveredRoute: null,
   selectedDa: null,
   selectedGrade: null,
+  activeMetric: 'composite',
   
   removedRoutes: [],
   
@@ -113,6 +118,7 @@ export const useRouteStore = create<RouteState>((set) => ({
   setHoveredRoute: (routeId) => set({ hoveredRoute: routeId }),
   setSelectedDa: (daId) => set({ selectedDa: daId }),
   setSelectedGrade: (grade) => set({ selectedGrade: grade }),
+  setActiveMetric: (metric) => set({ activeMetric: metric }),
   
   toggleRemovedRoute: (routeId) => set((state) => {
     const isRemoved = state.removedRoutes.includes(routeId);

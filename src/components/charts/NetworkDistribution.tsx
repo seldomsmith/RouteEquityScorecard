@@ -86,7 +86,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
 
     const pillars = [
       { key: 'pillar_1', label: 'Vulnerability', color: '#EF4444' },
-      { key: 'pillar_2', label: 'Temporal Risk', color: '#F59E0B' },
+      { key: 'pillar_2', label: 'Off Peak Service', color: '#F59E0B' },
       { key: 'pillar_3', label: 'Network Monopoly', color: '#8B5CF6' },
       { key: 'pillar_4', label: 'Opportunity Access', color: '#10B981' },
     ];

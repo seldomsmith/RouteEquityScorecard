@@ -9,10 +9,10 @@ interface SidebarProps {
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#EF4444' },
-  resilience:    { label: 'Temporal Risk',   desc: 'Off-peak service reliability',   color: '#F59E0B' },
-  monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#8B5CF6' },
-  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#10B981' },
+  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#64748B' },
+  resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
+  monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
+  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#64748B' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                   onChange={(e) =>
                     setWeight(key as keyof typeof weights, Number(e.target.value))
                   }
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:transition-transform [&::-moz-range-thumb]:hover:scale-110 [&::-moz-range-thumb]:active:scale-95"
                   style={{
                     background: `linear-gradient(to right, ${color} ${val}%, #E2E8F0 ${val}%)`,
                   }}

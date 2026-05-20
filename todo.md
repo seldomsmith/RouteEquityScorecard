@@ -24,6 +24,9 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Policy Sliders Visual Refactoring**:
+  - Shifted weight slider track backgrounds from high-contrast grade colors (red, orange, green, purple) to a unified, premium medium gray (`#64748B` / slate-500) to eliminate layout collision and map confusion.
+  - Custom styled the range slider thumbs to render as larger, elegant black dots (`w-4 h-4`) with a sharp white border, drop shadows, hover scaling, and reactive active clicks for smooth micro-interactivity.
 - **Grade-Level Route Isolation & DA Vulnerability Heatmap**:
   - Implemented interactive clickable grade badges (A, B, C, D, E) in both the Sidebar and the Clickable Map Legend to isolate and filter all routes matching that grade across the entire dashboard.
   - Set up pre-fetching and caching of Edmonton's Dissemination Area bounds (`da_boundaries_simple.geojson`) once on mount to maximize performance.

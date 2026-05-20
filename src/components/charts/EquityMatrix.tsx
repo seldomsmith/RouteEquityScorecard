@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
-import { useRouteStore } from '@/store/routeStore';
+import { useRouteStore, MetricKey } from '@/store/routeStore';
 
 export interface DaInfo {
   id: string;
@@ -24,9 +24,7 @@ interface MatrixProps {
   routes: RouteWithDAs[];
 }
 
-type MetricKey = 'composite' | 'low_income_pct' | 'minority_pct' | 'senior_pct' | 'lone_parent_pct' | 'recent_immigrant_pct' | 'youth_pct';
-
-const METRICS: { key: MetricKey; label: string; color: string }[] = [
+export const METRICS: { key: MetricKey; label: string; color: string }[] = [
   { key: 'composite',             label: 'Continuous index V_i', color: '#0F766E' },
   { key: 'low_income_pct',        label: 'Low Income',           color: '#EF4444' },
   { key: 'minority_pct',          label: 'Visible Minority',     color: '#F59E0B' },
@@ -60,7 +58,8 @@ function popToRadius(pop: number, maxPop: number): number {
 }
 
 export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
-  const [activeMetric, setActiveMetric] = useState<MetricKey>('composite');
+  const activeMetric = useRouteStore((s) => s.activeMetric);
+  const setActiveMetric = useRouteStore((s) => s.setActiveMetric);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const [hoveredDa, setHoveredDa] = useState<{ da: DaInfo; routeName: string; x: number; y: number } | null>(null);

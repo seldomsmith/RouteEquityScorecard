@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
-import { useRouteStore } from '@/store/routeStore';
+import { useRouteStore, MetricKey } from '@/store/routeStore';
+import { METRICS } from '@/components/charts/EquityMatrix';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -15,6 +16,102 @@ const GRADE_COLORS: Record<string, string> = {
   D: '#F97316',
   E: '#EF4444',
 };
+
+const METRIC_GRADIENTS: Record<MetricKey, string> = {
+  composite: 'linear-gradient(to right, #F0FDFA, #CCFBF1, #99F6E4, #2DD4BF, #0D9488, #0F766E)',
+  low_income_pct: 'linear-gradient(to right, #FEF2F2, #FEE2E2, #FCA5A5, #F87171, #EF4444, #B91C1C)',
+  minority_pct: 'linear-gradient(to right, #FFFBEB, #FEF3C7, #FDE68A, #FBBF24, #F59E0B, #B45309)',
+  senior_pct: 'linear-gradient(to right, #F5F3FF, #EDE9FE, #DDD6FE, #A78BFA, #8B5CF6, #6D28D9)',
+  lone_parent_pct: 'linear-gradient(to right, #FDF2F8, #FCE7F3, #FBCFE8, #F472B6, #EC4899, #BE185D)',
+  recent_immigrant_pct: 'linear-gradient(to right, #ECFDF5, #D1FAE5, #A7F3D0, #34D399, #059669, #047857)',
+  youth_pct: 'linear-gradient(to right, #EEF2FF, #E0E7FF, #C7D2FE, #818CF8, #6366F1, #4338CA)',
+};
+
+function getHeatmapPropertyKey(metric: MetricKey): string {
+  return metric === 'composite' ? 'vulnerability_index' : metric;
+}
+
+function getHeatmapFillColorExpression(metric: MetricKey): any[] {
+  const prop = getHeatmapPropertyKey(metric);
+  switch (metric) {
+    case 'composite':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#F0FDFA',
+        20,  '#CCFBF1',
+        40,  '#99F6E4',
+        60,  '#2DD4BF',
+        80,  '#0D9488',
+        100, '#0F766E'
+      ];
+    case 'low_income_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FEF2F2',
+        20,  '#FEE2E2',
+        40,  '#FCA5A5',
+        60,  '#F87171',
+        80,  '#EF4444',
+        100, '#B91C1C'
+      ];
+    case 'minority_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FFFBEB',
+        20,  '#FEF3C7',
+        40,  '#FDE68A',
+        60,  '#FBBF24',
+        80,  '#F59E0B',
+        100, '#B45309'
+      ];
+    case 'senior_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#F5F3FF',
+        20,  '#EDE9FE',
+        40,  '#DDD6FE',
+        60,  '#A78BFA',
+        80,  '#8B5CF6',
+        100, '#6D28D9'
+      ];
+    case 'lone_parent_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FDF2F8',
+        20,  '#FCE7F3',
+        40,  '#FBCFE8',
+        60,  '#F472B6',
+        80,  '#EC4899',
+        100, '#BE185D'
+      ];
+    case 'recent_immigrant_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#ECFDF5',
+        20,  '#D1FAE5',
+        40,  '#A7F3D0',
+        60,  '#34D399',
+        80,  '#059669',
+        100, '#047857'
+      ];
+    case 'youth_pct':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#EEF2FF',
+        20,  '#E0E7FF',
+        40,  '#C7D2FE',
+        60,  '#818CF8',
+        80,  '#6366F1',
+        100, '#4338CA'
+      ];
+    default:
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#F8FAFC',
+        100, '#64748B'
+      ];
+  }
+}
 
 interface MapProps {
   systemPopServed: number | null;
@@ -69,6 +166,12 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
   const selectedDa = useRouteStore((s) => s.selectedDa);
   const setSelectedDa = useRouteStore((s) => s.setSelectedDa);
+  const activeMetric = useRouteStore((s) => s.activeMetric);
+  
+  const activeMetricRef = useRef<MetricKey>(activeMetric);
+  useEffect(() => {
+    activeMetricRef.current = activeMetric;
+  }, [activeMetric]);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
@@ -148,16 +251,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         type: 'fill',
         source: 'da-heatmap',
         paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'vulnerability_index'],
-            -2.0, '#E2E8F0', // Neutral low vulnerability
-            -0.5, '#A7F3D0', // Cool light emerald
-            0.0,  '#FEF08A', // Average yellow
-            1.0,  '#FDBA74', // High orange
-            2.5,  '#F87171'  // Extreme red
-          ],
+          'fill-color': getHeatmapFillColorExpression(activeMetric),
           'fill-opacity': 0.55,
           'fill-outline-color': 'rgba(255, 255, 255, 0.4)',
         },
@@ -263,7 +357,9 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         if (e.features?.[0]) {
           map.current!.getCanvas().style.cursor = 'pointer';
           const props = e.features[0].properties!;
-          const vIndex = Number(props.vulnerability_index || 0).toFixed(2);
+          const currentMetric = activeMetricRef.current;
+          
+          const vIndex = Number(props.vulnerability_index || 0).toFixed(1);
           const pop = Number(props.pop || 0).toLocaleString();
           const lowInc = Number(props.low_income_pct || 0).toFixed(1);
           const minority = Number(props.minority_pct || 0).toFixed(1);
@@ -271,20 +367,53 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           const loneParent = Number(props.lone_parent_pct || 0).toFixed(1);
           const recentImmigrant = Number(props.recent_immigrant_pct || 0).toFixed(1);
           const youth = Number(props.youth_pct || 0).toFixed(1);
-          
+
+          const getHighlightStyle = (key: string) => {
+            if (key === currentMetric) {
+              const m = METRICS.find(item => item.key === key);
+              const color = m ? m.color : '#0F766E';
+              return `style="color:${color};font-weight:bold;background-color:rgba(0,0,0,0.04);padding:1px 4px;border-radius:3px;"`;
+            }
+            return '';
+          };
+
+          const getLabelStyle = (key: string) => {
+            if (key === currentMetric) {
+              return `style="font-weight:700;color:#1E293B;"`;
+            }
+            return '';
+          };
+
           daPopup
             .setLngLat(e.lngLat)
             .setHTML(`
-              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:4px;font-weight:bold;">DA: ${props.DAUID}</div>
-              <div style="font:500 10px Inter,sans-serif;color:#475569;display:grid;grid-template-columns:auto auto;gap:4px 8px;">
-                <span>Vulnerability Index:</span><strong style="color:#0F766E">${vIndex}</strong>
-                <span>Population:</span><strong>${pop}</strong>
-                <span>Low Income:</span><strong>${lowInc}%</strong>
-                <span>Minority:</span><strong>${minority}%</strong>
-                <span>Seniors:</span><strong>${senior}%</strong>
-                <span>Lone Parents:</span><strong>${loneParent}%</strong>
-                <span>Recent Immigrants:</span><strong>${recentImmigrant}%</strong>
-                <span>Youth:</span><strong>${youth}%</strong>
+              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:6px;font-weight:bold;border-bottom:1px solid #E2E8F0;padding-bottom:4px;">DA: ${props.DAUID}</div>
+              <div style="font:500 10px Inter,sans-serif;color:#475569;display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;">
+                <span ${getLabelStyle('composite')}>Transit Vulnerability (V_i):</span>
+                <strong ${getHighlightStyle('composite')}>${vIndex}</strong>
+                
+                <span>Population:</span>
+                <strong>${pop}</strong>
+                
+                <div style="grid-column: span 2; border-top: 1px solid #F1F5F9; margin: 2px 0;"></div>
+
+                <span ${getLabelStyle('low_income_pct')}>Low Income:</span>
+                <strong ${getHighlightStyle('low_income_pct')}>${lowInc}%</strong>
+                
+                <span ${getLabelStyle('minority_pct')}>Visible Minority:</span>
+                <strong ${getHighlightStyle('minority_pct')}>${minority}%</strong>
+                
+                <span ${getLabelStyle('senior_pct')}>Seniors:</span>
+                <strong ${getHighlightStyle('senior_pct')}>${senior}%</strong>
+                
+                <span ${getLabelStyle('lone_parent_pct')}>Lone Parents:</span>
+                <strong ${getHighlightStyle('lone_parent_pct')}>${loneParent}%</strong>
+                
+                <span ${getLabelStyle('recent_immigrant_pct')}>Recent Immigrants:</span>
+                <strong ${getHighlightStyle('recent_immigrant_pct')}>${recentImmigrant}%</strong>
+                
+                <span ${getLabelStyle('youth_pct')}>Youth (15-24):</span>
+                <strong ${getHighlightStyle('youth_pct')}>${youth}%</strong>
               </div>
             `)
             .addTo(map.current!);
@@ -304,6 +433,20 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current.on('load', addRoutes);
     }
   }, [routes, setSelectedRoute]);
+
+  // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle
+  useEffect(() => {
+    if (!map.current || !routesAdded.current) return;
+    try {
+      map.current.setPaintProperty(
+        'da-heatmap-layer',
+        'fill-color',
+        getHeatmapFillColorExpression(activeMetric)
+      );
+    } catch (e) {
+      console.warn("Could not update fill-color paint property", e);
+    }
+  }, [activeMetric]);
 
   // ⚡ Reactive GeoJSON update — hot-swap route data when weights change
   // This runs AFTER initial setup (routesAdded.current === true) and only
@@ -350,6 +493,31 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       // Layer might not exist yet
     }
   }, [selectedRoute]);
+
+  // Apply grade filter to the map layer when selectedGrade changes
+  // This is what makes the A/B/C/D/E legend buttons actually filter the map.
+  useEffect(() => {
+    if (!map.current || !routesAdded.current) return;
+    try {
+      if (selectedGrade) {
+        // Show only routes matching the selected grade, dim the highlight layer
+        map.current.setFilter('routes-line', ['==', ['get', 'grade'], selectedGrade]);
+        // Keep highlight filter coherent: selected route must also match the grade
+        map.current.setFilter('routes-highlight', [
+          'all',
+          ['==', ['get', 'route_id'], selectedRoute || ''],
+          ['==', ['get', 'grade'], selectedGrade],
+        ]);
+      } else {
+        // Clear grade filter — show all routes
+        map.current.setFilter('routes-line', null);
+        // Restore normal route highlight filter
+        map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
+      }
+    } catch (e) {
+      // Layers may not exist yet on first render
+    }
+  }, [selectedGrade, selectedRoute]);
 
   // ⚡ Reactive DA zoom and highlight - triggers Mapbox flyTo when selectedDa changes
   useEffect(() => {
@@ -416,13 +584,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       }
 
       // Create a lookup map of served DAs
-      const daMap = new Map(selectedRouteData.da_data.map((d: any) => [d.id, d]));
+      // Both keys are coerced to string — GeoJSON DAUID is numeric, da_data.id is already a string.
+      const daMap = new Map(selectedRouteData.da_data.map((d: any) => [String(d.id), d]));
+
+      console.log(`[Heatmap] Route ${selectedRoute} has ${selectedRouteData.da_data.length} DAs. Sample id: ${selectedRouteData.da_data[0]?.id}`);
 
       // Filter and enrich the geojson features
       const servedDaFeatures = daGeoJson.features
-        .filter((f: any) => daMap.has(f.properties?.DAUID))
+        .filter((f: any) => daMap.has(String(f.properties?.DAUID)))
         .map((f: any) => {
-          const daInfo = daMap.get(f.properties.DAUID)!;
+          const daInfo = daMap.get(String(f.properties.DAUID))!;
           return {
             ...f,
             properties: {
@@ -567,13 +738,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
         {selectedRoute && (
           <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
-            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-              Served DA Equity
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest truncate">
+              {METRICS.find((m) => m.key === activeMetric)?.label || 'Served DA Equity'}
             </span>
-            <div className="h-2 w-full rounded-full" style={{ background: 'linear-gradient(to right, #E2E8F0, #A7F3D0, #FEF08A, #FDBA74, #F87171)' }} />
+            <div 
+              className="h-2 w-full rounded-full border border-slate-200/50" 
+              style={{ background: METRIC_GRADIENTS[activeMetric] }} 
+            />
             <div className="flex justify-between text-[8px] font-mono text-slate-400">
-              <span>Low Risk</span>
-              <span>High Risk</span>
+              <span>0% (Low)</span>
+              <span>100% (High)</span>
             </div>
           </div>
         )}
