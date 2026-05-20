@@ -27,6 +27,20 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const routesAdded = useRef(false);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
+  const selectedGrade = useRouteStore((s) => s.selectedGrade);
+  const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
+
+  const [daGeoJson, setDaGeoJson] = useState<any>(null);
+
+  // Fetch DA boundaries GeoJSON once
+  useEffect(() => {
+    fetch('/data/da_boundaries_simple.geojson')
+      .then((res) => res.json())
+      .then((data) => {
+        setDaGeoJson(data);
+      })
+      .catch((err) => console.error("❌ Failed to load DA boundaries", err));
+  }, []);
 
   // Initialize the map
   useEffect(() => {
@@ -83,6 +97,32 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
       console.log(`🗺️ Drawing ${features.length} routes on map`);
 
+      // Add DA Heatmap source and layer FIRST so it sits underneath route lines
+      map.current!.addSource('da-heatmap', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+
+      map.current!.addLayer({
+        id: 'da-heatmap-layer',
+        type: 'fill',
+        source: 'da-heatmap',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'vulnerability_index'],
+            -2.0, '#E2E8F0', // Neutral low vulnerability
+            -0.5, '#A7F3D0', // Cool light emerald
+            0.0,  '#FEF08A', // Average yellow
+            1.0,  '#FDBA74', // High orange
+            2.5,  '#F87171'  // Extreme red
+          ],
+          'fill-opacity': 0.55,
+          'fill-outline-color': 'rgba(255, 255, 255, 0.4)',
+        },
+      });
+
       map.current!.addSource('routes', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features },
@@ -137,7 +177,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         if (map.current) map.current.getCanvas().style.cursor = '';
       });
 
-      // Hover tooltip
+      // Hover tooltip for routes
       const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 15 });
       map.current!.on('mouseenter', 'routes-line', (e) => {
         if (e.features?.[0]) {
@@ -149,6 +189,44 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         }
       });
       map.current!.on('mouseleave', 'routes-line', () => popup.remove());
+
+      // Hover tooltip for DAs
+      const daPopup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+      map.current!.on('mouseenter', 'da-heatmap-layer', (e) => {
+        if (e.features?.[0]) {
+          map.current!.getCanvas().style.cursor = 'pointer';
+          const props = e.features[0].properties!;
+          const vIndex = Number(props.vulnerability_index || 0).toFixed(2);
+          const pop = Number(props.pop || 0).toLocaleString();
+          const lowInc = Number(props.low_income_pct || 0).toFixed(1);
+          const minority = Number(props.minority_pct || 0).toFixed(1);
+          const senior = Number(props.senior_pct || 0).toFixed(1);
+          const loneParent = Number(props.lone_parent_pct || 0).toFixed(1);
+          const recentImmigrant = Number(props.recent_immigrant_pct || 0).toFixed(1);
+          const youth = Number(props.youth_pct || 0).toFixed(1);
+          
+          daPopup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:4px;font-weight:bold;">DA: ${props.DAUID}</div>
+              <div style="font:500 10px Inter,sans-serif;color:#475569;display:grid;grid-template-columns:auto auto;gap:4px 8px;">
+                <span>Vulnerability Index:</span><strong style="color:#0F766E">${vIndex}</strong>
+                <span>Population:</span><strong>${pop}</strong>
+                <span>Low Income:</span><strong>${lowInc}%</strong>
+                <span>Minority:</span><strong>${minority}%</strong>
+                <span>Seniors:</span><strong>${senior}%</strong>
+                <span>Lone Parents:</span><strong>${loneParent}%</strong>
+                <span>Recent Immigrants:</span><strong>${recentImmigrant}%</strong>
+                <span>Youth:</span><strong>${youth}%</strong>
+              </div>
+            `)
+            .addTo(map.current!);
+        }
+      });
+      map.current!.on('mouseleave', 'da-heatmap-layer', () => {
+        map.current!.getCanvas().style.cursor = '';
+        daPopup.remove();
+      });
 
       routesAdded.current = true;
     };
@@ -205,6 +283,57 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       // Layer might not exist yet
     }
   }, [selectedRoute]);
+
+  // ⚡ Reactive DA Heatmap overlay — updates DA geometry highlighting when a route is isolated
+  useEffect(() => {
+    if (!map.current || !routesAdded.current || !daGeoJson) return;
+
+    try {
+      const source = map.current.getSource('da-heatmap') as mapboxgl.GeoJSONSource;
+      if (!source) return;
+
+      if (!selectedRoute) {
+        // Clear overlay if no route is selected
+        source.setData({ type: 'FeatureCollection', features: [] });
+        return;
+      }
+
+      // Find the selected route
+      const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
+      if (!selectedRouteData || !selectedRouteData.da_data || selectedRouteData.da_data.length === 0) {
+        source.setData({ type: 'FeatureCollection', features: [] });
+        return;
+      }
+
+      // Create a lookup map of served DAs
+      const daMap = new Map(selectedRouteData.da_data.map((d: any) => [d.id, d]));
+
+      // Filter and enrich the geojson features
+      const servedDaFeatures = daGeoJson.features
+        .filter((f: any) => daMap.has(f.properties?.DAUID))
+        .map((f: any) => {
+          const daInfo = daMap.get(f.properties.DAUID)!;
+          return {
+            ...f,
+            properties: {
+              ...f.properties,
+              vulnerability_index: daInfo.vulnerability_index,
+              pop: daInfo.pop,
+              low_income_pct: daInfo.low_income_pct,
+              minority_pct: daInfo.minority_pct,
+              senior_pct: daInfo.senior_pct,
+              lone_parent_pct: daInfo.lone_parent_pct,
+              recent_immigrant_pct: daInfo.recent_immigrant_pct,
+              youth_pct: daInfo.youth_pct,
+            },
+          };
+        });
+
+      source.setData({ type: 'FeatureCollection', features: servedDaFeatures });
+    } catch (e) {
+      console.warn("Could not update DA Heatmap data source", e);
+    }
+  }, [selectedRoute, routes, daGeoJson]);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -267,6 +396,59 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
               {systemPopServed !== null ? systemPopServed.toLocaleString() : "..."}
             </p>
         </div>
+      </div>
+
+      {/* Clickable Map Legend */}
+      <div className="absolute bottom-6 right-6 z-10 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg flex flex-col gap-2 min-w-[140px]">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            Grade Filter
+          </span>
+          {selectedGrade && (
+            <button
+              onClick={() => setSelectedGrade(null)}
+              className="text-[8px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
+            const isActive = selectedGrade === g;
+            return (
+              <button
+                key={g}
+                onClick={() => setSelectedGrade(isActive ? null : g)}
+                className={`flex items-center gap-2 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-all border text-left
+                  ${isActive 
+                    ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
+                    : 'text-slate-600 bg-white/50 border-slate-100 hover:bg-slate-50'
+                  }`}
+              >
+                <span 
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: GRADE_COLORS[g] }}
+                />
+                Grade {g}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
+        {selectedRoute && (
+          <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+              Served DA Equity
+            </span>
+            <div className="h-2 w-full rounded-full" style={{ background: 'linear-gradient(to right, #E2E8F0, #A7F3D0, #FEF08A, #FDBA74, #F87171)' }} />
+            <div className="flex justify-between text-[8px] font-mono text-slate-400">
+              <span>Low Risk</span>
+              <span>High Risk</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

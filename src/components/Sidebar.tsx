@@ -29,8 +29,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const setWeights = useRouteStore((s) => s.setWeights);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
+  const selectedGrade = useRouteStore((s) => s.selectedGrade);
+  const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+
+  const gradeCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+    routes.forEach((r) => {
+      if (r.grade && counts[r.grade] !== undefined) {
+        counts[r.grade]++;
+      }
+    });
+    return counts;
+  }, [routes]);
+
+  const displayedRoutes = React.useMemo(() => {
+    if (!selectedGrade) return routes;
+    return routes.filter((r) => r.grade === selectedGrade);
+  }, [routes, selectedGrade]);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -115,14 +132,57 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         </select>
       </div>
 
+      {/* Grade Isolator */}
+      <div className="p-4 border-b border-slate-100">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Grade Isolator
+          </h2>
+          {selectedGrade && (
+            <button
+              onClick={() => setSelectedGrade(null)}
+              className="text-[9px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-5 gap-1.5">
+          {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
+            const isActive = selectedGrade === g;
+            const count = gradeCounts[g] || 0;
+            
+            // Premium custom badge styling based on active/inactive states
+            const styleMap: Record<string, string> = {
+              A: isActive ? 'bg-emerald-500 text-white shadow-sm border-emerald-500 font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200/50',
+              B: isActive ? 'bg-blue-500 text-white shadow-sm border-blue-500 font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200/50',
+              C: isActive ? 'bg-amber-500 text-white shadow-sm border-amber-500 font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200/50',
+              D: isActive ? 'bg-orange-500 text-white shadow-sm border-orange-500 font-bold' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200/50',
+              E: isActive ? 'bg-red-500 text-white shadow-sm border-red-500 font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200/50',
+            };
+            
+            return (
+              <button
+                key={g}
+                onClick={() => setSelectedGrade(isActive ? null : g)}
+                className={`py-1 px-1 rounded-lg border text-center transition-all duration-150 flex flex-col items-center justify-center ${styleMap[g]}`}
+              >
+                <span className="text-xs font-black leading-none">{g}</span>
+                <span className="text-[8px] font-mono font-semibold opacity-80 mt-0.5 leading-none">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Route List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className="p-4">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Network ({routes.length} routes)
+            Network ({displayedRoutes.length} {selectedGrade ? `Grade ${selectedGrade}` : ''} routes)
           </h2>
           <div className="space-y-1">
-            {routes
+            {displayedRoutes
               .sort((a, b) => a.composite_score - b.composite_score)
               .map((r) => (
                 <button

@@ -13,6 +13,7 @@ interface RouteState {
   selectedRoute: string | null;
   hoveredRoute: string | null;
   selectedDa: string | null;
+  selectedGrade: string | null;
   
   // Simulation State
   removedRoutes: string[];
@@ -23,6 +24,7 @@ interface RouteState {
   setSelectedRoute: (routeId: string | null) => void;
   setHoveredRoute: (routeId: string | null) => void;
   setSelectedDa: (daId: string | null) => void;
+  setSelectedGrade: (grade: string | null) => void;
   toggleRemovedRoute: (routeId: string) => void;
   resetSimulation: () => void;
 }
@@ -38,6 +40,7 @@ export const useRouteStore = create<RouteState>((set) => ({
   selectedRoute: null,
   hoveredRoute: null,
   selectedDa: null,
+  selectedGrade: null,
   
   removedRoutes: [],
   
@@ -77,13 +80,14 @@ export const useRouteStore = create<RouteState>((set) => ({
   setSelectedRoute: (routeId) => set({ selectedRoute: routeId }),
   setHoveredRoute: (routeId) => set({ hoveredRoute: routeId }),
   setSelectedDa: (daId) => set({ selectedDa: daId }),
+  setSelectedGrade: (grade) => set({ selectedGrade: grade }),
   
   toggleRemovedRoute: (routeId) => set((state) => {
     const isRemoved = state.removedRoutes.includes(routeId);
     return {
       removedRoutes: isRemoved 
-        ? state.removedRoutes.filter(id => id !== routeId)
-        : [...state.removedRoutes, routeId]
+      ? state.removedRoutes.filter(id => id !== routeId)
+      : [...state.removedRoutes, routeId]
     };
   }),
   

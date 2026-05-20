@@ -35,11 +35,11 @@
   - [x] Verify slider behaviors, reset behavior, and visual scorecard synchronization
 - [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
   - [ ] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
-- [ ] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
-  - [ ] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
-- [ ] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
-  - [ ] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
-  - [ ] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
+- [x] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
+  - [x] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
+- [x] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
+  - [x] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
+  - [x] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
 - [ ] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
 - [ ] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
