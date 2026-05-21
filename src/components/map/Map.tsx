@@ -27,9 +27,76 @@ const METRIC_GRADIENTS: Record<MetricKey, string> = {
   youth_pct: 'linear-gradient(to right, #EEF2FF, #E0E7FF, #C7D2FE, #818CF8, #6366F1, #4338CA)',
 };
 
+const GRADE_GRADIENTS: Record<string, string> = {
+  A: 'linear-gradient(to right, #ECFDF5, #D1FAE5, #A7F3D0, #34D399, #059669, #064E3B)',
+  B: 'linear-gradient(to right, #EFF6FF, #DBEAFE, #BFDBFE, #60A5FA, #2563EB, #1E3A8A)',
+  C: 'linear-gradient(to right, #FFFDF5, #FEF3C7, #FDE68A, #FBBF24, #D97706, #78350F)',
+  D: 'linear-gradient(to right, #FFF7ED, #FFEDD5, #FED7AA, #FB923C, #EA580C, #7C2D12)',
+  E: 'linear-gradient(to right, #FEF2F2, #FEE2E2, #FCA5A5, #F87171, #DC2626, #7F1D1D)',
+};
+
 function getHeatmapPropertyKey(metric: MetricKey): string {
   return metric === 'composite' ? 'vulnerability_index' : metric;
 }
+
+function getGradeHeatmapFillColorExpression(grade: string, metric: MetricKey): any[] {
+  const prop = getHeatmapPropertyKey(metric);
+  switch (grade) {
+    case 'A':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#ECFDF5',
+        20,  '#D1FAE5',
+        40,  '#A7F3D0',
+        60,  '#34D399',
+        80,  '#059669',
+        100, '#064E3B'
+      ];
+    case 'B':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#EFF6FF',
+        20,  '#DBEAFE',
+        40,  '#BFDBFE',
+        60,  '#60A5FA',
+        80,  '#2563EB',
+        100, '#1E3A8A'
+      ];
+    case 'C':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FFFDF5',
+        20,  '#FEF3C7',
+        40,  '#FDE68A',
+        60,  '#FBBF24',
+        80,  '#D97706',
+        100, '#78350F'
+      ];
+    case 'D':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FFF7ED',
+        20,  '#FFEDD5',
+        40,  '#FED7AA',
+        60,  '#FB923C',
+        80,  '#EA580C',
+        100, '#7C2D12'
+      ];
+    case 'E':
+      return [
+        'interpolate', ['linear'], ['get', prop],
+        0,   '#FEF2F2',
+        20,  '#FEE2E2',
+        40,  '#FCA5A5',
+        60,  '#F87171',
+        80,  '#DC2626',
+        100, '#7F1D1D'
+      ];
+    default:
+      return getHeatmapFillColorExpression(metric);
+  }
+}
+
 
 function getHeatmapFillColorExpression(metric: MetricKey): any[] {
   const prop = getHeatmapPropertyKey(metric);
@@ -168,6 +235,9 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const setSelectedDa = useRouteStore((s) => s.setSelectedDa);
   const activeMetric = useRouteStore((s) => s.activeMetric);
   
+  const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
+  const selectedRouteGrade = selectedRouteData?.grade || null;
+  
   const activeMetricRef = useRef<MetricKey>(activeMetric);
   useEffect(() => {
     activeMetricRef.current = activeMetric;
@@ -284,6 +354,33 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         },
       });
 
+      map.current!.addSource('isochrone', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+
+      map.current!.addLayer({
+        id: 'isochrone-fill',
+        type: 'fill',
+        source: 'isochrone',
+        paint: {
+          'fill-color': '#0F766E',
+          'fill-opacity': 0.18,
+        },
+      });
+
+      map.current!.addLayer({
+        id: 'isochrone-line',
+        type: 'line',
+        source: 'isochrone',
+        paint: {
+          'line-color': '#0F766E',
+          'line-width': 1.5,
+          'line-opacity': 0.7,
+          'line-dasharray': [2, 2],
+        },
+      });
+
       map.current!.addSource('routes', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features },
@@ -315,7 +412,15 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         type: 'line',
         source: 'routes',
         paint: {
-          'line-color': '#0F766E',
+          'line-color': [
+            'match', ['get', 'grade'],
+            'A', GRADE_COLORS.A,
+            'B', GRADE_COLORS.B,
+            'C', GRADE_COLORS.C,
+            'D', GRADE_COLORS.D,
+            'E', GRADE_COLORS.E,
+            '#94A3B8'
+          ],
           'line-width': 5,
           'line-opacity': 0.9,
         },
@@ -434,19 +539,23 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     }
   }, [routes, setSelectedRoute]);
 
-  // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle
+  // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle, route selection, or grade change
   useEffect(() => {
     if (!map.current || !routesAdded.current) return;
     try {
+      const paintExpression = selectedRouteGrade
+        ? getGradeHeatmapFillColorExpression(selectedRouteGrade, activeMetric)
+        : getHeatmapFillColorExpression(activeMetric);
+
       map.current.setPaintProperty(
         'da-heatmap-layer',
         'fill-color',
-        getHeatmapFillColorExpression(activeMetric)
+        paintExpression
       );
     } catch (e) {
       console.warn("Could not update fill-color paint property", e);
     }
-  }, [activeMetric]);
+  }, [activeMetric, selectedRouteGrade]);
 
   // ⚡ Reactive GeoJSON update — hot-swap route data when weights change
   // This runs AFTER initial setup (routesAdded.current === true) and only
@@ -493,6 +602,49 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       // Layer might not exist yet
     }
   }, [selectedRoute]);
+
+  // ⚡ Dynamic Isochrone Loader & Style Matcher
+  useEffect(() => {
+    if (!map.current || !routesAdded.current) return;
+
+    const source = map.current.getSource('isochrone') as mapboxgl.GeoJSONSource;
+    if (!source) return;
+
+    if (!selectedRoute) {
+      // No route selected, clear isochrone geometry
+      source.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    let active = true;
+
+    // Fetch walk catchment isochrone GeoJSON dynamically
+    fetch(`/data/isochrones/${selectedRoute}.json`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Isochrone not found for route ${selectedRoute}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (active) {
+          source.setData(data);
+          
+          // Apply dynamic grade color matching immediately
+          const gradeColor = selectedRouteGrade ? (GRADE_COLORS[selectedRouteGrade] || '#0F766E') : '#0F766E';
+          map.current!.setPaintProperty('isochrone-fill', 'fill-color', gradeColor);
+          map.current!.setPaintProperty('isochrone-line', 'line-color', gradeColor);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          console.warn(`[Isochrone] Could not load or parse isochrone for route ${selectedRoute}:`, err);
+          source.setData({ type: 'FeatureCollection', features: [] });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedRoute, selectedRouteGrade]);
 
   // Apply grade filter to the map layer when selectedGrade changes
   // This is what makes the A/B/C/D/E legend buttons actually filter the map.
@@ -743,7 +895,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             </span>
             <div 
               className="h-2 w-full rounded-full border border-slate-200/50" 
-              style={{ background: METRIC_GRADIENTS[activeMetric] }} 
+              style={{ background: selectedRouteGrade ? (GRADE_GRADIENTS[selectedRouteGrade] || METRIC_GRADIENTS[activeMetric]) : METRIC_GRADIENTS[activeMetric] }} 
             />
             <div className="flex justify-between text-[8px] font-mono text-slate-400">
               <span>0% (Low)</span>

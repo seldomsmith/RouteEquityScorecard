@@ -24,6 +24,16 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **SHAP Waterfall Layout & Scaling Polish (Phase 7)**:
+  - Replaced the dynamic sizing range with a strictly locked scale from `0` to `100` (`minVal = 0`, `maxVal = 100`, `range = 100`) for absolute, consistent cross-route comparison.
+  - Added top X-axis grid headers at `0`, `50` (Baseline), and `100`, along with vertical dashed grid lines running all the way down past the `RAW` and shifted `FINAL` score rows.
+  - Shifted the `FINAL` composite score row lower to `y = (shap.length + 2.3) * ROW_HEIGHT` to create clean visual whitespace, and added a neat horizontal dotted divider line separating it from the `RAW` composite row.
+  - Adjusted the `<svg>` canvas height to prevent any clipping of the shifted row or explanatory footnotes.
+- **Dynamic Route/Heatmap Grade Coloring (Phase 6)**:
+  - Updated the Map highlight boundary path to dynamically color-match the selected route's current grade (A: Emerald, B: Blue, C: Amber/Yellow, D: Orange, E: Red).
+  - Programmed served DA vulnerability heatmaps to dynamically transition gradients using custom shade scales matching the isolated route's grade (e.g. shades of yellow for Grade C routes).
+  - Connected the map legends to dynamically swap to matching grade-based gradients when a route is isolated, and to revert back to default metric colors when cleared.
+  - Handled seamless integration with active weight slides, ensuring color highlights and heatmap scales instantly adapt when dynamic grading shifts.
 - **Policy Sliders Visual Refactoring**:
   - Shifted weight slider track backgrounds from high-contrast grade colors (red, orange, green, purple) to a unified, premium medium gray (`#64748B` / slate-500) to eliminate layout collision and map confusion.
   - Custom styled the range slider thumbs to render as larger, elegant black dots (`w-4 h-4`) with a sharp white border, drop shadows, hover scaling, and reactive active clicks for smooth micro-interactivity.

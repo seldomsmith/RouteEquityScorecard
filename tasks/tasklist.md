@@ -76,3 +76,28 @@
 - [x] Ensure dynamic weight changes actively recalculate and alter Quintile distributions across the network <!-- id: 28, priority: high -->
 - [ ] Draft the core findings for the Route Equity Research Report <!-- id: 29 -->
 
+## Phase 6: Dynamic Grade-Colored Highlighting & Heatmaps [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 47, priority: critical -->
+- [x] Update `routes-highlight` layer to color-match routes dynamically by grade property <!-- id: 48, priority: high -->
+- [x] Implement `getGradeHeatmapFillColorExpression` and custom gradients in `Map.tsx` <!-- id: 49, priority: high -->
+- [x] Connect reactive state to heat map fill paint properties for instant updates on weight shift <!-- id: 50, priority: high -->
+- [x] Dynamic legend background updates on grade/metric changes <!-- id: 51, priority: medium -->
+- [x] Verify dynamic color shifts across different routes and weight combinations <!-- id: 52, priority: critical -->
+
+## Phase 7: Waterfall Chart Layout & Scaling Polish [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 53, priority: critical -->
+- [x] Implement static 0, 50, and 100 top X-axis markers with dashed vertical grid lines running down the chart <!-- id: 54, priority: high -->
+- [x] Shift the `FINAL` composite score row lower for clear visual separation <!-- id: 55, priority: high -->
+- [x] Add horizontal dotted divider line separating the `FINAL` score row from the other rows <!-- id: 56, priority: medium -->
+- [x] Verify waterfall chart layout, scaling, and comparative rendering (Ready for manual validation) <!-- id: 57, priority: critical -->
+
+## Phase 8: Network Pedestrian Isochrone Generator [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 58, priority: critical -->
+- [x] Develop `scripts/generate_network_isochrones.py` in the modeling codebase <!-- id: 59, priority: high -->
+  - [x] Implement Overpass API fetching for pedestrian network within route bounding boxes
+  - [x] Implement pure Python multi-source Dijkstra's algorithm for 400m walking limit
+  - [x] Generate smooth walking catchment polygons using Shapely unary unions
+- [x] Export isochrone GeoJSON files to the frontend scoreboard directory <!-- id: 60, priority: high -->
+- [x] Modify frontend `Map.tsx` to dynamically render true isochrone polygons instead of simple buffers <!-- id: 61, priority: medium -->
+
+
