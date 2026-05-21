@@ -51,5 +51,9 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Enabled direct double-sided interactive clicking on scatterplot dots to select, toggle, and isolate routes globally across the map and sidebar.
   - Removed the `Pillar Score Dispersion (Boxplot Spread)` card visual and its unused `useMemo` math calculations from `src/components/charts/NetworkDistribution.tsx` for a clean diagnostics panel layout.
   - Renamed the first button in the Equity Dissemination Matrix metrics from `"Continuous index V_i"` to `"Composite Vulnerability Score"`.
+- **Demographic Heatmap Resilient Fix & Git Synchronization**:
+  - Addressed the heatmap rendering visibility issue by adding a resilient fallback key mapping in `src/components/CommandCentre.tsx` supporting both `vulnerability` and `vulnerability_index` backend keys.
+  - Successfully staged, committed, and pushed the pipeline-modified `golden_route_record` database assets (.parquet and .json) and our frontend fixes to the remote master branch on GitHub.
+
 
 
