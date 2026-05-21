@@ -68,6 +68,10 @@
 - [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->
 - [ ] Finalize PostGIS/Python backend if needed <!-- id: 10 -->
 
+## Phase 4.6: Heatmap Defect Fix & Git Synchronization [IN PROGRESS]
+- [x] Apply resilient parser in `CommandCentre.tsx` for vulnerability keys <!-- id: 45, priority: high -->
+- [ ] Run Git synchronization pipeline to commit and push generated assets and parser fixes <!-- id: 46, priority: critical -->
+
 ## Phase 5: PhD-Level Research & Analytics
 - [x] Ensure dynamic weight changes actively recalculate and alter Quintile distributions across the network <!-- id: 28, priority: high -->
 - [ ] Draft the core findings for the Route Equity Research Report <!-- id: 29 -->
