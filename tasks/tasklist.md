@@ -100,4 +100,12 @@
 - [x] Export isochrone GeoJSON files to the frontend scoreboard directory <!-- id: 60, priority: high -->
 - [x] Modify frontend `Map.tsx` to dynamically render true isochrone polygons instead of simple buffers <!-- id: 61, priority: medium -->
 
+## Phase 8.1: Full Network Isochrone Generation & Verification [COMPLETE]
+- [x] Execute global isochrone generator pipeline `scripts/generate_network_isochrones.py` for all 236 transit routes <!-- id: 62, priority: critical -->
+- [x] Monitor background process and verify successful OSM grid caching and Dijkstra traversals <!-- id: 63, priority: high -->
+- [x] Validate generated GeoJSON assets inside frontend output directory `public/data/isochrones/` <!-- id: 64, priority: high -->
+- [x] Conduct manual UI verification of multiple selected routes (varying grades/locations) on Map <!-- id: 65, priority: critical -->
+- [x] Commit and push generated asset pack to remote master branch on GitHub <!-- id: 66, priority: critical -->
+
+
 
