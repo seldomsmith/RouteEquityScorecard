@@ -24,6 +24,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Policy Weight Toggles & School Route Exclusion (Phase 9)**:
+  - Excluded school special routes (6xx range) from the dataset, decreasing overall route count from 236 to 170.
+  - Re-run spatial calculations and re-standardized scoring pipelines to build fresh `.json` and `.parquet` databases.
+  - Implemented `disabledWeights` support and `toggleWeightEnabled` action in the Zustand store.
+  - Added checkboxes to the sidebar next to each weight parameter allowing them to be fully toggled on/off.
+  - Programmed sliders to dynamically auto-adjust and lock to 0% when disabled, redistributing remaining weight percentages proportionally.
 - **SHAP Waterfall Layout & Scaling Polish (Phase 7)**:
   - Replaced the dynamic sizing range with a strictly locked scale from `0` to `100` (`minVal = 0`, `maxVal = 100`, `range = 100`) for absolute, consistent cross-route comparison.
   - Added top X-axis grid headers at `0`, `50` (Baseline), and `100`, along with vertical dashed grid lines running all the way down past the `RAW` and shifted `FINAL` score rows.

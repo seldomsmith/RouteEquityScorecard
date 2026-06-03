@@ -27,6 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
+  const disabledWeights = useRouteStore((s) => s.disabledWeights);
+  const toggleWeightEnabled = useRouteStore((s) => s.toggleWeightEnabled);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const selectedGrade = useRouteStore((s) => s.selectedGrade);
@@ -82,11 +84,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         <div className="space-y-3">
           {Object.entries(WEIGHT_LABELS).map(([key, { label, desc, color }]) => {
             const val = weights[key as keyof typeof weights];
+            const isDisabled = disabledWeights.includes(key as any);
             return (
               <div key={key}>
                 <div className="flex justify-between items-center mb-0.5">
-                  <span className="text-[11px] font-semibold text-slate-600">{label}</span>
-                  <span className="text-[11px] font-mono font-bold text-slate-800">{val}%</span>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={!isDisabled}
+                      disabled={!isDisabled && disabledWeights.length >= 3}
+                      onChange={() => toggleWeightEnabled(key as any)}
+                      className="w-3.5 h-3.5 rounded border-slate-300 text-brand-teal-600 focus:ring-brand-teal-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    <span className={`text-[11px] font-semibold transition-colors duration-150 ${isDisabled ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-600'}`}>
+                      {label}
+                    </span>
+                  </div>
+                  <span className={`text-[11px] font-mono font-bold transition-colors duration-150 ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
+                    {val}%
+                  </span>
                 </div>
                 <p className="text-[9px] text-slate-400 mb-1">{desc}</p>
                 <input
@@ -95,12 +111,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                   max={100}
                   step={5}
                   value={val}
+                  disabled={isDisabled}
                   onChange={(e) =>
-                    setWeight(key as keyof typeof weights, Number(e.target.value))
+                    setWeight(key as any, Number(e.target.value))
                   }
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:transition-transform [&::-moz-range-thumb]:hover:scale-110 [&::-moz-range-thumb]:active:scale-95"
+                  className={`w-full h-1.5 rounded-full appearance-none transition-opacity duration-150
+                    ${isDisabled 
+                      ? 'opacity-40 cursor-not-allowed [&::-webkit-slider-thumb]:bg-slate-300 [&::-webkit-slider-thumb]:cursor-not-allowed [&::-moz-range-thumb]:bg-slate-300 [&::-moz-range-thumb]:cursor-not-allowed' 
+                      : 'cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:transition-transform [&::-moz-range-thumb]:hover:scale-110 [&::-moz-range-thumb]:active:scale-95'
+                    }`}
                   style={{
-                    background: `linear-gradient(to right, ${color} ${val}%, #E2E8F0 ${val}%)`,
+                    background: `linear-gradient(to right, ${isDisabled ? '#CBD5E1' : color} ${val}%, #E2E8F0 ${val}%)`,
                   }}
                 />
               </div>

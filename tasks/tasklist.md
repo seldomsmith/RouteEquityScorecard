@@ -107,5 +107,9 @@
 - [x] Conduct manual UI verification of multiple selected routes (varying grades/locations) on Map <!-- id: 65, priority: critical -->
 - [x] Commit and push generated asset pack to remote master branch on GitHub <!-- id: 66, priority: critical -->
 
-
-
+## Phase 9: Policy Weight Toggles & School Route Exclusion [COMPLETE]
+- [x] Exclude school special routes (6xx) from the data pipeline and regenerate database assets <!-- id: 67, priority: critical -->
+- [x] Add `disabledWeights` support to Zustand store (`src/store/routeStore.ts`) <!-- id: 68, priority: high -->
+- [x] Adjust `useReactiveScoring.ts` for dynamic weight disabling <!-- id: 69, priority: high -->
+- [x] Implement interactive checkboxes in `src/components/Sidebar.tsx` and gray out disabled sliders <!-- id: 70, priority: high -->
+- [x] Verify frontend reactive scoring and route filtering <!-- id: 71, priority: critical -->
