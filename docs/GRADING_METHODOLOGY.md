@@ -15,7 +15,7 @@ Measures the "social gravity" of the service corridor using distance-decay weigh
 - **Formula**: `Σ [ DA_Population × DA_Vulnerability × (1 - distance / 400m) ]`
 - **Logic**: Routes that penetrate directly into high-need dissemination areas receive higher scores than those merely bordering them.
 
-### Pillar 2: Temporal Resilience (Default Weight: 25%)
+### Pillar 2: Off Peak Service (Default Weight: 25%)
 
 Measures the reliability of service during off-peak windows critical for shift workers.
 
@@ -51,7 +51,7 @@ Raw pillar scores suffer from **pillar dilution**: different pillars produce val
 | Pillar | Raw Average | Raw StdDev | Problem |
 |--------|-----------|----------|---------|
 | P1 Vulnerability | 29.0 | 20.4 | Dominates composite by volume |
-| P2 Temporal | 10.5 | 14.4 | Most routes near 0, few spikes |
+| P2 Off Peak Service | 10.5 | 14.4 | Most routes near 0, few spikes |
 | P3 Monopoly | 6.4 | 14.2 | Most routes near 0, few spikes |
 | P4 Opportunity | 15.9 | 19.8 | Urban core hub-and-spoke bias |
 
@@ -62,7 +62,7 @@ Each pillar is capped at its 95th percentile value before normalization. This pr
 | Pillar | 95th Percentile Cap | Routes Capped |
 |--------|-------------------|---------------|
 | P1 Vulnerability | 73.1 | 12 |
-| P2 Temporal | 32.9 | 12 |
+| P2 Off Peak Service | 32.9 | 12 |
 | P3 Monopoly | 36.1 | 12 |
 | P4 Opportunity | 61.7 | 12 |
 
@@ -81,7 +81,7 @@ This ensures that a score of 70 in any pillar means "one standard deviation abov
 | Pillar | Normalized Average | Normalized StdDev |
 |--------|-------------------|-------------------|
 | P1 Vulnerability | 50.0 | 20.0 |
-| P2 Temporal | 50.0 | 20.0 |
+| P2 Off Peak Service | 50.0 | 20.0 |
 | P3 Monopoly | 49.4 | 18.4 |
 | P4 Opportunity | 49.9 | 19.6 |
 
@@ -161,7 +161,7 @@ The current scoring uses pre-computed pillar values from the original analytical
 
 | Refinement | Current | Proposed |
 |-----------|---------|----------|
-| P2 Temporal | Simple ratio (night/peak) | Service Retention Delta with `tanh()` saturation function |
+| P2 Off Peak Service | Simple ratio (night/peak) | Service Retention Delta with `tanh()` saturation function |
 | P3 Monopoly | Count × Log(trips) | Redundancy Index: `1 - (Alt_Capacity / Route_Capacity)` |
 | P4 Opportunity | Raw POI counts | Access Density: `Σ(POI × Weight) / Route_Length × Log(Ridership + 1)` |
 

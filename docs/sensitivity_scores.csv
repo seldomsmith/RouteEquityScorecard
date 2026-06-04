@@ -1,0 +1,171 @@
+Route ID,Name,Mean Score,Robustness (Rr),AB Stability (%),DE Stability (%),Primary Driver
+001,001 — Downtown - Capilano,87.52,10.68,99.7%,0.0%,Monopoly
+002,002 — West Edmonton Mall - Stadium - Clareview,99.36,0.43,100.0%,0.0%,Monopoly
+003,003 — Westmount - Stadium,53.85,21.3,45.2%,8.5%,Temporal
+004,004 — Lewis Farms - University - Capilano,88.11,7.34,100.0%,0.0%,Monopoly
+005,005 — Westmount - Downtown - Coliseum,92.0,9.87,99.3%,0.0%,Opportunity
+006,006 — Davies - Southgate,42.73,24.14,27.3%,41.8%,Temporal
+007,007 — West Edmonton Mall - Downtown,27.13,15.91,1.9%,72.3%,Temporal
+008,008 — Abbottsfield - Downtown - University,99.41,0.35,100.0%,0.0%,Monopoly
+009,009 — Southgate - Eaux Claires,98.51,1.11,100.0%,0.0%,Opportunity
+021R,Capital — Capital Line,98.54,1.61,100.0%,0.0%,Monopoly
+022R,Metro — Metro Line,72.68,20.57,83.6%,2.3%,Temporal
+023R,Valley — Valley Line,61.61,17.19,67.2%,5.0%,Opportunity
+031,031 — Leger - University,29.42,14.34,10.7%,63.1%,Monopoly
+051,051 — Castle Downs - University,72.76,9.85,82.8%,0.0%,Opportunity
+052,052 — Northgate - West Edmonton Mall,89.37,10.02,99.3%,0.0%,Opportunity
+053,053 — West Clareview - Mill Woods,96.84,2.03,100.0%,0.0%,Monopoly
+054,054 — West Edmonton Mall - West Clareview,89.7,7.66,98.4%,0.0%,Monopoly
+055,055 — Meadows - Southgate - West Edmonton Mall,93.77,3.17,100.0%,0.0%,Monopoly
+056,056 — Meadows - Leger - West Edmonton Mall,98.07,3.17,99.9%,0.0%,Monopoly
+101,101 — Stadium - Abbottsfield,73.8,13.94,93.1%,0.0%,Temporal
+102,102 — Kingsway - Coliseum - Abbottsfield,91.2,3.0,100.0%,0.0%,Monopoly
+103,103 — Eaux Claires - Castle Downs - Kingsway,98.44,0.85,100.0%,0.0%,Vulnerability
+104,104 — Coliseum - East Clareview,36.59,4.63,0.0%,1.1%,Temporal
+106,106 — Dunvegan - Northgate - Belvedere,55.99,15.67,44.2%,4.5%,Monopoly
+107,107 — Belvedere - West Clareview,93.36,6.33,99.7%,0.0%,Monopoly
+108,108 — Belvedere - East Clareview,89.4,8.0,100.0%,0.0%,Monopoly
+109,109 — Northgate - Castle Downs - Hudson,87.66,12.0,96.8%,0.0%,Vulnerability
+110X,110X — Eaux Claires - Downtown,58.5,23.87,56.0%,15.2%,Opportunity
+111,111 — Concordia - Westmount,72.16,26.89,71.2%,11.7%,Opportunity
+112,112 — Castle Downs - Eaux Claires,37.85,17.45,25.3%,43.7%,Monopoly
+113,113 — West Clareview - Northgate,93.62,4.3,100.0%,0.0%,Monopoly
+114,114 — West Clareview - Coliseum,84.5,10.18,91.7%,0.0%,Vulnerability
+116,116 — Abbottsfield - East Clareview,28.64,11.81,0.1%,69.0%,Temporal
+117,117 — Eaux Claires - West Clareview,82.54,9.45,99.5%,0.0%,Temporal
+118,118 — Eaux Claires - West Clareview,79.71,13.67,93.5%,0.0%,Vulnerability
+119,119 — Eaux Claires - West Clareview,83.83,8.22,99.8%,0.0%,Vulnerability
+120X,120X — Eaux Claires - Government Centre,59.84,27.24,58.3%,20.9%,Opportunity
+121,Fraser - Evergreen,68.63,13.67,84.4%,0.0%,Temporal
+122,122 — Eaux Claires - Lago Lindo - Klarvatten,41.37,16.66,12.0%,29.9%,Temporal
+124,124 — Westmount - Eaux Claires,89.7,4.46,100.0%,0.0%,Vulnerability
+127,127 — Northgate - White Oaks Square - Castle Downs,43.39,20.22,34.9%,34.4%,Vulnerability
+128,128 — Northgate - Londonderry,14.2,4.56,0.0%,100.0%,Vulnerability
+130X,130X — Baturyn - Eaux Claires - Government Centre,84.64,19.19,85.9%,2.5%,Opportunity
+140X,140X — Palisades - Kingsway Express,47.48,17.05,44.3%,25.0%,Vulnerability
+150X,150X — Dunluce - Castle Downs - Government Centre,89.2,17.19,89.5%,1.0%,Opportunity
+201,201 — Downtown Edmonton Loop,54.61,21.0,47.8%,9.1%,Temporal
+202,202 — Kingsway Tc Via Nait,19.04,6.14,0.0%,90.0%,Monopoly
+203,203 — Uofa Via Westmount,50.29,20.81,35.5%,15.8%,Temporal
+204,204 — Uofa Express,22.68,10.34,0.3%,79.3%,Opportunity
+205,205 — West Edmonton,8.61,1.65,0.0%,100.0%,Opportunity
+208,208 — Government Centre Express,40.36,20.59,29.9%,40.3%,Opportunity
+211,211 — Downtown Edmonton Express,30.15,15.43,11.3%,57.1%,Opportunity
+401,401 — Ordze - Downtown,24.05,12.96,3.3%,75.5%,Opportunity
+403,403 — Ordze - Government Centre,25.62,13.62,5.1%,70.0%,Opportunity
+404,404 — Ordze - University Of Alberta,34.29,16.89,16.3%,48.4%,Opportunity
+411,411 — Bethel - Downtown,60.77,12.08,65.4%,0.8%,Monopoly
+413,413 — Bethel - Government Centre,39.97,15.55,27.9%,35.1%,Monopoly
+414,414 — Bethel - University Of Alberta,55.96,18.54,47.9%,9.9%,Monopoly
+415,415 — Bethel - Nait,35.01,12.69,10.9%,42.7%,Monopoly
+420,420 — Bethel - Millennium Place,4.75,1.58,0.0%,100.0%,Monopoly
+430,430 — Bethel - Emerald Hills,10.7,2.95,0.0%,100.0%,Vulnerability
+431,431 — Bethel - Emerald Hills,10.28,2.69,0.0%,100.0%,Vulnerability
+432,432 — Bethel - Summerwood,7.94,3.4,0.0%,99.7%,Monopoly
+433,433 — Bethel - Clarkdale,6.74,1.3,0.0%,100.0%,Monopoly
+433A,433A — School Special,16.96,6.18,0.0%,91.7%,Vulnerability
+440,440 — Bethel - Heritage Hills,8.88,3.04,0.0%,99.9%,Monopoly
+441,441 — Bethel - Ordze - Regency,9.97,3.39,0.0%,99.4%,Monopoly
+441A,441A — Bethel - Regency,12.04,4.11,0.0%,99.9%,Vulnerability
+442,442 — Bethel - Nottingham,6.4,1.87,0.0%,100.0%,Monopoly
+443,443 — Bethel - Ordze - Glen Allan,30.69,23.01,19.8%,63.3%,Monopoly
+450,450 — Bethel - Centre In The Park,8.15,3.39,0.0%,99.5%,Monopoly
+451,451 — Bethel - Ordze - Woodbridge,22.18,15.29,7.5%,77.0%,Monopoly
+500X,500X — Meadows - Macewan,41.14,12.28,20.7%,27.9%,Opportunity
+501,501 — Davies - Capilano,75.62,12.13,89.2%,0.0%,Monopoly
+502,502 — Davies - South Campus,15.4,10.66,1.4%,88.1%,Monopoly
+503,503 — Davies - Millbourne - Woodvale,7.88,1.82,0.0%,100.0%,Monopoly
+504,504 — Meadows - Davies,20.98,12.46,2.3%,77.9%,Monopoly
+506,506 — Davies - Meadows - Maple,79.03,13.38,94.1%,0.0%,Monopoly
+507,507 — Tamarack - Southgate,35.73,19.98,12.6%,52.2%,Temporal
+508,508 — Meadows - Mill Woods,90.77,1.56,100.0%,0.0%,Vulnerability
+509,509 — Mill Woods - Millbourne,24.23,12.65,0.1%,83.3%,Temporal
+511,511 — Mill Woods - Downtown,44.85,20.59,37.0%,31.3%,Opportunity
+512,512 — Mill Woods - South Edmonton Common,31.66,10.44,0.0%,61.9%,Temporal
+513,513 — Mill Woods - Knottwood,47.85,4.83,0.0%,0.0%,Temporal
+514,514 — Mill Woods - Millhurst,37.41,6.06,0.0%,6.3%,Temporal
+515,515 — Mill Woods - Meadows,76.86,14.32,84.1%,0.0%,Vulnerability
+516,516 — Mill Woods - Laurel - Meadows,90.28,9.67,99.2%,0.0%,Vulnerability
+517,517 — Mill Woods - Southwood,84.59,5.9,100.0%,0.0%,Temporal
+518,518 — Mill Woods - Century Park,83.43,13.06,91.2%,0.0%,Vulnerability
+519,519 — Mill Woods - Century Park,89.39,9.21,99.8%,0.0%,Vulnerability
+521,521 — Mill Woods - Century Park,81.79,6.75,96.0%,0.0%,Vulnerability
+522,522 — Capilano - Bonnie Doon,64.52,12.88,77.9%,0.0%,Temporal
+523,523 — Mill Woods - Downtown,80.61,9.09,100.0%,0.0%,Temporal
+524,524 — Bonnie Doon - Holyrood,9.77,2.74,0.0%,100.0%,Opportunity
+525,525 — Bonnie Doon - Ritchie,9.88,3.0,0.0%,100.0%,Opportunity
+526,526 — Mill Woods - Millbourne Woodvale,17.29,6.5,0.0%,95.9%,Opportunity
+527,527 — Mill Woods - Millbourne,87.65,2.04,100.0%,0.0%,Temporal
+540,540 — Beaumont To Edmonton,17.8,5.1,0.0%,96.2%,Monopoly
+560,560 — Spruce Grove - Downtown Edmonton,58.75,26.17,50.5%,21.0%,Monopoly
+589,589 — Edmonton Waste Management Centre - Coliseum,45.51,23.2,30.9%,34.6%,Temporal
+700X,700X — Century Park - Heritage Valley,30.63,18.41,5.1%,68.4%,Temporal
+701,701 — Southgate - Kingsway,45.09,15.86,24.7%,19.5%,Opportunity
+702,702 — Southgate - South Campus,37.26,17.05,8.5%,45.3%,Temporal
+703,703 — Leger - South Campus,30.5,10.34,0.0%,68.8%,Temporal
+704,704 — Southgate - Southpark,46.02,22.99,30.3%,35.6%,Temporal
+705,705 — Century Park - Southgate,49.69,18.26,32.6%,12.1%,Temporal
+706,706 — Leger - Southgate,66.08,19.89,70.6%,3.9%,Temporal
+707,707 — Century Park - Southgate,53.27,7.79,20.8%,0.0%,Temporal
+708,708 — Century Park - Southgate,62.49,15.45,67.3%,0.0%,Temporal
+709,709 — Century Park - Southgate,46.74,15.01,14.3%,1.6%,Temporal
+712,712 — Century Park - Yellowbird,32.47,5.01,0.0%,48.1%,Temporal
+713,713 — Century Park - Twin Brooks,46.95,17.68,26.7%,20.2%,Temporal
+715,715 — Leger - Century Park,94.95,2.51,100.0%,0.0%,Temporal
+716,716 — Leger - Century Park,52.77,17.32,42.9%,3.2%,Temporal
+717,717 — Leger - Century Park,74.77,11.88,85.8%,0.0%,Vulnerability
+718,718 — Leger - Century Park,47.68,15.2,26.7%,15.4%,Vulnerability
+719,719 — Century Park - Chappelle,30.88,7.34,0.0%,64.4%,Temporal
+721,721 — Century Park - Rutherford - Desrochers,56.65,8.66,51.7%,0.1%,Temporal
+722,722 — Century Park - Rutherford - Allard,63.97,8.68,78.0%,0.0%,Temporal
+723,723 — University - Parkallen,19.13,9.95,0.2%,88.0%,Opportunity
+724,724 — Leger - Brander Gardens - South Campus,38.92,15.06,21.5%,36.2%,Vulnerability
+727,727 — Heritage Valley - Chappelle,15.31,6.42,0.0%,93.7%,Vulnerability
+729,729 — Leger - Century Park,40.6,8.45,0.6%,5.3%,Temporal
+747,747 — Century Park - Edmonton International Airport,47.68,22.55,32.4%,29.7%,Temporal
+900X,900X — Lewis Farms - Downtown,95.03,9.79,95.8%,0.0%,Monopoly
+901,901 — Jasper Place - Downtown,85.43,8.31,100.0%,0.0%,Temporal
+902,902 — Nait - University,83.1,5.27,100.0%,0.0%,Opportunity
+903,903 — Jasper Place - Kingsway,42.67,15.23,7.0%,20.9%,Temporal
+904,904 — West Edmonton Mall - Westmount,12.55,7.3,0.0%,95.4%,Temporal
+905,905 — Northgate - Westmount,14.29,3.88,0.0%,100.0%,Opportunity
+906,906 — West Edmonton Mall - Westmount,13.54,3.43,0.0%,100.0%,Opportunity
+907,907 — West Edmonton Mall - Westmount,40.62,13.17,1.2%,23.5%,Temporal
+908,908 — Jasper Place - Westmount,9.3,2.19,0.0%,100.0%,Opportunity
+909,909 — Jasper Place - Westmount,61.77,13.95,69.3%,0.0%,Temporal
+910X,910X — West Lymburn - Lessard - South Campus,63.44,20.79,66.7%,12.9%,Monopoly
+912,912 — Lewis Farms - Jasper Place,35.61,24.66,17.0%,59.7%,Temporal
+913,913 — West Edmonton Mall - Jamieson Place,53.33,3.85,40.1%,0.0%,Vulnerability
+914,914 — West Edmonton Mall - Jasper Place,78.56,8.53,99.7%,0.0%,Temporal
+915,915 — West Edmonton Mall - Jasper Place,42.89,12.42,18.5%,19.5%,Vulnerability
+916,916 — West Edmonton Mall - Lewis Farms,84.21,6.39,98.4%,0.0%,Vulnerability
+917,917 — West Edmonton Mall - Lewis Farms,83.05,7.07,96.7%,0.0%,Vulnerability
+918,918 — West Edmonton Mall - Lessard,60.64,18.03,68.7%,4.5%,Temporal
+919,919 — Lewis Farms - Secord,14.07,3.17,0.0%,98.9%,Monopoly
+920X,920X — Lewis Farms - University Express,32.24,12.41,6.9%,47.9%,Opportunity
+921,921 — Jasper Place - Westview Village,39.68,20.56,16.6%,44.6%,Temporal
+922,922 — Lewis Farms - Rosenthal,20.26,11.77,0.0%,85.1%,Temporal
+923,923 — West Edmonton Mall - Oleskiw,52.34,22.01,42.7%,14.1%,Temporal
+924,924 — Jasper Place - Rio Terrace,61.69,19.42,68.0%,13.2%,Opportunity
+925,925 — West Edmonton Mall - Jasper Place,31.74,15.58,13.4%,53.8%,Vulnerability
+926,926 — Lewis Farms - Stillwater,44.6,22.38,26.2%,35.6%,Temporal
+930X,930X — The Grange - South Campus,62.24,20.9,64.5%,14.5%,Monopoly
+A12,A12 — Campbell - Akinsdale,7.04,1.35,0.0%,100.0%,Monopoly
+A13,A13 — Akinsdale - Campbell,6.98,1.34,0.0%,100.0%,Monopoly
+A14,A14 — Sturgeon Hospital - St Albert North,24.56,21.16,6.4%,76.1%,Temporal
+A21,A21 — Heritage Lakes - Riel,8.64,1.89,0.0%,100.0%,Vulnerability
+A22,A22 — Riel - Heritage Lakes,7.86,1.53,0.0%,100.0%,Vulnerability
+A23,A23 — Heritage Lakes - Riel,7.99,1.58,0.0%,100.0%,Vulnerability
+A24,A24 — The Gardens,7.98,1.77,0.0%,100.0%,Monopoly
+A3,A3 — Riverside,5.71,1.38,0.0%,100.0%,Monopoly
+A31,A31 — Heritage Lakes - The Gardens,11.15,3.04,0.0%,100.0%,Monopoly
+A32,A32 — Akinsdale - Campbell - Pineview - Forest Lawn,15.95,7.28,0.1%,90.7%,Monopoly
+A33,A33 — Sturgeon - Forest Lawn - Woodlands - Braeside,9.9,2.64,0.0%,100.0%,Vulnerability
+A4,A4 — Lacombe - Deer Ridge,10.77,3.26,0.0%,100.0%,Vulnerability
+A5,A5 — Deer Ridge - Lacombe,10.8,3.35,0.0%,100.0%,Vulnerability
+A6,A6 — Deer Ridge - North Ridge,21.18,12.27,3.4%,79.8%,Monopoly
+A7,A7 — Sturgeon Hospital - Erin Ridge - Oakmont,7.81,1.51,0.0%,100.0%,Vulnerability
+A8,A8 — Oakmont - Erin Ridge - Sturgeon Hospital,9.67,2.25,0.0%,100.0%,Vulnerability
+A9,A9 — Sturgeon - Kingswood - Woodlands,9.84,2.76,0.0%,100.0%,Monopoly
+L1,1 — Leduc - Nisku - Edmonton,33.66,12.25,8.8%,45.9%,Monopoly
+L10,10 — Leduc - Nisku - Eia,28.98,25.0,12.5%,69.3%,Temporal

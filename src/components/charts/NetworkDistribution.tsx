@@ -80,33 +80,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
     }));
   }, [data]);
 
-  // 3. Pillar Variance Spread
-  const pillarSpread = useMemo(() => {
-    if (!data.length) return [];
 
-    const pillars = [
-      { key: 'pillar_1', label: 'Vulnerability' },
-      { key: 'pillar_2', label: 'Temporal Resilience' },
-      { key: 'pillar_3', label: 'Network Monopoly' },
-      { key: 'pillar_4', label: 'Opportunity Access' },
-    ];
-
-    return pillars.map(p => {
-      const values = data.map(r => (r as any)[p.key] || 0);
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
-      
-      return {
-        name: p.label,
-        min: Number(min.toFixed(1)),
-        max: Number(max.toFixed(1)),
-        avg: Number(avg.toFixed(1)),
-        // For Recharts range bar, data format is [min, max]
-        range: [Number(min.toFixed(1)), Number(max.toFixed(1))]
-      };
-    });
-  }, [data]);
 
   if (!data.length) return null;
 
@@ -205,6 +179,8 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
           </ResponsiveContainer>
         </div>
       </div>
+
+
 
     </div>
   );

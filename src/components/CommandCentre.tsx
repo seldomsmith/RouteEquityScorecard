@@ -10,6 +10,8 @@ import { ShapWaterfall } from '@/components/charts/ShapWaterfall';
 import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMatrix';
 import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
+import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
+
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -24,6 +26,12 @@ export const CommandCentre = () => {
   // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP
   // every time weights change. Pure math on 235 routes = microseconds.
   const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights);
+
+  const selectedGrade = useRouteStore((state) => state.selectedGrade);
+  const filteredRoutes = React.useMemo(() => {
+    if (!selectedGrade) return scoredRoutes;
+    return scoredRoutes.filter((r) => r.grade === selectedGrade);
+  }, [scoredRoutes, selectedGrade]);
 
   useEffect(() => {
     if (db) {
@@ -104,7 +112,7 @@ export const CommandCentre = () => {
                   lone_parent_pct: Number(d.lone_parent_pct || 0),
                   recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
                   youth_pct: Number(d.youth_pct || 0),
-                  vulnerability_index: Number(d.vulnerability_index || 0),
+                  vulnerability_index: Number(d.vulnerability_index !== undefined ? d.vulnerability_index : (d.vulnerability !== undefined ? d.vulnerability : 0)),
                 }));
               }
             } catch (e) {
@@ -163,7 +171,7 @@ export const CommandCentre = () => {
 
           {/* Map */}
           <div className="w-full h-full">
-            <Map systemPopServed={systemPopServed} routes={scoredRoutes} />
+            <Map systemPopServed={systemPopServed} routes={filteredRoutes} />
           </div>
         </div>
         
@@ -176,16 +184,16 @@ export const CommandCentre = () => {
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Ridership-Equity Quadrant</span>
+              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Population-Equity Quadrant</span>
               <div className="flex-1 min-h-0">
-                <EquityQuadrant data={scoredRoutes} />
+                <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
               </div>
           </div>
         </div>
-
+ 
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
-          <EquityMatrix routes={scoredRoutes} />
+          <EquityMatrix routes={filteredRoutes} />
           
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
@@ -193,10 +201,11 @@ export const CommandCentre = () => {
               <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">System-Wide Health Diagnostics</h2>
               <p className="text-xs text-slate-500">Aggregate performance distribution across the network.</p>
             </div>
-            <NetworkDistribution data={scoredRoutes} />
+            <NetworkDistribution data={filteredRoutes} />
           </div>
         </div>
       </div>
+      <SpotlightSearch routes={scoredRoutes} />
     </div>
   );
 };

@@ -22,7 +22,7 @@ export const ShapWaterfall = () => {
 
   const drivers = [
     { label: 'Social Vulnerability', value: (routeData.vuln_score || 0) * weights.vulnerability, color: 'bg-emerald-600' },
-    { label: 'Temporal Reliability', value: (routeData.temp_score || 0) * weights.temporal, color: 'bg-emerald-500' },
+    { label: 'Off Peak Service', value: (routeData.temp_score || 0) * weights.temporal, color: 'bg-emerald-500' },
     { label: 'Network Monopoly', value: (routeData.mono_score || 0) * weights.monopoly, color: 'bg-emerald-400' },
     { label: 'Opportunity Access', value: (routeData.opp_score || 0) * weights.opportunity, color: 'bg-emerald-300' },
   ].sort((a, b) => b.value - a.value);

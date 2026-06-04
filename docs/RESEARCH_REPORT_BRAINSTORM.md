@@ -12,7 +12,7 @@ The report must rigorously defend the statistical normalization pipeline.
 - **The Solution:** Justifying the 95th percentile capping, Z-score normalization (Mean=50, SD=20), and the Sigmoid (S-Curve) transform. Explain how this isolates the "Essential Lifelines" (the statistical extremes) from the "Standard Coverage" (the compressed middle).
 
 ## 3. Investigating Dynamic Weighting Elasticity (High Priority)
-A core component of the report will investigate **Policy Sensitivity**. When planners shift the weights (e.g., prioritizing *Temporal Resilience* over *Vulnerability Density*), how elastic is the network? 
+A core component of the report will investigate **Policy Sensitivity**. When planners shift the weights (e.g., prioritizing *Off Peak Service* over *Vulnerability Density*), how elastic is the network? 
 
 **Research Questions:**
 - **System-Wide Synchronization:** How does a shift in policy weight ripples through the entire analytical suite? The report will document the real-time interaction between weights and the *Score Breakdown*, *Quadrant Chart*, and *Bell Curve*.

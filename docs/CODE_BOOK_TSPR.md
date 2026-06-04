@@ -12,7 +12,7 @@ Measures the "Social Gravity" of the service corridor using distance-decay weigh
 - **Formula**: `Σ [ DA_Population × DA_Vulnerability × (1 - distance / 400m) ]`
 - **Logic**: Routes that penetrate directly into high-need dissemination areas receive higher scores than those merely bordering them.
 
-### ⏱️ Pillar 2: Temporal Resilience (25%)
+### ⏱️ Pillar 2: Off Peak Service (25%)
 Measures the reliability of service during off-peak windows critical for shift workers.
 - **Formula**: `( Trips_Night [9:30-10:30 PM] / Trips_Peak [7:30-8:30 AM] ) × 100`
 - **Logic**: Routes that maintain a high percentage of their peak frequency late at night provide 24/7 resilience for workers in hospitals, retail, and security.

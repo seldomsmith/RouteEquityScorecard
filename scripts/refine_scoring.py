@@ -66,7 +66,9 @@ def main():
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    routes = data['routes']
+    # Filter out school routes (starts with '6')
+    routes = [r for r in data['routes'] if not str(r.get('short_name', '')).startswith('6')]
+    data['routes'] = routes
     n = len(routes)
     
     # === STEP 1: 95th Percentile Capping ===

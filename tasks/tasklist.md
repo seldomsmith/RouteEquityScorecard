@@ -33,18 +33,27 @@
   - [x] Implement `setWeights` in `src/store/routeStore.ts` and update default state to 15/40/10/35
   - [x] Update **Reset** button handler in `src/components/Sidebar.tsx` to use the new atomic `setWeights` action
   - [x] Verify slider behaviors, reset behavior, and visual scorecard synchronization
-- [ ] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
-  - [ ] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
-- [ ] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
-  - [ ] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
-- [ ] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
-  - [ ] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
-  - [ ] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
-- [ ] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
-- [ ] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
+- [x] Add Pillar Boxplot/Spread visualization <!-- id: 20, priority: medium -->
+  - [x] Render the range bars for all four pillars inside the Network Diagnostics panel to show spread and dispersion
+- [x] Add Grade-level Route Isolation <!-- id: 21, priority: high -->
+  - [x] Add interactive grade badges in the sidebar or map legends that isolate all routes of grade A, B, C, D, or E when clicked
+- [x] Add DA Vulnerability Heatmap overlay when a route is isolated <!-- id: 22, priority: high -->
+  - [x] Load `public/data/da_boundaries_simple.geojson` as a Mapbox GL source
+  - [x] Highlight the specific DAs served by the selected route with a custom color scale representing low-income or vulnerability levels
+- [x] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
+- [x] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
+- [x] Refactor Policy Sliders to use a unified medium gray color and a larger black thumb dot to prevent map color confusion <!-- id: 39, priority: high -->
 - [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
+- [ ] Design and Implement "Policy Sensitivity Explorer" UI Tab (interactive OLS driver scatterplots and dynamic simplex terrain) <!-- id: 38, priority: future -->
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
+
+## Phase 3.6: Quadrant & Diagnostics Dashboard Polish [COMPLETE]
+- [x] Update title of quadrant scatterplot to "Population-Equity Quadrant" <!-- id: 40, priority: high -->
+- [x] Standardize and lock X and Y axes domains and reference lines dynamically from overall network statistics <!-- id: 41, priority: high -->
+- [x] Implement two-way route isolation sync on the quadrant scatterplot (dim non-selected routes, highlight selected, and allow click interaction) <!-- id: 42, priority: critical -->
+- [x] Remove "Pillar Score Dispersion (Boxplot Spread)" visualization and clean up unused calculations <!-- id: 43, priority: medium -->
+- [x] Rename the continuous index button in the Dissemination Matrix to "Composite Vulnerability Score" <!-- id: 44, priority: high -->
 
 ## Phase 4: Empirically Weighted Transit Vulnerability Index [COMPLETE]
 - [x] Acquire and copy raw demographics.csv into workspace data directory <!-- id: 33, priority: critical -- >
@@ -59,7 +68,76 @@
 - [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->
 - [ ] Finalize PostGIS/Python backend if needed <!-- id: 10 -->
 
+## Phase 4.6: Heatmap Defect Fix & Git Synchronization [COMPLETE]
+- [x] Apply resilient parser in `CommandCentre.tsx` for vulnerability keys <!-- id: 45, priority: high -->
+- [x] Run Git synchronization pipeline to commit and push generated assets and parser fixes <!-- id: 46, priority: critical -->
+
 ## Phase 5: PhD-Level Research & Analytics
 - [x] Ensure dynamic weight changes actively recalculate and alter Quintile distributions across the network <!-- id: 28, priority: high -->
 - [ ] Draft the core findings for the Route Equity Research Report <!-- id: 29 -->
 
+## Phase 6: Dynamic Grade-Colored Highlighting & Heatmaps [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 47, priority: critical -->
+- [x] Update `routes-highlight` layer to color-match routes dynamically by grade property <!-- id: 48, priority: high -->
+- [x] Implement `getGradeHeatmapFillColorExpression` and custom gradients in `Map.tsx` <!-- id: 49, priority: high -->
+- [x] Connect reactive state to heat map fill paint properties for instant updates on weight shift <!-- id: 50, priority: high -->
+- [x] Dynamic legend background updates on grade/metric changes <!-- id: 51, priority: medium -->
+- [x] Verify dynamic color shifts across different routes and weight combinations <!-- id: 52, priority: critical -->
+
+## Phase 7: Waterfall Chart Layout & Scaling Polish [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 53, priority: critical -->
+- [x] Implement static 0, 50, and 100 top X-axis markers with dashed vertical grid lines running down the chart <!-- id: 54, priority: high -->
+- [x] Shift the `FINAL` composite score row lower for clear visual separation <!-- id: 55, priority: high -->
+- [x] Add horizontal dotted divider line separating the `FINAL` score row from the other rows <!-- id: 56, priority: medium -->
+- [x] Verify waterfall chart layout, scaling, and comparative rendering (Ready for manual validation) <!-- id: 57, priority: critical -->
+
+## Phase 8: Network Pedestrian Isochrone Generator [COMPLETE]
+- [x] Create implementation plan and seek user approval <!-- id: 58, priority: critical -->
+- [x] Develop `scripts/generate_network_isochrones.py` in the modeling codebase <!-- id: 59, priority: high -->
+  - [x] Implement Overpass API fetching for pedestrian network within route bounding boxes
+  - [x] Implement pure Python multi-source Dijkstra's algorithm for 400m walking limit
+  - [x] Generate smooth walking catchment polygons using Shapely unary unions
+- [x] Export isochrone GeoJSON files to the frontend scoreboard directory <!-- id: 60, priority: high -->
+- [x] Modify frontend `Map.tsx` to dynamically render true isochrone polygons instead of simple buffers <!-- id: 61, priority: medium -->
+
+## Phase 8.1: Full Network Isochrone Generation & Verification [COMPLETE]
+- [x] Execute global isochrone generator pipeline `scripts/generate_network_isochrones.py` for all 236 transit routes <!-- id: 62, priority: critical -->
+- [x] Monitor background process and verify successful OSM grid caching and Dijkstra traversals <!-- id: 63, priority: high -->
+- [x] Validate generated GeoJSON assets inside frontend output directory `public/data/isochrones/` <!-- id: 64, priority: high -->
+- [x] Conduct manual UI verification of multiple selected routes (varying grades/locations) on Map <!-- id: 65, priority: critical -->
+- [x] Commit and push generated asset pack to remote master branch on GitHub <!-- id: 66, priority: critical -->
+
+## Phase 9: Policy Weight Toggles & School Route Exclusion [COMPLETE]
+- [x] Exclude school special routes (6xx) from the data pipeline and regenerate database assets <!-- id: 67, priority: critical -->
+- [x] Add `disabledWeights` support to Zustand store (`src/store/routeStore.ts`) <!-- id: 68, priority: high -->
+- [x] Adjust `useReactiveScoring.ts` for dynamic weight disabling <!-- id: 69, priority: high -->
+- [x] Implement interactive checkboxes in `src/components/Sidebar.tsx` and gray out disabled sliders <!-- id: 70, priority: high -->
+- [x] Verify frontend reactive scoring and route filtering <!-- id: 71, priority: critical -->
+
+## Phase 10: Sensitivity Analysis Recalculation [COMPLETE]
+- [x] Run the python sensitivity analysis script `scripts/run_sensitivity_analysis.py` <!-- id: 72, priority: critical -->
+- [x] Verify execution outputs and route count in `SENSITIVITY_ANALYSIS_REPORT.md` <!-- id: 73, priority: high -->
+
+## Phase 11: Sensitivity Spreadsheet Generation [COMPLETE]
+- [x] Write a python script/command to generate `docs/sensitivity_scores.csv` from the simulation summary <!-- id: 74, priority: high -->
+- [x] Verify the spreadsheet data matches the requested style and contains all routes <!-- id: 75, priority: high -->
+
+## Phase 12: 2-Pillar Sensitivity Analysis [COMPLETE]
+- [x] Create and run 2-pillar sensitivity script `scripts/run_two_pillar_sensitivity_analysis.py` <!-- id: 76, priority: high -->
+- [x] Verify outputs `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` and `docs/sensitivity_scores_2_pillar.csv` <!-- id: 77, priority: high -->
+
+## Phase 13: 2-Pillar Policy Report Drafting [COMPLETE]
+- [x] Draft the complete 2-pillar sensitivity report at `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` <!-- id: 78, priority: high -->
+- [x] Verify the narrative and formatting match the requested style <!-- id: 79, priority: high -->
+
+## Phase 14: Destination-Overlap Monopoly Planning [COMPLETE]
+- [x] Design technical math formulations and architecture for functional monopoly indexing <!-- id: 80, priority: high -->
+- [x] Document the data pipeline steps in the brain implementation plan <!-- id: 81, priority: high -->
+
+## Phase 15: Functional Monopoly Implementation
+- [x] Develop destination catchment builder script `scripts/build_destination_catchments.py` <!-- id: 82, priority: critical -->
+- [x] Develop redundancy evaluation script `scripts/calculate_functional_monopoly.py` <!-- id: 83, priority: critical -->
+- [x] Integrate functional monopoly scoring in `scripts/refine_scoring.py` and `scripts/update_vulnerability_index.py` <!-- id: 84, priority: critical -->
+- [x] Re-run demographics/scoring pipeline to generate updated `golden_route_record.json` <!-- id: 85, priority: critical -->
+- [x] Re-run sensitivity analysis (`scripts/run_sensitivity_analysis.py` and `scripts/run_two_pillar_sensitivity_analysis.py`) <!-- id: 86, priority: high -->
+- [x] Verify updated scores, grades, and report distributions <!-- id: 87, priority: critical -->

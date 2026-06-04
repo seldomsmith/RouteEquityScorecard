@@ -9,10 +9,10 @@ interface SidebarProps {
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#EF4444' },
-  resilience:    { label: 'Temporal Risk',   desc: 'Off-peak service reliability',   color: '#F59E0B' },
-  monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#8B5CF6' },
-  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#10B981' },
+  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#64748B' },
+  resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
+  monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
+  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#64748B' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -27,10 +27,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
+  const disabledWeights = useRouteStore((s) => s.disabledWeights);
+  const toggleWeightEnabled = useRouteStore((s) => s.toggleWeightEnabled);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
+  const selectedGrade = useRouteStore((s) => s.selectedGrade);
+  const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+
+  const gradeCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+    routes.forEach((r) => {
+      if (r.grade && counts[r.grade] !== undefined) {
+        counts[r.grade]++;
+      }
+    });
+    return counts;
+  }, [routes]);
+
+  const displayedRoutes = React.useMemo(() => {
+    if (!selectedGrade) return routes;
+    return routes.filter((r) => r.grade === selectedGrade);
+  }, [routes, selectedGrade]);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -65,24 +84,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         <div className="space-y-3">
           {Object.entries(WEIGHT_LABELS).map(([key, { label, desc, color }]) => {
             const val = weights[key as keyof typeof weights];
+            const isDisabled = disabledWeights.includes(key as any);
             return (
               <div key={key}>
                 <div className="flex justify-between items-center mb-0.5">
-                  <span className="text-[11px] font-semibold text-slate-600">{label}</span>
-                  <span className="text-[11px] font-mono font-bold text-slate-800">{val}%</span>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={!isDisabled}
+                      disabled={!isDisabled && disabledWeights.length >= 3}
+                      onChange={() => toggleWeightEnabled(key as any)}
+                      className="w-3.5 h-3.5 rounded border-slate-300 text-brand-teal-600 focus:ring-brand-teal-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    <span className={`text-[11px] font-semibold transition-colors duration-150 ${isDisabled ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-600'}`}>
+                      {label}
+                    </span>
+                  </div>
+                  <span className={`text-[11px] font-mono font-bold transition-colors duration-150 ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
+                    {val}%
+                  </span>
                 </div>
                 <p className="text-[9px] text-slate-400 mb-1">{desc}</p>
                 <input
                   type="range"
                   min={0}
                   max={100}
+                  step={5}
                   value={val}
+                  disabled={isDisabled}
                   onChange={(e) =>
-                    setWeight(key as keyof typeof weights, Number(e.target.value))
+                    setWeight(key as any, Number(e.target.value))
                   }
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  className={`w-full h-1.5 rounded-full appearance-none transition-opacity duration-150
+                    ${isDisabled 
+                      ? 'opacity-40 cursor-not-allowed [&::-webkit-slider-thumb]:bg-slate-300 [&::-webkit-slider-thumb]:cursor-not-allowed [&::-moz-range-thumb]:bg-slate-300 [&::-moz-range-thumb]:cursor-not-allowed' 
+                      : 'cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:transition-transform [&::-moz-range-thumb]:hover:scale-110 [&::-moz-range-thumb]:active:scale-95'
+                    }`}
                   style={{
-                    background: `linear-gradient(to right, ${color} ${val}%, #E2E8F0 ${val}%)`,
+                    background: `linear-gradient(to right, ${isDisabled ? '#CBD5E1' : color} ${val}%, #E2E8F0 ${val}%)`,
                   }}
                 />
               </div>
@@ -115,14 +154,57 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         </select>
       </div>
 
+      {/* Grade Isolator */}
+      <div className="p-4 border-b border-slate-100">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Grade Isolator
+          </h2>
+          {selectedGrade && (
+            <button
+              onClick={() => setSelectedGrade(null)}
+              className="text-[9px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-5 gap-1.5">
+          {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
+            const isActive = selectedGrade === g;
+            const count = gradeCounts[g] || 0;
+            
+            // Premium custom badge styling based on active/inactive states
+            const styleMap: Record<string, string> = {
+              A: isActive ? 'bg-emerald-500 text-white shadow-sm border-emerald-500 font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200/50',
+              B: isActive ? 'bg-blue-500 text-white shadow-sm border-blue-500 font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200/50',
+              C: isActive ? 'bg-amber-500 text-white shadow-sm border-amber-500 font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200/50',
+              D: isActive ? 'bg-orange-500 text-white shadow-sm border-orange-500 font-bold' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200/50',
+              E: isActive ? 'bg-red-500 text-white shadow-sm border-red-500 font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200/50',
+            };
+            
+            return (
+              <button
+                key={g}
+                onClick={() => setSelectedGrade(isActive ? null : g)}
+                className={`py-1 px-1 rounded-lg border text-center transition-all duration-150 flex flex-col items-center justify-center ${styleMap[g]}`}
+              >
+                <span className="text-xs font-black leading-none">{g}</span>
+                <span className="text-[8px] font-mono font-semibold opacity-80 mt-0.5 leading-none">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Route List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className="p-4">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Network ({routes.length} routes)
+            Network ({displayedRoutes.length} {selectedGrade ? `Grade ${selectedGrade}` : ''} routes)
           </h2>
           <div className="space-y-1">
-            {routes
+            {displayedRoutes
               .sort((a, b) => a.composite_score - b.composite_score)
               .map((r) => (
                 <button

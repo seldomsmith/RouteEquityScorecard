@@ -68,16 +68,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
   // The raw composite is where the waterfall ends
   const rawComposite = baseline + shap.reduce((sum, p) => sum + p.value, 0);
 
-  // Scale: we need to map score values (roughly 0-100) to pixel positions
-  // Find the range we need to display
-  const allValues = [
-    baseline,
-    rawComposite,
-    ...waterfallBars.flatMap((b) => [b.startX, b.endX]),
-  ];
-  const minVal = Math.max(0, Math.min(...allValues) - 5);
-  const maxVal = Math.min(100, Math.max(...allValues) + 5);
-  const range = maxVal - minVal || 1;
+  // Fixed scale from 0 to 100 for consistent network comparisons
+  const minVal = 0;
+  const maxVal = 100;
+  const range = 100;
 
   // Chart dimensions — responsive calculations
   const BAR_HEIGHT = 18;
@@ -136,11 +130,33 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
       <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-hidden">
         <svg
           width="100%"
-          height={(shap.length + 3) * ROW_HEIGHT}
+          height={(shap.length + 3.6) * ROW_HEIGHT}
           className="block overflow-visible"
         >
-          {/* Baseline */}
+          {/* Grid lines and headers (0, 50/Baseline, 100) */}
           <g transform={`translate(0, ${ROW_HEIGHT * 0.5})`}>
+            {/* Grid Line 0 */}
+            <line
+              x1={LABEL_W}
+              y1={-4}
+              x2={LABEL_W}
+              y2={(shap.length + 2.3) * ROW_HEIGHT + BAR_HEIGHT - ROW_HEIGHT * 0.5}
+              stroke="#CBD5E1"
+              strokeDasharray="2 2"
+              strokeWidth={1}
+            />
+            <text
+              x={LABEL_W}
+              y={-8}
+              textAnchor="middle"
+              fontSize={8}
+              fontWeight={700}
+              fill="#94A3B8"
+            >
+              0
+            </text>
+
+            {/* Grid Line 50 (Baseline) */}
             <text x={LABEL_W - 4} y={4} textAnchor="end" fontSize={9} fontWeight={600} fill="#64748B">
               Baseline
             </text>
@@ -148,7 +164,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
               x1={LABEL_W + toPixel(baseline)}
               y1={-4}
               x2={LABEL_W + toPixel(baseline)}
-              y2={(shap.length + 1) * ROW_HEIGHT + 4}
+              y2={(shap.length + 2.3) * ROW_HEIGHT + BAR_HEIGHT - ROW_HEIGHT * 0.5}
               stroke="#CBD5E1"
               strokeDasharray="3 3"
               strokeWidth={1}
@@ -157,11 +173,32 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
               x={LABEL_W + toPixel(baseline)}
               y={-8}
               textAnchor="middle"
-              fontSize={9}
+              fontSize={8}
+              fontWeight={700}
+              fill="#64748B"
+            >
+              50
+            </text>
+
+            {/* Grid Line 100 */}
+            <line
+              x1={LABEL_W + CHART_W}
+              y1={-4}
+              x2={LABEL_W + CHART_W}
+              y2={(shap.length + 2.3) * ROW_HEIGHT + BAR_HEIGHT - ROW_HEIGHT * 0.5}
+              stroke="#CBD5E1"
+              strokeDasharray="2 2"
+              strokeWidth={1}
+            />
+            <text
+              x={LABEL_W + CHART_W}
+              y={-8}
+              textAnchor="middle"
+              fontSize={8}
               fontWeight={700}
               fill="#94A3B8"
             >
-              {baseline.toFixed(1)}
+              100
             </text>
           </g>
 
@@ -251,11 +288,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
             );
           })()}
 
-          {/* Final sigmoid score */}
+          {/* Final sigmoid score (Shifted down for visual separation) */}
           {(() => {
-            const y = (shap.length + 2) * ROW_HEIGHT;
+            const y = (shap.length + 2.3) * ROW_HEIGHT;
             return (
               <g transform={`translate(0, ${y})`}>
+                {/* Dotted separator divider line */}
+                <line
+                  x1={LABEL_W}
+                  y1={-6}
+                  x2={LABEL_W + CHART_W}
+                  y2={-6}
+                  stroke="#E2E8F0"
+                  strokeWidth={1}
+                  strokeDasharray="2 2"
+                />
                 <text x={LABEL_W - 4} y={BAR_HEIGHT / 2 + 3} textAnchor="end" fontSize={9} fontWeight={700} fill="#0F766E">
                   FINAL
                 </text>

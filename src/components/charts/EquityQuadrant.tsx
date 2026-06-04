@@ -5,6 +5,7 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Cell
 } from 'recharts';
+import { useRouteStore } from '@/store/routeStore';
 
 export interface RoutePoint {
   route_id: string;
@@ -18,10 +19,22 @@ export interface RoutePoint {
   pillar_3: number;
   pillar_4: number;
   coords: number[][];  // [[lat, lng], ...]
+  da_data?: {
+    id: string;
+    pop: number;
+    low_income_pct: number;
+    minority_pct: number;
+    senior_pct: number;
+    lone_parent_pct?: number;
+    recent_immigrant_pct?: number;
+    youth_pct?: number;
+    vulnerability_index?: number;
+  }[];
 }
 
 interface EquityQuadrantProps {
   data: RoutePoint[];
+  allRoutes?: RoutePoint[];
 }
 
 const GRADE_COLORS: Record<string, string> = {
@@ -56,7 +69,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   );
 };
 
-export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
+export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes }) => {
+  const selectedRoute = useRouteStore((state) => state.selectedRoute);
+  const setSelectedRoute = useRouteStore((state) => state.setSelectedRoute);
+
   if (!data.length) {
     return (
       <div className="flex items-center justify-center h-full text-xs text-slate-400">
@@ -65,10 +81,17 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
     );
   }
 
-  const sortedPop = [...data].sort((a, b) => a.total_pop_served - b.total_pop_served);
-  const sortedScore = [...data].sort((a, b) => a.composite_score - b.composite_score);
-  const medianPop = sortedPop[Math.floor(sortedPop.length / 2)].total_pop_served;
-  const medianScore = sortedScore[Math.floor(sortedScore.length / 2)].composite_score;
+  // Use allRoutes (system-wide) if available to establish static bounds and reference lines
+  const referenceData = allRoutes && allRoutes.length > 0 ? allRoutes : data;
+
+  const sortedPop = [...referenceData].sort((a, b) => a.total_pop_served - b.total_pop_served);
+  const sortedScore = [...referenceData].sort((a, b) => a.composite_score - b.composite_score);
+  const medianPop = sortedPop.length > 0 ? sortedPop[Math.floor(sortedPop.length / 2)].total_pop_served : 0;
+  const medianScore = sortedScore.length > 0 ? sortedScore[Math.floor(sortedScore.length / 2)].composite_score : 50;
+
+  // Calculate static max bounds for X axis
+  const maxPop = referenceData.length > 0 ? Math.max(...referenceData.map(r => r.total_pop_served)) : 20000;
+  const xMax = Math.ceil(maxPop * 1.05); // Pad by 5% to keep dots in-bounds beautifully
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -78,6 +101,7 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
           type="number"
           dataKey="total_pop_served"
           name="Pop Served"
+          domain={[0, xMax]}
           tick={{ fontSize: 9, fill: '#64748B' }}
           tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
           label={{ value: 'Population Served', position: 'insideBottom', offset: -2, fontSize: 9, fill: '#94A3B8' }}
@@ -86,6 +110,7 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
           type="number"
           dataKey="composite_score"
           name="Equity Score"
+          domain={[0, 100]}
           tick={{ fontSize: 9, fill: '#64748B' }}
           label={{ value: 'Equity Score', angle: -90, position: 'insideLeft', offset: 10, fontSize: 9, fill: '#94A3B8' }}
         />
@@ -93,14 +118,33 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data }) => {
         <ReferenceLine x={medianPop} stroke="#CBD5E1" strokeDasharray="4 4" />
         <ReferenceLine y={medianScore} stroke="#CBD5E1" strokeDasharray="4 4" />
         <Scatter data={data} animationDuration={600}>
-          {data.map((entry, i) => (
-            <Cell
-              key={`cell-${i}`}
-              fill={GRADE_COLORS[entry.grade] || '#94A3B8'}
-              fillOpacity={0.75}
-              r={4}
-            />
-          ))}
+          {data.map((entry, i) => {
+            const isSelected = selectedRoute === entry.route_id;
+            const isAnySelected = selectedRoute !== null;
+            const opacity = isAnySelected ? (isSelected ? 1.0 : 0.15) : 0.75;
+            const radius = isAnySelected ? (isSelected ? 6 : 3) : 4;
+            const stroke = isSelected ? '#1E293B' : 'none';
+            const strokeWidth = isSelected ? 1.5 : 0;
+
+            return (
+              <Cell
+                key={`cell-${i}`}
+                fill={GRADE_COLORS[entry.grade] || '#94A3B8'}
+                fillOpacity={opacity}
+                r={radius}
+                stroke={stroke}
+                strokeWidth={strokeWidth}
+                cursor="pointer"
+                onClick={() => {
+                  if (isSelected) {
+                    setSelectedRoute(null);
+                  } else {
+                    setSelectedRoute(entry.route_id);
+                  }
+                }}
+              />
+            );
+          })}
         </Scatter>
       </ScatterChart>
     </ResponsiveContainer>

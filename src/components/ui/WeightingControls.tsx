@@ -39,7 +39,7 @@ export const WeightingControls = () => {
         description="Prioritizes routes serving high-needs demographics (low income, zero-vehicle households)."
       />
       <Slider 
-        label="Temporal Reliability" 
+        label="Off Peak Service" 
         value={store.temporal} 
         onChange={(v: any) => store.setWeight('temporal', v)} 
         description="Measures how consistent service is during off-peak and weekend hours."

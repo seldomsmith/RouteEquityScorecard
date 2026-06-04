@@ -189,7 +189,7 @@ def calculate_tspr_2(route_gdf, route_da_map, demo_df, enriched_data):
     p1['grade'] = p1['composite_score'].apply(get_grade)
 
     drivers = {
-        'pillar_1': 'Vulnerability Density', 'pillar_2': 'Temporal Resilience',
+        'pillar_1': 'Vulnerability Density', 'pillar_2': 'Off Peak Service',
         'pillar_3': 'Network Monopoly', 'pillar_4': 'Critical Opportunity'
     }
     p1['primary_driver'] = p1[['pillar_1', 'pillar_2', 'pillar_3', 'pillar_4']].idxmax(axis=1).map(drivers)

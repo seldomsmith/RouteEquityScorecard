@@ -20,14 +20,14 @@ export const useBriefingExport = () => {
 ## ⚖️ Policy Calibration
 The following weights were applied to this analysis:
 *   **Social Vulnerability:** ${(weights.vulnerability * 100).toFixed(0)}%
-*   **Temporal Reliability:** ${(weights.temporal * 100).toFixed(0)}%
+*   **Off Peak Service:** ${(weights.temporal * 100).toFixed(0)}%
 *   **Network Monopoly:** ${(weights.monopoly * 100).toFixed(0)}%
 *   **Opportunity Access:** ${(weights.opportunity * 100).toFixed(0)}%
 
 ## 📊 Score Drivers (SHAP Analysis)
 The route's performance is driven by the following factors:
 *   **Vulnerability Impact:** +${(routeData.vuln_score * weights.vulnerability).toFixed(1)}
-*   **Temporal Impact:** +${(routeData.temp_score * weights.temporal).toFixed(1)}
+*   **Off Peak Service Impact:** +${(routeData.temp_score * weights.temporal).toFixed(1)}
 *   **Monopoly Impact:** +${(routeData.mono_score * weights.monopoly).toFixed(1)}
 *   **Opportunity Impact:** +${(routeData.opp_score * weights.opportunity).toFixed(1)}
 
