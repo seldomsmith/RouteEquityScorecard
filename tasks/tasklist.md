@@ -141,3 +141,12 @@
 - [x] Re-run demographics/scoring pipeline to generate updated `golden_route_record.json` <!-- id: 85, priority: critical -->
 - [x] Re-run sensitivity analysis (`scripts/run_sensitivity_analysis.py` and `scripts/run_two_pillar_sensitivity_analysis.py`) <!-- id: 86, priority: high -->
 - [x] Verify updated scores, grades, and report distributions <!-- id: 87, priority: critical -->
+
+## Phase 16: Meta Resiliency Map Layer Toggle
+- [x] Add active filter states and toggles for stability classifications to the state store (`src/store/routeStore.ts`) <!-- id: 88, priority: high -->
+- [x] Develop segmented control toggle in sidebar (`src/components/Sidebar.tsx`) to switch between Grade Filter and Stability Filter <!-- id: 89, priority: high -->
+- [x] Implement Stability Filter UI selectors (Bedrock Essential, Resilient, Policy Swing, Moderate Stability) <!-- id: 90, priority: high -->
+- [x] Rewire `src/components/Map.tsx` route visualization expressions to color-code by stability class when toggled <!-- id: 91, priority: high -->
+- [x] Add dynamic legend rendering in Map for Stability Classifications (Purple, Green, Amber, Gray) <!-- id: 92, priority: medium -->
+- [x] Verify reactive filtering and coordinate synchronization across scatterplots and grids <!-- id: 93, priority: critical -->
+

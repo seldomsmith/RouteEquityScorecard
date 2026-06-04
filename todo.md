@@ -24,6 +24,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Meta Resiliency Map Layer Toggle (Phase 16)**:
+  - Added filter mode states (`mapFilterMode`, `selectedStabilityClasses`) and actions to Zustand state store.
+  - Implemented Segmented Toggle Control (Grade Focus vs. Stability Focus) in Sidebar.
+  - Implemented dynamic Stability Isolator checkboxes in Sidebar with active route counts.
+  - Updated Map route line color expressions and tooltips to dynamically swap based on active filter mode (Color-coded by Grade or Stability Class).
+  - Implemented reactive Map legend that switches dynamically between Grade colors and Stability colors (Purple, Green, Amber, Gray).
 - **Functional Monopoly Implementation (Phase 15)**:
   - Developed `scripts/build_destination_catchments.py` to project route stops and POIs to UTM Zone 12N coordinates, constructing destination catchments using a fast scipy `KDTree` within 400m.
   - Developed `scripts/calculate_functional_monopoly.py` to calculate the Functional Redundancy ratio ($FR_{i,r}$) of route-DA pairs, flagging functional monopolies where destination overlap with alternative routes is $<20\%$.
