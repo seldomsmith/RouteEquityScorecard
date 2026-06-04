@@ -24,6 +24,30 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Functional Monopoly Implementation (Phase 15)**:
+  - Developed `scripts/build_destination_catchments.py` to project route stops and POIs to UTM Zone 12N coordinates, constructing destination catchments using a fast scipy `KDTree` within 400m.
+  - Developed `scripts/calculate_functional_monopoly.py` to calculate the Functional Redundancy ratio ($FR_{i,r}$) of route-DA pairs, flagging functional monopolies where destination overlap with alternative routes is $<20\%$.
+  - Integrated the calculations into `scripts/update_vulnerability_index.py` and `scripts/refine_scoring.py` pipelines, updating raw and Z-score normalized monopoly scores.
+  - Re-run all sensitivity analysis Monte Carlo simulations and updated CSV/parquet datasets, modifying `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` and `docs/sensitivity_scores_2_pillar.csv` to match.
+- **Destination-Overlap Monopoly Planning (Phase 14)**:
+  - Formulated the exact mathematical equations and logic to calculate Functional Redundancy ($FR_{i,r}$) by intersecting route-level destination catchments.
+  - Documented a 3-stage data pipeline structure in the brain implementation plan for future integration into the scoreboard backend.
+- **2-Pillar Policy Report Drafting (Phase 13)**:
+  - Authored a comprehensive and professional 2-pillar sensitivity meta-analysis at `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` styled in an accessible first-year university tone.
+  - Excluded operational service features (Monopoly and Off-Peak) to isolate pure human demographic vs. employment access priorities.
+  - Inserted clear chart placeholders, outlined key structural drivers, and detailed recommendations for planning figures.
+  - Compiled and structured the **Moderate Swing Corridors** table (15 most volatile routes in the Moderate Stability group) to illustrate route sensitivity to weight shifts.
+- **2-Pillar Sensitivity Sweep (Phase 12)**:
+  - Developed and ran `scripts/run_two_pillar_sensitivity_analysis.py` to simulate all 21 zero-sum combinations of Vulnerability and Opportunity Access.
+  - Authored a dedicated report at `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` and exported the formatted spreadsheet at `docs/sensitivity_scores_2_pillar.csv` for all 170 routes.
+- **Sensitivity Spreadsheet Generation (Phase 11)**:
+  - Formulated a pandas extraction script to parse `public/data/sensitivity_summary.csv`.
+  - Generated the formatted spreadsheet `docs/sensitivity_scores.csv` containing Route ID, Name, Mean Score, Robustness, AB/DE Stability, and Primary Driver columns for all 170 routes.
+- **Sensitivity Analysis Recalculation (Phase 10)**:
+  - Dynamicized route count and output metrics inside `scripts/run_sensitivity_analysis.py`.
+  - Recalculated the Monte Carlo weight sensitivity meta-analysis using the updated 170-route database (post-school route exclusion).
+  - Regenerated `public/data/sensitivity_summary.csv` and `public/data/sensitivity_matrix.parquet` with the updated 301,070 simulated data points.
+  - Replaced `docs/SENSITIVITY_ANALYSIS_REPORT.md` with updated stats, showing 36 Bedrock Essentials (21.2%) and 63 Policy Swing Corridors (37.1%).
 - **Policy Weight Toggles & School Route Exclusion (Phase 9)**:
   - Excluded school special routes (6xx range) from the dataset, decreasing overall route count from 236 to 170.
   - Re-run spatial calculations and re-standardized scoring pipelines to build fresh `.json` and `.parquet` databases.

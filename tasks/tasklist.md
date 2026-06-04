@@ -113,3 +113,31 @@
 - [x] Adjust `useReactiveScoring.ts` for dynamic weight disabling <!-- id: 69, priority: high -->
 - [x] Implement interactive checkboxes in `src/components/Sidebar.tsx` and gray out disabled sliders <!-- id: 70, priority: high -->
 - [x] Verify frontend reactive scoring and route filtering <!-- id: 71, priority: critical -->
+
+## Phase 10: Sensitivity Analysis Recalculation [COMPLETE]
+- [x] Run the python sensitivity analysis script `scripts/run_sensitivity_analysis.py` <!-- id: 72, priority: critical -->
+- [x] Verify execution outputs and route count in `SENSITIVITY_ANALYSIS_REPORT.md` <!-- id: 73, priority: high -->
+
+## Phase 11: Sensitivity Spreadsheet Generation [COMPLETE]
+- [x] Write a python script/command to generate `docs/sensitivity_scores.csv` from the simulation summary <!-- id: 74, priority: high -->
+- [x] Verify the spreadsheet data matches the requested style and contains all routes <!-- id: 75, priority: high -->
+
+## Phase 12: 2-Pillar Sensitivity Analysis [COMPLETE]
+- [x] Create and run 2-pillar sensitivity script `scripts/run_two_pillar_sensitivity_analysis.py` <!-- id: 76, priority: high -->
+- [x] Verify outputs `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` and `docs/sensitivity_scores_2_pillar.csv` <!-- id: 77, priority: high -->
+
+## Phase 13: 2-Pillar Policy Report Drafting [COMPLETE]
+- [x] Draft the complete 2-pillar sensitivity report at `docs/SENSITIVITY_ANALYSIS_REPORT_2_PILLAR.md` <!-- id: 78, priority: high -->
+- [x] Verify the narrative and formatting match the requested style <!-- id: 79, priority: high -->
+
+## Phase 14: Destination-Overlap Monopoly Planning [COMPLETE]
+- [x] Design technical math formulations and architecture for functional monopoly indexing <!-- id: 80, priority: high -->
+- [x] Document the data pipeline steps in the brain implementation plan <!-- id: 81, priority: high -->
+
+## Phase 15: Functional Monopoly Implementation
+- [x] Develop destination catchment builder script `scripts/build_destination_catchments.py` <!-- id: 82, priority: critical -->
+- [x] Develop redundancy evaluation script `scripts/calculate_functional_monopoly.py` <!-- id: 83, priority: critical -->
+- [x] Integrate functional monopoly scoring in `scripts/refine_scoring.py` and `scripts/update_vulnerability_index.py` <!-- id: 84, priority: critical -->
+- [x] Re-run demographics/scoring pipeline to generate updated `golden_route_record.json` <!-- id: 85, priority: critical -->
+- [x] Re-run sensitivity analysis (`scripts/run_sensitivity_analysis.py` and `scripts/run_two_pillar_sensitivity_analysis.py`) <!-- id: 86, priority: high -->
+- [x] Verify updated scores, grades, and report distributions <!-- id: 87, priority: critical -->

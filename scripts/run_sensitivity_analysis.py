@@ -145,7 +145,27 @@ def main():
     # Save Summary CSV
     summary_csv_path = 'public/data/sensitivity_summary.csv'
     df_summary.to_csv(summary_csv_path, index=False)
-    print(f"  Summary saved to {summary_csv_path} (235 rows).")
+    print(f"  Summary saved to {summary_csv_path} ({len(df_summary)} rows).")
+    
+    # Export formatted sensitivity scores to docs/sensitivity_scores.csv
+    df_export = pd.DataFrame()
+    df_export['Route ID'] = df_summary['route_id']
+    df_export['Name'] = df_summary['name'].apply(lambda x: x.split('  ')[-1] if '  ' in str(x) else x)
+    df_export['Mean Score'] = df_summary['score_mean']
+    df_export['Robustness (Rr)'] = df_summary['score_std']
+    df_export['AB Stability (%)'] = df_summary['grade_stability_ab'].apply(lambda x: f'{x:.1f}%')
+    df_export['DE Stability (%)'] = df_summary['grade_stability_de'].apply(lambda x: f'{x:.1f}%')
+    
+    df_export['Primary Driver'] = df_summary[['driver_vulnerability', 'driver_temporal', 'driver_monopoly', 'driver_opportunity']].idxmax(axis=1).apply(
+        lambda x: {
+            'driver_vulnerability': 'Vulnerability',
+            'driver_temporal': 'Temporal',
+            'driver_monopoly': 'Monopoly',
+            'driver_opportunity': 'Opportunity'
+        }.get(x, 'Unknown')
+    )
+    df_export.to_csv('docs/sensitivity_scores.csv', index=False)
+    print(f"  Spreadsheet saved to docs/sensitivity_scores.csv ({len(df_export)} rows).")
     
     # Build complete raw output matrix DataFrame
     print("  Constructing complete matrix DataFrame...")
@@ -180,69 +200,73 @@ def main():
     
     counts = df_summary['stability_class'].value_counts()
     
-    report_content = f"""# Route Equity Scorecard — Weight Sensitivity & Robustness Analysis
+    report_content = f"""# ROUTE EQUITY SCORECARD: REI WEIGHT SENSITIVITY ANALYSIS
 *A Monte Carlo Policy Simulation Meta-Analysis on Transit Equity Classifications*
 
 ---
 
-## 🎯 Executive Summary
-The Route Equity Scorecard defines equity priority by weighting four distinct operational and socio-demographic pillars: Vulnerability ($15\\%$), Temporal Resilience ($40\\%$), Monopoly ($10\\%$), and Opportunity Access ($35\\%$). However, selecting static weights poses a core policy vulnerability: *does the prioritization of transit lifelines change under differing philosophical definitions of equity?*
+## EXECUTIVE SUMMARY
+The Route Equity Scorecard defines equity priority by weighting four operational and socio-demographic pillars. These pillars are Vulnerability (socio-economic demographics) at 15 percent, Off Peak Service at 40 percent, Service Monopoly at 10 percent, and Opportunity Access at 35 percent. We conducted this analysis because choosing one specific default set of weighting introduces a potential policy vulnerability or weakness, as the prioritization of specific weights will shift the scoring of different routes depending on the policy orientations and definitions of “equity”.
 
-To isolate policy bias from structural necessity, we executed a global weight sensitivity Monte Carlo analysis. We simulated **1,771 valid zero-sum policy weight configurations** (in 5% increments) across all **235 routes in Edmonton**, generating **416,185 analytical records**. 
+To evaluate how sensitive the route equity scoring is to weight changes, a weight sensitivity Monte Carlo simulation was performed. The evaluation simulated 1,771 valid zero-sum policy weight configurations in 5 percent increments across all {num_routes} transit routes in Edmonton, generating {len(df_matrix):,} analytical records.
 
-### Key Discoveries:
-1. **The Bedrock Lifelines exist:** Out of 235 routes, **{counts.get('Bedrock Essential', 0)} corridors ({counts.get('Bedrock Essential', 0)/num_routes*100:.1f}%) are Bedrock Essentials**. They maintain an A or B Grade in $\\ge 90\\%$ of all simulated policy configurations. Regardless of whether opportunity, temporal resilience, or census demographics are heavily prioritized, these corridors are structurally and socially essential lifelines.
-2. **Policy Swings are restricted:** Only **{counts.get('Policy Swing Corridor', 0)} corridors ({counts.get('Policy Swing Corridor', 0)/num_routes*100:.1f}%) are highly sensitive Policy Swing Corridors**. These routes swing wildly (e.g. from Grade A under a pure Temporal mix to Grade D under an Opportunity mix), meaning their funding or optimization is dependent on political and administrative weight selections.
-3. **Pillar Dominance:** Regression driver coefficients show that **Opportunity Access** and **Temporal Resilience** act as the primary engines of score dispersion, while **Monopoly** exerts a highly localized, corridor-specific influence.
+### 1.2 Summary of Findings:
+First, **Bedrock Essentials**: Out of {num_routes} routes, {counts.get('Bedrock Essential', 0)} corridors representing {counts.get('Bedrock Essential', 0)/num_routes*100:.1f} percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity, off peak service, or vulnerability of the area, or monopoly service are emphasized.
 
----
+Second, **Policy Swing Corridors**: There are {counts.get('Policy Swing Corridor', 0)} corridors representing {counts.get('Policy Swing Corridor', 0)/num_routes*100:.1f} percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
 
-## 📖 Table of Contents
-1. [Executive Summary](#-executive-summary)
-2. [Methodology & Combinatorics](#-methodology--combinatorics)
-3. [Corridor Stability Profiles](#-corridor-stability-profiles)
-4. [Statistical Drivers of Score Volatility](#-statistical-drivers-of-score-volatility)
-5. [Top Corridor Sensitivity Matrices](#-top-corridor-sensitivity-matrices)
-6. [Policy Conclusions & Strategic Actions](#-policy-conclusions--strategic-actions)
+Third, **Pillar Dominance**: Regression driver coefficients indicate that Opportunity Access and Off Peak Service serve as the primary drivers of score variation, while Monopoly exerts a highly localized, corridor-specific influence.
 
 ---
 
-## 🔬 Methodology & Combinatorics
+## METHODOLOGY AND COMBINATORICS
 
-### 1. Combinatorial Compression (Stars and Bars Theorem)
-To compute every possible increment permutation where weights must sum to exactly $100\\%$ ($w_1 + w_2 + w_3 + w_4 = 1.0$), we apply the **Stars and Bars** combinatorics theorem:
-$$\\text{{Combinations}} = \\binom{{N + K - 1}}{{K - 1}} = \\binom{{20 + 4 - 1}}{{4 - 1}} = \\binom{{23}}{{3}} = 1,771$$
-Where:
-* $N = 20$ represents steps of $5\\%$ ($100\\% / 5\\% = 20$ discrete increments).
-* $K = 4$ represents our four equity pillars.
+### A. Combinatorial Compression
+To compute every possible increment permutation where weights must sum to exactly 100 percent, the Stars and Bars combinatorics theorem was applied.
 
-This reduces the search space by **99.1%** relative to a simple grid search ($21^4 = 194,481$), rendering the simulation highly performant.
+The number of combinations is calculated as follows:
 
-### 2. Analytical Indices
-* **Robustness Index ($R_r$):** The standard deviation of the route's composite score across all 1,771 configurations. A lower $R_r$ implies structural resilience to policy bias.
-* **No-Intercept Ordinary Least Squares (OLS) Drivers:**
-  For each corridor, we fit the following no-intercept OLS model:
-  $$\\text{{CompositeScore}}_{{r, c}} = \\beta_1 w_{{1, c}} + \\beta_2 w_{{2, c}} + \\beta_3 w_{{3, c}} + \\beta_4 w_{{4, c}} + \\epsilon$$
-  Since weights sum to 1.0, the coefficients $\\beta_p$ correspond exactly to the expected score of the route under a **100% pure weight** on pillar $p$, serving as direct driver indicators.
+$$\\text{{Combinations}} = \\binom{{N+K-1}}{{K-1}} = \\binom{{20+4-1}}{{4-1}} = \\binom{{23}}{{3}} = 1,771$$
 
-* **Stability Classifications:**
-  * **Bedrock Essential:** Grade A or B in $\\ge 90\\%$ of combinations.
-  * **Bedrock Resilient:** Grade D or E in $\\ge 90\\%$ of combinations.
-  * **Policy Swing Corridor:** Grade spread $\\ge 3$ grades (e.g. from B to E) across runs.
-  * **Moderate Stability:** Corridors that do not swing severely but are not consistently in the extreme quintiles.
+In this calculation, $N$ equals 20, which represents steps of 5 percent. $K$ equals 4, which represents the four equity pillars.
+This reduces the search space by 99.1 percent relative to a full grid search, which would require 194,481 evaluations, improving the efficiency of the simulation.
+
+### B. Analytical Indices
+- **Robustness Index ($R_r$):** This is the standard deviation of the route composite score across all 1,771 configurations. A lower robustness index value implies structural resilience to changes in policy weights. Essentially, no matter what the weighting of the REI factors is, the score remains stable.
+- **No-Intercept Ordinary Least Squares Drivers:** For each corridor, a no-intercept ordinary least squares regression model was used:
+  
+  $$\\text{{CompositeScore}}(r,c) = \\beta_1 w_{{1,c}} + \\beta_2 w_{{2,c}} + \\beta_3 w_{{3,c}} + \\beta_4 w_{{4,c}} + \\epsilon$$
+  
+  Since the weights sum to 1.0, the coefficients correspond to the expected score of the route under a 100 percent pure weight on that specific pillar, acting as direct driver indicators.
+
+### C. Stability Classifications
+- **Bedrock Essential:** Grade A or B in 90 percent or more of simulated combinations.
+- **Bedrock Resilient:** Grade D or E in 90 percent or more of simulated combinations.
+- **Policy Swing Corridor:** Grade spread of 3 or more grades, such as from B to E, across runs.
+- **Moderate Stability:** Corridors that do not swing severely but are not consistently in the extreme quintiles.
 
 ---
 
-## 📊 Corridor Stability Profiles
+## CORRIDOR STABILITY PROFILES
 
-Edmonton's transit corridors are classified as follows:
-* **Bedrock Essentials:** `{counts.get('Bedrock Essential', 0)} routes`
-* **Bedrock Resilient:** `{counts.get('Bedrock Resilient', 0)} routes`
-* **Policy Swing Corridors:** `{counts.get('Policy Swing Corridor', 0)} routes`
-* **Moderate Stability:** `{counts.get('Moderate Stability', 0)} routes`
+### Figure 3A: Network Stability Class Distribution
+Edmonton transit corridors are classified into the following categories:
+- **Bedrock Essentials:** {counts.get('Bedrock Essential', 0)} routes
+- **Bedrock Resilient:** {counts.get('Bedrock Resilient', 0)} routes
+- **Policy Swing Corridors:** {counts.get('Policy Swing Corridor', 0)} routes
+- **Moderate Stability:** {counts.get('Moderate Stability', 0)} routes
 
-### 1. Bedrock Essentials (Top 15 Corridors)
-These corridors are absolute transit lifelines. They consistently score in the top 40% (Grades A & B) under almost every policy weight mix:
+*(Note: Visual representation coordinates and trends are detailed in Appendix A)*
+
+### Figure 3C: Volatility vs. Mean Score (Policy Risk Map)
+*(Note: Volatility mapping is outputted as part of the analysis backend exports)*
+
+### Figure 3B: Grade Stability AB Distribution
+
+### A. Bedrock Essentials, Top 15 Corridors
+These corridors consistently score in the top 40 percent, representing Grades A and B, under nearly all policy weight configurations.
+
+The details below list the Route ID, Name, Mean Score, Robustness, AB Stability percentage, and Primary Driver:
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | Primary Driver |
 | :--- | :--- | :---: | :---: | :---: | :--- |
@@ -255,11 +279,14 @@ These corridors are absolute transit lifelines. They consistently score in the t
             ('Opportunity', row['driver_opportunity'])
         ]
         best_driver = max(drivers, key=lambda x: x[1])[0]
-        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name']} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_ab']:.1f}% | {best_driver} |\n"
+        # Map driver name to match user layout
+        driver_map = {'Vulnerability': 'Vulnerability', 'Temporal': 'Temporal', 'Monopoly': 'Monopoly', 'Opportunity': 'Opportunity'}
+        best_driver = driver_map[best_driver]
+        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name'].split('  ')[-1]} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_ab']:.1f}% | {best_driver} |\n"
         
     report_content += """
-### 2. Highly Sensitive Policy Swing Corridors (Top 15 Corridors)
-These corridors are volatile and highly dependent on the administrative weights. Under some weight combinations, they represent critical equity priority; under others, they receive low funding priority:
+### B. Highly Sensitive Policy Swing Corridors, Top 15 Corridors
+These corridors are sensitive to weight adjustments. Depending on the weight configuration, they may receive either high or low priority rankings.
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | Grade Swing | Best Weight Mix |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -272,41 +299,58 @@ These corridors are volatile and highly dependent on the administrative weights.
             ('Opp', row['driver_opportunity'])
         ]
         best_mix = max(drivers, key=lambda x: x[1])[0]
-        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name']} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_ab']:.1f}% | Volatile | {best_mix}-heavy |\n"
+        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name'].split('  ')[-1]} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_ab']:.1f}% | Volatile | {best_mix}-heavy |\n"
 
     report_content += """
-### 3. Bedrock Resilient (Top 15 Low-Priority Corridors)
-These corridors consistently score in the bottom 40% (Grades D & E) under almost all weight definitions, typically representing commuter expresses or affluent low-dependency suburban feeders:
+### C. Bedrock Resilient Corridors, Top 15 Low-Priority Corridors
+These corridors consistently score in the bottom 40 percent, representing Grades D and E, under almost all weight configurations, typically representing commuter expresses or low-dependency suburban feeders.
 
-| Route ID | Name | Mean Score | Robustness ($R_r$) | DE Stability (%) |
+The details below list the Route ID, Name, Mean Score, Robustness, and DE Stability percentage:
+
+| Route ID | Name | Mean Score | Robustness | DE Stability (%) |
 | :--- | :--- | :---: | :---: | :---: |
 """
     for _, row in bedrock_resilient.iterrows():
-        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name']} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_de']:.1f}% |\n"
+        report_content += f"| `{row['route_id']}` | {row['short_name']} — {row['name'].split('  ')[-1]} | {row['score_mean']:.1f} | {row['score_std']:.2f} | {row['grade_stability_de']:.1f}% |\n"
 
     report_content += """
 ---
 
-## 📈 Statistical Drivers of Score Volatility
+## STATISTICAL DRIVERS OF SCORE VOLATILITY
+The sensitivity of a composite score to weight changes can be traced back to its underlying pillar values, explained by the standardized ordinary least squares driver coefficients:
+- **Opportunity-Driven Corridors:** Corridors with high opportunity drivers typically represent radial express routes serving employment centers. These routes perform well under opportunity-heavy configurations.
+- **Temporal-Driven Corridors:** Corridors with high temporal coefficients represent local routes with substantial off-peak, late-night, or weekend service coverage. These routes show higher priority when Temporal Resilience is emphasized.
+- **Vulnerability-Driven Corridors:** Corridors serving areas with higher demographic concentrations of transit-reliant populations, such as low-income households, single-parent families, seniors, and recent immigrants. These routes rank highest when Vulnerability weights are elevated.
+- **Monopoly-Driven Corridors:** Corridors serving areas with limited or no overlapping transit alternatives, where residents are structurally dependent on a single route for spatial access to the broader transit network. These routes rank highest when Monopoly weight is elevated.
 
-For each route, the sensitivity of the composite score to changes in weight can be mapped to its underlying pillar values. The standardized OLS driver coefficients explain this transition:
+### Figure 4: Top 20 Most Volatile Routes by Primary Driver
+This horizontal bar chart presents the twenty most volatile transit routes measured by their standard deviation, with each bar colour-coded to represent its primary structural driver. The three routes with the highest volatility scores are entirely driven by monopoly characteristics and reach standard deviations of nearly thirty (29.5). The remaining volatility profile is dominated by a mixture of Monopoly, Opportunity, and Temporal drivers, with no routes being primarily driven by Vulnerability.
 
-* **Opportunity-Driven Corridors:** Routes with large opportunity drivers represent radial express corridors serving high-employment zones. These corridors benefit from an Opportunity-heavy mix.
-* **Temporal-Driven Corridors:** Routes with high temporal coefficients are local routes with high late-night and weekend service requirements. They dominate when Temporal Resilience is prioritized.
-* **Vulnerability-Driven Corridors:** Corridors directly serving areas with dense demographic indices (lone parents, low-income households, seniors, recent immigrants). They stand out when Vulnerability weight is set high.
+#### Why is Vulnerability never a key driver of policy swings?
+1. **Socio-Demographic Smoothing at the Route Level**: Vulnerability is calculated across Edmonton's 1,700+ Dissemination Areas (DAs) using continuous PCA-weighted indicators. When projected onto route paths via spatial catchment distance decay, these scores are naturally aggregated and smoothed. Routes rarely serve purely homogeneous demographic extremes, resulting in a more balanced and centered distribution across the network.
+2. **Binary Contrast in Structural Attributes**: Structural features like *Monopoly* (either a route is the absolute sole lifeline for a neighborhood or it overlaps with several routes) and *Opportunity Access* (either a route runs directly into a major job hub like Downtown/WEM or it is a minor suburban feeder) are highly polarized. Shifting weight to these variables causes extreme score changes (near 0 to near 100), driving high standard deviations.
+3. **Policy Implications for Planners**:
+   - **Vulnerability as a Stable Anchor**: Identifying demographic transit need is reliable and structurally insulated from weight philosophy changes.
+   - **Structural Trade-offs Drive Risk**: Planners' political choices primarily shift transit priorities between coverage networks (Monopoly) and high-frequency commuter networks (Opportunity Access), which is where sensitivity checking and "what-if" modeling should be focused.
 
 ---
 
-## 🏁 Policy Conclusions & Strategic Actions
+## POLICY CONCLUSIONS 
 
-### 1. Hard-Code "Bedrock Essentials" into Capital Planning
-Because **Bedrock Essentials** are structurally critical under any definition of transit equity, their funding and prioritization should be insulated from political shifts in weights. They represent absolute system lifelines.
+### A. Protect Bedrock Essentials 
+Since Bedrock Essentials maintain consistent priority rankings across varying weight definitions, their planning and funding can be prioritized independently of shifts in policy weights. These corridors show stable, structural demand under all evaluated scenarios.
 
-### 2. Standardize "Strategic Defaults" to Limit Volatility
-The current strategic defaults—**Vulnerability (15%), Temporal (40%), Monopoly (10%), and Opportunity (35%)**—sit at a balanced junction. This baseline prevents any single pillar from skewing the results, stabilizing the scores of the Policy Swing Corridors.
+### B. Use Strategic Defaults to Manage Volatility
+The current baseline weight configuration, which allocates Vulnerability at 15 percent, Temporal at 40 percent, Monopoly at 10 percent, and Opportunity at 35 percent, provides a balanced point of reference. This distribution prevents any single operational or demographic pillar from dominating the final scores, helping to stabilize classifications for the more sensitive Policy Swing Corridors.
 
-### 3. Deploy "Draft Mode" Simulations for Swing Corridors
-For the Policy Swing Corridors, any service adjustments or routing edits must undergo rigorous sensitivity modeling. If a small change in weight drops a swing route's grade from B to D, planners must carefully evaluate whether the route is serving a specialized local transit monopoly or standard commuter needs.
+### C. Implement Sensitivity Modeling for Swing Corridors
+For routes identified as Policy Swing Corridors, planning changes or route optimizations should be accompanied by sensitivity modeling. If a modest shift in policy weights significantly alters a route's priority grade, additional evaluation is recommended to clarify whether the route primarily serves a localized transit monopoly or standard commuter demand.
+
+---
+
+## Appendix A: 
+- `sensitivity_summary`
+- **Figure A: Score Range Volatility Profile**
 """
     
     report_path = 'docs/SENSITIVITY_ANALYSIS_REPORT.md'
