@@ -150,3 +150,8 @@
 - [x] Add dynamic legend rendering in Map for Stability Classifications (Purple, Green, Amber, Gray) <!-- id: 92, priority: medium -->
 - [x] Verify reactive filtering and coordinate synchronization across scatterplots and grids <!-- id: 93, priority: critical -->
 
+## Phase 17: Stability Focus Visual and Sensitivity Integration
+- [ ] In CommandCentre, dynamically switch the Population-Equity Quadrant chart to the Route Stability Class Distribution component when switching to stability focus <!-- id: 94, priority: high -->
+- [ ] If Off-Peak and Monopoly weights are deselected/disabled in the policy weight menu, load/use the 2-weight (2-pillar) sensitivity analysis classifications for the stability focus <!-- id: 95, priority: critical -->
+
+

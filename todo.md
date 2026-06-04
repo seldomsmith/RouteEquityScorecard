@@ -7,6 +7,10 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
 1. **SHAP Waterfall Micro-Animations** [LOW]
    - Integrate Framer Motion spring physics to animate the SHAP waterfall bar adjustments fluidly when weights are dragged.
+2. **Stability Focus Component Shift** [HIGH]
+   - When switching the segmented control to Stability Focus, swap the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
+3. **2-Pillar Sensitivity Integration** [CRITICAL]
+   - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
 
 ### Phase 4.5: Simulation & Data Pipeline
 2. **Service Impact Simulation (Draft Mode)** [HIGH]
