@@ -74,7 +74,8 @@ export const CommandCentre = () => {
               CAST(route.pillar_3_monopoly AS DOUBLE) as pillar_3,
               CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
               route.coords,
-              route.da_metadata
+              route.da_metadata,
+              COALESCE(route.stability_class, 'Moderate Stability') as stability_class
             FROM (
               SELECT UNNEST(routes) as route FROM network_data
             ) t1
@@ -132,6 +133,7 @@ export const CommandCentre = () => {
               pillar_4: Number(row.pillar_4),
               coords,
               da_data,
+              stability_class: String(row.stability_class || 'Moderate Stability'),
             };
           });
           

@@ -19,6 +19,7 @@ export interface RoutePoint {
   pillar_3: number;
   pillar_4: number;
   coords: number[][];  // [[lat, lng], ...]
+  stability_class?: string;
   da_data?: {
     id: string;
     pop: number;
