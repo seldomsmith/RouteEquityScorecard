@@ -64,8 +64,21 @@ export const CommandCentre = () => {
           `);
           setSystemPopServed(Number(popResult.toArray()[0].total_pop));
 
-          // ── Helper: Parse a DuckDB row into a RouteWithDAs ──────────────
-          const parseRow = (row: any, hasCostFields: boolean): RouteWithDAs => {
+          // ⚡ QUERY 2: Route data with coords, pillars, and da_metadata
+          // Use route.* to expand all struct fields into columns. This is
+          // schema-agnostic: it never names specific fields in SQL, so it
+          // can never crash on missing struct members (stability_class,
+          // trip_count, etc.). All type conversion and optional field
+          // extraction happens in JavaScript below with safe defaults.
+          const routeResult = await conn.query(`
+            SELECT route.*
+            FROM (
+              SELECT UNNEST(routes) as route FROM network_data
+            ) t1
+          `);
+
+          const rows = routeResult.toArray();
+          const routes: RouteWithDAs[] = rows.map((row: any) => {
             // Parse coords
             let coords: number[][] = [];
             try {
@@ -105,90 +118,27 @@ export const CommandCentre = () => {
             }
 
             return {
-              route_id: String(row.route_id),
-              name: String(row.name),
-              short_name: String(row.short_name),
-              grade: String(row.grade),
-              composite_score: Number(row.composite_score),
-              total_pop_served: Number(row.total_pop_served),
-              pillar_1: Number(row.pillar_1),
-              pillar_2: Number(row.pillar_2),
-              pillar_3: Number(row.pillar_3),
-              pillar_4: Number(row.pillar_4),
+              route_id: String(row.route_id || ''),
+              name: String(row.name || ''),
+              short_name: String(row.short_name || ''),
+              grade: String(row.grade || 'C'),
+              composite_score: Number(row.composite_score || 0),
+              total_pop_served: Number(row.total_pop_served || 0),
+              pillar_1: Number(row.pillar_1_vulnerability || 0),
+              pillar_2: Number(row.pillar_2_temporal || 0),
+              pillar_3: Number(row.pillar_3_monopoly || 0),
+              pillar_4: Number(row.pillar_4_opportunity || 0),
               coords,
               da_data,
               stability_class: String(row.stability_class || 'Moderate Stability'),
               stability_class_2_pillar: String(row.stability_class_2_pillar || 'Moderate Stability'),
-              trip_count: hasCostFields ? Number(row.trip_count || 0) : 0,
-              category: hasCostFields ? String(row.category || 'bus_regular') : 'bus_regular',
-              route_length_km: hasCostFields ? Number(row.route_length_km || 0) : 0,
+              trip_count: Number(row.trip_count || 0),
+              category: String(row.category || 'bus_regular'),
+              route_length_km: Number(row.route_length_km || 0),
             };
-          };
-
-          // ── Base SQL (always works) ─────────────────────────────────────
-          const BASE_SQL = `
-            SELECT 
-              route.route_id,
-              route.name,
-              route.short_name,
-              route.grade,
-              CAST(route.composite_score AS DOUBLE) as composite_score,
-              CAST(route.total_pop_served AS INTEGER) as total_pop_served,
-              CAST(route.pillar_1_vulnerability AS DOUBLE) as pillar_1,
-              CAST(route.pillar_2_temporal AS DOUBLE) as pillar_2,
-              CAST(route.pillar_3_monopoly AS DOUBLE) as pillar_3,
-              CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
-              route.coords,
-              route.da_metadata,
-              COALESCE(route.stability_class, 'Moderate Stability') as stability_class,
-              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar
-            FROM (
-              SELECT UNNEST(routes) as route FROM network_data
-            ) t1
-          `;
-
-          // ── Enhanced SQL (adds cost-mapping columns) ────────────────────
-          const ENHANCED_SQL = `
-            SELECT 
-              route.route_id,
-              route.name,
-              route.short_name,
-              route.grade,
-              CAST(route.composite_score AS DOUBLE) as composite_score,
-              CAST(route.total_pop_served AS INTEGER) as total_pop_served,
-              CAST(route.pillar_1_vulnerability AS DOUBLE) as pillar_1,
-              CAST(route.pillar_2_temporal AS DOUBLE) as pillar_2,
-              CAST(route.pillar_3_monopoly AS DOUBLE) as pillar_3,
-              CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
-              route.coords,
-              route.da_metadata,
-              COALESCE(route.stability_class, 'Moderate Stability') as stability_class,
-              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar,
-              CAST(route.trip_count AS INTEGER) as trip_count,
-              COALESCE(route.category, 'bus_regular') as category,
-              CAST(route.route_length_km AS DOUBLE) as route_length_km
-            FROM (
-              SELECT UNNEST(routes) as route FROM network_data
-            ) t1
-          `;
-
-          // ⚡ QUERY 2: Try enhanced query first; fall back to base if it fails
-          let routes: RouteWithDAs[] = [];
-          try {
-            const routeResult = await conn.query(ENHANCED_SQL);
-            routes = routeResult.toArray().map((row: any) => parseRow(row, true));
-            console.log(`📊 Engine -> ${routes.length} routes loaded (enhanced: coords + pillars + DA + cost fields)`);
-          } catch (enhancedErr) {
-            console.warn('⚠️ Enhanced query failed (cost fields missing from parquet?), falling back to base query:', enhancedErr);
-            try {
-              const routeResult = await conn.query(BASE_SQL);
-              routes = routeResult.toArray().map((row: any) => parseRow(row, false));
-              console.log(`📊 Engine -> ${routes.length} routes loaded (base: coords + pillars + DA)`);
-            } catch (baseErr) {
-              console.error('❌ Base route query also failed:', baseErr);
-            }
-          }
-
+          });
+          
+          console.log(`📊 Engine -> ${routes.length} routes loaded (coords + pillars + DA metadata)`);
           setBaseRoutes(routes);
           
           await conn.close();
