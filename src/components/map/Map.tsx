@@ -17,6 +17,13 @@ const GRADE_COLORS: Record<string, string> = {
   E: '#EF4444',
 };
 
+const STABILITY_COLORS: Record<string, string> = {
+  'Bedrock Essential': '#4F46E5', // Indigo
+  'Bedrock Resilient': '#10B981', // Emerald
+  'Policy Swing Corridor': '#F59E0B', // Amber
+  'Moderate Stability': '#94A3B8', // Slate
+};
+
 const METRIC_GRADIENTS: Record<MetricKey, string> = {
   composite: 'linear-gradient(to right, #F0FDFA, #CCFBF1, #99F6E4, #2DD4BF, #0D9488, #0F766E)',
   low_income_pct: 'linear-gradient(to right, #FEF2F2, #FEE2E2, #FCA5A5, #F87171, #EF4444, #B91C1C)',
@@ -235,6 +242,13 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const setSelectedDa = useRouteStore((s) => s.setSelectedDa);
   const activeMetric = useRouteStore((s) => s.activeMetric);
   
+  const mapFilterMode = useRouteStore((s) => s.mapFilterMode);
+  const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
+  const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
+  const disabledWeights = useRouteStore((s) => s.disabledWeights);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+
+
   const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
   const selectedRouteGrade = selectedRouteData?.grade || null;
   
@@ -242,6 +256,11 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   useEffect(() => {
     activeMetricRef.current = activeMetric;
   }, [activeMetric]);
+
+  const mapFilterModeRef = useRef(mapFilterMode);
+  useEffect(() => {
+    mapFilterModeRef.current = mapFilterMode;
+  }, [mapFilterMode]);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
@@ -300,6 +319,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
+            stability_class: (r as any).stability_class || 'Moderate Stability',
+            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
           },
           geometry: {
             type: 'LineString' as const,
@@ -492,7 +513,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           daPopup
             .setLngLat(e.lngLat)
             .setHTML(`
-              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:6px;font-weight:bold;border-bottom:1px solid #E2E8F0;padding-bottom:4px;">DA: ${props.DAUID}</div>
+              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:6px;font-weight:bold;border-bottom:1px solid #E2E8F0;padding-bottom:4px;">DA: ${props.DAUID} ${props.neighbourhood ? `(${props.neighbourhood})` : ''}</div>
               <div style="font:500 10px Inter,sans-serif;color:#475569;display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;">
                 <span ${getLabelStyle('composite')}>Transit Vulnerability (V_i):</span>
                 <strong ${getHighlightStyle('composite')}>${vIndex}</strong>
@@ -577,6 +598,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
+            stability_class: (r as any).stability_class || 'Moderate Stability',
+            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
           },
           geometry: {
             type: 'LineString' as const,
@@ -646,30 +669,71 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     };
   }, [selectedRoute, selectedRouteGrade]);
 
-  // Apply grade filter to the map layer when selectedGrade changes
-  // This is what makes the A/B/C/D/E legend buttons actually filter the map.
+  // Hot-swap route colors when filter mode changes or 2-pillar mode shifts
   useEffect(() => {
     if (!map.current || !routesAdded.current) return;
     try {
-      if (selectedGrade) {
-        // Show only routes matching the selected grade, dim the highlight layer
-        map.current.setFilter('routes-line', ['==', ['get', 'grade'], selectedGrade]);
-        // Keep highlight filter coherent: selected route must also match the grade
-        map.current.setFilter('routes-highlight', [
-          'all',
-          ['==', ['get', 'route_id'], selectedRoute || ''],
-          ['==', ['get', 'grade'], selectedGrade],
-        ]);
+      const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
+      const lineExpr = mapFilterMode === 'stability'
+        ? [
+            'match', ['get', stabilityKey],
+            'Bedrock Essential', STABILITY_COLORS['Bedrock Essential'],
+            'Bedrock Resilient', STABILITY_COLORS['Bedrock Resilient'],
+            'Policy Swing Corridor', STABILITY_COLORS['Policy Swing Corridor'],
+            'Moderate Stability', STABILITY_COLORS['Moderate Stability'],
+            '#94A3B8'
+          ]
+        : [
+            'match', ['get', 'grade'],
+            'A', GRADE_COLORS.A,
+            'B', GRADE_COLORS.B,
+            'C', GRADE_COLORS.C,
+            'D', GRADE_COLORS.D,
+            'E', GRADE_COLORS.E,
+            '#94A3B8'
+          ];
+      
+      map.current.setPaintProperty('routes-line', 'line-color', lineExpr);
+      map.current.setPaintProperty('routes-highlight', 'line-color', lineExpr);
+    } catch (e) {
+      console.warn("Could not update route line color paint property", e);
+    }
+  }, [mapFilterMode, is2PillarActive]);
+
+  // Apply filters (Grade or Stability) to map layers
+  useEffect(() => {
+    if (!map.current || !routesAdded.current) return;
+    try {
+      const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
+      if (mapFilterMode === 'stability') {
+        if (selectedStabilityClasses.length > 0) {
+          map.current.setFilter('routes-line', ['in', ['get', stabilityKey], ['literal', selectedStabilityClasses]]);
+          map.current.setFilter('routes-highlight', [
+            'all',
+            ['==', ['get', 'route_id'], selectedRoute || ''],
+            ['in', ['get', stabilityKey], ['literal', selectedStabilityClasses]]
+          ]);
+        } else {
+          map.current.setFilter('routes-line', null);
+          map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
+        }
       } else {
-        // Clear grade filter — show all routes
-        map.current.setFilter('routes-line', null);
-        // Restore normal route highlight filter
-        map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
+        if (selectedGrade) {
+          map.current.setFilter('routes-line', ['==', ['get', 'grade'], selectedGrade]);
+          map.current.setFilter('routes-highlight', [
+            'all',
+            ['==', ['get', 'route_id'], selectedRoute || ''],
+            ['==', ['get', 'grade'], selectedGrade],
+          ]);
+        } else {
+          map.current.setFilter('routes-line', null);
+          map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
+        }
       }
     } catch (e) {
       // Layers may not exist yet on first render
     }
-  }, [selectedGrade, selectedRoute]);
+  }, [selectedGrade, selectedRoute, mapFilterMode, selectedStabilityClasses, is2PillarActive]);
 
   // ⚡ Reactive DA zoom and highlight - triggers Mapbox flyTo when selectedDa changes
   useEffect(() => {
@@ -758,6 +822,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
               lone_parent_pct: daInfo.lone_parent_pct,
               recent_immigrant_pct: daInfo.recent_immigrant_pct,
               youth_pct: daInfo.youth_pct,
+              neighbourhood: (daInfo as any).neighbourhood || '',
             },
           };
         });
@@ -851,41 +916,88 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
       {/* Clickable Map Legend */}
       <div className="absolute bottom-6 right-6 z-10 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg flex flex-col gap-2 min-w-[140px]">
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            Grade Filter
-          </span>
-          {selectedGrade && (
-            <button
-              onClick={() => setSelectedGrade(null)}
-              className="text-[8px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-        <div className="flex flex-col gap-1">
-          {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
-            const isActive = selectedGrade === g;
-            return (
-              <button
-                key={g}
-                onClick={() => setSelectedGrade(isActive ? null : g)}
-                className={`flex items-center gap-2 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-all border text-left
-                  ${isActive 
-                    ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
-                    : 'text-slate-600 bg-white/50 border-slate-100 hover:bg-slate-50'
-                  }`}
-              >
-                <span 
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: GRADE_COLORS[g] }}
-                />
-                Grade {g}
-              </button>
-            );
-          })}
-        </div>
+        {mapFilterMode === 'grade' ? (
+          <>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                Grade Filter
+              </span>
+              {selectedGrade && (
+                <button
+                  onClick={() => setSelectedGrade(null)}
+                  className="text-[8px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
+                const isActive = selectedGrade === g;
+                return (
+                  <button
+                    key={g}
+                    onClick={() => setSelectedGrade(isActive ? null : g)}
+                    className={`flex items-center gap-2 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-all border text-left
+                      ${isActive 
+                        ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
+                        : 'text-slate-600 bg-white/50 border-slate-100 hover:bg-slate-50'
+                      }`}
+                  >
+                    <span 
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: GRADE_COLORS[g] }}
+                    />
+                    Grade {g}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                Stability Filter
+              </span>
+              {selectedStabilityClasses.length > 0 && (
+                <button
+                  onClick={() => useRouteStore.setState({ selectedStabilityClasses: [] })}
+                  className="text-[8px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              {([
+                { name: 'Bedrock Essential', key: 'Bedrock Essential' },
+                { name: 'Bedrock Resilient', key: 'Bedrock Resilient' },
+                { name: 'Policy Swing', key: 'Policy Swing Corridor' },
+                { name: 'Moderate', key: 'Moderate Stability' }
+              ] as const).map((cls) => {
+                const isActive = selectedStabilityClasses.includes(cls.key);
+                return (
+                  <button
+                    key={cls.key}
+                    onClick={() => toggleStabilityClass(cls.key)}
+                    className={`flex items-center gap-2 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-all border text-left
+                      ${isActive 
+                        ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
+                        : 'text-slate-600 bg-white/50 border-slate-100 hover:bg-slate-50'
+                      }`}
+                  >
+                    <span 
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: STABILITY_COLORS[cls.key] }}
+                    />
+                    {cls.name}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
         {selectedRoute && (

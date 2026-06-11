@@ -66,47 +66,51 @@ def main():
                 da_to_routes[da_id_str] = []
             da_to_routes[da_id_str].append(route_id)
 
-    # 3. Evaluate functional monopoly status for each route and its DAs
+    # 3. Evaluate functional monopoly status for each route and its DAs using Continuous FMI
     route_monopoly_da_counts = {}
     
     for r in routes:
         route_id = str(r['route_id'])
-        monopoly_count = 0
+        total_fmi = 0.0
         da_list = r.get('da_list', [])
         
-        # Get destinations for this route
+        # Get destinations and capacity for this route
         route_dests = set(catchments.get(route_id, []))
+        route_cap = trip_counts.get(route_id, 0.0)
         
         for da_id in da_list:
             da_id_str = str(da_id)
-            # Alternatives serving the same DA
-            alternatives = [alt_id for alt_id in da_to_routes.get(da_id_str, []) if alt_id != route_id]
             
-            # If no alternatives, it is a monopoly
-            if not alternatives:
-                monopoly_count += 1
-                continue
-                
-            # If route serves no destinations, it's not a functional monopoly
+            # If route serves no destinations, its monopoly contribution is 0
             if not route_dests:
                 continue
                 
-            # Union of alternative destinations
-            alt_dests = set()
-            for alt_id in alternatives:
-                alt_dests.update(catchments.get(alt_id, []))
-                
-            # Intersection (shared destinations)
-            shared_dests = route_dests.intersection(alt_dests)
+            # Alternatives serving the same DA
+            alternatives = [alt_id for alt_id in da_to_routes.get(da_id_str, []) if alt_id != route_id]
             
-            # Functional Redundancy ratio
-            fr_ratio = len(shared_dests) / len(route_dests)
-            
-            # If redundancy is < 20%, it counts as a Functional Monopoly
-            if fr_ratio < 0.20:
-                monopoly_count += 1
+            # If no alternatives, it is a pure monopoly for this DA
+            if not alternatives:
+                total_fmi += 1.0
+                continue
                 
-        route_monopoly_da_counts[route_id] = monopoly_count
+            # Calculate FMI by iterating through destinations of route r
+            da_fmi_sum = 0.0
+            for dest in route_dests:
+                # Find which alternatives also serve this destination
+                dest_alts = [alt_id for alt_id in alternatives if dest in catchments.get(alt_id, [])]
+                
+                # Capacity of alternatives serving this destination
+                alt_cap_sum = sum(trip_counts.get(alt_id, 0.0) for alt_id in dest_alts)
+                
+                # FMI for this destination
+                dest_fmi = route_cap / (route_cap + alt_cap_sum) if (route_cap + alt_cap_sum) > 0 else 0.0
+                da_fmi_sum += dest_fmi
+                
+            # Average FMI across all destinations of this route
+            da_fmi = da_fmi_sum / len(route_dests)
+            total_fmi += da_fmi
+            
+        route_monopoly_da_counts[route_id] = total_fmi
 
     # 4. Update the scores in both golden records files
     for path in golden_json_paths:

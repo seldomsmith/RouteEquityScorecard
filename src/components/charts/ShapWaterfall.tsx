@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { ScoredRoute, NetworkStats, ShapContribution } from '@/hooks/useReactiveScoring';
+import { motion } from 'framer-motion';
+
 
 interface WaterfallProps {
   route: ScoredRoute | null;
@@ -218,10 +220,13 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
 
                 {/* Connector line from previous bar's end to this bar's start */}
                 {i > 0 && (
-                  <line
-                    x1={LABEL_W + toPixel(bar.startX)}
+                  <motion.line
+                    animate={{
+                      x1: LABEL_W + toPixel(bar.startX),
+                      x2: LABEL_W + toPixel(bar.startX),
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     y1={-ROW_HEIGHT + BAR_HEIGHT}
-                    x2={LABEL_W + toPixel(bar.startX)}
                     y2={0}
                     stroke="#CBD5E1"
                     strokeWidth={1}
@@ -230,20 +235,23 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                 )}
 
                 {/* Bar */}
-                <rect
-                  x={x1}
+                <motion.rect
+                  animate={{
+                    x: x1,
+                    width: barW,
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={0}
-                  width={barW}
                   height={BAR_HEIGHT}
                   rx={4}
                   fill={bar.color}
                   opacity={0.85}
-                  className="transition-all duration-300"
                 />
 
                 {/* Value label */}
-                <text
-                  x={LABEL_W + CHART_W + 6}
+                <motion.text
+                  animate={{ x: LABEL_W + CHART_W + 6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontFamily="ui-monospace, monospace"
@@ -251,7 +259,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill={isPositive ? '#059669' : '#E11D48'}
                 >
                   {isPositive ? '+' : ''}{bar.value.toFixed(1)}
-                </text>
+                </motion.text>
               </g>
             );
           })}
@@ -265,17 +273,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                 <text x={LABEL_W - 4} y={BAR_HEIGHT / 2 + 3} textAnchor="end" fontSize={9} fontWeight={700} fill="#475569">
                   RAW
                 </text>
-                <rect
-                  x={LABEL_W + toPixel(Math.min(baseline, rawComposite))}
+                <motion.rect
+                  animate={{
+                    x: LABEL_W + toPixel(Math.min(baseline, rawComposite)),
+                    width: Math.max(Math.abs(toPixel(rawComposite) - toPixel(baseline)), 2),
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={0}
-                  width={Math.max(Math.abs(toPixel(rawComposite) - toPixel(baseline)), 2)}
                   height={BAR_HEIGHT}
                   rx={4}
                   fill="url(#tealGradient)"
                   opacity={0.5}
                 />
-                <text
-                  x={LABEL_W + CHART_W + 6}
+                <motion.text
+                  animate={{ x: LABEL_W + CHART_W + 6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontFamily="ui-monospace, monospace"
@@ -283,7 +295,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="#334155"
                 >
                   {rawComposite.toFixed(1)}
-                </text>
+                </motion.text>
               </g>
             );
           })()}
@@ -306,17 +318,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                 <text x={LABEL_W - 4} y={BAR_HEIGHT / 2 + 3} textAnchor="end" fontSize={9} fontWeight={700} fill="#0F766E">
                   FINAL
                 </text>
-                <rect
-                  x={LABEL_W + toPixel(Math.min(minVal, route.composite_score))}
+                <motion.rect
+                  animate={{
+                    x: LABEL_W + toPixel(Math.min(minVal, route.composite_score)),
+                    width: Math.max(toPixel(route.composite_score) - toPixel(minVal), 2),
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={0}
-                  width={Math.max(toPixel(route.composite_score) - toPixel(minVal), 2)}
                   height={BAR_HEIGHT}
                   rx={4}
                   fill="url(#tealGradient)"
                   opacity={0.9}
                 />
-                <text
-                  x={LABEL_W + CHART_W + 6}
+                <motion.text
+                  animate={{ x: LABEL_W + CHART_W + 6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={11}
                   fontFamily="ui-monospace, monospace"
@@ -324,7 +340,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="#0F766E"
                 >
                   {route.composite_score.toFixed(1)}
-                </text>
+                </motion.text>
               </g>
             );
           })()}

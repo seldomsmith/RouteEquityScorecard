@@ -7,6 +7,10 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
 1. **SHAP Waterfall Micro-Animations** [LOW]
    - Integrate Framer Motion spring physics to animate the SHAP waterfall bar adjustments fluidly when weights are dragged.
+2. **Stability Focus Component Shift** [HIGH]
+   - When switching the segmented control to Stability Focus, swap the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
+3. **2-Pillar Sensitivity Integration** [CRITICAL]
+   - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
 
 ### Phase 4.5: Simulation & Data Pipeline
 2. **Service Impact Simulation (Draft Mode)** [HIGH]
@@ -16,14 +20,29 @@ Refining analytical modeling, service impact simulations, and advanced research 
 4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
-### Phase 5: PhD-Level Research Reporting
-5. **Draft Route Equity Research Report** [HIGH]
-   - Author a comprehensive, high-fidelity report detailing transit equity scores, demographic correlations, and policy recommendations.
-
 ---
 
 ## Review & Completed Work
 ### Completed:
+- **Demographic Vulnerability Sensitivity Analysis (Phase 19)**:
+  - Vectorized DA-level sensitivity analysis (88,913 weight configurations) in Python (`run_da_sensitivity_analysis.py`) and exported to `docs/da_vulnerability_sensitivity.csv`.
+  - Mapped all 1,764 DAs to Edmonton neighbourhoods and merged population metrics (`map_da_to_neighbourhoods.py`), outputting `docs/da_vulnerability_sensitivity_mapped.csv`.
+  - Aggregated sensitivity results (mean score and standard deviation volatility) at the neighbourhood level (both simple and population-weighted averages) to `docs/neighbourhood_vulnerability_sensitivity.csv`.
+- **Continuous Capacity-Weighted Functional Monopoly Index (Phase 18)**:
+  - Transitioned the Network Monopoly scoring logic from a binary 20% destination-overlap threshold to a continuous Capacity-Weighted Functional Monopoly Index ($FMI_{i,r}$).
+  - Updated stops/destinations overlap loop in `calculate_functional_monopoly.py` to weight each destination by the route's trip count capacity share relative to all overlapping alternative routes.
+  - Re-run demographic Z-scoring, PCA vulnerability, scoring refinement pipelines, and updated JSON/Parquet assets.
+  - Re-run 4-pillar and 2-pillar Monte Carlo sensitivity simulations to update stability classifications and policy reports.
+  - Documented math formulations in `docs/GRADING_METHODOLOGY.md`.
+- **Draft Route Equity Research Report (Phase 5)**:
+  - Authored a comprehensive, publication-grade academic and policy report detailing our methodology, transit equity scores, demographic correlations, 2-pillar vs 4-pillar sensitivity findings, and strategic transit planning recommendations.
+  - Included an in-depth breakdown of the Opportunity Score (Pillar 4) weight scale from 1.0 (Schools) to 5.0 (Hospitals).
+- **Meta Resiliency Map Layer Toggle (Phase 16)**:
+  - Added filter mode states (`mapFilterMode`, `selectedStabilityClasses`) and actions to Zustand state store.
+  - Implemented Segmented Toggle Control (Grade Focus vs. Stability Focus) in Sidebar.
+  - Implemented dynamic Stability Isolator checkboxes in Sidebar with active route counts.
+  - Updated Map route line color expressions and tooltips to dynamically swap based on active filter mode (Color-coded by Grade or Stability Class).
+  - Implemented reactive Map legend that switches dynamically between Grade colors and Stability colors (Purple, Green, Amber, Gray).
 - **Functional Monopoly Implementation (Phase 15)**:
   - Developed `scripts/build_destination_catchments.py` to project route stops and POIs to UTM Zone 12N coordinates, constructing destination catchments using a fast scipy `KDTree` within 400m.
   - Developed `scripts/calculate_functional_monopoly.py` to calculate the Functional Redundancy ratio ($FR_{i,r}$) of route-DA pairs, flagging functional monopolies where destination overlap with alternative routes is $<20\%$.

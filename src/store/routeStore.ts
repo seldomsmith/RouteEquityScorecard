@@ -33,6 +33,12 @@ interface RouteState {
   toggleRemovedRoute: (routeId: string) => void;
   resetSimulation: () => void;
   disabledWeights: (keyof RouteState['weights'])[];
+  
+  // Meta Resiliency Filter Mode State
+  mapFilterMode: 'grade' | 'stability';
+  selectedStabilityClasses: string[];
+  setMapFilterMode: (mode: 'grade' | 'stability') => void;
+  toggleStabilityClass: (stabilityClass: string) => void;
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
@@ -217,6 +223,14 @@ export const useRouteStore = create<RouteState>((set) => ({
       }
     }
 
+    // Special case: If only vulnerability and opportunity are enabled (resilience and monopoly are disabled)
+    if (newDisabled.includes('resilience') && newDisabled.includes('monopoly')) {
+      newWeights.vulnerability = 30;
+      newWeights.opportunity = 70;
+      newWeights.resilience = 0;
+      newWeights.monopoly = 0;
+    }
+
     return {
       disabledWeights: newDisabled,
       weights: newWeights
@@ -238,5 +252,17 @@ export const useRouteStore = create<RouteState>((set) => ({
     };
   }),
   
-  resetSimulation: () => set({ removedRoutes: [] })
+  resetSimulation: () => set({ removedRoutes: [] }),
+  
+  mapFilterMode: 'grade',
+  selectedStabilityClasses: [],
+  setMapFilterMode: (mode) => set({ mapFilterMode: mode, selectedGrade: null, selectedStabilityClasses: [] }),
+  toggleStabilityClass: (stabilityClass) => set((state) => {
+    const isSelected = state.selectedStabilityClasses.includes(stabilityClass);
+    return {
+      selectedStabilityClasses: isSelected
+        ? state.selectedStabilityClasses.filter(c => c !== stabilityClass)
+        : [...state.selectedStabilityClasses, stabilityClass]
+    };
+  })
 }));

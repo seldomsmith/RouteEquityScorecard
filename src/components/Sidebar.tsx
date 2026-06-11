@@ -23,6 +23,13 @@ const GRADE_DOT: Record<string, string> = {
   E: 'bg-red-500',
 };
 
+const STABILITY_DOT: Record<string, string> = {
+  'Bedrock Essential': 'bg-indigo-600',
+  'Bedrock Resilient': 'bg-emerald-600',
+  'Policy Swing Corridor': 'bg-amber-500',
+  'Moderate Stability': 'bg-slate-400',
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
@@ -33,8 +40,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const selectedGrade = useRouteStore((s) => s.selectedGrade);
   const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
+  
+  const mapFilterMode = useRouteStore((s) => s.mapFilterMode);
+  const setMapFilterMode = useRouteStore((s) => s.setMapFilterMode);
+  const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
+  const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+
+  const getStabilityClass = React.useCallback((r: any) => {
+    return is2PillarActive
+      ? (r.stability_class_2_pillar || 'Moderate Stability')
+      : (r.stability_class || 'Moderate Stability');
+  }, [is2PillarActive]);
+
 
   const gradeCounts = React.useMemo(() => {
     const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
@@ -46,10 +66,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
     return counts;
   }, [routes]);
 
+  const stabilityCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {
+      'Bedrock Essential': 0,
+      'Bedrock Resilient': 0,
+      'Policy Swing Corridor': 0,
+      'Moderate Stability': 0,
+    };
+    routes.forEach((r) => {
+      const cls = getStabilityClass(r);
+      if (counts[cls] !== undefined) {
+        counts[cls]++;
+      }
+    });
+    return counts;
+  }, [routes, getStabilityClass]);
+
   const displayedRoutes = React.useMemo(() => {
+    if (mapFilterMode === 'stability') {
+      if (selectedStabilityClasses.length === 0) return routes;
+      return routes.filter((r) => selectedStabilityClasses.includes(getStabilityClass(r)));
+    }
     if (!selectedGrade) return routes;
     return routes.filter((r) => r.grade === selectedGrade);
-  }, [routes, selectedGrade]);
+  }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -154,54 +194,121 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         </select>
       </div>
 
-      {/* Grade Isolator */}
+      {/* Filter Mode segmented toggle */}
+      <div className="p-4 border-b border-slate-100 flex gap-2">
+        <button
+          onClick={() => setMapFilterMode('grade')}
+          className={`flex-1 py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all duration-150 ${
+            mapFilterMode === 'grade'
+              ? 'bg-slate-900 border-slate-900 text-white shadow-sm font-black'
+              : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Grade Focus
+        </button>
+        <button
+          onClick={() => setMapFilterMode('stability')}
+          className={`flex-1 py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all duration-150 ${
+            mapFilterMode === 'stability'
+              ? 'bg-slate-900 border-slate-900 text-white shadow-sm font-black'
+              : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Stability Focus
+        </button>
+      </div>
+
+      {/* Dynamic Isolator (Grade or Stability Selector) */}
       <div className="p-4 border-b border-slate-100">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Grade Isolator
-          </h2>
-          {selectedGrade && (
-            <button
-              onClick={() => setSelectedGrade(null)}
-              className="text-[9px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-5 gap-1.5">
-          {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
-            const isActive = selectedGrade === g;
-            const count = gradeCounts[g] || 0;
-            
-            // Premium custom badge styling based on active/inactive states
-            const styleMap: Record<string, string> = {
-              A: isActive ? 'bg-emerald-500 text-white shadow-sm border-emerald-500 font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200/50',
-              B: isActive ? 'bg-blue-500 text-white shadow-sm border-blue-500 font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200/50',
-              C: isActive ? 'bg-amber-500 text-white shadow-sm border-amber-500 font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200/50',
-              D: isActive ? 'bg-orange-500 text-white shadow-sm border-orange-500 font-bold' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200/50',
-              E: isActive ? 'bg-red-500 text-white shadow-sm border-red-500 font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200/50',
-            };
-            
-            return (
-              <button
-                key={g}
-                onClick={() => setSelectedGrade(isActive ? null : g)}
-                className={`py-1 px-1 rounded-lg border text-center transition-all duration-150 flex flex-col items-center justify-center ${styleMap[g]}`}
-              >
-                <span className="text-xs font-black leading-none">{g}</span>
-                <span className="text-[8px] font-mono font-semibold opacity-80 mt-0.5 leading-none">{count}</span>
-              </button>
-            );
-          })}
-        </div>
+        {mapFilterMode === 'grade' ? (
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Grade Isolator
+              </h2>
+              {selectedGrade && (
+                <button
+                  onClick={() => setSelectedGrade(null)}
+                  className="text-[9px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
+              {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
+                const isActive = selectedGrade === g;
+                const count = gradeCounts[g] || 0;
+                
+                const styleMap: Record<string, string> = {
+                  A: isActive ? 'bg-emerald-500 text-white shadow-sm border-emerald-500 font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200/50',
+                  B: isActive ? 'bg-blue-500 text-white shadow-sm border-blue-500 font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200/50',
+                  C: isActive ? 'bg-amber-500 text-white shadow-sm border-amber-500 font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200/50',
+                  D: isActive ? 'bg-orange-500 text-white shadow-sm border-orange-500 font-bold' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200/50',
+                  E: isActive ? 'bg-red-500 text-white shadow-sm border-red-500 font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200/50',
+                };
+                
+                return (
+                  <button
+                    key={g}
+                    onClick={() => setSelectedGrade(isActive ? null : g)}
+                    className={`py-1 px-1 rounded-lg border text-center transition-all duration-150 flex flex-col items-center justify-center ${styleMap[g]}`}
+                  >
+                    <span className="text-xs font-black leading-none">{g}</span>
+                    <span className="text-[8px] font-mono font-semibold opacity-80 mt-0.5 leading-none">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Stability Isolator
+              </h2>
+              {selectedStabilityClasses.length > 0 && (
+                <button
+                  onClick={() => useRouteStore.setState({ selectedStabilityClasses: [] })}
+                  className="text-[9px] font-semibold text-brand-rose-500 hover:text-brand-rose-600 uppercase tracking-wider"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {([
+                { name: 'Bedrock Essential', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
+                { name: 'Bedrock Resilient', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
+                { name: 'Policy Swing Corridor', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
+                { name: 'Moderate Stability', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
+              ] as const).map((cls) => {
+                const isActive = selectedStabilityClasses.includes(cls.name);
+                const count = stabilityCounts[cls.name] || 0;
+                
+                return (
+                  <button
+                    key={cls.name}
+                    onClick={() => toggleStabilityClass(cls.name)}
+                    className={`py-1.5 px-2 rounded-lg border text-center transition-all duration-150 flex flex-col items-center justify-center leading-tight ${
+                      isActive ? cls.color : cls.labelColor
+                    }`}
+                  >
+                    <span className="text-[10px] font-black">{cls.name.replace(' Corridor', '')}</span>
+                    <span className="text-[8px] font-mono font-semibold opacity-85 mt-0.5 leading-none">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Route List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className="p-4">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Network ({displayedRoutes.length} {selectedGrade ? `Grade ${selectedGrade}` : ''} routes)
+            Network ({displayedRoutes.length} {mapFilterMode === 'stability' ? 'stability-filtered' : (selectedGrade ? `Grade ${selectedGrade}` : '')} routes)
           </h2>
           <div className="space-y-1">
             {displayedRoutes
@@ -218,7 +325,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                       : 'hover:bg-slate-50 border border-transparent'
                     }`}
                 >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${GRADE_DOT[r.grade] || 'bg-slate-300'}`} />
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    mapFilterMode === 'stability'
+                      ? (STABILITY_DOT[getStabilityClass(r)] || 'bg-slate-300')
+                      : (GRADE_DOT[r.grade] || 'bg-slate-300')
+                  }`} />
                   <span className="font-mono font-bold text-slate-700 w-8">{r.short_name}</span>
                   <span className="text-slate-500 truncate flex-1">{r.name}</span>
                   <span className="font-mono font-bold text-slate-400 text-[10px]">{r.grade}</span>

@@ -147,6 +147,23 @@ def main():
     df_summary.to_csv(summary_csv_path, index=False)
     print(f"  Summary saved to {summary_csv_path} ({len(df_summary)} rows).")
     
+    # Save stability_class back to golden records
+    print("  Saving stability_class back to golden records...")
+    stability_lookup = {s['route_id']: s['stability_class'] for s in summaries}
+    golden_json_paths = [
+        'public/data/golden_route_record.json',
+        'data/golden_route_record.json'
+    ]
+    for g_path in golden_json_paths:
+        if os.path.exists(g_path):
+            with open(g_path, 'r', encoding='utf-8') as f:
+                g_data = json.load(f)
+            for r in g_data['routes']:
+                r['stability_class'] = stability_lookup.get(r['route_id'], 'Moderate Stability')
+            with open(g_path, 'w', encoding='utf-8') as f:
+                json.dump(g_data, f)
+            print(f"    Updated {g_path}")
+    
     # Export formatted sensitivity scores to docs/sensitivity_scores.csv
     df_export = pd.DataFrame()
     df_export['Route ID'] = df_summary['route_id']
