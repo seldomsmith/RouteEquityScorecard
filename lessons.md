@@ -29,4 +29,5 @@ Whenever the USER requests an update to GitHub (e.g., "Update Github" or "Sync t
 4. **Push Execution**: Execute a push to the active branch (`git push origin <branch_name>`).
 5. **Confirmation Summary**: Print the commit hash, modified files, and push confirmation in a concise markdown table or list for the USER.
 
-
+### Demographic Weight Calibration & Equal Weighting
+- **Equal-Weight Policy Baseline**: Using equal weights (`1.0` for all indicators) provides a policy-neutral, simple, and transparent baseline for demographic vulnerability scoring. This removes administrative or political bias from the index's default settings while retaining a high correlation (0.98) with complex empirical weighting schemes (like PCA-derived weights), making it highly defensible for public transit policy.
