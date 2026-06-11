@@ -80,7 +80,10 @@ export const CommandCentre = () => {
               route.coords,
               route.da_metadata,
               COALESCE(route.stability_class, 'Moderate Stability') as stability_class,
-              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar
+              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar,
+              CAST(route.trip_count AS INTEGER) as trip_count,
+              COALESCE(route.category, 'bus_regular') as category,
+              CAST(route.route_length_km AS DOUBLE) as route_length_km
             FROM (
 
               SELECT UNNEST(routes) as route FROM network_data
@@ -142,6 +145,9 @@ export const CommandCentre = () => {
               da_data,
               stability_class: String(row.stability_class || 'Moderate Stability'),
               stability_class_2_pillar: String(row.stability_class_2_pillar || 'Moderate Stability'),
+              trip_count: Number(row.trip_count || 0),
+              category: String(row.category || 'bus_regular'),
+              route_length_km: Number(row.route_length_km || 0),
             };
           });
           

@@ -28,6 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data', 'EDM')
 if not os.path.exists(DATA_DIR):
     DATA_DIR = os.path.join(BASE_DIR, 'ted-data-main', 'data', 'EDM')
+if not os.path.exists(DATA_DIR):
+    DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'YEG Transit Equity Dashboard', 'YEGTransitEquityModel3.0-2.26.26-main', 'YEGTransitEquityModel3.0-2.26.26-main', 'data', 'EDM'))
 
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
 RAW_DIR = os.path.join(DATA_DIR, 'raw')
@@ -205,6 +207,10 @@ def save_results(df, route_gdf, route_da_map):
         geom = route_gdf_4326[route_gdf_4326['route_id'] == rid].iloc[0]
         da_list = route_da_map[route_da_map['route_id'] == rid]['DAUID'].tolist()
         
+        # Get UTM geometry to calculate route length in kilometres
+        utm_geom = route_gdf[route_gdf['route_id'] == rid].iloc[0].geometry
+        length_km = round(utm_geom.length / 1000.0, 2)
+        
         results.append({
             'route_id': str(rid), 'name': geom['name'], 'short_name': geom['short_name'],
             'grade': row['grade'], 'composite_score': float(row['composite_score']),
@@ -217,7 +223,10 @@ def save_results(df, route_gdf, route_da_map):
             'das_served': int(row['das_served']),
             'monopoly_das': int(row['monopoly_das']),
             'da_list': da_list,
-            'coords': [[c[1], c[0]] for c in geom.geometry.coords]
+            'coords': [[c[1], c[0]] for c in geom.geometry.coords],
+            'trip_count': int(geom.get('trip_count', 0)),
+            'category': str(geom.get('category', 'bus_regular')),
+            'route_length_km': length_km
         })
     with open(OUTPUT_PATH, 'w') as f:
         json.dump(results, f, indent=2)
