@@ -37,6 +37,8 @@ def main():
     with open(catchments_path, 'r', encoding='utf-8') as f:
         catchments = json.load(f)
         
+    catchment_sets = {str(k): set(v) for k, v in catchments.items()}
+        
     with open(transit_routes_path, 'r', encoding='utf-8') as f:
         transit_routes_raw = json.load(f)
         
@@ -97,7 +99,7 @@ def main():
             da_fmi_sum = 0.0
             for dest in route_dests:
                 # Find which alternatives also serve this destination
-                dest_alts = [alt_id for alt_id in alternatives if dest in catchments.get(alt_id, [])]
+                dest_alts = [alt_id for alt_id in alternatives if dest in catchment_sets.get(alt_id, set())]
                 
                 # Capacity of alternatives serving this destination
                 alt_cap_sum = sum(trip_counts.get(alt_id, 0.0) for alt_id in dest_alts)
