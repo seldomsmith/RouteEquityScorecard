@@ -11,6 +11,8 @@ import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMa
 import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
+import { RouteStabilityDistribution } from '@/components/charts/RouteStabilityDistribution';
+
 
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
@@ -19,6 +21,8 @@ export const CommandCentre = () => {
   const { db, isInitializing, error } = useDuckDB();
   const weights = useRouteStore((state) => state.weights);
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
+  const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
+
 
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
@@ -75,8 +79,10 @@ export const CommandCentre = () => {
               CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
               route.coords,
               route.da_metadata,
-              COALESCE(route.stability_class, 'Moderate Stability') as stability_class
+              COALESCE(route.stability_class, 'Moderate Stability') as stability_class,
+              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar
             FROM (
+
               SELECT UNNEST(routes) as route FROM network_data
             ) t1
           `);
@@ -114,6 +120,7 @@ export const CommandCentre = () => {
                   recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
                   youth_pct: Number(d.youth_pct || 0),
                   vulnerability_index: Number(d.vulnerability_index !== undefined ? d.vulnerability_index : (d.vulnerability !== undefined ? d.vulnerability : 0)),
+                  neighbourhood: String(d.neighbourhood || ''),
                 }));
               }
             } catch (e) {
@@ -134,6 +141,7 @@ export const CommandCentre = () => {
               coords,
               da_data,
               stability_class: String(row.stability_class || 'Moderate Stability'),
+              stability_class_2_pillar: String(row.stability_class_2_pillar || 'Moderate Stability'),
             };
           });
           
@@ -186,11 +194,18 @@ export const CommandCentre = () => {
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Population-Equity Quadrant</span>
+              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">
+                {mapFilterMode === 'stability' ? 'Route Stability Distribution' : 'Population-Equity Quadrant'}
+              </span>
               <div className="flex-1 min-h-0">
-                <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
+                {mapFilterMode === 'stability' ? (
+                  <RouteStabilityDistribution data={filteredRoutes} />
+                ) : (
+                  <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
+                )}
               </div>
           </div>
+
         </div>
  
         {/* Equity Dissemination Matrix — Full Width */}

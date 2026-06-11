@@ -20,14 +20,23 @@ Refining analytical modeling, service impact simulations, and advanced research 
 4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
-### Phase 5: PhD-Level Research Reporting
-5. **Draft Route Equity Research Report** [HIGH]
-   - Author a comprehensive, high-fidelity report detailing transit equity scores, demographic correlations, and policy recommendations.
-
 ---
 
 ## Review & Completed Work
 ### Completed:
+- **Demographic Vulnerability Sensitivity Analysis (Phase 19)**:
+  - Vectorized DA-level sensitivity analysis (88,913 weight configurations) in Python (`run_da_sensitivity_analysis.py`) and exported to `docs/da_vulnerability_sensitivity.csv`.
+  - Mapped all 1,764 DAs to Edmonton neighbourhoods and merged population metrics (`map_da_to_neighbourhoods.py`), outputting `docs/da_vulnerability_sensitivity_mapped.csv`.
+  - Aggregated sensitivity results (mean score and standard deviation volatility) at the neighbourhood level (both simple and population-weighted averages) to `docs/neighbourhood_vulnerability_sensitivity.csv`.
+- **Continuous Capacity-Weighted Functional Monopoly Index (Phase 18)**:
+  - Transitioned the Network Monopoly scoring logic from a binary 20% destination-overlap threshold to a continuous Capacity-Weighted Functional Monopoly Index ($FMI_{i,r}$).
+  - Updated stops/destinations overlap loop in `calculate_functional_monopoly.py` to weight each destination by the route's trip count capacity share relative to all overlapping alternative routes.
+  - Re-run demographic Z-scoring, PCA vulnerability, scoring refinement pipelines, and updated JSON/Parquet assets.
+  - Re-run 4-pillar and 2-pillar Monte Carlo sensitivity simulations to update stability classifications and policy reports.
+  - Documented math formulations in `docs/GRADING_METHODOLOGY.md`.
+- **Draft Route Equity Research Report (Phase 5)**:
+  - Authored a comprehensive, publication-grade academic and policy report detailing our methodology, transit equity scores, demographic correlations, 2-pillar vs 4-pillar sensitivity findings, and strategic transit planning recommendations.
+  - Included an in-depth breakdown of the Opportunity Score (Pillar 4) weight scale from 1.0 (Schools) to 5.0 (Hospitals).
 - **Meta Resiliency Map Layer Toggle (Phase 16)**:
   - Added filter mode states (`mapFilterMode`, `selectedStabilityClasses`) and actions to Zustand state store.
   - Implemented Segmented Toggle Control (Grade Focus vs. Stability Focus) in Sidebar.

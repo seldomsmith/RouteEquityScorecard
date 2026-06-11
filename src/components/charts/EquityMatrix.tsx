@@ -14,6 +14,7 @@ export interface DaInfo {
   recent_immigrant_pct?: number;
   youth_pct?: number;
   vulnerability_index?: number;
+  neighbourhood?: string;
 }
 
 export interface RouteWithDAs extends RoutePoint {
@@ -228,6 +229,9 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
             }}
           >
             <p className="font-bold text-slate-800 text-[10px]">{hoveredDa.routeName}</p>
+            {hoveredDa.da.neighbourhood && (
+              <p className="font-semibold text-slate-500 text-[9px] uppercase tracking-wide">{hoveredDa.da.neighbourhood}</p>
+            )}
             <div className="grid grid-cols-2 gap-x-3 mt-1 text-slate-600">
               <span>DA ID</span>
               <span className="font-mono text-right">{hoveredDa.da.id}</span>

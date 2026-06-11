@@ -24,10 +24,10 @@ Measures the reliability of service during off-peak windows critical for shift w
 
 ### Pillar 3: Network Monopoly (Default Weight: 25%)
 
-Identifies corridors where a route is the sole provider of transit access.
+Identifies corridors where a route is the primary or sole provider of transit access to its destinations.
 
-- **Formula**: `Count(Monopoly_DAs) × Log(Daily_Trips)`
-- **Logic**: Removing a monopoly route creates an immediate transit desert. Weighted by frequency to distinguish vital high-frequency lifelines from infrequent regional connectors.
+- **Formula**: `Sum(FMI_ir) × Log1p(Daily_Trips)` where $FMI_{i,r}$ is the Capacity-Weighted Functional Monopoly Index for route $r$ in DA $i$.
+- **Logic**: Measures destination-level dependency. Instead of a binary cutoff, it calculates the route's capacity share for each destination it serves compared to alternative routes serving the same DA. Defaulting to 0 if a route serves zero POIs. Weighted by frequency log1p to distinguish vital high-frequency lifelines from infrequent connectors.
 
 ### Pillar 4: Critical Opportunity Linkage (Default Weight: 15%)
 
@@ -157,12 +157,12 @@ Both scripts are idempotent and update the JSON and Apache Parquet data files. S
 
 ## 6. Known Limitations & Future Refinements
 
-The current scoring uses pre-computed pillar values from the original analytical engine. The following refinements are planned for future iterations when raw data access is restored:
+The current scoring uses pre-computed pillar values from the original analytical engine. The following refinements are planned for future iterations:
 
 | Refinement | Current | Proposed |
 |-----------|---------|----------|
 | P2 Off Peak Service | Simple ratio (night/peak) | Service Retention Delta with `tanh()` saturation function |
-| P3 Monopoly | Count × Log(trips) | Redundancy Index: `1 - (Alt_Capacity / Route_Capacity)` |
+| P3 Monopoly | Capacity-Weighted FMI | Fully implemented in Phase 18 |
 | P4 Opportunity | Raw POI counts | Access Density: `Σ(POI × Weight) / Route_Length × Log(Ridership + 1)` |
 
 These require access to raw GTFS trip frequencies, network overlap analysis, route lengths, and ridership data.

@@ -245,6 +245,9 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const mapFilterMode = useRouteStore((s) => s.mapFilterMode);
   const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
+  const disabledWeights = useRouteStore((s) => s.disabledWeights);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+
 
   const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
   const selectedRouteGrade = selectedRouteData?.grade || null;
@@ -317,6 +320,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             grade: r.grade,
             composite_score: r.composite_score,
             stability_class: (r as any).stability_class || 'Moderate Stability',
+            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
           },
           geometry: {
             type: 'LineString' as const,
@@ -509,7 +513,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           daPopup
             .setLngLat(e.lngLat)
             .setHTML(`
-              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:6px;font-weight:bold;border-bottom:1px solid #E2E8F0;padding-bottom:4px;">DA: ${props.DAUID}</div>
+              <div style="font:600 12px Inter,sans-serif;color:#1E293B;margin-bottom:6px;font-weight:bold;border-bottom:1px solid #E2E8F0;padding-bottom:4px;">DA: ${props.DAUID} ${props.neighbourhood ? `(${props.neighbourhood})` : ''}</div>
               <div style="font:500 10px Inter,sans-serif;color:#475569;display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;">
                 <span ${getLabelStyle('composite')}>Transit Vulnerability (V_i):</span>
                 <strong ${getHighlightStyle('composite')}>${vIndex}</strong>
@@ -595,6 +599,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             grade: r.grade,
             composite_score: r.composite_score,
             stability_class: (r as any).stability_class || 'Moderate Stability',
+            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
           },
           geometry: {
             type: 'LineString' as const,
@@ -664,13 +669,14 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     };
   }, [selectedRoute, selectedRouteGrade]);
 
-  // Hot-swap route colors when filter mode changes
+  // Hot-swap route colors when filter mode changes or 2-pillar mode shifts
   useEffect(() => {
     if (!map.current || !routesAdded.current) return;
     try {
+      const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
       const lineExpr = mapFilterMode === 'stability'
         ? [
-            'match', ['get', 'stability_class'],
+            'match', ['get', stabilityKey],
             'Bedrock Essential', STABILITY_COLORS['Bedrock Essential'],
             'Bedrock Resilient', STABILITY_COLORS['Bedrock Resilient'],
             'Policy Swing Corridor', STABILITY_COLORS['Policy Swing Corridor'],
@@ -692,19 +698,20 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     } catch (e) {
       console.warn("Could not update route line color paint property", e);
     }
-  }, [mapFilterMode]);
+  }, [mapFilterMode, is2PillarActive]);
 
   // Apply filters (Grade or Stability) to map layers
   useEffect(() => {
     if (!map.current || !routesAdded.current) return;
     try {
+      const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
       if (mapFilterMode === 'stability') {
         if (selectedStabilityClasses.length > 0) {
-          map.current.setFilter('routes-line', ['in', ['get', 'stability_class'], ['literal', selectedStabilityClasses]]);
+          map.current.setFilter('routes-line', ['in', ['get', stabilityKey], ['literal', selectedStabilityClasses]]);
           map.current.setFilter('routes-highlight', [
             'all',
             ['==', ['get', 'route_id'], selectedRoute || ''],
-            ['in', ['get', 'stability_class'], ['literal', selectedStabilityClasses]]
+            ['in', ['get', stabilityKey], ['literal', selectedStabilityClasses]]
           ]);
         } else {
           map.current.setFilter('routes-line', null);
@@ -726,7 +733,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     } catch (e) {
       // Layers may not exist yet on first render
     }
-  }, [selectedGrade, selectedRoute, mapFilterMode, selectedStabilityClasses]);
+  }, [selectedGrade, selectedRoute, mapFilterMode, selectedStabilityClasses, is2PillarActive]);
 
   // ⚡ Reactive DA zoom and highlight - triggers Mapbox flyTo when selectedDa changes
   useEffect(() => {
@@ -815,6 +822,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
               lone_parent_pct: daInfo.lone_parent_pct,
               recent_immigrant_pct: daInfo.recent_immigrant_pct,
               youth_pct: daInfo.youth_pct,
+              neighbourhood: (daInfo as any).neighbourhood || '',
             },
           };
         });

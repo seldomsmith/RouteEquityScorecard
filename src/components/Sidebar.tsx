@@ -47,6 +47,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+
+  const getStabilityClass = React.useCallback((r: any) => {
+    return is2PillarActive
+      ? (r.stability_class_2_pillar || 'Moderate Stability')
+      : (r.stability_class || 'Moderate Stability');
+  }, [is2PillarActive]);
+
 
   const gradeCounts = React.useMemo(() => {
     const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
@@ -66,22 +74,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
       'Moderate Stability': 0,
     };
     routes.forEach((r) => {
-      const cls = (r as any).stability_class || 'Moderate Stability';
+      const cls = getStabilityClass(r);
       if (counts[cls] !== undefined) {
         counts[cls]++;
       }
     });
     return counts;
-  }, [routes]);
+  }, [routes, getStabilityClass]);
 
   const displayedRoutes = React.useMemo(() => {
     if (mapFilterMode === 'stability') {
       if (selectedStabilityClasses.length === 0) return routes;
-      return routes.filter((r) => selectedStabilityClasses.includes((r as any).stability_class || 'Moderate Stability'));
+      return routes.filter((r) => selectedStabilityClasses.includes(getStabilityClass(r)));
     }
     if (!selectedGrade) return routes;
     return routes.filter((r) => r.grade === selectedGrade);
-  }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses]);
+  }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -319,7 +327,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                 >
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     mapFilterMode === 'stability'
-                      ? (STABILITY_DOT[(r as any).stability_class || 'Moderate Stability'] || 'bg-slate-300')
+                      ? (STABILITY_DOT[getStabilityClass(r)] || 'bg-slate-300')
                       : (GRADE_DOT[r.grade] || 'bg-slate-300')
                   }`} />
                   <span className="font-mono font-bold text-slate-700 w-8">{r.short_name}</span>

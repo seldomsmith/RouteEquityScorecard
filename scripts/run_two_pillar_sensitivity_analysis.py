@@ -146,6 +146,24 @@ def main():
     spreadsheet_path = 'docs/sensitivity_scores_2_pillar.csv'
     df_export.to_csv(spreadsheet_path, index=False)
     print(f"  Spreadsheet saved to {spreadsheet_path} ({len(df_export)} rows).")
+
+    # Save stability_class_2_pillar back to golden records
+    print("  Saving stability_class_2_pillar back to golden records...")
+    stability_lookup = {s['route_id']: s['stability_class'] for s in summaries}
+    golden_json_paths = [
+        'public/data/golden_route_record.json',
+        'data/golden_route_record.json'
+    ]
+    for g_path in golden_json_paths:
+        if os.path.exists(g_path):
+            with open(g_path, 'r', encoding='utf-8') as f:
+                g_data = json.load(f)
+            for r in g_data['routes']:
+                r['stability_class_2_pillar'] = stability_lookup.get(r['route_id'], 'Moderate Stability')
+            with open(g_path, 'w', encoding='utf-8') as f:
+                json.dump(g_data, f)
+            print(f"    Updated {g_path} with 2-pillar stability classes")
+
     
     # 6. Generate 2-Pillar Research Report
     print("\n[5/5] Authoring 2-Pillar Sensitivity Report...")
