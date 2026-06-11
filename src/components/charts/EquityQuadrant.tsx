@@ -135,15 +135,8 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes 
   const setSelectedRoute = useRouteStore((state) => state.setSelectedRoute);
   const [xAxisMetric, setXAxisMetric] = React.useState<'pop_served' | 'weekly_cost' | 'hourly_cost' | 'equity_efficiency'>('pop_served');
 
-  if (!data.length) {
-    return (
-      <div className="flex items-center justify-center h-full text-xs text-slate-400">
-        Awaiting engine data...
-      </div>
-    );
-  }
-
   // Pre-calculate and map the cost variables onto the datasets for graphing
+  // (hooks must always run, even when data is empty)
   const mappedData = React.useMemo(() => {
     return data.map(r => {
       const { costPerHour, weeklyCost, costPerEquityPoint } = computeRouteCosts(r);
@@ -168,6 +161,14 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes 
       };
     });
   }, [allRoutes, data]);
+
+  if (!data.length) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-slate-400">
+        Awaiting engine data...
+      </div>
+    );
+  }
 
   // Set configuration details for the dynamic X-axis
   let xKey = 'total_pop_served';
