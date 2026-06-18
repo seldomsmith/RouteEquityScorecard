@@ -27,9 +27,9 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
   prefix = '',
   precision = 1,
 }) => {
-  const ref = React.useRef<SVGTextElement>(null);
   const motionValue = useMotionValue(value);
   const springValue = useSpring(motionValue, { stiffness: 120, damping: 20 });
+  const [displayVal, setDisplayVal] = React.useState(value);
 
   React.useEffect(() => {
     motionValue.set(value);
@@ -37,19 +37,15 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
 
   React.useEffect(() => {
     const unsubscribe = springValue.on("change", (latest) => {
-      if (ref.current) {
-        const sign = prefix === '+' && latest >= 0 ? '+' : '';
-        ref.current.textContent = `${sign}${latest.toFixed(precision)}`;
-      }
+      setDisplayVal(latest);
     });
     return () => unsubscribe();
-  }, [springValue, precision, prefix]);
+  }, [springValue]);
 
-  const initialSign = prefix === '+' && value >= 0 ? '+' : '';
+  const sign = prefix === '+' && displayVal >= 0 ? '+' : '';
 
   return (
     <motion.text
-      ref={ref}
       x={x}
       animate={{ x }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -59,7 +55,7 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
       fontWeight={fontWeight}
       fill={fill}
     >
-      {initialSign}{value.toFixed(precision)}
+      {sign}{displayVal.toFixed(precision)}
     </motion.text>
   );
 };
