@@ -53,10 +53,11 @@ function intensityToOpacity(value: number, maxVal: number): number {
   return 0.15 + (value / maxVal) * 0.85;
 }
 
-// Map density to circle radius (3-10px)
+// Map density to circle radius (2.5-12px)
 function densityToRadius(density: number, maxDensity: number): number {
-  if (maxDensity === 0) return 3;
-  return 3 + (Math.sqrt(density / maxDensity)) * 7;
+  if (maxDensity === 0) return 2.5;
+  // Linear scale with wider range makes differences significantly more prominent
+  return 2.5 + (density / maxDensity) * 9.5;
 }
 
 export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
@@ -134,7 +135,11 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
       <div className="flex items-center gap-4 mb-2 text-[9px] text-slate-400">
         <div className="flex items-center gap-1.5">
           <span>Dot size = Population Density (people/km²)</span>
-          <svg width="40" height="12"><circle cx="6" cy="6" r="3" fill="#94A3B8" opacity="0.5"/><circle cx="20" cy="6" r="5" fill="#94A3B8" opacity="0.5"/><circle cx="36" cy="6" r="7" fill="#94A3B8" opacity="0.5"/></svg>
+          <svg width="60" height="26" className="inline-block align-middle">
+            <circle cx="6" cy="13" r="2.5" fill="#94A3B8" opacity="0.5"/>
+            <circle cx="24" cy="13" r="7" fill="#94A3B8" opacity="0.5"/>
+            <circle cx="48" cy="13" r="12" fill="#94A3B8" opacity="0.5"/>
+          </svg>
         </div>
         <div className="flex items-center gap-1.5">
           <span>Color intensity = {METRICS.find(m => m.key === activeMetric)?.label}</span>
