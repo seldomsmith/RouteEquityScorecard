@@ -94,10 +94,12 @@ export const RouteStabilityScatter: React.FC<RouteStabilityScatterProps> = ({ se
   const selectedStabilityClasses = useRouteStore((state) => state.selectedStabilityClasses);
 
   const chartData = useMemo(() => {
-    return Object.values(sensitivityData).filter((row) => {
+    const raw = Object.values(sensitivityData).filter((row) => {
       if (!selectedStabilityClasses.length) return true;
       return selectedStabilityClasses.includes(row.stability_class);
     });
+    // Explicitly sort by score_mean so Cell elements map correctly to Recharts internal plot order!
+    return raw.sort((a, b) => a.score_mean - b.score_mean);
   }, [sensitivityData, selectedStabilityClasses]);
 
   const handlePointClick = (data: any) => {
@@ -127,7 +129,7 @@ export const RouteStabilityScatter: React.FC<RouteStabilityScatterProps> = ({ se
 
       <div className="flex-1 min-h-0 w-full relative">
         <ResponsiveContainer width="100%" height="95%">
-          <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: -15 }}>
+          <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 15 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
             <XAxis
               type="number"
@@ -150,15 +152,15 @@ export const RouteStabilityScatter: React.FC<RouteStabilityScatterProps> = ({ se
               type="number"
               dataKey="score_std"
               name="Volatility"
-              domain={[0, 25]}
-              tickCount={6}
+              domain={[0, 40]}
+              tickCount={5}
               stroke="#94A3B8"
               fontSize={10}
               label={{
                 value: 'Robustness Index (Rr) — Volatility',
                 angle: -90,
                 position: 'insideLeft',
-                offset: -5,
+                offset: -10,
                 fontSize: 10,
                 fill: '#64748B',
                 fontWeight: 600
