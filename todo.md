@@ -15,6 +15,10 @@ Refining analytical modeling, service impact simulations, and advanced research 
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
 4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
+5. **Scrollytelling Application Integration** [HIGH]
+   - Construct base narrative pages in Google Stitch based on the revised script.
+   - Incorporate the scrollytelling components into the frontend codebase.
+   - Wire dynamic map states, responsive charts, and policy weight controllers to the scroll triggers.
 
 ---
 
