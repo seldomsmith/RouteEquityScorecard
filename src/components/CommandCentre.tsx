@@ -24,6 +24,27 @@ export const CommandCentre = () => {
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
   const [sensitivityData, setSensitivityData] = React.useState<Record<string, any>>({});
+  const [daAreaMap, setDaAreaMap] = React.useState<Record<string, number>>({});
+
+  // Fetch DA boundaries to build land area lookup
+  React.useEffect(() => {
+    fetch('/data/da_boundaries_simple.geojson')
+      .then((res) => res.json())
+      .then((data) => {
+        const lookup: Record<string, number> = {};
+        if (data && data.features) {
+          data.features.forEach((f: any) => {
+            const dauid = String(f.properties?.DAUID || '');
+            const area = Number(f.properties?.LANDAREA || 0.0);
+            if (dauid && area > 0) {
+              lookup[dauid] = area;
+            }
+          });
+        }
+        setDaAreaMap(lookup);
+      })
+      .catch((err) => console.error('Failed to load DA boundaries geojson:', err));
+  }, []);
 
   // Fetch sensitivity data
   React.useEffect(() => {
@@ -231,7 +252,7 @@ export const CommandCentre = () => {
  
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
-          <EquityMatrix routes={filteredRoutes} />
+          <EquityMatrix routes={filteredRoutes} daAreaMap={daAreaMap} />
           
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
