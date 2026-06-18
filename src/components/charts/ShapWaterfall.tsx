@@ -108,18 +108,8 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
     return () => resizeObserver.disconnect();
   }, []);
 
-  if (!route) {
-    return (
-      <div ref={containerRef} className="flex flex-col items-center justify-center h-full text-xs text-brand-slate-400 w-full">
-        <span className="text-lg mb-1">📊</span>
-        Select a route to see its score breakdown
-      </div>
-    );
-  }
-
-  const baseline = isStabilityMode ? sensitivityRow.score_mean : 50.0;
-
   const shap = React.useMemo(() => {
+    if (!route) return [];
     if (isStabilityMode) {
       // Option 3: Sensitivity Drivers Waterfall
       // Baseline is score_mean (mean rank under uniform 25% weights)
@@ -164,7 +154,18 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
       ];
     }
     return route.shap || [];
-  }, [isStabilityMode, sensitivityRow, route.shap, weights]);
+  }, [isStabilityMode, sensitivityRow, route, weights]);
+
+  if (!route) {
+    return (
+      <div ref={containerRef} className="flex flex-col items-center justify-center h-full text-xs text-brand-slate-400 w-full">
+        <span className="text-lg mb-1">📊</span>
+        Select a route to see its score breakdown
+      </div>
+    );
+  }
+
+  const baseline = isStabilityMode ? sensitivityRow.score_mean : 50.0;
 
   // Compute the waterfall geometry
   // Each bar starts where the previous one ended
