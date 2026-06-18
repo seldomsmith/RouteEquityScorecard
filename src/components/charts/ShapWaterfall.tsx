@@ -3,6 +3,7 @@
 import React from 'react';
 import { ScoredRoute, NetworkStats, ShapContribution } from '@/hooks/useReactiveScoring';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useRouteStore } from '@/store/routeStore';
 
 interface AnimatedTextProps {
   value: number;
@@ -84,9 +85,15 @@ const GRADE_BG: Record<string, string> = {
  *
  * Positive contributions render in emerald; negative in rose.
  */
-export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats }) => {
+export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, sensitivityData }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [width, setWidth] = React.useState(310);
+
+  const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
+  const weights = useRouteStore((state) => state.weights);
+
+  const sensitivityRow = sensitivityData?.[route?.route_id || ''];
+  const isStabilityMode = mapFilterMode === 'stability' && sensitivityRow;
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -110,8 +117,54 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
     );
   }
 
-  const shap = route.shap || [];
-  const baseline = 50.0;
+  const baseline = isStabilityMode ? sensitivityRow.score_mean : 50.0;
+
+  const shap = React.useMemo(() => {
+    if (isStabilityMode) {
+      // Option 3: Sensitivity Drivers Waterfall
+      // Baseline is score_mean (mean rank under uniform 25% weights)
+      // Deviation is w_j - 0.25
+      return [
+        {
+          pillar: 'pillar_1',
+          label: 'Vuln Sensitivity',
+          value: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100),
+          color: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_vulnerability,
+          networkMean: 25,
+          weight: weights.vulnerability / 100,
+        },
+        {
+          pillar: 'pillar_2',
+          label: 'Off-Peak Sens',
+          value: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100),
+          color: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_temporal,
+          networkMean: 25,
+          weight: weights.resilience / 100,
+        },
+        {
+          pillar: 'pillar_3',
+          label: 'Monopoly Sens',
+          value: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100),
+          color: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_monopoly,
+          networkMean: 25,
+          weight: weights.monopoly / 100,
+        },
+        {
+          pillar: 'pillar_4',
+          label: 'Opp Sensitivity',
+          value: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100),
+          color: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_opportunity,
+          networkMean: 25,
+          weight: weights.opportunity / 100,
+        },
+      ];
+    }
+    return route.shap || [];
+  }, [isStabilityMode, sensitivityRow, route.shap, weights]);
 
   // Compute the waterfall geometry
   // Each bar starts where the previous one ended
@@ -145,6 +198,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
 
   // 🤖 Narrative Briefing Generator
   const generateNarrative = () => {
+    if (isStabilityMode) {
+      const clsLabel = sensitivityRow.stability_class === 'Bedrock Essential' ? 'Always High Equity (Bedrock Essential)' :
+                       sensitivityRow.stability_class === 'Bedrock Resilient' ? 'Always Low Equity (Bedrock Resilient)' :
+                       sensitivityRow.stability_class === 'Policy Swing Corridor' ? 'High Swing Corridor (Policy Swing)' :
+                       'Moderate Stability Corridor';
+      return `${route.short_name} is classified as a ${clsLabel} under Monte Carlo policy weight sweeps. Mean Score: ${sensitivityRow.score_mean.toFixed(1)}, Volatility (Rr): ${sensitivityRow.score_std.toFixed(2)}.`;
+    }
+
     const sorted = [...shap].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
     const strongest = sorted[0];
     const weakest = sorted.find((s) => s.value < 0);
@@ -417,14 +478,24 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
       </div>
 
       {/* Sigmoid callout */}
-      <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
-        <span>σ midpoint: {networkStats.sigmoidMidpoint.toFixed(1)} · steepness: {networkStats.sigmoidSteepness.toFixed(3)}</span>
-        <span className="font-mono">Quintile: {networkStats.quintileCuts.map((c) => c.toFixed(0)).join(' | ')}</span>
-      </div>
+      {!isStabilityMode && (
+        <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
+          <span>σ midpoint: {networkStats.sigmoidMidpoint.toFixed(1)} · steepness: {networkStats.sigmoidSteepness.toFixed(3)}</span>
+          <span className="font-mono">Quintile: {networkStats.quintileCuts.map((c) => c.toFixed(0)).join(' | ')}</span>
+        </div>
+      )}
 
       {/* Explanatory Footnote */}
       <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
-        <strong>How to read this:</strong> This waterfall chart decomposes the route's raw score starting from the Edmonton network baseline (50.0). Each bar shows the dynamic SHAP contribution of a pillar ($\phi_j = w_j \times (score_j - \mu_j)$). Positive contributions (emerald) push the raw score up, while negative contributions (rose) pull it down. The <strong>FINAL</strong> score is computed by passing the raw sum through the calibration sigmoid curve, yielding the final grade quintile (A–E).
+        {isStabilityMode ? (
+          <>
+            <strong>How to read this:</strong> This policy sensitivity waterfall chart decomposes how your current weight selections shift the route's score relative to its long-term simulation mean. Each bar shows the delta contribution of a weight deviation ($\beta_j \times (w_j - 25\%)$). Positive shifts (emerald) indicate that your current policy weights favor this route, while negative shifts (rose) show they penalize it relative to the uniform baseline.
+          </>
+        ) : (
+          <>
+            <strong>How to read this:</strong> This waterfall chart decomposes the route's raw score starting from the Edmonton network baseline (50.0). Each bar shows the dynamic SHAP contribution of a pillar ($\phi_j = w_j \times (score_j - \mu_j)$). Positive contributions (emerald) push the raw score up, while negative contributions (rose) pull it down. The <strong>FINAL</strong> score is computed by passing the raw sum through the calibration sigmoid curve, yielding the final grade quintile (A–E).
+          </>
+        )}
       </p>
     </div>
   );
