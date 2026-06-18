@@ -5,9 +5,7 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Sprint Backlog
 ### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
-1. **Stability Focus Component Shift** [HIGH]
-   - When switching the segmented control to Stability Focus, swap the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
-2. **2-Pillar Sensitivity Integration** [CRITICAL]
+1. **2-Pillar Sensitivity Integration** [CRITICAL]
    - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
 
 ### Phase 4.5: Simulation & Data Pipeline
@@ -22,6 +20,11 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Stability Focus Component Shift (Phase 3.5)**:
+  - When switching the segmented control to Stability Focus, swapped the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
+- **Policy Risk Map Scatter Plot & Sensitivity Waterfall (Phase 3.5)**:
+  - Swapped the Route Stability bar chart in Stability Focus for a Recharts-based Volatility vs. Mean Score scatter plot.
+  - Implemented the Option 3 Policy Sensitivity Drivers waterfall in `ShapWaterfall.tsx` under Stability Focus, using OLS beta drivers to show how current weights deviate from uniform mix.
 - **SHAP Waterfall Micro-Animations (Phase 3.5)**:
   - Integrated Framer Motion spring physics (`useMotionValue`, `useSpring`) to animate the SHAP waterfall bar widths and numeric text values fluidly when weights are dragged.
   - Implemented entry load animations so bars transition and expand dynamically from the baseline when a route is loaded.

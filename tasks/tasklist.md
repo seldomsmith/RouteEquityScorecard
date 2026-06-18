@@ -297,6 +297,8 @@
 - [x] Verify reactive filtering and coordinate synchronization across scatterplots and grids <!-- id: 93, priority: critical -->
 
 ## Phase 17: Stability Focus Visual and Sensitivity Integration
+- [x] Swap the Route Stability bar chart in Stability Focus for Volatility vs. Mean Score scatter plot <!-- id: 93a, priority: high -->
+- [x] Implement Option 3 Sensitivity Drivers Waterfall in `ShapWaterfall.tsx` under Stability Focus <!-- id: 93b, priority: high -->
 
 ## Phase 18: Capacity-Weighted Functional Monopoly Index
 - [x] Update `scripts/calculate_functional_monopoly.py` to use capacity-weighted formulation <!-- id: 94, priority: critical -->

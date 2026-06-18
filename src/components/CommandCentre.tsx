@@ -11,9 +11,7 @@ import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMa
 import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
-import { RouteStabilityDistribution } from '@/components/charts/RouteStabilityDistribution';
-
-
+import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -23,9 +21,39 @@ export const CommandCentre = () => {
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
   const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
 
-
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
+  const [sensitivityData, setSensitivityData] = React.useState<Record<string, any>>({});
+
+  // Fetch sensitivity data
+  React.useEffect(() => {
+    fetch('/data/sensitivity_summary.csv')
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map((h) => h.trim());
+        const lookup: Record<string, any> = {};
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const values = line.split(',').map((v) => v.trim());
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = values[idx];
+            if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
+              obj[h] = val || '';
+            } else {
+              obj[h] = Number(val || 0);
+            }
+          });
+          if (obj.route_id) {
+            lookup[obj.route_id] = obj;
+          }
+        }
+        setSensitivityData(lookup);
+      })
+      .catch((err) => console.error('Failed to load sensitivity summary:', err));
+  }, []);
 
   // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP
   // every time weights change. Pure math on 235 routes = microseconds.
@@ -183,16 +211,16 @@ export const CommandCentre = () => {
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
               <div className="flex-1 min-h-0">
-                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} />
+                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">
-                {mapFilterMode === 'stability' ? 'Route Stability Distribution' : 'Population-Equity Quadrant'}
+                {mapFilterMode === 'stability' ? 'Volatility vs. Mean Score (Policy Risk Map)' : 'Population-Equity Quadrant'}
               </span>
               <div className="flex-1 min-h-0">
                 {mapFilterMode === 'stability' ? (
-                  <RouteStabilityDistribution data={filteredRoutes} />
+                  <RouteStabilityScatter sensitivityData={sensitivityData} />
                 ) : (
                   <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
                 )}
