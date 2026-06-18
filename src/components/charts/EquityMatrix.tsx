@@ -47,10 +47,30 @@ function getMetricValue(da: DaInfo, metric: MetricKey): number {
   return da[metric] || 0;
 }
 
-// Map a value 0-100 to opacity 0.15-1.0
-function intensityToOpacity(value: number, maxVal: number): number {
-  if (maxVal === 0) return 0.15;
-  return 0.15 + (value / maxVal) * 0.85;
+// Map a value to opacity using dynamic scaling
+function calculateOpacity(
+  value: number,
+  metric: MetricKey,
+  minVal: number,
+  maxVal: number,
+  meanVal: number,
+  stdVal: number
+): number {
+  if (maxVal === minVal) return 0.15;
+  
+  if (metric === 'composite') {
+    // For composite score, use a Sigmoid function centered around the mean
+    // stdVal controls the spread. We divide by stdVal to normalize the distribution.
+    const z = (value - meanVal) / stdVal;
+    // Standard logistic sigmoid maps (-infinity, +infinity) to (0, 1)
+    const sigmoid = 1 / (1 + Math.exp(-z));
+    
+    // Scale sigmoid output to [0.15, 1.0] range
+    return 0.15 + sigmoid * 0.85;
+  } else {
+    // For other metrics, use local Min-Max normalization to maximize contrast
+    return 0.15 + ((value - minVal) / (maxVal - minVal)) * 0.85;
+  }
 }
 
 // Map density to circle radius (2.5-12px)
@@ -67,9 +87,14 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const [hoveredDa, setHoveredDa] = useState<{ da: DaInfo; routeName: string; x: number; y: number } | null>(null);
 
-  // Pre-compute max values for scaling
-  const { maxPop, maxDensity, maxMetric, maxDAs, sortedRoutes } = useMemo(() => {
-    let mp = 0, mdens = 0, mm = 0, md = 0;
+  // Pre-compute values for scaling
+  const { maxPop, maxDensity, minMetric, maxMetric, meanMetric, stdMetric, maxDAs, sortedRoutes } = useMemo(() => {
+    let mp = 0, mdens = 0, md = 0;
+    let minM = Infinity, maxM = -Infinity;
+    
+    // Gather all metric values to compute mean and std dev
+    const allMetricVals: number[] = [];
+    
     routes.forEach((r) => {
       if (r.da_data.length > md) md = r.da_data.length;
       r.da_data.forEach((da) => {
@@ -80,12 +105,32 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
         if (density > mdens) mdens = density;
 
         const v = getMetricValue(da, activeMetric);
-        if (v > mm) mm = v;
+        allMetricVals.push(v);
+        if (v < minM) minM = v;
+        if (v > maxM) maxM = v;
       });
     });
+
+    if (minM === Infinity) minM = 0;
+    if (maxM === -Infinity) maxM = 100;
+
+    const count = allMetricVals.length;
+    const mean = count > 0 ? allMetricVals.reduce((sum, v) => sum + v, 0) / count : 50;
+    const variance = count > 0 ? allMetricVals.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / count : 0;
+    const std = Math.sqrt(variance) || 1.0;
+
     // Sort by composite score (worst first)
     const sorted = [...routes].sort((a, b) => a.composite_score - b.composite_score);
-    return { maxPop: mp, maxDensity: mdens, maxMetric: mm, maxDAs: md, sortedRoutes: sorted };
+    return { 
+      maxPop: mp, 
+      maxDensity: mdens, 
+      minMetric: minM, 
+      maxMetric: maxM, 
+      meanMetric: mean, 
+      stdMetric: std, 
+      maxDAs: md, 
+      sortedRoutes: sorted 
+    };
   }, [routes, activeMetric, daAreaMap]);
 
   if (!routes.length) {
@@ -206,7 +251,7 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
                   const density = da.pop / area;
                   const r = densityToRadius(density, maxDensity);
                   const val = getMetricValue(da, activeMetric);
-                  const opacity = intensityToOpacity(val, maxMetric);
+                  const opacity = calculateOpacity(val, activeMetric, minMetric, maxMetric, meanMetric, stdMetric);
 
                   return (
                     <circle
