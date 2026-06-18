@@ -158,7 +158,7 @@ export const CommandCentre = () => {
                   lone_parent_pct: Number(d.lone_parent_pct || 0),
                   recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
                   youth_pct: Number(d.youth_pct || 0),
-                  vulnerability_index: Number(d.vulnerability_index !== undefined ? d.vulnerability_index : (d.vulnerability !== undefined ? d.vulnerability : 0)),
+                  vulnerability_index: d.vulnerability_index !== undefined ? Number(d.vulnerability_index) : (d.vulnerability !== undefined ? Number(d.vulnerability) : undefined),
                   neighbourhood: String(d.neighbourhood || ''),
                 }));
               }
