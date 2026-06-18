@@ -42,7 +42,7 @@ const GRADE_COLORS: Record<string, string> = {
 
 function getMetricValue(da: DaInfo, metric: MetricKey): number {
   if (metric === 'composite') {
-    return da.vulnerability_index !== undefined ? da.vulnerability_index : (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
+    return (da.vulnerability_index !== undefined && da.vulnerability_index !== null) ? da.vulnerability_index : (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
   }
   return da[metric] || 0;
 }
