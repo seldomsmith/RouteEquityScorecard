@@ -5,11 +5,9 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Sprint Backlog
 ### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
-1. **SHAP Waterfall Micro-Animations** [LOW]
-   - Integrate Framer Motion spring physics to animate the SHAP waterfall bar adjustments fluidly when weights are dragged.
-2. **Stability Focus Component Shift** [HIGH]
+1. **Stability Focus Component Shift** [HIGH]
    - When switching the segmented control to Stability Focus, swap the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
-3. **2-Pillar Sensitivity Integration** [CRITICAL]
+2. **2-Pillar Sensitivity Integration** [CRITICAL]
    - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
 
 ### Phase 4.5: Simulation & Data Pipeline
@@ -24,6 +22,9 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **SHAP Waterfall Micro-Animations (Phase 3.5)**:
+  - Integrated Framer Motion spring physics (`useMotionValue`, `useSpring`) to animate the SHAP waterfall bar widths and numeric text values fluidly when weights are dragged.
+  - Implemented entry load animations so bars transition and expand dynamically from the baseline when a route is loaded.
 - **Demographic Vulnerability Sensitivity Analysis (Phase 19)**:
   - Vectorized DA-level sensitivity analysis (88,913 weight configurations) in Python (`run_da_sensitivity_analysis.py`) and exported to `docs/da_vulnerability_sensitivity.csv`.
   - Mapped all 1,764 DAs to Edmonton neighbourhoods and merged population metrics (`map_da_to_neighbourhoods.py`), outputting `docs/da_vulnerability_sensitivity_mapped.csv`.
