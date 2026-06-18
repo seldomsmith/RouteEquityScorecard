@@ -2,8 +2,65 @@
 
 import React from 'react';
 import { ScoredRoute, NetworkStats, ShapContribution } from '@/hooks/useReactiveScoring';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
+interface AnimatedTextProps {
+  value: number;
+  x: number;
+  y: number;
+  isPositive?: boolean;
+  fontWeight?: number | string;
+  fontSize?: number;
+  fill?: string;
+  prefix?: string;
+  precision?: number;
+}
+
+const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
+  value,
+  x,
+  y,
+  fontWeight = 700,
+  fontSize = 10,
+  fill,
+  prefix = '',
+  precision = 1,
+}) => {
+  const ref = React.useRef<SVGTextElement>(null);
+  const motionValue = useMotionValue(value);
+  const springValue = useSpring(motionValue, { stiffness: 120, damping: 20 });
+
+  React.useEffect(() => {
+    motionValue.set(value);
+  }, [value, motionValue]);
+
+  React.useEffect(() => {
+    const unsubscribe = springValue.on("change", (latest) => {
+      if (ref.current) {
+        const sign = prefix === '+' && latest >= 0 ? '+' : '';
+        ref.current.textContent = `${sign}${latest.toFixed(precision)}`;
+      }
+    });
+    return () => unsubscribe();
+  }, [springValue, precision, prefix]);
+
+  const initialSign = prefix === '+' && value >= 0 ? '+' : '';
+
+  return (
+    <motion.text
+      ref={ref}
+      animate={{ x }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      y={y}
+      fontSize={fontSize}
+      fontFamily="ui-monospace, monospace"
+      fontWeight={fontWeight}
+      fill={fill}
+    >
+      {initialSign}{value.toFixed(precision)}
+    </motion.text>
+  );
+};
 
 interface WaterfallProps {
   route: ScoredRoute | null;
@@ -236,6 +293,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
 
                 {/* Bar */}
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(bar.startX),
+                    width: 0,
+                  }}
                   animate={{
                     x: x1,
                     width: barW,
@@ -249,17 +310,15 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                 />
 
                 {/* Value label */}
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                <AnimatedTextValue
+                  value={bar.value}
+                  x={LABEL_W + CHART_W + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={700}
                   fill={isPositive ? '#059669' : '#E11D48'}
-                >
-                  {isPositive ? '+' : ''}{bar.value.toFixed(1)}
-                </motion.text>
+                  prefix={isPositive ? '+' : ''}
+                />
               </g>
             );
           })}
@@ -274,6 +333,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   RAW
                 </text>
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(baseline),
+                    width: 0,
+                  }}
                   animate={{
                     x: LABEL_W + toPixel(Math.min(baseline, rawComposite)),
                     width: Math.max(Math.abs(toPixel(rawComposite) - toPixel(baseline)), 2),
@@ -285,17 +348,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="url(#tealGradient)"
                   opacity={0.5}
                 />
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                <AnimatedTextValue
+                  value={rawComposite}
+                  x={LABEL_W + CHART_W + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={800}
                   fill="#334155"
-                >
-                  {rawComposite.toFixed(1)}
-                </motion.text>
+                />
               </g>
             );
           })()}
@@ -319,6 +379,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   FINAL
                 </text>
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(minVal),
+                    width: 0,
+                  }}
                   animate={{
                     x: LABEL_W + toPixel(Math.min(minVal, route.composite_score)),
                     width: Math.max(toPixel(route.composite_score) - toPixel(minVal), 2),
@@ -330,17 +394,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="url(#tealGradient)"
                   opacity={0.9}
                 />
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                <AnimatedTextValue
+                  value={route.composite_score}
+                  x={LABEL_W + CHART_W + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={11}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={900}
                   fill="#0F766E"
-                >
-                  {route.composite_score.toFixed(1)}
-                </motion.text>
+                />
               </g>
             );
           })()}
