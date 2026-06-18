@@ -50,6 +50,7 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
   return (
     <motion.text
       ref={ref}
+      x={x}
       animate={{ x }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       y={y}
