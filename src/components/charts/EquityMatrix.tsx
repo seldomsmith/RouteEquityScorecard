@@ -47,8 +47,18 @@ function getMetricValue(da: DaInfo, metric: MetricKey): number {
   return da[metric] || 0;
 }
 
-// Map a value to opacity using dynamic scaling
-function calculateOpacity(
+const METRIC_HSL: Record<MetricKey, { h: number; s: number; minL: number; maxL: number }> = {
+  composite:            { h: 174, s: 76, minL: 20, maxL: 92 },
+  low_income_pct:        { h: 0,   s: 84, minL: 35, maxL: 95 },
+  minority_pct:          { h: 38,  s: 93, minL: 30, maxL: 95 },
+  senior_pct:            { h: 262, s: 89, minL: 35, maxL: 95 },
+  lone_parent_pct:       { h: 330, s: 81, minL: 30, maxL: 95 },
+  recent_immigrant_pct:  { h: 161, s: 84, minL: 20, maxL: 92 },
+  youth_pct:             { h: 239, s: 84, minL: 30, maxL: 95 },
+};
+
+// Map a value to a normalized intensity t [0, 1]
+function calculateIntensity(
   value: number,
   metric: MetricKey,
   minVal: number,
@@ -56,20 +66,15 @@ function calculateOpacity(
   meanVal: number,
   stdVal: number
 ): number {
-  if (maxVal === minVal) return 0.15;
+  if (maxVal === minVal) return 0.0;
   
   if (metric === 'composite') {
-    // For composite score, use a Sigmoid function centered around the mean
-    // stdVal controls the spread. We divide by stdVal to normalize the distribution.
     const z = (value - meanVal) / stdVal;
-    // Standard logistic sigmoid maps (-infinity, +infinity) to (0, 1)
-    const sigmoid = 1 / (1 + Math.exp(-z));
-    
-    // Scale sigmoid output to [0.15, 1.0] range
-    return 0.15 + sigmoid * 0.85;
+    // Standard logistic sigmoid maps to (0, 1)
+    return 1 / (1 + Math.exp(-z));
   } else {
-    // For other metrics, use local Min-Max normalization to maximize contrast
-    return 0.15 + ((value - minVal) / (maxVal - minVal)) * 0.85;
+    // For other metrics, use local Min-Max normalization
+    return (value - minVal) / (maxVal - minVal);
   }
 }
 
@@ -141,7 +146,6 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
     );
   }
 
-  const activeColor = METRICS.find((m) => m.key === activeMetric)?.color || '#0F766E';
   const ROW_HEIGHT = 24;
   const LABEL_WIDTH = 60;
   const CHART_WIDTH = Math.max(maxDAs * 22, 400);
@@ -188,10 +192,20 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
         </div>
         <div className="flex items-center gap-1.5">
           <span>Color intensity = {METRICS.find(m => m.key === activeMetric)?.label}</span>
-          <svg width="60" height="12">
-            {[0.2, 0.4, 0.6, 0.8, 1.0].map((op, i) => (
-              <circle key={i} cx={6 + i * 13} cy={6} r={5} fill={activeColor} opacity={op}/>
-            ))}
+          <svg width="75" height="12" className="inline-block align-middle">
+            {[0.1, 0.325, 0.55, 0.775, 1.0].map((t, i) => {
+              const hsl = METRIC_HSL[activeMetric] || { h: 174, s: 76, minL: 20, maxL: 92 };
+              const l = hsl.maxL - t * (hsl.maxL - hsl.minL);
+              return (
+                <circle
+                  key={i}
+                  cx={6 + i * 14}
+                  cy={6}
+                  r={5}
+                  fill={`hsl(${hsl.h}, ${hsl.s}%, ${l}%)`}
+                />
+              );
+            })}
           </svg>
         </div>
       </div>
@@ -251,7 +265,11 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
                   const density = da.pop / area;
                   const r = densityToRadius(density, maxDensity);
                   const val = getMetricValue(da, activeMetric);
-                  const opacity = calculateOpacity(val, activeMetric, minMetric, maxMetric, meanMetric, stdMetric);
+                  
+                  const intensity = calculateIntensity(val, activeMetric, minMetric, maxMetric, meanMetric, stdMetric);
+                  const hsl = METRIC_HSL[activeMetric] || { h: 174, s: 76, minL: 20, maxL: 92 };
+                  const l = hsl.maxL - intensity * (hsl.maxL - hsl.minL);
+                  const fill = `hsl(${hsl.h}, ${hsl.s}%, ${l}%)`;
 
                   return (
                     <circle
@@ -259,11 +277,12 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
                       cx={cx}
                       cy={y}
                       r={r}
-                      fill={activeColor}
-                      opacity={opacity}
+                      fill={fill}
+                      opacity={0.95}
+                      stroke="#FFFFFF"
+                      strokeWidth={0.5}
                       cursor="pointer"
                       onMouseEnter={(e) => {
-                        const rect = (e.target as SVGElement).closest('svg')?.getBoundingClientRect();
                         setHoveredDa({
                           da,
                           routeName: `${route.short_name} — ${route.name}`,
