@@ -1,0 +1,87 @@
+"use client";
+
+import React from 'react';
+
+interface LandingPageProps {
+  onTellMeHow: () => void;
+  onJumpIn: () => void;
+}
+
+export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn }) => {
+  return (
+    <main className="min-h-screen w-full flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24 relative overflow-hidden bg-slate-50 font-sans">
+      {/* Subway Line Background SVG */}
+      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <svg className="w-full h-full opacity-30" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 800">
+          {/* Green Line */}
+          <path d="M-100 200 L 300 200 L 500 400 L 1100 400 L 1300 600 L 1540 600" fill="none" stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
+          <circle cx="300" cy="200" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
+          <circle cx="500" cy="400" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
+          <circle cx="1100" cy="400" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
+          <circle cx="1300" cy="600" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
+
+          {/* Yellow Line */}
+          <path d="M400 -100 L 400 300 L 600 500 L 600 900" fill="none" stroke="#eab308" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
+          <circle cx="400" cy="100" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
+          <circle cx="400" cy="300" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
+          <circle cx="600" cy="500" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
+          <circle cx="600" cy="700" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
+
+          {/* Red Line */}
+          <path d="M-100 600 L 200 600 L 400 400 L 1200 400 L 1400 200 L 1540 200" fill="none" stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
+          <circle cx="200" cy="600" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
+          <circle cx="400" cy="400" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
+          <circle cx="1200" cy="400" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
+          <circle cx="1400" cy="200" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
+
+          {/* Blue Line */}
+          <path d="M1000 -100 L 1000 200 L 800 400 L 800 600 L 600 800 L -100 800" fill="none" stroke="#3b82f6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
+          <circle cx="1000" cy="200" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
+          <circle cx="800" cy="400" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
+          <circle cx="800" cy="600" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
+          <circle cx="600" cy="800" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
+
+          {/* Connecting Stations (Interchanges) */}
+          <circle cx="400" cy="400" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
+          <circle cx="800" cy="400" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
+          <circle cx="600" cy="500" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
+        </svg>
+      </div>
+
+      {/* Main Center Title Card */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] bg-blue-600 p-10 md:p-20 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden transition-all duration-300">
+        {/* Glow Spheres */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-900 opacity-20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center w-full gap-8">
+          <header className="flex flex-col gap-4">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-blue-950 tracking-tighter">
+              ETS Route Equity
+              <br />
+              Scorecard
+            </h1>
+            <p className="text-blue-100 text-sm md:text-base font-semibold tracking-wider uppercase mt-2 opacity-90">
+              Edmonton Transit Service Policy Impact Dashboard
+            </p>
+          </header>
+
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto">
+            <button
+              onClick={onTellMeHow}
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-blue-900 font-bold text-lg hover:bg-slate-50 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95"
+            >
+              Tell me how this works!
+            </button>
+            <button
+              onClick={onJumpIn}
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-950 text-white font-bold text-lg hover:bg-blue-900 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-95"
+            >
+              Let me jump in!
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
