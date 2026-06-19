@@ -23,8 +23,8 @@ Refining analytical modeling, service impact simulations, and advanced research 
    - Integrate spatial boundaries and coverage metrics of Edmonton's On Demand Transit zones into the map dashboard.
    - Factor ODT feeder availability into transit monopoly and neighbourhood vulnerability scoring models.
 7. **Scroll-Driven Map Sync (Scrollytelling)** [HIGH]
-   - Build a lightweight SVG-based vector transit grid for Edmonton in the explainer.
-   - Implement `IntersectionObserver` triggers to pan and animate map layers dynamically as users scroll through pillars.
+   - Integrate the real Mapbox GL JS map component directly as a sticky visualization panel in the explainer.
+   - Connect scroll thresholds to flyTo transitions isolating Route 002 and Route 003 on the map dynamically.
 8. **Side-by-Side Monte Carlo Plinko Simulator (Scrollytelling)** [HIGH]
    - Design interactive matching Plinko boards to visualize Route 002 (Bedrock) vs Route 003 (Swing Corridor) score stability side-by-side using smooth canvas ball drop physics.
 9. **Micro-Scroll Animations & Sticky Headers (Scrollytelling)** [MEDIUM]
