@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Bus, 
   Home, 
@@ -43,7 +43,7 @@ const CLASS_LABELS: Record<string, string> = {
 };
 
 export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sensitivityData, setSensitivityData] = useState<any[]>([]);
 
@@ -76,6 +76,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
       .then((res) => res.text())
       .then((text) => {
         const lines = text.split('\n');
+        if (lines.length === 0) return;
         const headers = lines[0].split(',').map((h) => h.trim());
         const list: any[] = [];
         for (let i = 1; i < lines.length; i++) {
@@ -150,25 +151,26 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     return { route2: score2, route3: score3 };
   }, [weights]);
 
-  // Highlight Route 2 and Route 3 in the custom tooltip
+  // Safe Highlight Tooltip for the Scatter Chart
   const CustomChartTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const d = payload[0].payload;
+    if (!d) return null;
 
     return (
       <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3 py-2 text-xs max-w-xs">
-        <p className="font-bold text-slate-900">{d.name}</p>
+        <p className="font-bold text-slate-900">{d?.name || 'Unknown Route'}</p>
         <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-          {CLASS_LABELS[d.stability_class] || d.stability_class} (Route {d.short_name})
+          {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
         </p>
         <div className="mt-1.5 space-y-0.5 text-slate-600 border-t border-slate-100 pt-1.5">
           <div className="flex justify-between gap-4">
             <span>Mean Score:</span>
-            <span className="font-bold text-slate-800">{d.score_mean.toFixed(1)}</span>
+            <span className="font-bold text-slate-800">{(typeof d?.score_mean === 'number') ? d.score_mean.toFixed(1) : 'N/A'}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span>Volatility:</span>
-            <span className="font-bold text-slate-800">{d.score_std.toFixed(2)}</span>
+            <span className="font-bold text-slate-800">{(typeof d?.score_std === 'number') ? d.score_std.toFixed(2) : 'N/A'}</span>
           </div>
         </div>
       </div>
@@ -231,10 +233,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">The Big Picture</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit users, particularly those in equity-seeking communities.
               </p>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 We will examine two contrasting routes throughout this walkthrough:
               </p>
               
@@ -253,7 +255,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 />
               </div>
 
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 City planners must identify which routes provide an essential service to equity-seeking communities, and this scorecard provides the data to make those decisions.
               </p>
             </div>
@@ -272,16 +274,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">The Four Pillars of Transit Equity</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars:
               </p>
-              <ul className="space-y-3 pl-2 text-slate-650 text-base">
+              <ul className="space-y-3 pl-2 text-slate-600 text-base">
                 <li><strong className="text-blue-950 font-bold">1. Transit Vulnerability</strong>: The demographic makeup of the neighbourhoods along the route.</li>
                 <li><strong className="text-blue-950 font-bold">2. Destination Opportunity</strong>: The connection of riders to essential locations, including employment areas, hospitals, supermarkets, and schools.</li>
                 <li><strong className="text-blue-950 font-bold">3. Off Peak Service</strong>: The availability of the route during evenings, nights, and weekends.</li>
                 <li><strong className="text-blue-950 font-bold">4. Transit Monopoly</strong>: The reliance of neighbourhoods on a single route without alternative options, such as the LRT or nearby frequent bus lines.</li>
               </ul>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's transit equity score.
               </p>
             </div>
@@ -300,7 +302,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Vulnerability</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-655 text-base leading-relaxed">
                 The Transit Vulnerability pillar measures who lives near a bus route. We look at the population of low-income households, seniors, youth, lone parents, and visible minorities in the neighbourhoods served by each line.
               </p>
               
@@ -334,7 +336,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Destination Opportunity</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 The Destination Opportunity pillar evaluates how well a bus route connects riders to critical locations. These locations include major employment centres, medical facilities, post-secondary schools, and grocery stores.
               </p>
               
@@ -368,7 +370,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Off Peak Service</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-655 text-base leading-relaxed">
                 The Off Peak Service pillar measures the frequency and reliability of a bus route outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
               </p>
               
@@ -402,7 +404,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Monopoly</h2>
-              <p className="text-slate-650 text-base leading-relaxed">
+              <p className="text-slate-655 text-base leading-relaxed">
                 The Transit Monopoly pillar measures how dependent a neighbourhood is on a single bus route. If a neighbourhood has no other bus routes or LRT stations within walking distance, that route acts as a transit monopoly.
               </p>
               
@@ -510,10 +512,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Policy Weights (Setting City Priorities)</h2>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 After evaluating the individual pillars, city planners must combine them to generate a final grade. To do this, planners assign weights to each pillar, representing the city's current priorities.
               </p>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Under a balanced policy with equal 25% weights, Route 002 receives a B grade (score of 66.9) due to its high scores in vulnerability, monopoly, and opportunity. Route 003 receives an E grade (score of 18.5) because it serves neighbourhoods with higher average incomes and many alternative transit options.
               </p>
             </div>
@@ -573,11 +575,12 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       
                       <Scatter data={sensitivityData}>
                         {sensitivityData.map((entry, index) => {
+                          if (!entry) return null;
                           const isRoute2 = entry.route_id === '002';
                           const isRoute3 = entry.route_id === '003';
                           
                           // Style highlight for Route 002 and 003
-                          let fill = CLASS_COLORS[entry.stability_class] || '#64748B';
+                          let fill = (entry.stability_class && CLASS_COLORS[entry.stability_class]) || '#64748B';
                           let radius = 3.5;
                           let fillOpacity = 0.25;
                           let stroke = 'transparent';
@@ -613,10 +616,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   </ResponsiveContainer>
 
                   {/* Manual Overlay Labels for Route 002 and Route 003 */}
-                  <div className="absolute top-2 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-blue-600 shadow-sm pointer-events-none">
+                  <div className="absolute top-2 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-blue-650 shadow-sm pointer-events-none">
                     🔵 Route 002: Bedrock Essential (Low Volatility / High Score)
                   </div>
-                  <div className="absolute bottom-10 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-orange-600 shadow-sm pointer-events-none">
+                  <div className="absolute bottom-10 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-orange-605 shadow-sm pointer-events-none">
                     🟠 Route 003: Policy Swing Corridor (Low Volatility / Low Score)
                   </div>
                 </div>
@@ -629,17 +632,17 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">The Stability Focus (Predicting Policy Swings)</h2>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 To confirm transit planning is reliable under different political administrations, the model runs a Monte Carlo simulation. This process tests thousands of weight combinations to determine how scores change as policy priorities shift.
               </p>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 The model classifies routes based on their scoring stability:
               </p>
-              <ul className="space-y-3 pl-2 text-slate-655 text-base">
+              <ul className="space-y-3 pl-2 text-slate-600 text-base">
                 <li><strong className="text-blue-950 font-bold">Bedrock Essentials</strong>: These routes score highly across all weight scenarios. Route 002 is a Bedrock Essential because it consistently receives high marks, making it a permanent priority for transit funding.</li>
                 <li><strong className="text-blue-950 font-bold">Policy Swing Corridors</strong>: These routes have scores that fluctuate wildly depending on weight selections. Route 003 is a Policy Swing Corridor because its score rises under an Off Peak Service focus but drops when planners prioritise Transit Monopoly or Transit Vulnerability.</li>
               </ul>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Identifying these classes helps planners protect core services and understand how policy changes affect specific routes.
               </p>
             </div>
@@ -658,20 +661,20 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Turning Data into Action</h2>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 By scoring bus routes across the four pillars and testing score stability, transit planners can make objective funding decisions.
               </p>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Instead of guessing, resources can be distributed systematically:
               </p>
-              <ul className="list-disc list-inside flex flex-col gap-2 text-slate-655 text-base pl-2">
+              <ul className="list-disc list-inside flex flex-col gap-2 text-slate-600 text-base pl-2">
                 <li>Protect and fund Bedrock Essentials, such as Route 002, to maintain the foundation of the transit network.</li>
                 <li>Target funding toward low-scoring routes to improve frequency, off-peak hours, or connections to jobs.</li>
               </ul>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Transit equity is not about providing the same service to everyone. It is about allocating resources to make the greatest positive difference in the lives of residents.
               </p>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 Planners and residents can use the search tool in the dashboard to find specific bus routes, view individual pillar scores, and identify stability classes.
               </p>
             </div>
