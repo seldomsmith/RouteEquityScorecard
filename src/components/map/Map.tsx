@@ -263,6 +263,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   }, [mapFilterMode]);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
+  const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
   const [showOdtZones, setShowOdtZones] = useState(false);
 
   // Fetch DA boundaries GeoJSON once
@@ -273,6 +274,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         setDaGeoJson(data);
       })
       .catch((err) => console.error("❌ Failed to load DA boundaries", err));
+  }, []);
+
+  // Fetch ODT boundaries GeoJSON once
+  useEffect(() => {
+    fetch('/data/odt_zones.geojson')
+      .then((res) => res.json())
+      .then((data) => {
+        setOdtGeoJson(data);
+      })
+      .catch((err) => console.error("❌ Failed to load ODT boundaries", err));
   }, []);
 
   // Initialize the map
@@ -341,7 +352,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       // Add ODT Zones source and layers
       map.current!.addSource('odt-zones', {
         type: 'geojson',
-        data: '/data/odt_zones.geojson',
+        data: odtGeoJson || { type: 'FeatureCollection', features: [] },
       });
 
       map.current!.addLayer({
@@ -353,7 +364,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           'fill-opacity': 0.12,
         },
         layout: {
-          visibility: 'none',
+          visibility: showOdtZones ? 'visible' : 'none',
         },
       });
 
@@ -367,7 +378,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           'line-dasharray': [3, 3],
         },
         layout: {
-          visibility: 'none',
+          visibility: showOdtZones ? 'visible' : 'none',
         },
       });
 
@@ -633,6 +644,19 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       console.warn('Could not toggle ODT layer visibility:', e);
     }
   }, [showOdtZones]);
+
+  // Update ODT Zones source when geojson is loaded
+  useEffect(() => {
+    if (!map.current || !odtGeoJson) return;
+    try {
+      const source = map.current.getSource('odt-zones') as mapboxgl.GeoJSONSource;
+      if (source) {
+        source.setData(odtGeoJson);
+      }
+    } catch (e) {
+      // Source might not exist yet during style load
+    }
+  }, [odtGeoJson]);
 
   // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle, route selection, or grade change
   useEffect(() => {
