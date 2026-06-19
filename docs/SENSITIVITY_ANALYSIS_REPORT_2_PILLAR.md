@@ -16,10 +16,10 @@ While these operational metrics are valuable, they reflect the *way service is s
 This two-pillar approach helps planners understand the trade-offs between a "welfare-oriented" equity model (focusing resources on disadvantaged populations) and an "economic-utility" model (focusing resources on employment hubs).
 
 ### Simulation Scale
-To test the sensitivity of this two-pillar model, we ran a Monte Carlo simulation. We swept the weights of Vulnerability ($w_1$) and Opportunity Access ($w_4$) from 0% to 100% in 5% increments (yielding 21 unique weight combinations). Running this sweep across all 235 transit routes in Edmonton generated 4,935 analytical records.
+To test the sensitivity of this two-pillar model, we ran a Monte Carlo simulation. We swept the weights of Vulnerability ($w_1$) and Opportunity Access ($w_4$) from 0% to 100% in 5% increments (yielding 21 unique weight combinations). Running this sweep across all 170 transit routes in Edmonton generated 3,570 analytical records.
 
 ### 1.2 Summary of Findings:
-First, **Bedrock Essentials**: Out of 235 routes, 48 corridors representing 20.4 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity or vulnerability of the area are emphasized.
+First, **Bedrock Essentials**: Out of 170 routes, 41 corridors representing 24.1 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity or vulnerability of the area are emphasized.
 
 Second, **Policy Swing Corridors**: There are 0 corridors representing 0.0 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
 
@@ -59,10 +59,10 @@ This reduces the search space significantly relative to a full 4-pillar grid sea
 
 ### Figure 3A: Network Stability Class Distribution
 Edmonton transit corridors are classified into the following categories:
-- **Bedrock Essentials:** 48 routes
-- **Bedrock Resilient:** 59 routes
+- **Bedrock Essentials:** 41 routes
+- **Bedrock Resilient:** 10 routes
 - **Policy Swing Corridors:** 0 routes
-- **Moderate Stability:** 103 routes
+- **Moderate Stability:** 101 routes
 
 *(Note: Visual representation coordinates and trends are detailed in Appendix A)*
 
@@ -78,21 +78,21 @@ The details below list the Route ID, Name, Mean Score, Robustness, AB Stability 
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | Primary Driver |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| `002` | 002 — 002 — West Edmonton Mall - Stadium - Clareview | 98.3 | 1.06 | 100.0% | Opportunity |
-| `008` | 008 — 008 — Abbottsfield - Downtown - University | 97.5 | 2.56 | 100.0% | Opportunity |
-| `005` | 005 — 005 — Westmount - Downtown - Coliseum | 96.9 | 0.92 | 100.0% | Opportunity |
-| `900X` | 900X — 900X — Lewis Farms - Downtown | 86.9 | 2.12 | 100.0% | Opportunity |
-| `009` | 009 — 009 — Southgate - Eaux Claires | 85.5 | 3.23 | 100.0% | Opportunity |
-| `130X` | 130X — 130X — Baturyn - Eaux Claires - Government Centre | 79.3 | 1.55 | 100.0% | Vulnerability |
-| `111` | 111 — 111 — Concordia - Westmount | 78.9 | 2.91 | 100.0% | Opportunity |
-| `056` | 056 — 056 — Meadows - Leger - West Edmonton Mall | 75.0 | 27.73 | 100.0% | Vulnerability |
-| `021R` | Capital — Capital — Capital Line | 74.1 | 2.15 | 100.0% | Vulnerability |
-| `150X` | 150X — 150X — Dunluce - Castle Downs - Government Centre | 69.0 | 3.46 | 100.0% | Opportunity |
-| `120X` | 120X — 120X — Eaux Claires - Government Centre | 63.6 | 12.69 | 100.0% | Opportunity |
-| `523` | 523 — 523 — Mill Woods - Downtown | 59.5 | 28.03 | 100.0% | Opportunity |
-| `701` | 701 — 701 — Southgate - Kingsway | 59.3 | 32.31 | 95.2% | Opportunity |
-| `110X` | 110X — 110X — Eaux Claires - Downtown | 53.1 | 13.82 | 100.0% | Opportunity |
-| `665` | 665 — 665 — Charlesworth - Dr. Anne Anderson | 52.5 | 39.05 | 95.2% | Vulnerability |
+| `002` | 002 — 002 — West Edmonton Mall - Stadium - Clareview | 99.4 | 0.19 | 100.0% | Vulnerability |
+| `005` | 005 — 005 — Westmount - Downtown - Coliseum | 99.4 | 0.19 | 100.0% | Vulnerability |
+| `008` | 008 — 008 — Abbottsfield - Downtown - University | 99.4 | 0.19 | 100.0% | Vulnerability |
+| `900X` | 900X — 900X — Lewis Farms - Downtown | 99.1 | 0.36 | 100.0% | Opportunity |
+| `009` | 009 — 009 — Southgate - Eaux Claires | 99.0 | 0.50 | 100.0% | Opportunity |
+| `130X` | 130X — 130X — Baturyn - Eaux Claires - Government Centre | 98.8 | 0.49 | 100.0% | Opportunity |
+| `111` | 111 — 111 — Concordia - Westmount | 98.7 | 0.73 | 100.0% | Opportunity |
+| `021R` | Capital — Capital — Capital Line | 98.4 | 0.52 | 100.0% | Opportunity |
+| `150X` | 150X — 150X — Dunluce - Castle Downs - Government Centre | 97.8 | 1.20 | 100.0% | Opportunity |
+| `120X` | 120X — 120X — Eaux Claires - Government Centre | 96.4 | 3.29 | 100.0% | Opportunity |
+| `056` | 056 — 056 — Meadows - Leger - West Edmonton Mall | 95.8 | 4.26 | 100.0% | Vulnerability |
+| `110X` | 110X — 110X — Eaux Claires - Downtown | 94.4 | 4.99 | 100.0% | Opportunity |
+| `052` | 052 — 052 — Northgate - West Edmonton Mall | 93.9 | 1.12 | 100.0% | Vulnerability |
+| `054` | 054 — 054 — West Edmonton Mall - West Clareview | 92.7 | 6.35 | 100.0% | Opportunity |
+| `901` | 901 — 901 — Jasper Place - Downtown | 90.3 | 9.79 | 100.0% | Opportunity |
 
 ### B. Highly Sensitive Policy Swing Corridors
 No corridors met the strict criteria for highly volatile Policy Swing Corridors in this 2-pillar model, as no route swung by 3 or more grades (such as from A to D or B to E). The maximum grade variation across all 170 routes was limited to 2 grades. 
@@ -101,21 +101,21 @@ However, there is a group of **Moderate Swing Corridors** (classified under Mode
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | DE Stability (%) | Primary Driver |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| `630` | 630 — 630 — Austin O'Brien - Silver Berry | 36.3 | 33.96 | 85.7% | 0.0% | Vulnerability |
-| `201` | 201 — 201 — Downtown Edmonton Loop | 43.7 | 29.94 | 85.7% | 0.0% | Opportunity |
-| `119` | 119 — 119 — Eaux Claires - West Clareview | 25.5 | 26.03 | 81.0% | 0.0% | Vulnerability |
-| `618` | 618 — 618 — Sir John Thompson - Rapperswill | 21.4 | 22.45 | 76.2% | 0.0% | Vulnerability |
-| `626` | 626 — 626 — O'Leary - Crystallina Nera | 20.0 | 20.32 | 85.7% | 0.0% | Vulnerability |
-| `625` | 625 — 625 — O'Leary - Palisades | 15.1 | 15.45 | 85.7% | 0.0% | Vulnerability |
-| `907` | 907 — 907 — West Edmonton Mall - Westmount | 21.0 | 14.63 | 81.0% | 0.0% | Opportunity |
-| `610` | 610 — 610 — Queen E. - Dickinsfield - Lago Lindo | 12.0 | 12.79 | 71.4% | 0.0% | Vulnerability |
-| `634` | 634 — 634 — Mcnally - Tamarack | 11.1 | 11.84 | 66.7% | 0.0% | Vulnerability |
-| `718` | 718 — 718 — Leger - Century Park | 11.0 | 11.28 | 71.4% | 0.0% | Vulnerability |
-| `627` | 627 — 627 — Eastglen - Bannerman | 9.7 | 9.36 | 76.2% | 0.0% | Vulnerability |
-| `527` | 527 — 527 — Mill Woods - Millbourne | 9.1 | 9.27 | 61.9% | 0.0% | Vulnerability |
-| `722` | 722 — 722 — Century Park - Rutherford - Allard | 8.3 | 8.89 | 52.4% | 0.0% | Vulnerability |
-| `724` | 724 — 724 — Leger - Brander Gardens - South Campus | 7.4 | 8.46 | 47.6% | 19.0% | Vulnerability |
-| `930X` | 930X — 930X — The Grange - South Campus | 7.1 | 8.08 | 47.6% | 19.0% | Vulnerability |
+| `107` | 107 — 107 — Belvedere - West Clareview | 74.3 | 22.40 | 81.0% | 0.0% | Vulnerability |
+| `717` | 717 — 717 — Leger - Century Park | 76.2 | 22.03 | 85.7% | 0.0% | Vulnerability |
+| `508` | 508 — 508 — Meadows - Mill Woods | 68.7 | 21.98 | 76.2% | 0.0% | Vulnerability |
+| `515` | 515 — 515 — Mill Woods - Meadows | 75.5 | 21.96 | 85.7% | 0.0% | Vulnerability |
+| `516` | 516 — 516 — Mill Woods - Laurel - Meadows | 80.2 | 21.81 | 85.7% | 0.0% | Vulnerability |
+| `724` | 724 — 724 — Leger - Brander Gardens - South Campus | 47.5 | 21.21 | 42.9% | 23.8% | Vulnerability |
+| `201` | 201 — 201 — Downtown Edmonton Loop | 80.9 | 20.96 | 85.7% | 0.0% | Opportunity |
+| `907` | 907 — 907 — West Edmonton Mall - Westmount | 74.3 | 20.70 | 81.0% | 0.0% | Opportunity |
+| `930X` | 930X — 930X — The Grange - South Campus | 47.0 | 20.70 | 42.9% | 28.6% | Vulnerability |
+| `722` | 722 — 722 — Century Park - Rutherford - Allard | 52.0 | 19.84 | 47.6% | 14.3% | Vulnerability |
+| `718` | 718 — 718 — Leger - Century Park | 59.4 | 19.81 | 61.9% | 0.0% | Vulnerability |
+| `527` | 527 — 527 — Mill Woods - Millbourne | 55.6 | 18.65 | 57.1% | 0.0% | Vulnerability |
+| `905` | 905 — 905 — Northgate - Westmount | 44.0 | 18.60 | 38.1% | 23.8% | Opportunity |
+| `411` | 411 — 411 — Bethel - Downtown | 57.2 | 18.53 | 57.1% | 4.8% | Opportunity |
+| `401` | 401 — 401 — Ordze - Downtown | 61.0 | 17.28 | 66.7% | 0.0% | Opportunity |
 
 ### C. Bedrock Resilient Corridors, Top 15 Low-Priority Corridors
 These corridors consistently score in the bottom 40 percent, representing Grades D and E, under almost all weight configurations, typically representing commuter expresses or low-dependency suburban feeders.
@@ -124,21 +124,16 @@ The details below list the Route ID, Name, Mean Score, Robustness, and DE Stabil
 
 | Route ID | Name | Mean Score | Robustness | DE Stability (%) |
 | :--- | :--- | :---: | :---: | :---: |
-| `420` | 420 — 420 — Bethel - Millennium Place | 0.4 | 0.16 | 100.0% |
-| `A14` | A14 — A14 — Sturgeon Hospital - St Albert North | 0.5 | 0.21 | 100.0% |
-| `L10` | 10 — 10 — Leduc - Nisku - Eia | 0.5 | 0.21 | 100.0% |
-| `A3` | A3 — A3 — Riverside | 0.5 | 0.21 | 100.0% |
-| `F600` | 600 — 600 — Fort Saskatchewan | 0.5 | 0.24 | 100.0% |
-| `432` | 432 — 432 — Bethel - Summerwood | 0.5 | 0.23 | 100.0% |
-| `442` | 442 — 442 — Bethel - Nottingham | 0.5 | 0.23 | 100.0% |
-| `622` | 622 — 622 — Stadium - Concordia University | 0.5 | 0.21 | 100.0% |
-| `450` | 450 — 450 — Bethel - Centre In The Park | 0.5 | 0.26 | 100.0% |
-| `651` | 651 — 651 — Avalon - Southgate | 0.5 | 0.21 | 100.0% |
-| `F610` | 610 — 610 — Westpark | 0.5 | 0.28 | 100.0% |
-| `F611` | 611 — 611 — Downtown | 0.6 | 0.29 | 100.0% |
-| `433` | 433 — 433 — Bethel - Clarkdale | 0.6 | 0.31 | 100.0% |
-| `653` | 653 — 653 — Strathcona - Davies | 0.6 | 0.22 | 100.0% |
-| `A13` | A13 — A13 — Akinsdale - Campbell | 0.6 | 0.35 | 100.0% |
+| `420` | 420 — 420 — Bethel - Millennium Place | 6.6 | 2.83 | 100.0% |
+| `L10` | 10 — 10 — Leduc - Nisku - Eia | 7.8 | 2.32 | 100.0% |
+| `A14` | A14 — A14 — Sturgeon Hospital - St Albert North | 7.8 | 2.40 | 100.0% |
+| `A3` | A3 — A3 — Riverside | 7.9 | 2.34 | 100.0% |
+| `432` | 432 — 432 — Bethel - Summerwood | 8.1 | 2.17 | 100.0% |
+| `442` | 442 — 442 — Bethel - Nottingham | 8.2 | 2.20 | 100.0% |
+| `450` | 450 — 450 — Bethel - Centre In The Park | 8.6 | 1.98 | 100.0% |
+| `433` | 433 — 433 — Bethel - Clarkdale | 9.2 | 1.71 | 100.0% |
+| `A13` | A13 — A13 — Akinsdale - Campbell | 9.7 | 1.53 | 100.0% |
+| `A12` | A12 — A12 — Campbell - Akinsdale | 9.8 | 1.52 | 100.0% |
 
 ---
 
