@@ -27,6 +27,8 @@ Refining analytical modeling, service impact simulations, and advanced research 
    - Implement `IntersectionObserver` triggers to pan and animate map layers dynamically as users scroll through pillars.
 8. **Side-by-Side Monte Carlo Plinko Simulator (Scrollytelling)** [HIGH]
    - Design interactive matching Plinko boards to visualize Route 002 (Bedrock) vs Route 003 (Swing Corridor) score stability side-by-side using smooth canvas ball drop physics.
+9. **Micro-Scroll Animations & Sticky Headers (Scrollytelling)** [MEDIUM]
+   - Implement scroll-driven text fading, sticky section tracking headers, and radial gauge count-up animations to enhance narrative delivery.
 
 ---
 
