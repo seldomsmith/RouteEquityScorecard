@@ -43,6 +43,7 @@ const CLASS_LABELS: Record<string, string> = {
 };
 
 export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sensitivityData, setSensitivityData] = useState<any[]>([]);
 
@@ -54,16 +55,19 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     opportunity: 25,
   });
 
-  // Track window scroll progress for the top indicator
+  // Track container scroll progress for the top indicator
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const totalScroll = el.scrollHeight - el.clientHeight;
       if (totalScroll > 0) {
-        setScrollProgress(window.scrollY / totalScroll);
+        setScrollProgress(el.scrollTop / totalScroll);
       }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Fetch sensitivity data for the scatter plot
@@ -172,7 +176,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-slate-50 font-sans relative">
+    <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
       
       {/* 🚌 Fixed Scrollytelling Header with Scroll Progress Tracker */}
       <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
