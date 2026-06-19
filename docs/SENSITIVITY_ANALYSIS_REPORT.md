@@ -9,9 +9,9 @@ The Route Equity Scorecard defines equity priority by weighting four operational
 To evaluate how sensitive the route equity scoring is to weight changes, a weight sensitivity Monte Carlo simulation was performed. The evaluation simulated 1,771 valid zero-sum policy weight configurations in 5 percent increments across all 235 transit routes in Edmonton, generating 416,185 analytical records.
 
 ### 1.2 Summary of Findings:
-First, **Bedrock Essentials**: Out of 235 routes, 44 corridors representing 18.7 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity, off peak service, or vulnerability of the area, or monopoly service are emphasized.
+First, **Bedrock Essentials**: Out of 235 routes, 20 corridors representing 8.5 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity, off peak service, or vulnerability of the area, or monopoly service are emphasized.
 
-Second, **Policy Swing Corridors**: There are 107 corridors representing 45.5 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
+Second, **Policy Swing Corridors**: There are 108 corridors representing 46.0 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
 
 Third, **Pillar Dominance**: Regression driver coefficients indicate that Opportunity Access and Off Peak Service serve as the primary drivers of score variation, while Monopoly exerts a highly localized, corridor-specific influence.
 
@@ -49,10 +49,10 @@ This reduces the search space by 99.1 percent relative to a full grid search, wh
 
 ### Figure 3A: Network Stability Class Distribution
 Edmonton transit corridors are classified into the following categories:
-- **Bedrock Essentials:** 44 routes
+- **Bedrock Essentials:** 20 routes
 - **Bedrock Resilient:** 44 routes
-- **Policy Swing Corridors:** 107 routes
-- **Moderate Stability:** 40 routes
+- **Policy Swing Corridors:** 108 routes
+- **Moderate Stability:** 63 routes
 
 *(Note: Visual representation coordinates and trends are detailed in Appendix A)*
 
