@@ -264,7 +264,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
   const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
-  const [showOdtZones, setShowOdtZones] = useState(false);
+  const [showOdtZones, setShowOdtZones] = useState(true);
 
   // Fetch DA boundaries GeoJSON once
   useEffect(() => {
