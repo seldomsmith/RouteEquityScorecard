@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ETS Route Equity Scorecard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#767684",
+                        "tertiary": "#130900",
+                        "inverse-surface": "#303037",
+                        "on-surface": "#1b1b22",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#0058bb",
+                        "tertiary-fixed": "#ffddb5",
+                        "on-surface-variant": "#464653",
+                        "tertiary-container": "#321d00",
+                        "surface-bright": "#fbf8ff",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#4b53bc",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b22",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed-variant": "#643f00",
+                        "primary": "#00003c",
+                        "on-tertiary-container": "#bd7b00",
+                        "surface-container-high": "#eae7f0",
+                        "primary-fixed-dim": "#bfc2ff",
+                        "surface-container-highest": "#e4e1eb",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary-fixed-variant": "#3239a3",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dbd9e2",
+                        "secondary-container": "#1471e6",
+                        "on-secondary-fixed": "#001a41",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#00006e",
+                        "inverse-primary": "#bfc2ff",
+                        "on-primary-container": "#777eea",
+                        "surface": "#fbf8ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb957",
+                        "surface-variant": "#e4e1eb",
+                        "background": "#fbf8ff",
+                        "surface-container-low": "#f5f2fc",
+                        "primary-fixed": "#e0e0ff",
+                        "primary-container": "#000080",
+                        "outline-variant": "#c6c5d5",
+                        "on-tertiary-fixed": "#2a1800",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f2eff9",
+                        "error": "#ba1a1a",
+                        "surface-container": "#efecf6",
+                        "on-secondary-fixed-variant": "#004493"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-white text-on-surface min-h-screen flex flex-col font-body-lg">
+<!-- TopAppBar Navigation suppressed for primary landing intent -->
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24 w-full relative">
+<div aria-hidden="true" class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<svg class="w-full h-full preserve-3d opacity-50" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 800">
+<!-- Green Line -->
+<path d="M-100 200 L 300 200 L 500 400 L 1100 400 L 1300 600 L 1540 600" fill="none" stroke="#22c55e" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></path>
+<circle cx="300" cy="200" fill="white" r="8" stroke="#22c55e" stroke-width="4"></circle>
+<circle cx="500" cy="400" fill="white" r="8" stroke="#22c55e" stroke-width="4"></circle>
+<circle cx="1100" cy="400" fill="white" r="8" stroke="#22c55e" stroke-width="4"></circle>
+<circle cx="1300" cy="600" fill="white" r="8" stroke="#22c55e" stroke-width="4"></circle>
+<!-- Yellow Line -->
+<path d="M400 -100 L 400 300 L 600 500 L 600 900" fill="none" stroke="#eab308" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></path>
+<circle cx="400" cy="100" fill="white" r="8" stroke="#eab308" stroke-width="4"></circle>
+<circle cx="400" cy="300" fill="white" r="8" stroke="#eab308" stroke-width="4"></circle>
+<circle cx="600" cy="500" fill="white" r="8" stroke="#eab308" stroke-width="4"></circle>
+<circle cx="600" cy="700" fill="white" r="8" stroke="#eab308" stroke-width="4"></circle>
+<!-- Red Line -->
+<path d="M-100 600 L 200 600 L 400 400 L 1200 400 L 1400 200 L 1540 200" fill="none" stroke="#ef4444" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></path>
+<circle cx="200" cy="600" fill="white" r="8" stroke="#ef4444" stroke-width="4"></circle>
+<circle cx="400" cy="400" fill="white" r="8" stroke="#ef4444" stroke-width="4"></circle>
+<circle cx="1200" cy="400" fill="white" r="8" stroke="#ef4444" stroke-width="4"></circle>
+<circle cx="1400" cy="200" fill="white" r="8" stroke="#ef4444" stroke-width="4"></circle>
+<!-- Blue Line -->
+<path d="M1000 -100 L 1000 200 L 800 400 L 800 600 L 600 800 L -100 800" fill="none" stroke="#3b82f6" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></path>
+<circle cx="1000" cy="200" fill="white" r="8" stroke="#3b82f6" stroke-width="4"></circle>
+<circle cx="800" cy="400" fill="white" r="8" stroke="#3b82f6" stroke-width="4"></circle>
+<circle cx="800" cy="600" fill="white" r="8" stroke="#3b82f6" stroke-width="4"></circle>
+<circle cx="600" cy="800" fill="white" r="8" stroke="#3b82f6" stroke-width="4"></circle>
+<!-- Connecting Stations (Interchanges) -->
+<circle cx="400" cy="400" fill="white" r="12" stroke="#1f2937" stroke-width="4"></circle>
+<circle cx="800" cy="400" fill="white" r="12" stroke="#1f2937" stroke-width="4"></circle>
+<circle cx="600" cy="500" fill="white" r="12" stroke="#1f2937" stroke-width="4"></circle>
+</svg>
+</div><div class="relative z-10 w-full max-w-5xl mx-auto rounded-[3rem] md:rounded-[4rem] bg-[#3b82f6] p-10 md:p-20 flex flex-col items-center justify-center text-center shadow-xl overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-80 h-80 bg-[#000080] opacity-10 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center w-full gap-8">
+<header class="flex flex-col gap-4">
+<h1 class="font-display-lg text-[3rem] md:text-[5rem] lg:text-[6rem] leading-none text-[#000080] font-bold tracking-tighter">
+                ETS Route Equity<br>Scorecard
+            </h1>
+</header>
+<div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-8 w-full sm:w-auto">
+<button class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-[#000080] font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50">
+                Tell me how this works!
+            </button>
+<button class="w-full sm:w-auto px-8 py-4 rounded-full bg-[#000080] text-white font-bold text-lg hover:bg-[#000060] transition-colors shadow-lg focus:outline-none focus:ring-4 focus:ring-[#000080]/50">
+                Let me jump in!
+            </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-white border-t border-on-surface/10 w-full mt-auto relative z-20">
+
+</footer>
+
+
+</body></html>

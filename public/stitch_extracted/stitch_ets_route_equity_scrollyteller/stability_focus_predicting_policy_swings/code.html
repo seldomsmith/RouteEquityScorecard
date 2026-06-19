@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Stability Focus - ETS Route Equity Scorecard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#0058bb",
+                    "on-secondary-container": "#fefcff",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e4e1eb",
+                    "on-secondary-fixed-variant": "#004493",
+                    "on-primary-fixed-variant": "#3239a3",
+                    "surface-container-high": "#eae7f0",
+                    "secondary-fixed-dim": "#adc7ff",
+                    "background": "#fbf8ff",
+                    "primary": "#00003c",
+                    "inverse-on-surface": "#f2eff9",
+                    "surface-variant": "#e4e1eb",
+                    "on-surface-variant": "#464653",
+                    "surface-container": "#efecf6",
+                    "on-background": "#1b1b22",
+                    "tertiary-container": "#321d00",
+                    "surface-container-low": "#f5f2fc",
+                    "primary-fixed": "#e0e0ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#777eea",
+                    "tertiary-fixed-dim": "#ffb957",
+                    "on-primary-fixed": "#00006e",
+                    "surface-tint": "#4b53bc",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#767684",
+                    "on-surface": "#1b1b22",
+                    "surface": "#fbf8ff",
+                    "secondary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#bfc2ff",
+                    "primary-container": "#000080",
+                    "inverse-primary": "#bfc2ff",
+                    "outline-variant": "#c6c5d5",
+                    "on-secondary-fixed": "#001a41",
+                    "secondary-container": "#1471e6",
+                    "on-tertiary-container": "#bd7b00",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#dbd9e2",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#2a1800",
+                    "tertiary": "#130900",
+                    "surface-bright": "#fbf8ff",
+                    "inverse-surface": "#303037",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffddb5",
+                    "on-tertiary-fixed-variant": "#643f00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "title-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ticket-notch-top {
+            clip-path: circle(8px at 50% -2px);
+        }
+        .ticket-notch-bottom {
+            clip-path: circle(8px at 50% calc(100% + 2px));
+        }
+        .ticket-tab-notch-top {
+            clip-path: circle(4px at 50% 0);
+        }
+        .ticket-tab-notch-bottom {
+            clip-path: circle(4px at 50% 100%);
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md overflow-x-hidden bg-white">
+<!-- TopAppBar Placeholder -->
+<header class="fixed top-0 z-50 w-full bg-white border-b border-on-surface/10 h-20"></header>
+<!-- Main Content Canvas -->
+<main class="pt-20 min-h-screen flex flex-col lg:flex-row w-full bg-white">
+<!-- LEFT PANEL (60% width): Stability Analysis Visualization -->
+<section class="lg:w-[60%] w-full p-8 lg:p-12 border-r border-on-surface/5 flex flex-col">
+<h2 class="font-title-md text-outline mb-6 uppercase tracking-widest">Stability Analysis</h2>
+<div class="relative flex-grow flex flex-col justify-center items-center bg-white rounded-xl border border-on-surface/5 p-4 shadow-sm overflow-hidden">
+<!-- Main Scatter Plot -->
+<div class="relative w-full">
+<img alt="Monte Carlo Stability Scatter Plot" class="w-full h-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF-VjJVYZgTka6NjzwjLppoNZzcPRrzaOimXTqQ2Fzi5O-eQ6nj4rUJ56w2vcHn_oi1wWIwPoEspVZd-bqE9NOKT1-4vbCQdFVCDH2AInac5CbyfT8iLSrs31HsPU-Q6z3JxTPFXpZK_Vt1aXHqfS6QVLHikdP4zOpvtT8by1OvDTbnHJgseFP0I9_EfS8n8ajuZPdQJLaDeGX_NqHoKv0DE28udzxOFo9AckftUdiwvb4xpCy4CdvaULGLsXIFOed-R8F_Y7RophX"/>
+<!-- Callout: Route 002 (Stable - Right Bottom) -->
+<div class="absolute bottom-[5%] right-[5%] flex flex-col items-end pointer-events-none">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-secondary font-bold text-sm bg-white px-2 py-0.5 border border-secondary rounded shadow-sm">Route 002</span>
+<div class="w-8 h-px bg-secondary"></div>
+</div>
+<p class="text-[10px] uppercase font-bold text-secondary">High Stability Bedrock</p>
+</div>
+<!-- Callout: Route 003 (Volatile - Center Top) -->
+<div class="absolute top-[25%] left-[45%] flex flex-col items-start pointer-events-none">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-8 h-px bg-[#f59e0b]"></div>
+<span class="text-[#f59e0b] font-bold text-sm bg-white px-2 py-0.5 border border-[#f59e0b] rounded shadow-sm">Route 003</span>
+</div>
+<p class="text-[10px] uppercase font-bold text-[#f59e0b]">Policy Swing Corridor</p>
+</div>
+</div>
+<div class="mt-8 flex gap-8">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="text-label-sm text-outline">Low Volatility</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div>
+<span class="text-label-sm text-outline">High Volatility</span>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANEL (40% width): Content & Tickets -->
+<section class="lg:w-[40%] w-full p-8 lg:p-12 flex flex-col">
+<div class="max-w-md mx-auto lg:mx-0">
+<h1 class="font-display-lg text-primary mb-8">The Stability Focus</h1>
+<div class="space-y-6 mb-12">
+<p class="text-on-surface-variant font-body-lg leading-relaxed">
+                        Since establishing a set distribution of policy weights is a subjective exercise, we ran a <span class="text-primary font-semibold">Monte Carlo analysis</span> of all possible policy weight distributions.
+                    </p>
+<p class="text-on-surface-variant font-body-md">
+                        This allows us to identify routes that remain high-equity regardless of political swings or subjective weight changes, providing greater confidence in long-term transit funding priorities.
+                    </p>
+</div>
+<!-- Ticket Components Container -->
+<div class="space-y-6">
+<!-- Ticket 1: Bedrock Essentials -->
+<div class="relative flex bg-white border border-on-surface/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<!-- Left Tab -->
+<div class="w-12 bg-secondary flex flex-col items-center justify-center shrink-0 relative py-4">
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full ticket-tab-notch-top border border-on-surface/10"></div>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full ticket-tab-notch-bottom border border-on-surface/10"></div>
+<span class="material-symbols-outlined text-white -rotate-90">anchor</span>
+</div>
+<!-- Ticket Content -->
+<div class="flex-grow p-5 flex flex-col relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-md text-primary font-bold">Bedrock Essentials</h3>
+<span class="font-label-sm text-secondary bg-secondary/10 px-2 py-0.5 rounded">R-002</span>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">Consistently high marks across all scenarios.</p>
+<!-- Dashed Divider with Notches -->
+<div class="relative py-4">
+<div class="absolute -left-[20px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ticket-notch-top border border-on-surface/10 z-10"></div>
+<div class="absolute -right-[21px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ticket-notch-top border border-on-surface/10 z-10"></div>
+<div class="w-full border-t border-dashed border-on-surface/20"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-sm text-outline uppercase tracking-tight">Score Stability</span>
+<span class="font-display-lg text-2xl text-secondary font-bold">98.2% Constant</span>
+</div>
+</div>
+</div>
+<!-- Ticket 2: Policy Swing Corridors -->
+<div class="relative flex bg-white border border-on-surface/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<!-- Left Tab -->
+<div class="w-12 bg-[#f59e0b] flex flex-col items-center justify-center shrink-0 relative py-4">
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full ticket-tab-notch-top border border-on-surface/10"></div>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full ticket-tab-notch-bottom border border-on-surface/10"></div>
+<span class="material-symbols-outlined text-white -rotate-90">swap_vert</span>
+</div>
+<!-- Ticket Content -->
+<div class="flex-grow p-5 flex flex-col relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-md text-primary font-bold">Policy Swing Corridors</h3>
+<span class="font-label-sm text-[#f59e0b] bg-[#f59e0b]/10 px-2 py-0.5 rounded">R-003</span>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">Scores fluctuate depending on weight selections.</p>
+<!-- Dashed Divider with Notches -->
+<div class="relative py-4">
+<div class="absolute -left-[20px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ticket-notch-top border border-on-surface/10 z-10"></div>
+<div class="absolute -right-[21px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ticket-notch-top border border-on-surface/10 z-10"></div>
+<div class="w-full border-t border-dashed border-on-surface/20"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-sm text-outline uppercase tracking-tight">Score Stability</span>
+<span class="font-display-lg text-2xl text-[#f59e0b] font-bold">42.1% Variable</span>
+</div>
+</div>
+</div>
+<p class="text-label-sm italic text-on-surface-variant mt-8 px-2">
+                        * Identifying these classes helps planners protect core services and understand how policy changes affect specific routes.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Placeholder -->
+<footer class="w-full bg-white border-t border-on-surface/10 h-16"></footer>
+<script>
+        // Micro-interactions or dynamic labels can be added here
+    </script>
+</body></html>

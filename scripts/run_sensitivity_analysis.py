@@ -111,9 +111,10 @@ def main():
         pct_de = np.mean((g_nums == 2) | (g_nums == 1))
         
         # Stability Classification
-        if pct_ab >= 0.90:
+        mean_score = np.mean(y)
+        if pct_ab >= 0.90 and mean_score >= 10.0:
             stability_class = "Bedrock Essential"
-        elif pct_de >= 0.90:
+        elif pct_de >= 0.90 and mean_score < 10.0:
             stability_class = "Bedrock Resilient"
         elif (max_g - min_g) >= 3:
             stability_class = "Policy Swing Corridor"

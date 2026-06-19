@@ -19,7 +19,7 @@ This two-pillar approach helps planners understand the trade-offs between a "wel
 To test the sensitivity of this two-pillar model, we ran a Monte Carlo simulation. We swept the weights of Vulnerability ($w_1$) and Opportunity Access ($w_4$) from 0% to 100% in 5% increments (yielding 21 unique weight combinations). Running this sweep across all 235 transit routes in Edmonton generated 4,935 analytical records.
 
 ### 1.2 Summary of Findings:
-First, **Bedrock Essentials**: Out of 235 routes, 55 corridors representing 23.4 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity or vulnerability of the area are emphasized.
+First, **Bedrock Essentials**: Out of 235 routes, 48 corridors representing 20.4 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity or vulnerability of the area are emphasized.
 
 Second, **Policy Swing Corridors**: There are 0 corridors representing 0.0 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
 
@@ -59,10 +59,10 @@ This reduces the search space significantly relative to a full 4-pillar grid sea
 
 ### Figure 3A: Network Stability Class Distribution
 Edmonton transit corridors are classified into the following categories:
-- **Bedrock Essentials:** 55 routes
+- **Bedrock Essentials:** 48 routes
 - **Bedrock Resilient:** 59 routes
 - **Policy Swing Corridors:** 0 routes
-- **Moderate Stability:** 96 routes
+- **Moderate Stability:** 103 routes
 
 *(Note: Visual representation coordinates and trends are detailed in Appendix A)*
 
