@@ -21,6 +21,8 @@ import {
   Cell
 } from 'recharts';
 import { RouteTicket } from './ui/RouteTicket';
+import { ExplainerMap } from './widgets/ExplainerMap';
+import { MonteCarloPlinko } from './widgets/MonteCarloPlinko';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -46,6 +48,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sensitivityData, setSensitivityData] = useState<any[]>([]);
+
+  // States to hold route geometry & boundaries for the inline ExplainerMaps
+  const [route2Data, setRoute2Data] = useState<any>(null);
+  const [route3Data, setRoute3Data] = useState<any>(null);
+  const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
   // Policy Sliders state for Step 7 (Policy Weights)
   const [weights, setWeights] = useState({
@@ -99,6 +106,24 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
         setSensitivityData(list);
       })
       .catch((err) => console.error('Failed to load sensitivity summary:', err));
+  }, []);
+
+  // Fetch route geometries and DA boundaries GeoJSON
+  useEffect(() => {
+    fetch('/data/da_boundaries_simple.geojson')
+      .then((res) => res.json())
+      .then((data) => setDaGeoJson(data))
+      .catch((err) => console.error("❌ Explainer Map failed to load DA boundaries:", err));
+
+    fetch('/data/golden_route_record.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const r2 = data.routes.find((r: any) => r.route_id === '002');
+        const r3 = data.routes.find((r: any) => r.route_id === '003');
+        setRoute2Data(r2);
+        setRoute3Data(r3);
+      })
+      .catch((err) => console.error("❌ Explainer Map failed to load golden route records:", err));
   }, []);
 
   const handleWeightChange = (key: keyof typeof weights, val: number) => {
@@ -221,14 +246,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           
           {/* ================= SECTION 1: Introduction ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Bus className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Edmonton Transit Service grid map</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                A system overview highlighting Route 002 (Blue Corridor) and Route 003 (Red Corridor) on the regional grid map.
-              </p>
-            </div>
             
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
@@ -240,19 +257,44 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 We will examine two contrasting routes throughout this walkthrough:
               </p>
               
-              <div className="flex flex-col gap-4 py-2">
-                <RouteTicket 
-                  routeNumber="002" 
-                  theme="blue" 
-                  title="Route 002: Downtown - Capilano" 
-                  description="A long, high-frequency line crossing the city to link outer neighbourhoods."
-                />
-                <RouteTicket 
-                  routeNumber="003" 
-                  theme="orange" 
-                  title="Route 003: Westmount - Stadium" 
-                  description="A shorter connection route linking central hubs."
-                />
+              <div className="flex flex-col gap-8 py-4">
+                <div className="flex flex-col gap-2">
+                  <RouteTicket 
+                    routeNumber="002" 
+                    theme="blue" 
+                    title="Route 002: Downtown - Capilano" 
+                    description="A long, high-frequency line crossing the city to link outer neighbourhoods."
+                  />
+                  {/* Inline interactive Mapbox instance showing Route 002 */}
+                  {daGeoJson && route2Data && (
+                    <ExplainerMap 
+                      routeId="002" 
+                      routeCoords={route2Data.coords} 
+                      servedDas={route2Data.da_metadata} 
+                      daGeoJson={daGeoJson} 
+                      grade={route2Data.grade} 
+                    />
+                  )}
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <RouteTicket 
+                    routeNumber="003" 
+                    theme="orange" 
+                    title="Route 003: Westmount - Stadium" 
+                    description="A shorter connection route linking central hubs."
+                  />
+                  {/* Inline interactive Mapbox instance showing Route 003 */}
+                  {daGeoJson && route3Data && (
+                    <ExplainerMap 
+                      routeId="003" 
+                      routeCoords={route3Data.coords} 
+                      servedDas={route3Data.da_metadata} 
+                      daGeoJson={daGeoJson} 
+                      grade={route3Data.grade} 
+                    />
+                  )}
+                </div>
               </div>
 
               <p className="text-slate-600 text-base leading-relaxed">
@@ -302,7 +344,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Vulnerability</h2>
-              <p className="text-slate-655 text-base leading-relaxed">
+              <p className="text-slate-600 text-base leading-relaxed">
                 The Transit Vulnerability pillar measures who lives near a bus route. We look at the population of low-income households, seniors, youth, lone parents, and visible minorities in the neighbourhoods served by each line.
               </p>
               
@@ -521,7 +563,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
-          {/* ================= SECTION 8: Stability Focus Scatter Plot ================= */}
+          {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
           <section className="flex flex-col gap-6">
             
             {/* 📊 Actual Interactive Scatter Plot */}
@@ -628,6 +670,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   Loading Sensitivity Scatter dataset...
                 </div>
               )}
+            </div>
+
+            {/* 🎮 Premium Interactive Monte Carlo Plinko Physics Simulation Widget */}
+            <div className="w-full mt-4">
+              <MonteCarloPlinko />
             </div>
 
             <div className="space-y-4">
