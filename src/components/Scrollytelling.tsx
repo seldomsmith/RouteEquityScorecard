@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Bus, 
-  ChevronLeft, 
-  ChevronRight, 
   Home, 
   ArrowRight,
   ShieldCheck,
@@ -12,6 +10,16 @@ import {
   Clock,
   Compass
 } from 'lucide-react';
+import { 
+  ScatterChart, 
+  Scatter, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell
+} from 'recharts';
 import { RouteTicket } from './ui/RouteTicket';
 
 interface ScrollytellingProps {
@@ -19,8 +27,24 @@ interface ScrollytellingProps {
   onJumpIn: () => void;
 }
 
+// Color map aligning with the user's Policy Risk Map design:
+const CLASS_COLORS: Record<string, string> = {
+  'Bedrock Essential': '#2E4057',       // Always High Equity
+  'Bedrock Resilient': '#68889E',       // Always Low Equity
+  'Policy Swing Corridor': '#E85F5C',   // High Swing Routes
+  'Moderate Stability': '#F4B942',      // Moderate Stability
+};
+
+const CLASS_LABELS: Record<string, string> = {
+  'Bedrock Essential': 'Always High Equity',
+  'Bedrock Resilient': 'Always Low Equity',
+  'Policy Swing Corridor': 'High Swing Routes',
+  'Moderate Stability': 'Moderate Stability',
+};
+
 export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [sensitivityData, setSensitivityData] = useState<any[]>([]);
 
   // Policy Sliders state for Step 7 (Policy Weights)
   const [weights, setWeights] = useState({
@@ -29,6 +53,48 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     monopoly: 25,
     opportunity: 25,
   });
+
+  // Track window scroll progress for the top indicator
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        setScrollProgress(window.scrollY / totalScroll);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch sensitivity data for the scatter plot
+  useEffect(() => {
+    fetch('/data/sensitivity_summary.csv')
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map((h) => h.trim());
+        const list: any[] = [];
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const values = line.split(',').map((v) => v.trim());
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = values[idx];
+            if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
+              obj[h] = val || '';
+            } else {
+              obj[h] = Number(val || 0);
+            }
+          });
+          if (obj.route_id) {
+            list.push(obj);
+          }
+        }
+        setSensitivityData(list);
+      })
+      .catch((err) => console.error('Failed to load sensitivity summary:', err));
+  }, []);
 
   const handleWeightChange = (key: keyof typeof weights, val: number) => {
     const diff = val - weights[key];
@@ -58,11 +124,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     setWeights(newWeights);
   };
 
-  // Live Score Calculator for Step 7
+  // Live Score Calculator for weights simulator
   const liveScores = useMemo(() => {
-    // Route 002 raw scores
     const r2 = { vulnerability: 80.8, offPeak: 31.3, monopoly: 67.6, opportunity: 92.7 };
-    // Route 003 raw scores
     const r3 = { vulnerability: 17.5, offPeak: 38.0, monopoly: 0.0, opportunity: 18.9 };
 
     const score2 = (
@@ -82,34 +146,36 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     return { route2: score2, route3: score3 };
   }, [weights]);
 
-  const totalSteps = 9;
+  // Highlight Route 2 and Route 3 in the custom tooltip
+  const CustomChartTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
 
-  const handleNext = () => {
-    if (activeStep < totalSteps - 1) setActiveStep(activeStep + 1);
+    return (
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3 py-2 text-xs max-w-xs">
+        <p className="font-bold text-slate-900">{d.name}</p>
+        <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
+          {CLASS_LABELS[d.stability_class] || d.stability_class} (Route {d.short_name})
+        </p>
+        <div className="mt-1.5 space-y-0.5 text-slate-600 border-t border-slate-100 pt-1.5">
+          <div className="flex justify-between gap-4">
+            <span>Mean Score:</span>
+            <span className="font-bold text-slate-800">{d.score_mean.toFixed(1)}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>Volatility:</span>
+            <span className="font-bold text-slate-800">{d.score_std.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    );
   };
-
-  const handlePrev = () => {
-    if (activeStep > 0) setActiveStep(activeStep - 1);
-  };
-
-  // Step names for progress tracking
-  const stepTitles = [
-    "Introduction",
-    "Four Pillars",
-    "Vulnerability",
-    "Opportunity",
-    "Off Peak Service",
-    "Transit Monopoly",
-    "Policy Weights",
-    "Stability Focus",
-    "Action"
-  ];
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-slate-50 font-sans relative">
       
-      {/* 🚌 Fixed Scrollytelling Header with Progress Tracker */}
-      <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between">
+      {/* 🚌 Fixed Scrollytelling Header with Scroll Progress Tracker */}
+      <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button 
             onClick={onBack}
@@ -118,28 +184,19 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           >
             <Home className="w-5 h-5" />
           </button>
-          <div className="hidden sm:flex flex-col">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Scrollyteller</span>
-            <span className="text-sm font-black text-blue-900 leading-none mt-1">{stepTitles[activeStep]}</span>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Transit Equity Explainer</span>
+            <span className="text-xs font-semibold text-teal-650 leading-none mt-1">Scroll down to read</span>
           </div>
         </div>
 
-        {/* Dynamic Bus Progress Bar */}
+        {/* Scroll Progress Bar */}
         <div className="flex-1 max-w-xl mx-8 relative hidden md:block">
-          <div className="w-full h-1 bg-slate-100 rounded-full overflow-visible relative">
+          <div className="w-full h-1 bg-slate-100 rounded-full">
             <div 
-              className="h-full bg-teal-500 rounded-full transition-all duration-300"
-              style={{ width: `${(activeStep / (totalSteps - 1)) * 100}%` }}
+              className="h-full bg-teal-500 rounded-full transition-all duration-75"
+              style={{ width: `${scrollProgress * 100}%` }}
             />
-            {/* Slideable Bus Indicator */}
-            <div 
-              className="absolute -top-3 w-7 h-7 bg-white border-2 border-teal-500 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
-              style={{ 
-                left: `calc(${(activeStep / (totalSteps - 1)) * 100}% - 14px)`,
-              }}
-            >
-              <Bus className="w-4 h-4 text-teal-600" />
-            </div>
           </div>
         </div>
 
@@ -153,341 +210,493 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
       </header>
 
       {/* Main Scrollytelling Container */}
-      <main className="flex-grow pt-16 overflow-y-auto w-full flex justify-center bg-slate-50">
-        <div className="w-full max-w-3xl px-4 py-8 md:py-12 flex flex-col gap-6">
+      <main className="flex-grow pt-24 pb-20 w-full flex justify-center bg-slate-50">
+        <div className="w-full max-w-3xl px-6 flex flex-col gap-24">
           
-          {/* 📊 Vertically Stacked Visual Placeholder */}
-          <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-            <Bus className="w-10 h-10 text-slate-350" />
-            <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation Placeholder: Screen {activeStep + 1}</span>
-            <span className="text-sm font-black text-slate-500">{stepTitles[activeStep]}</span>
-            <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-              {activeStep === 0 && "Edmonton Transit Service grid map highlighting Route 002 (Blue) and Route 003 (Red)."}
-              {activeStep === 1 && "Interactive grid layout presenting the Four Pillars: Vulnerability, Off Peak, Monopoly, and Opportunity."}
-              {activeStep === 2 && "Comparative bar chart comparing demographic vulnerability indexes (low income, seniors, and minorities) for Route 002 vs Route 003."}
-              {activeStep === 3 && "Accessibility network map illustrating destination opportunity reach (employment hubs, hospitals, and post-secondary hubs)."}
-              {activeStep === 4 && "Off-peak service timeline clock highlighting operating hours during evenings, nights, and weekends."}
-              {activeStep === 5 && "Service monopoly catchment boundaries and walking buffers highlighting route redundancy."}
-              {activeStep === 6 && "Live interactive weights policy simulator updating composite results in real-time."}
-              {activeStep === 7 && "Monte Carlo simplex scatter plot identifying Bedrock Essentials vs. Policy Swing Corridors."}
-              {activeStep === 8 && "Comparative diagnostic route metrics overview matrix."}
-            </p>
-          </div>
-
-          {/* 📖 Text Narrative & Tickets */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-10 shadow-sm flex flex-col justify-between min-h-[300px]">
-            
-            <div className="flex-1 flex flex-col justify-center">
-              
-              {/* Step content switches */}
-              {activeStep === 0 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">The Big Picture</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit users, particularly those in equity-seeking communities.
-                  </p>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    We will examine two contrasting routes:
-                  </p>
-                  <div className="flex flex-col gap-4 mt-2">
-                    <RouteTicket 
-                      routeNumber="002" 
-                      theme="blue" 
-                      title="Route 002: Downtown - Capilano" 
-                      description="A long, high-frequency line crossing the city to link outer neighbourhoods."
-                    />
-                    <RouteTicket 
-                      routeNumber="003" 
-                      theme="orange" 
-                      title="Route 003: Westmount - Stadium" 
-                      description="A shorter connection route linking central hubs."
-                    />
-                  </div>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed mt-2">
-                    City planners must identify which routes provide an essential service to equity-seeking communities, and this scorecard provides the data to make those decisions.
-                  </p>
-                </div>
-              )}
-
-              {activeStep === 1 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">The Four Pillars of Transit Equity</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars:
-                  </p>
-                  <ol className="list-decimal list-inside flex flex-col gap-3 text-slate-600 text-sm md:text-base pl-2">
-                    <li><strong className="text-blue-950">Transit Vulnerability</strong>: The demographic makeup of the neighbourhoods along the route.</li>
-                    <li><strong className="text-blue-950">Off Peak Service</strong>: The availability of the route during evenings, nights, and weekends.</li>
-                    <li><strong className="text-blue-950">Transit Monopoly</strong>: The reliance of neighbourhoods on a single route without alternative options, such as the LRT or nearby frequent bus lines.</li>
-                    <li><strong className="text-blue-950">Destination Opportunity</strong>: The connection of riders to essential locations, including employment areas, hospitals, supermarkets, and schools.</li>
-                  </ol>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's transit equity score.
-                  </p>
-                </div>
-              )}
-
-              {activeStep === 2 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Transit Vulnerability</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    The Transit Vulnerability pillar measures who lives near a bus route. We look at the population of low-income households, seniors, youth, lone parents, and visible minorities in the neighbourhoods served by each line.
-                  </p>
-                  <div className="flex flex-col gap-4 my-2">
-                    <RouteTicket 
-                      routeNumber="002" 
-                      theme="blue" 
-                      title="Route 002: High Vulnerability" 
-                      description="Route 002 serves a large population of 49,902 people across 81 neighbourhoods. Many of these areas contain high concentrations of low-income residents and recent immigrants. As a result, Route 002 receives a vulnerability score of 80.8 out of 100."
-                    />
-                    <RouteTicket 
-                      routeNumber="003" 
-                      theme="orange" 
-                      title="Route 003: Low Vulnerability" 
-                      description="Route 003 serves 13,664 people across 25 neighbourhoods. Because these areas generally have higher average household incomes, fewer seniors, and fewer low-income households, Route 003 receives a vulnerability score of 17.5 out of 100."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {activeStep === 3 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Destination Opportunity</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    The Destination Opportunity pillar evaluates how well a bus route connects riders to critical locations. These locations include major employment centres, medical facilities, post-secondary schools, and grocery stores.
-                  </p>
-                  <div className="flex flex-col gap-4 my-2">
-                    <RouteTicket 
-                      routeNumber="002" 
-                      theme="blue" 
-                      title="Route 002: Diverse Access Link" 
-                      description="Route 002 connects many residential areas directly to major shopping centres, employment zones, and transit terminals. Because it links riders to diverse opportunities, it scores 92.7 out of 100 on Destination Opportunity."
-                    />
-                    <RouteTicket 
-                      routeNumber="003" 
-                      theme="orange" 
-                      title="Route 003: Local Hub connection" 
-                      description="Route 003 covers a shorter distance and connects fewer major hubs, resulting in a Destination Opportunity score of 18.9 out of 100. This score indicates that riders on Route 003 must transfer more frequently to reach key destinations across Edmonton."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {activeStep === 4 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Off Peak Service</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    The Off Peak Service pillar measures the frequency and reliability of a bus route outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
-                  </p>
-                  <div className="flex flex-col gap-4 my-2">
-                    <RouteTicket 
-                      routeNumber="003" 
-                      theme="orange" 
-                      title="Route 003: Consistent Off Peak" 
-                      description="Route 003 maintains regular frequency during late-night hours and weekends. Because it provides dependable service throughout the entire week, it scores 38.0 out of 100 on Off Peak Service."
-                    />
-                    <RouteTicket 
-                      routeNumber="002" 
-                      theme="blue" 
-                      title="Route 002: Reduced Night Hours" 
-                      description="Route 002 has a slightly lower score of 31.3 out of 100. Although Route 002 has high frequency during weekdays, its frequency drops significantly during off-peak times, making travel more difficult for late-night shift workers."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {activeStep === 5 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Transit Monopoly</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    The Transit Monopoly pillar measures how dependent a neighbourhood is on a single bus route. If a neighbourhood has no other bus routes or LRT stations within walking distance, that route acts as a transit monopoly.
-                  </p>
-                  <div className="flex flex-col gap-4 my-2">
-                    <RouteTicket 
-                      routeNumber="002" 
-                      theme="blue" 
-                      title="Route 002: Sole Lifeline" 
-                      description="Route 002 serves outer neighbourhoods where no other transit options exist. If this route were reduced, residents would have no alternative transportation. Therefore, it scores 67.6 out of 100 on Transit Monopoly."
-                    />
-                    <RouteTicket 
-                      routeNumber="003" 
-                      theme="orange" 
-                      title="Route 003: Multiple transit Alternatives" 
-                      description="Route 003 runs through central areas with overlapping transit options, including several bus routes and nearby LRT stations. Because residents can easily access alternative transit lines, Route 003 scores 0.0 out of 100 on Transit Monopoly."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {activeStep === 6 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Policy Weights (Setting City Priorities)</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    After evaluating the individual pillars, city planners must combine them to generate a final grade. To do this, planners assign weights to each pillar, representing the city's current priorities.
-                  </p>
-                  
-                  {/* Weight Sliders Simulator UI */}
-                  <div className="my-2 p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-4">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Weights Allocation Dashboard</span>
-                    
-                    {/* Slider: Vulnerability */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-xs font-bold text-slate-700">
-                        <span>Transit Vulnerability</span>
-                        <span className="font-mono text-teal-650">{weights.vulnerability}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={weights.vulnerability}
-                        onChange={(e) => handleWeightChange('vulnerability', parseInt(e.target.value))}
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                      />
-                    </div>
-
-                    {/* Slider: Off Peak */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-xs font-bold text-slate-700">
-                        <span>Off Peak Service</span>
-                        <span className="font-mono text-teal-650">{weights.offPeak}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={weights.offPeak}
-                        onChange={(e) => handleWeightChange('offPeak', parseInt(e.target.value))}
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                      />
-                    </div>
-
-                    {/* Slider: Monopoly */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-xs font-bold text-slate-700">
-                        <span>Transit Monopoly</span>
-                        <span className="font-mono text-teal-655">{weights.monopoly}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={weights.monopoly}
-                        onChange={(e) => handleWeightChange('monopoly', parseInt(e.target.value))}
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                      />
-                    </div>
-
-                    {/* Slider: Opportunity */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-xs font-bold text-slate-700">
-                        <span>Destination Opportunity</span>
-                        <span className="font-mono text-teal-655">{weights.opportunity}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={weights.opportunity}
-                        onChange={(e) => handleWeightChange('opportunity', parseInt(e.target.value))}
-                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Live score comparison inside weight card */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-3">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Live Simulated Result</span>
-                    <div className="flex flex-col gap-2 text-xs font-bold text-slate-700">
-                      <div className="flex justify-between">
-                        <span>Route 002 Score:</span>
-                        <span className="text-blue-600 font-mono">{liveScores.route2.toFixed(1)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Route 003 Score:</span>
-                        <span className="text-amber-500 font-mono">{liveScores.route3.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Under a balanced policy with equal 25% weights, Route 002 receives a B grade (score of 66.9) due to its high scores in vulnerability, monopoly, and opportunity. Route 003 receives an E grade (score of 18.5) because it serves neighbourhoods with higher average incomes and many alternative transit options.
-                  </p>
-                </div>
-              )}
-
-              {activeStep === 8 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">Turning Data into Action</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    By scoring bus routes across the four pillars and testing score stability, transit planners can make objective funding decisions.
-                  </p>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Instead of guessing, resources can be distributed systematically:
-                  </p>
-                  <ul className="list-disc list-inside flex flex-col gap-2 text-slate-600 text-sm md:text-base pl-2">
-                    <li>Protect and fund Bedrock Essentials, such as Route 002, to maintain the foundation of the transit network.</li>
-                    <li>Target funding toward low-scoring routes to improve frequency, off-peak hours, or connections to jobs.</li>
-                  </ul>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Transit equity is not about providing the same service to everyone. It is about allocating resources to make the greatest positive difference in the lives of residents.
-                  </p>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Planners and residents can use the search tool below to find specific bus routes, view individual pillar scores, and identify stability classes.
-                  </p>
-                </div>
-              )}
-
-              {activeStep === 7 && (
-                <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-blue-900 leading-tight">The Stability Focus (Predicting Policy Swings)</h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    To confirm transit planning is reliable under different political administrations, the model runs a Monte Carlo simulation. This process tests thousands of weight combinations to determine how scores change as policy priorities shift.
-                  </p>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    The model classifies routes based on their scoring stability:
-                  </p>
-                  <ul className="list-disc list-inside flex flex-col gap-3 text-slate-600 text-sm md:text-base pl-2">
-                    <li><strong className="text-blue-950">Bedrock Essentials</strong>: These routes score highly across all weight scenarios. Route 002 is a Bedrock Essential because it consistently receives high marks, making it a permanent priority for transit funding.</li>
-                    <li><strong className="text-blue-950">Policy Swing Corridors</strong>: These routes have scores that fluctuate wildly depending on weight selections. Route 003 is a Policy Swing Corridor because its score rises under an Off Peak Service focus but drops when planners prioritise Transit Monopoly or Transit Vulnerability.</li>
-                  </ul>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Identifying these classes helps planners protect core services and understand how policy changes affect specific routes.
-                  </p>
-                </div>
-              )}
-
+          {/* ================= SECTION 1: Introduction ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Bus className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Edmonton Transit Service grid map</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                A system overview highlighting Route 002 (Blue Corridor) and Route 003 (Red Corridor) on the regional grid map.
+              </p>
             </div>
-
-            {/* 🔘 Navigation Footbar */}
-            <div className="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
-              <button
-                onClick={handlePrev}
-                disabled={activeStep === 0}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border font-bold text-xs transition-all duration-200 ${
-                  activeStep === 0
-                    ? 'text-slate-300 bg-slate-50 border-slate-100 cursor-not-allowed'
-                    : 'text-slate-600 bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:scale-95'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
+            
+            {/* Narrative text (sitting directly on the background) */}
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">The Big Picture</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit users, particularly those in equity-seeking communities.
+              </p>
+              <p className="text-slate-650 text-base leading-relaxed">
+                We will examine two contrasting routes throughout this walkthrough:
+              </p>
               
-              <div className="flex gap-1">
-                {Array.from({ length: totalSteps }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveStep(i)}
-                    className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                      activeStep === i ? 'bg-teal-500 w-4' : 'bg-slate-200 hover:bg-slate-300'
-                    }`}
-                  />
-                ))}
+              <div className="flex flex-col gap-4 py-2">
+                <RouteTicket 
+                  routeNumber="002" 
+                  theme="blue" 
+                  title="Route 002: Downtown - Capilano" 
+                  description="A long, high-frequency line crossing the city to link outer neighbourhoods."
+                />
+                <RouteTicket 
+                  routeNumber="003" 
+                  theme="orange" 
+                  title="Route 003: Westmount - Stadium" 
+                  description="A shorter connection route linking central hubs."
+                />
               </div>
 
-              <button
-                onClick={activeStep === totalSteps - 1 ? onJumpIn : handleNext}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all duration-200 active:scale-95"
-              >
-                {activeStep === totalSteps - 1 ? "Jump to Map!" : "Next"}
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <p className="text-slate-650 text-base leading-relaxed">
+                City planners must identify which routes provide an essential service to equity-seeking communities, and this scorecard provides the data to make those decisions.
+              </p>
+            </div>
+          </section>
+
+          {/* ================= SECTION 2: Four Pillars ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Compass className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: The Four Pillars of Transit Equity</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Visualizing Vulnerability, Off Peak, Monopoly, and Opportunity weight pillars.
+              </p>
             </div>
 
-          </div>
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">The Four Pillars of Transit Equity</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars:
+              </p>
+              <ul className="space-y-3 pl-2 text-slate-650 text-base">
+                <li><strong className="text-blue-950 font-bold">1. Transit Vulnerability</strong>: The demographic makeup of the neighbourhoods along the route.</li>
+                <li><strong className="text-blue-950 font-bold">2. Destination Opportunity</strong>: The connection of riders to essential locations, including employment areas, hospitals, supermarkets, and schools.</li>
+                <li><strong className="text-blue-950 font-bold">3. Off Peak Service</strong>: The availability of the route during evenings, nights, and weekends.</li>
+                <li><strong className="text-blue-950 font-bold">4. Transit Monopoly</strong>: The reliance of neighbourhoods on a single route without alternative options, such as the LRT or nearby frequent bus lines.</li>
+              </ul>
+              <p className="text-slate-650 text-base leading-relaxed">
+                Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's transit equity score.
+              </p>
+            </div>
+          </section>
+
+          {/* ================= SECTION 3: Vulnerability ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Bus className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Transit Vulnerability comparison</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Demographic metrics comparison for low income, seniors, and minorities on Route 002 vs Route 003.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Vulnerability</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                The Transit Vulnerability pillar measures who lives near a bus route. We look at the population of low-income households, seniors, youth, lone parents, and visible minorities in the neighbourhoods served by each line.
+              </p>
+              
+              <div className="flex flex-col gap-4 py-2">
+                <RouteTicket 
+                  routeNumber="002" 
+                  theme="blue" 
+                  title="Route 002: High Vulnerability (Score: 80.8)" 
+                  description="Route 002 serves a large population of 49,902 people across 81 neighbourhoods. Many of these areas contain high concentrations of low-income residents and recent immigrants."
+                />
+                <RouteTicket 
+                  routeNumber="003" 
+                  theme="orange" 
+                  title="Route 003: Low Vulnerability (Score: 17.5)" 
+                  description="Route 003 serves 13,664 people across 25 neighbourhoods. Because these areas generally have higher average household incomes, they present lower vulnerability index rankings."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ================= SECTION 4: Opportunity ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Compass className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Destination Opportunity network maps</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Route reach to major employment hubs, hospitals, and post-secondary campuses.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Destination Opportunity</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                The Destination Opportunity pillar evaluates how well a bus route connects riders to critical locations. These locations include major employment centres, medical facilities, post-secondary schools, and grocery stores.
+              </p>
+              
+              <div className="flex flex-col gap-4 py-2">
+                <RouteTicket 
+                  routeNumber="002" 
+                  theme="blue" 
+                  title="Route 002: Diverse Access Link (Score: 92.7)" 
+                  description="Route 002 connects many residential areas directly to major shopping centres, employment zones, and transit terminals."
+                />
+                <RouteTicket 
+                  routeNumber="003" 
+                  theme="orange" 
+                  title="Route 003: Local Hub Connection (Score: 18.9)" 
+                  description="Route 003 covers a shorter distance and connects fewer major hubs, indicating that riders on Route 003 must transfer more frequently to reach key destinations across Edmonton."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ================= SECTION 5: Off Peak Service ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Clock className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Off-Peak service clock</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Operating hours and reliability timeline comparisons for evening and weekend service.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Off Peak Service</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                The Off Peak Service pillar measures the frequency and reliability of a bus route outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
+              </p>
+              
+              <div className="flex flex-col gap-4 py-2">
+                <RouteTicket 
+                  routeNumber="003" 
+                  theme="orange" 
+                  title="Route 003: Consistent Off Peak (Score: 38.0)" 
+                  description="Route 003 maintains regular frequency during late-night hours and weekends, providing dependable service throughout the entire week."
+                />
+                <RouteTicket 
+                  routeNumber="002" 
+                  theme="blue" 
+                  title="Route 002: Reduced Night Hours (Score: 31.3)" 
+                  description="Although Route 002 has high frequency during weekdays, its frequency drops significantly during off-peak times, making travel more difficult for late-night shift workers."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ================= SECTION 6: Transit Monopoly ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <ShieldCheck className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Transit Monopoly buffer catchments</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Highlighting areas that are solely reliant on one specific route without alternative transit corridors.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Monopoly</h2>
+              <p className="text-slate-650 text-base leading-relaxed">
+                The Transit Monopoly pillar measures how dependent a neighbourhood is on a single bus route. If a neighbourhood has no other bus routes or LRT stations within walking distance, that route acts as a transit monopoly.
+              </p>
+              
+              <div className="flex flex-col gap-4 py-2">
+                <RouteTicket 
+                  routeNumber="002" 
+                  theme="blue" 
+                  title="Route 002: Sole Lifeline (Score: 67.6)" 
+                  description="Route 002 serves outer neighbourhoods where no other transit options exist. If this route were reduced, residents would have no alternative transportation."
+                />
+                <RouteTicket 
+                  routeNumber="003" 
+                  theme="orange" 
+                  title="Route 003: Multiple Transit Alternatives (Score: 0.0)" 
+                  description="Route 003 runs through central areas with overlapping transit options, including several bus routes and nearby LRT stations. Because residents can easily access alternative transit lines, it scores zero."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ================= SECTION 7: Policy Weights Simulator ================= */}
+          <section className="flex flex-col gap-6">
+            
+            {/* Interactive Weight Sliders Simulator Widget */}
+            <div className="p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm">
+              <div className="flex flex-col items-center">
+                <Zap className="w-8 h-8 text-teal-600 mb-1" />
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Policy Weights Simulator</span>
+                <span className="text-xs text-slate-400 mt-0.5 text-center">Adjust weights to see how route scores shift instantly</span>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                {/* Slider: Vulnerability */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-700">
+                    <span>Transit Vulnerability</span>
+                    <span className="font-mono text-teal-600">{weights.vulnerability}%</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="100" 
+                    value={weights.vulnerability}
+                    onChange={(e) => handleWeightChange('vulnerability', parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+                  />
+                </div>
+
+                {/* Slider: Off Peak */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-700">
+                    <span>Off Peak Service</span>
+                    <span className="font-mono text-teal-600">{weights.offPeak}%</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="100" 
+                    value={weights.offPeak}
+                    onChange={(e) => handleWeightChange('offPeak', parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+                  />
+                </div>
+
+                {/* Slider: Monopoly */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-700">
+                    <span>Transit Monopoly</span>
+                    <span className="font-mono text-teal-600">{weights.monopoly}%</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="100" 
+                    value={weights.monopoly}
+                    onChange={(e) => handleWeightChange('monopoly', parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+                  />
+                </div>
+
+                {/* Slider: Opportunity */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-700">
+                    <span>Destination Opportunity</span>
+                    <span className="font-mono text-teal-600">{weights.opportunity}%</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="100" 
+                    value={weights.opportunity}
+                    onChange={(e) => handleWeightChange('opportunity', parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+                  />
+                </div>
+              </div>
+
+              {/* Live score comparison inside weight card */}
+              <div className="p-4 bg-white/70 border border-slate-200 rounded-xl flex flex-col gap-1.5 shadow-inner">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Live Simulated Result</span>
+                <div className="flex flex-col gap-1 text-xs font-bold text-slate-700">
+                  <div className="flex justify-between">
+                    <span>Route 002 Score:</span>
+                    <span className="text-blue-650 font-mono font-black">{liveScores.route2.toFixed(1)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Route 003 Score:</span>
+                    <span className="text-amber-600 font-mono font-black">{liveScores.route3.toFixed(1)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Policy Weights (Setting City Priorities)</h2>
+              <p className="text-slate-655 text-base leading-relaxed">
+                After evaluating the individual pillars, city planners must combine them to generate a final grade. To do this, planners assign weights to each pillar, representing the city's current priorities.
+              </p>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Under a balanced policy with equal 25% weights, Route 002 receives a B grade (score of 66.9) due to its high scores in vulnerability, monopoly, and opportunity. Route 003 receives an E grade (score of 18.5) because it serves neighbourhoods with higher average incomes and many alternative transit options.
+              </p>
+            </div>
+          </section>
+
+          {/* ================= SECTION 8: Stability Focus Scatter Plot ================= */}
+          <section className="flex flex-col gap-6">
+            
+            {/* 📊 Actual Interactive Scatter Plot */}
+            <div className="w-full h-96 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col">
+              <div className="text-center mb-3">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Policy Risk Map: Mean Score vs. Volatility</span>
+                <p className="text-[10px] text-slate-400 mt-0.5">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
+              </div>
+
+              {sensitivityData.length > 0 ? (
+                <div className="flex-1 min-h-0 relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                      <XAxis
+                        type="number"
+                        dataKey="score_mean"
+                        name="Mean Score"
+                        domain={[0, 100]}
+                        tickCount={6}
+                        stroke="#94A3B8"
+                        fontSize={9}
+                        label={{
+                          value: 'Mean Score (Overall Priority Rank)',
+                          position: 'bottom',
+                          offset: 5,
+                          fontSize: 9,
+                          fill: '#64748B',
+                          fontWeight: 600
+                        }}
+                      />
+                      <YAxis
+                        type="number"
+                        dataKey="score_std"
+                        name="Volatility"
+                        domain={[0, 40]}
+                        tickCount={5}
+                        stroke="#94A3B8"
+                        fontSize={9}
+                        label={{
+                          value: 'Robustness Index (Rr) — Volatility',
+                          angle: -90,
+                          position: 'insideLeft',
+                          offset: -5,
+                          fontSize: 9,
+                          fill: '#64748B',
+                          fontWeight: 600
+                        }}
+                      />
+                      <Tooltip content={<CustomChartTooltip />} cursor={{ strokeDasharray: '3 3' }} />
+                      
+                      <Scatter data={sensitivityData}>
+                        {sensitivityData.map((entry, index) => {
+                          const isRoute2 = entry.route_id === '002';
+                          const isRoute3 = entry.route_id === '003';
+                          
+                          // Style highlight for Route 002 and 003
+                          let fill = CLASS_COLORS[entry.stability_class] || '#64748B';
+                          let radius = 3.5;
+                          let fillOpacity = 0.25;
+                          let stroke = 'transparent';
+                          let strokeWidth = 0;
+
+                          if (isRoute2) {
+                            fill = '#2563EB'; // Bright blue for Route 2
+                            radius = 8;
+                            fillOpacity = 1.0;
+                            stroke = '#1D4ED8';
+                            strokeWidth = 2;
+                          } else if (isRoute3) {
+                            fill = '#EA580C'; // Bright orange for Route 3
+                            radius = 8;
+                            fillOpacity = 1.0;
+                            stroke = '#C2410C';
+                            strokeWidth = 2;
+                          }
+
+                          return (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={fill}
+                              fillOpacity={fillOpacity}
+                              stroke={stroke}
+                              strokeWidth={strokeWidth}
+                              r={radius}
+                            />
+                          );
+                        })}
+                      </Scatter>
+                    </ScatterChart>
+                  </ResponsiveContainer>
+
+                  {/* Manual Overlay Labels for Route 002 and Route 003 */}
+                  <div className="absolute top-2 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-blue-600 shadow-sm pointer-events-none">
+                    🔵 Route 002: Bedrock Essential (Low Volatility / High Score)
+                  </div>
+                  <div className="absolute bottom-10 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-orange-600 shadow-sm pointer-events-none">
+                    🟠 Route 003: Policy Swing Corridor (Low Volatility / Low Score)
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-xs text-slate-400 font-mono">
+                  Loading Sensitivity Scatter dataset...
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">The Stability Focus (Predicting Policy Swings)</h2>
+              <p className="text-slate-655 text-base leading-relaxed">
+                To confirm transit planning is reliable under different political administrations, the model runs a Monte Carlo simulation. This process tests thousands of weight combinations to determine how scores change as policy priorities shift.
+              </p>
+              <p className="text-slate-655 text-base leading-relaxed">
+                The model classifies routes based on their scoring stability:
+              </p>
+              <ul className="space-y-3 pl-2 text-slate-655 text-base">
+                <li><strong className="text-blue-950 font-bold">Bedrock Essentials</strong>: These routes score highly across all weight scenarios. Route 002 is a Bedrock Essential because it consistently receives high marks, making it a permanent priority for transit funding.</li>
+                <li><strong className="text-blue-950 font-bold">Policy Swing Corridors</strong>: These routes have scores that fluctuate wildly depending on weight selections. Route 003 is a Policy Swing Corridor because its score rises under an Off Peak Service focus but drops when planners prioritise Transit Monopoly or Transit Vulnerability.</li>
+              </ul>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Identifying these classes helps planners protect core services and understand how policy changes affect specific routes.
+              </p>
+            </div>
+          </section>
+
+          {/* ================= SECTION 9: Action ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Bus className="w-10 h-10 text-slate-350" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Comparative diagnostics route matrix</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                A summary grid presenting diagnostic indicators and final recommendations.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">Turning Data into Action</h2>
+              <p className="text-slate-655 text-base leading-relaxed">
+                By scoring bus routes across the four pillars and testing score stability, transit planners can make objective funding decisions.
+              </p>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Instead of guessing, resources can be distributed systematically:
+              </p>
+              <ul className="list-disc list-inside flex flex-col gap-2 text-slate-655 text-base pl-2">
+                <li>Protect and fund Bedrock Essentials, such as Route 002, to maintain the foundation of the transit network.</li>
+                <li>Target funding toward low-scoring routes to improve frequency, off-peak hours, or connections to jobs.</li>
+              </ul>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Transit equity is not about providing the same service to everyone. It is about allocating resources to make the greatest positive difference in the lives of residents.
+              </p>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Planners and residents can use the search tool in the dashboard to find specific bus routes, view individual pillar scores, and identify stability classes.
+              </p>
+            </div>
+          </section>
+
+          {/* ================= BOTTOM CALL TO ACTION ================= */}
+          <section className="mt-12 pt-12 border-t border-slate-200 flex flex-col items-center gap-6 text-center">
+            <div className="max-w-md space-y-2">
+              <h3 className="text-2xl font-black text-blue-950">Ready to explore the data?</h3>
+              <p className="text-sm text-slate-500">
+                You can search routes, adjust weights, and explore Dissemination Area matrices in our fully interactive map dashboard.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+              <button
+                onClick={onJumpIn}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-all duration-200 active:scale-95 whitespace-nowrap"
+              >
+                Go to Map Dashboard
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onBack}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm border border-slate-300 shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap"
+              >
+                Back to Welcome Screen
+              </button>
+            </div>
+          </section>
 
         </div>
       </main>
