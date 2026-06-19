@@ -23,6 +23,7 @@ import {
 import { RouteTicket } from './ui/RouteTicket';
 import { ExplainerMap } from './widgets/ExplainerMap';
 import { MonteCarloPlinko } from './widgets/MonteCarloPlinko';
+import { OdtExplainerMap } from './widgets/OdtExplainerMap';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -52,6 +53,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   // States to hold route geometry & boundaries for the inline ExplainerMaps
   const [route2Data, setRoute2Data] = useState<any>(null);
   const [route3Data, setRoute3Data] = useState<any>(null);
+  const [route727Data, setRoute727Data] = useState<any>(null);
+  const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
   // Policy Sliders state for Step 7 (Policy Weights)
@@ -115,13 +118,20 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
       .then((data) => setDaGeoJson(data))
       .catch((err) => console.error("❌ Explainer Map failed to load DA boundaries:", err));
 
+    fetch('/data/odt_zones.geojson')
+      .then((res) => res.json())
+      .then((data) => setOdtGeoJson(data))
+      .catch((err) => console.error("❌ Explainer Map failed to load ODT GeoJSON:", err));
+
     fetch('/data/golden_route_record.json')
       .then((res) => res.json())
       .then((data) => {
         const r2 = data.routes.find((r: any) => r.route_id === '002');
         const r3 = data.routes.find((r: any) => r.route_id === '003');
+        const r727 = data.routes.find((r: any) => r.route_id === '727');
         setRoute2Data(r2);
         setRoute3Data(r3);
+        setRoute727Data(r727);
       })
       .catch((err) => console.error("❌ Explainer Map failed to load golden route records:", err));
   }, []);
@@ -469,14 +479,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
           {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Bus className="w-10 h-10 text-teal-600 animate-pulse" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2 text-teal-700">On Demand Transit (ODT) Integration</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Visualizing how demand-responsive shuttles connect outer residential pockets to LRT stations and transit hubs.
-              </p>
-            </div>
+            {/* Dynamic Map Visualization */}
+            {odtGeoJson && (
+              <OdtExplainerMap odtGeoJson={odtGeoJson} routeData={route727Data} />
+            )}
 
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
