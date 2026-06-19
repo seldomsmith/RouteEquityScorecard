@@ -495,11 +495,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <ul className="space-y-3 pl-2 text-slate-600 text-base">
                 <li>
                   <strong className="text-blue-950 font-bold">Transit Vulnerability Mitigation (-10%)</strong>: 
-                  DAs covered by ODT receive a 10% mitigation discount on their vulnerability index ($V_i \times 0.90$) because dynamic feeder shuttles help eliminate local isolation.
+                  DAs covered by ODT receive a 10% mitigation discount on their vulnerability index ({"$V_i \\times 0.90$"}) because dynamic feeder shuttles help eliminate local isolation.
                 </li>
                 <li>
                   <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
-                  DAs within ODT zones are no longer purely captive to a single fixed bus route. We apply a 50% discount to their Functional Monopoly Index ($FMI_{i,r} \times 0.50$) to reflect this dynamic transit alternative.
+                  DAs within ODT zones are no longer purely captive to a single fixed bus route. We apply a 50% discount to their Functional Monopoly Index ({"$FMI_{i,r} \\times 0.50$"}) to reflect this dynamic transit alternative.
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
