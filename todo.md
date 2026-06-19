@@ -19,6 +19,9 @@ Refining analytical modeling, service impact simulations, and advanced research 
    - Construct base narrative pages in Google Stitch based on the revised script.
    - Incorporate the scrollytelling components into the frontend codebase.
    - Wire dynamic map states, responsive charts, and policy weight controllers to the scroll triggers.
+6. **On Demand Transit (ODT) Zones Integration** [HIGH]
+   - Integrate spatial boundaries and coverage metrics of Edmonton's On Demand Transit zones into the map dashboard.
+   - Factor ODT feeder availability into transit monopoly and neighbourhood vulnerability scoring models.
 
 ---
 
