@@ -263,6 +263,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   }, [mapFilterMode]);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
+  const [showOdtZones, setShowOdtZones] = useState(false);
 
   // Fetch DA boundaries GeoJSON once
   useEffect(() => {
@@ -335,6 +336,39 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current!.addSource('da-heatmap', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+      });
+
+      // Add ODT Zones source and layers
+      map.current!.addSource('odt-zones', {
+        type: 'geojson',
+        data: '/data/odt_zones.geojson',
+      });
+
+      map.current!.addLayer({
+        id: 'odt-zones-fill',
+        type: 'fill',
+        source: 'odt-zones',
+        paint: {
+          'fill-color': '#0D9488',
+          'fill-opacity': 0.12,
+        },
+        layout: {
+          visibility: 'none',
+        },
+      });
+
+      map.current!.addLayer({
+        id: 'odt-zones-line',
+        type: 'line',
+        source: 'odt-zones',
+        paint: {
+          'line-color': '#0F766E',
+          'line-width': 1.5,
+          'line-dasharray': [3, 3],
+        },
+        layout: {
+          visibility: 'none',
+        },
       });
 
       map.current!.addLayer({
@@ -469,9 +503,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current!.on('mouseenter', 'routes-line', (e) => {
         if (e.features?.[0]) {
           const props = e.features[0].properties!;
+          const state = useRouteStore.getState();
+          const isStability = state.mapFilterMode === 'stability';
+          const is2P = state.disabledWeights.includes('resilience') && state.disabledWeights.includes('monopoly');
+          const stabilityClass = is2P ? props.stability_class_2_pillar : props.stability_class;
+          const detailText = isStability
+            ? `${stabilityClass} · Score ${Number(props.composite_score).toFixed(1)}`
+            : `Grade ${props.grade} · Score ${Number(props.composite_score).toFixed(1)}`;
           popup
             .setLngLat(e.lngLat)
-            .setHTML(`<div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.short_name} — ${props.name}</div><div style="font:500 10px Inter,sans-serif;color:#64748B">Grade ${props.grade} · Score ${Number(props.composite_score).toFixed(1)}</div>`)
+            .setHTML(`<div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.short_name} — ${props.name}</div><div style="font:500 10px Inter,sans-serif;color:#64748B">${detailText}</div>`)
             .addTo(map.current!);
         }
       });
@@ -550,6 +591,23 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         daPopup.remove();
       });
 
+      // Hover tooltip for ODT Zones
+      const odtPopup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+      map.current!.on('mouseenter', 'odt-zones-fill', (e) => {
+        if (e.features?.[0]) {
+          map.current!.getCanvas().style.cursor = 'pointer';
+          const props = e.features[0].properties!;
+          odtPopup
+            .setLngLat(e.lngLat)
+            .setHTML(`<div style="font:700 11px Inter,sans-serif;color:#0F766E;text-transform:uppercase;letter-spacing:0.05em">On Demand Transit Zone</div><div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.neighbourhood || 'Edmonton Area'}</div>`)
+            .addTo(map.current!);
+        }
+      });
+      map.current!.on('mouseleave', 'odt-zones-fill', () => {
+        map.current!.getCanvas().style.cursor = '';
+        odtPopup.remove();
+      });
+
       routesAdded.current = true;
     };
 
@@ -559,6 +617,22 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current.on('load', addRoutes);
     }
   }, [routes, setSelectedRoute]);
+
+  // Toggle ODT Zones layer visibility
+  useEffect(() => {
+    if (!map.current) return;
+    const visibility = showOdtZones ? 'visible' : 'none';
+    try {
+      if (map.current.getLayer('odt-zones-fill')) {
+        map.current.setLayoutProperty('odt-zones-fill', 'visibility', visibility);
+      }
+      if (map.current.getLayer('odt-zones-line')) {
+        map.current.setLayoutProperty('odt-zones-line', 'visibility', visibility);
+      }
+    } catch (e) {
+      console.warn('Could not toggle ODT layer visibility:', e);
+    }
+  }, [showOdtZones]);
 
   // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle, route selection, or grade change
   useEffect(() => {
@@ -1008,6 +1082,19 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             </div>
           </>
         )}
+
+        {/* On Demand Transit Toggle */}
+        <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
+          <label className="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-slate-600">
+            <input 
+              type="checkbox"
+              checked={showOdtZones}
+              onChange={(e) => setShowOdtZones(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-slate-300 text-brand-teal-600 focus:ring-brand-teal-500 cursor-pointer"
+            />
+            ODT Zones Overlay
+          </label>
+        </div>
 
         {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
         {selectedRoute && (

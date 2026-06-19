@@ -7,6 +7,20 @@ import json
 import os
 import math
 import numpy as np
+import pandas as pd
+
+# Exact list of neighbourhoods from the official Edmonton Transit ODT map
+ODT_NEIGHBOURHOODS = {
+    'BRECKENRIDGE GREENS', 'EDGEMONT', 'POTTER GREENS', 'STEWART GREENS', 'THE HAMPTONS', 'RIVER CREE', 'ENOCH',
+    'HAWKS RIDGE', 'KINOKAMAU PLAINS INDUSTRIAL', 'MISTATIM INDUSTRIAL', 'STARLING', 'TRUMPETER', 'WESTVIEW VILLAGE', 'WINTERBURN INDUSTRIAL',
+    'BALWIN', 'MONTROSE', 'INDUSTRIAL HEIGHTS', 'CLOVERDALE', 'EASTGATE BUSINESS PARK',
+    'AVONMORE', 'GAINER INDUSTRIAL', 'GIRARD INDUSTRIAL', 'KENILWORTH', 'KING EDWARD PARK',
+    'ROPER INDUSTRIAL', 'WEIR INDUSTRIAL', 'ASPEN GARDENS', 'BROOKSIDE', 'FORT EDMONTON PARK', 'GRANDVIEW HEIGHTS', 'LANSDOWNE',
+    'FALCONER HEIGHTS', 'HENDERSON ESTATES', 'JASPER PARK', 'LAURIER HEIGHTS', 'PARKVIEW', 'QUESNELL HEIGHTS', 'RIO TERRACE', 'SHERWOOD', 'VALLEY ZOO', 'WESTRIDGE',
+    'CAMERON HEIGHTS', 'WEDGEWOOD HEIGHTS', 'BLACKBURNE', 'CASHMAN', 'CAVANAGH', 'THE HILLS AT CHARLESWORTH',
+    'ALBANY', 'CHAMBERY', 'ELSINORE', 'NORTHWEST POLICE CAMPUS', 'RAMPART INDUSTRIAL', 'ASTER', 'TAMARACK', 'MAPLE',
+    'BLACKMUD CREEK', 'GLENRIDDING RAVINE', 'GRAYDON HILL', 'HAYS RIDGE', 'KESWICK', 'RUNDLE PARK', 'RIVERDALE', 'WINDSOR PARK', 'BELGRAVIA', 'LENDRUM', 'MALMO PLAINS'
+}
 
 def main():
     print("=" * 60)
@@ -16,6 +30,16 @@ def main():
     # Paths
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
+    # Load fallback neighbourhood map
+    mapped_csv = os.path.join(BASE_DIR, 'docs', 'da_vulnerability_sensitivity_mapped.csv')
+    da_to_nh = {}
+    if os.path.exists(mapped_csv):
+        df_map = pd.read_csv(mapped_csv)
+        da_to_nh = dict(zip(df_map['DAID'].astype(str).str.strip(), df_map['Neighbourhood'].astype(str).str.strip().str.upper()))
+        print(f"Loaded {len(da_to_nh)} DA to neighbourhood mappings for monopoly calculations.")
+    else:
+        print(f"Warning: Fallback map not found at {mapped_csv}")
+
     golden_json_paths = [
         'public/data/golden_route_record.json',
         'data/golden_route_record.json'
@@ -25,29 +49,12 @@ def main():
     if not os.path.exists(catchments_path):
         raise FileNotFoundError(f"Missing destination catchments at {catchments_path}. Run build_destination_catchments.py first.")
         
-    dashboard_dir = os.path.abspath(os.path.join(BASE_DIR, '..', 'YEG Transit Equity Dashboard', 'YEGTransitEquityModel3.0-2.26.26-main', 'YEGTransitEquityModel3.0-2.26.26-main'))
-    if not os.path.exists(dashboard_dir):
-        dashboard_dir = os.path.abspath(os.path.join(BASE_DIR, '..', 'YEG Transit Equity Dashboard'))
-        
-    transit_routes_path = os.path.join(dashboard_dir, 'data', 'EDM', 'processed', 'transit_routes.json')
-    if not os.path.exists(transit_routes_path):
-        raise FileNotFoundError(f"Missing transit_routes.json at {transit_routes_path}")
-
     # 1. Load inputs
     with open(catchments_path, 'r', encoding='utf-8') as f:
         catchments = json.load(f)
         
     catchment_sets = {str(k): set(v) for k, v in catchments.items()}
         
-    with open(transit_routes_path, 'r', encoding='utf-8') as f:
-        transit_routes_raw = json.load(f)
-        
-    # Build a trip_count lookup from transit_routes.json
-    trip_counts = {}
-    for cat, route_list in transit_routes_raw.items():
-        for r in route_list:
-            trip_counts[str(r['route_id'])] = float(r.get('trip_count', 0))
-
     # Read from public golden record as baseline
     primary_path = 'public/data/golden_route_record.json'
     if not os.path.exists(primary_path):
@@ -57,6 +64,9 @@ def main():
         golden_data = json.load(f)
 
     routes = golden_data['routes']
+    
+    # Build a trip_count lookup from golden_route_record.json!
+    trip_counts = {str(r['route_id']): float(r.get('trip_count', 0.0)) for r in routes}
     
     # 2. Build mapping of DA ID -> list of route IDs serving that DA
     da_to_routes = {}
@@ -110,6 +120,17 @@ def main():
                 
             # Average FMI across all destinations of this route
             da_fmi = da_fmi_sum / len(route_dests)
+            
+            # Apply ODT discount (50% reduction in monopoly score contribution)
+            nh = da_to_nh.get(da_id_str, 'UNKNOWN')
+            is_odt = False
+            for odt_nh in ODT_NEIGHBOURHOODS:
+                if odt_nh in nh or nh in odt_nh:
+                    is_odt = True
+                    break
+            if is_odt:
+                da_fmi = da_fmi * 0.50
+                
             total_fmi += da_fmi
             
         route_monopoly_da_counts[route_id] = total_fmi

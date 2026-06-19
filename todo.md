@@ -4,36 +4,31 @@
 Refining analytical modeling, service impact simulations, and advanced research reporting.
 
 ## Sprint Backlog
-### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
-1. **2-Pillar Sensitivity Integration** [CRITICAL]
-   - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
-
 ### Phase 4.5: Simulation & Data Pipeline
-2. **Service Impact Simulation (Draft Mode)** [HIGH]
+1. **Service Impact Simulation (Draft Mode)** [HIGH]
    - Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory.
-3. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
+2. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
-4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
+3. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
-5. **Scrollytelling Application Integration** [HIGH]
-   - Construct base narrative pages in Google Stitch based on the revised script.
-   - Incorporate the scrollytelling components into the frontend codebase.
-   - Wire dynamic map states, responsive charts, and policy weight controllers to the scroll triggers.
-6. **On Demand Transit (ODT) Zones Integration** [HIGH]
-   - Integrate spatial boundaries and coverage metrics of Edmonton's On Demand Transit zones into the map dashboard.
-   - Factor ODT feeder availability into transit monopoly and neighbourhood vulnerability scoring models.
-7. **Scroll-Driven Map Sync (Scrollytelling)** [HIGH]
-   - Integrate the real Mapbox GL JS map component directly as a sticky visualization panel in the explainer.
-   - Connect scroll thresholds to flyTo transitions isolating Route 002 and Route 003 on the map dynamically.
-8. **Side-by-Side Monte Carlo Plinko Simulator (Scrollytelling)** [HIGH]
-   - Design interactive matching Plinko boards to visualize Route 002 (Bedrock) vs Route 003 (Swing Corridor) score stability side-by-side using smooth canvas ball drop physics.
-9. **Micro-Scroll Animations & Sticky Headers (Scrollytelling)** [MEDIUM]
-   - Implement scroll-driven text fading, sticky section tracking headers, and radial gauge count-up animations to enhance narrative delivery.
 
 ---
 
 ## Review & Completed Work
 ### Completed:
+- **On Demand Transit (ODT) Zones Integration (Phase 4.5)**:
+  - Formulated a 21-zone neighborhood list matching official ETS ODT boundaries to capture 135 census DAs.
+  - Updated `scripts/update_vulnerability_index.py` and `scripts/calculate_functional_monopoly.py` to discount vulnerability ($V_i$) by 10% and FMI monopoly score contribution by 50% for DAs in ODT zones.
+  - Re-executed scoring, cap-normalization, and Monte Carlo engines to refresh JSON/Parquet databases.
+  - Loaded `odt_zones.geojson` and styled translucent fill and dashed borders in `src/components/map/Map.tsx`, complete with hover tooltips and legend controls.
+- **2-Pillar Sensitivity Integration (Phase 3.5)**:
+  - Configured `scripts/run_two_pillar_sensitivity_analysis.py` to write 2-pillar simulation results directly to `public/data/sensitivity_summary_2_pillar.csv`.
+  - Updated `src/components/CommandCentre.tsx` to read both 4-pillar and 2-pillar datasets, dynamically swapping them as active `sensitivityData` when Off-Peak (`resilience`) and Monopoly (`monopoly`) weight variables are disabled.
+  - Rewired the map hover tooltip popup inside `src/components/map/Map.tsx` to dynamically query and show the correct active stability classification in Stability Focus mode.
+- **Monte Carlo Stability Alignment & School Specials Exclusion (Phase 3.5 / Phase 10)**:
+  - Refined Monte Carlo engine classification logic in `run_sensitivity_analysis.py` and `run_two_pillar_sensitivity_analysis.py` to bound Bedrock Essentials (Always High Equity) to `mean_score >= 10.0` and Bedrock Resilients to `mean_score < 10.0`.
+  - Excluded all 65 school special routes (6xx-range) from the analytical data pipeline, updating the baseline to 170 active transit corridors.
+  - Regenerated golden route records, sensitivity matrices, statistical summaries, and remote git repositories.
 - **Stability Focus Component Shift (Phase 3.5)**:
   - When switching the segmented control to Stability Focus, swapped the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
 - **Policy Risk Map Scatter Plot & Sensitivity Waterfall (Phase 3.5)**:
