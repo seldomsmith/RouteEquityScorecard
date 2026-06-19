@@ -134,3 +134,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 
 
+
+- **Monte Carlo Plinko Physics Simulation Widget (Phase 20)**:
+  - Created `src/components/widgets/MonteCarloPlinko.tsx` representing a high-performance side-by-side Plinko simulation.
+  - Implemented separate HTML5 `<canvas>` elements for two transit routes:
+    - **Route 002 (Bedrock Essential)**: Custom physics applies a subtle steering force to particles, guiding them to cluster in a tight score range of 65-75 (low volatility profile).
+    - **Route 003 (Policy Swing Corridor)**: Custom physics allows a wide dispersion of particles scattered across 10-60 (high volatility profile).
+  - Added a global "Simulate 100 Scenarios" trigger that cascades 100 particles on both boards simultaneously with a staggered drop rate.
+  - Integrated interactive live histograms and digital stats at the bottom of each board calculating the real-time Mean score and Standard Deviation (Spread) as particles land in their bins.
+  - Custom-styled the board with deep navy backgrounds, glowing particle trails, pulsing peg indicators, and a clean white border layout matching the Route Equity Scorecard premium visual standards.

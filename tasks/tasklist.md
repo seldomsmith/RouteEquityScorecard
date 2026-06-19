@@ -317,3 +317,10 @@
   $$\text{Access Density} = \frac{\sum(\text{POI}_i \times \text{Weight}_i)}{\text{Length}_{\text{route}}} \times \ln(\text{Ridership} + 1)$$
 - [ ] **Temporal Schedule Matching**: Align the operating hours of schools, grocery stores, and hospitals with GTFS timetables (e.g., verifying if transit runs when shifts change).
 - [ ] **Real-Time Pedestrian Infrastructure**: Replace standard circular walking buffers or static isochrones with true sidewalk networks that account for crosswalk wait times and physical barriers.
+
+## Phase 20: Premium Monte Carlo Plinko Physics Simulation Widget
+- [x] Design and implement the premium side-by-side Plinko physics simulation in `src/components/widgets/MonteCarloPlinko.tsx` <!-- id: 102, priority: critical -->
+- [x] Add HTML5 Canvas simulation for Route 002 (Bedrock Essential) funneling to 65-75 score range <!-- id: 103, priority: high -->
+- [x] Add HTML5 Canvas simulation for Route 003 (Policy Swing Corridor) scattering widely across 10-60 score range <!-- id: 104, priority: high -->
+- [x] Implement interactive "Simulate 100 Policy Scenarios" trigger, live histograms, and premium visuals <!-- id: 105, priority: high -->
+- [x] Verify TS compilation and run builds to ensure correctness <!-- id: 106, priority: critical -->
