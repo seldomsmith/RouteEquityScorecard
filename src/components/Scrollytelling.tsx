@@ -467,6 +467,41 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
+          {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
+          <section className="flex flex-col gap-6">
+            {/* Visual Placeholder */}
+            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
+              <Bus className="w-10 h-10 text-teal-600 animate-pulse" />
+              <span className="text-xs font-mono tracking-widest uppercase mt-2 text-teal-700">On Demand Transit (ODT) Integration</span>
+              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
+                Visualizing how demand-responsive shuttles connect outer residential pockets to LRT stations and transit hubs.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
+              <p className="text-slate-655 text-base leading-relaxed">
+                Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable shuttle fleets to ferry residents directly from their doorsteps to major transit centres or LRT stations.
+              </p>
+              <p className="text-slate-655 text-base leading-relaxed">
+                By providing dynamic feeder service, ODT fundamentally changes how transit equity is modeled:
+              </p>
+              <ul className="space-y-3 pl-2 text-slate-600 text-base">
+                <li>
+                  <strong className="text-blue-950 font-bold">Transit Vulnerability Mitigation (-10%)</strong>: 
+                  DAs covered by ODT receive a 10% mitigation discount on their vulnerability index ($V_i \times 0.90$) because dynamic feeder shuttles help eliminate local isolation.
+                </li>
+                <li>
+                  <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
+                  DAs within ODT zones are no longer purely captive to a single fixed bus route. We apply a 50% discount to their Functional Monopoly Index ($FMI_{i,r} \times 0.50$) to reflect this dynamic transit alternative.
+                </li>
+              </ul>
+              <p className="text-slate-600 text-base leading-relaxed">
+                This ensures route scores are not artificially inflated in areas where demand-responsive shuttles are already successfully bridging the service gap.
+              </p>
+            </div>
+          </section>
+
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
           <section className="flex flex-col gap-6">
             
