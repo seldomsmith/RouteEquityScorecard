@@ -21,10 +21,16 @@ export const CommandCentre = () => {
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
   const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
 
+  const disabledWeights = useRouteStore((state) => state.disabledWeights);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
-  const [sensitivityData, setSensitivityData] = React.useState<Record<string, any>>({});
+  const [sensitivityData4Pillar, setSensitivityData4Pillar] = React.useState<Record<string, any>>({});
+  const [sensitivityData2Pillar, setSensitivityData2Pillar] = React.useState<Record<string, any>>({});
   const [daAreaMap, setDaAreaMap] = React.useState<Record<string, number>>({});
+
+  const sensitivityData = is2PillarActive ? sensitivityData2Pillar : sensitivityData4Pillar;
 
   // Fetch DA boundaries to build land area lookup
   React.useEffect(() => {
@@ -48,6 +54,7 @@ export const CommandCentre = () => {
 
   // Fetch sensitivity data
   React.useEffect(() => {
+    // 4-Pillar
     fetch('/data/sensitivity_summary.csv')
       .then((res) => res.text())
       .then((text) => {
@@ -71,9 +78,37 @@ export const CommandCentre = () => {
             lookup[obj.route_id] = obj;
           }
         }
-        setSensitivityData(lookup);
+        setSensitivityData4Pillar(lookup);
       })
-      .catch((err) => console.error('Failed to load sensitivity summary:', err));
+      .catch((err) => console.error('Failed to load 4-pillar sensitivity summary:', err));
+
+    // 2-Pillar
+    fetch('/data/sensitivity_summary_2_pillar.csv')
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map((h) => h.trim());
+        const lookup: Record<string, any> = {};
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const values = line.split(',').map((v) => v.trim());
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = values[idx];
+            if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
+              obj[h] = val || '';
+            } else {
+              obj[h] = Number(val || 0);
+            }
+          });
+          if (obj.route_id) {
+            lookup[obj.route_id] = obj;
+          }
+        }
+        setSensitivityData2Pillar(lookup);
+      })
+      .catch((err) => console.error('Failed to load 2-pillar sensitivity summary:', err));
   }, []);
 
   // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP

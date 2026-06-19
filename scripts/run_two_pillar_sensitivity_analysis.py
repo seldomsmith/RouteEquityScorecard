@@ -148,6 +148,11 @@ def main():
     df_export.to_csv(spreadsheet_path, index=False)
     print(f"  Spreadsheet saved to {spreadsheet_path} ({len(df_export)} rows).")
 
+    # Save summary representation in the frontend data directory
+    summary_2_pillar_path = 'public/data/sensitivity_summary_2_pillar.csv'
+    df_summary.to_csv(summary_2_pillar_path, index=False)
+    print(f"  Summary representation saved to {summary_2_pillar_path}.")
+
     # Save stability_class_2_pillar back to golden records
     print("  Saving stability_class_2_pillar back to golden records...")
     stability_lookup = {s['route_id']: s['stability_class'] for s in summaries}
