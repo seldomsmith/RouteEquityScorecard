@@ -810,19 +810,29 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         .filter((f: any) => daMap.has(String(f.properties?.DAUID)))
         .map((f: any) => {
           const daInfo = daMap.get(String(f.properties.DAUID))!;
+          
+          // Compute dynamic fallback for vulnerability_index if undefined
+          const lowIncome = Number(daInfo.low_income_pct || 0);
+          const minority = Number(daInfo.minority_pct || 0);
+          const senior = Number(daInfo.senior_pct || 0);
+          
+          const vIndex = (daInfo.vulnerability_index !== undefined && daInfo.vulnerability_index !== null)
+            ? Number(daInfo.vulnerability_index)
+            : (lowIncome + minority + senior) / 3;
+
           return {
             ...f,
             properties: {
               ...f.properties,
-              vulnerability_index: daInfo.vulnerability_index,
-              pop: daInfo.pop,
-              low_income_pct: daInfo.low_income_pct,
-              minority_pct: daInfo.minority_pct,
-              senior_pct: daInfo.senior_pct,
-              lone_parent_pct: daInfo.lone_parent_pct,
-              recent_immigrant_pct: daInfo.recent_immigrant_pct,
-              youth_pct: daInfo.youth_pct,
-              neighbourhood: (daInfo as any).neighbourhood || '',
+              vulnerability_index: vIndex,
+              pop: Number(daInfo.pop || 0),
+              low_income_pct: lowIncome,
+              minority_pct: minority,
+              senior_pct: senior,
+              lone_parent_pct: Number(daInfo.lone_parent_pct || 0),
+              recent_immigrant_pct: Number(daInfo.recent_immigrant_pct || 0),
+              youth_pct: Number(daInfo.youth_pct || 0),
+              neighbourhood: String((daInfo as any).neighbourhood || ''),
             },
           };
         });
