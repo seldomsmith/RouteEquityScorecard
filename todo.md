@@ -6,7 +6,7 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ## Sprint Backlog
 ### Phase 4.5: Simulation & Data Pipeline
 1. **Service Impact Simulation (Draft Mode)** [HIGH]
-   - Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory.
+   - *Deferred*: Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory. See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md).
 2. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
 3. **Policy Sensitivity Explorer UI Tab** [FUTURE]
