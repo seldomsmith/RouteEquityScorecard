@@ -65,7 +65,7 @@
 ## Phase 4.5: Data Pipeline & Integration (Future)
 - [ ] Integrate additional vulnerability groups (e.g., "New Immigrants") into the data pipeline and scoring model <!-- id: 31, priority: high -->
 - [ ] Decide on R5 Data Pipeline migration vs. pre-processing <!-- id: 15 -->
-- [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->
+- [ ] Implement service impact simulation logic (Draft Mode) (See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md) - Deferred) <!-- id: 8 -->
 - [ ] Finalize PostGIS/Python backend if needed <!-- id: 10 -->
 
 ## Phase 4.6: Heatmap Defect Fix & Git Synchronization [COMPLETE]
