@@ -424,16 +424,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </div>
 
                     <p>
-                      A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall raw score is the population-weighted average of all DAs it intersects:
+                      A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then converted to a scale of 0 to 100 relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents score higher.
                     </p>
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
-                      <div className="font-bold text-center text-teal-700">
-                        {"\\[ V_{\\text{route}} = \\frac{\\sum (V_{\\text{DA}} \\times \\text{Population}_{\\text{DA}})}{\\sum \\text{Population}_{\\text{DA}}} \\]"}
-                      </div>
-                      <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
-                        We then normalize this weighted score to a scale of 0 to 100 relative to all other routes in Edmonton.
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -502,7 +494,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     <div className="space-y-2 py-2">
                       {[
                         { label: 'Hospitals & Medical Facilities', weight: '5.0 multiplier', percent: 100, color: 'bg-emerald-600' },
-                        { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-650' },
+                        { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-600' },
                         { label: 'Post-Secondary Campuses', weight: '3.0 multiplier', percent: 60, color: 'bg-teal-500' },
                         { label: 'Supermarkets & Food Markets', weight: '2.0 multiplier', percent: 40, color: 'bg-amber-500' },
                         { label: 'Primary & Secondary Schools', weight: '1.0 multiplier', percent: 20, color: 'bg-slate-400' }
@@ -520,19 +512,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </div>
 
                     <p>
-                      The weighted raw counts are combined and normalized relative to the minimum and maximum raw opportunity counts recorded across Edmonton's entire transit network:
+                      These weighted counts are summed together to create a raw opportunity score. This raw score is then converted to a scale of 0 to 100 by comparing it to all other routes in Edmonton. Routes connecting to a wide variety of high-priority destinations score close to 100, while local feeder routes that serve fewer key hubs score lower.
                     </p>
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
-                      <div className="font-bold text-center text-teal-700">
-                        {"\\[ O_{\\text{route}} = \\frac{O_{\\text{raw}} - O_{\\text{min}}}{O_{\\text{max}} - O_{\\text{min}}} \\times 100 \\]"}
-                      </div>
-                      <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
-                        This guarantees that routes serving a high variety of vital destinations score close to 100, while hyper-local feeder routes score lower.
-                      </div>
-                    </div>
 
                     <p className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 leading-relaxed">
-                      <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight (default 35%) emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for transit planners.
+                      <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
                     </p>
                   </div>
                 </div>
@@ -616,16 +600,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </div>
 
                     <p>
-                      The overall Off-Peak Score is the arithmetic mean of the points awarded in each of the four categories:
+                      The overall Off-Peak Score is calculated by averaging the points earned across all four time windows (Evenings, Nights, Saturdays, and Sundays). For example, if a route runs frequently on Saturdays (earning 70 points) but has no service late at night (earning only 10 points), the final score will be dragged down to reflect that lack of late-night service.
                     </p>
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
-                      <div className="font-bold text-center text-teal-700">
-                        {"\\[ OP_{\\text{route}} = \\frac{P_{\\text{Evening}} + P_{\\text{Night}} + P_{\\text{Saturday}} + P_{\\text{Sunday}}}{4} \\]"}
-                      </div>
-                      <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
-                        For example, a route with 15-minute headway on Saturday (70 pts) but no service at Night (10 pts) will see its overall score reflect that gap.
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -715,16 +691,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </div>
 
                     <p>
-                      The final route score is the population-weighted average of these discounts, scaled from 0 to 100:
+                      The final route score is calculated by taking the average of these monopoly values across all neighbourhoods served, weighted by population. We then scale the result from 0 to 100. A route that runs through areas with many other bus routes and LRT lines will get a score close to 0, indicating that riders have plenty of other travel options.
                     </p>
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
-                      <div className="font-bold text-center text-teal-700">
-                        {"\\[ M_{\\text{route}} = \\text{Normalize}\\left(\\frac{\\sum (FMI_{i,r} \\times \\text{Pop}_i)}{\\sum \\text{Pop}_i}\\right) \\times 100 \\]"}
-                      </div>
-                      <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
-                        A route that serves areas with multiple high-frequency lines gets a score close to 0, indicating that riders have plenty of choices.
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -973,11 +941,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               )}
             </div>
 
-            {/* 🎮 Premium Interactive Monte Carlo Plinko Physics Simulation Widget */}
-            <div className="w-full mt-4">
-              <MonteCarloPlinko />
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1004,6 +967,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-600 text-base leading-relaxed">
                 Identifying these classifications for each route helps us identify which routes should be protected and how different service changes may impact specific routes.
               </p>
+            </div>
+
+            {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget */}
+            <div className="w-full mt-4">
+              <MonteCarloPlinko />
             </div>
           </section>
 
