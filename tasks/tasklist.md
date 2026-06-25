@@ -324,3 +324,20 @@
 - [x] Add HTML5 Canvas simulation for Route 003 (Policy Swing Corridor) scattering widely across 10-60 score range <!-- id: 104, priority: high -->
 - [x] Implement interactive "Simulate 100 Policy Scenarios" trigger, live histograms, and premium visuals <!-- id: 105, priority: high -->
 - [x] Verify TS compilation and run builds to ensure correctness <!-- id: 106, priority: critical -->
+
+## Phase 21: Scrollytelling Math Explainers and Horizontal Routes
+- [x] Add state variables to `Scrollytelling.tsx` for toggling math pages <!-- id: 107, priority: medium -->
+- [x] Refactor route comparison cards to stack horizontally on desktop with breakout width <!-- id: 108, priority: high -->
+- [x] Implement Vulnerability detailed math explainer with visual grid <!-- id: 109, priority: high -->
+- [x] Implement Opportunity detailed math explainer with sub-weights visualization <!-- id: 110, priority: high -->
+- [x] Implement Off Peak detailed math explainer with headway points scale visual <!-- id: 111, priority: high -->
+- [x] Implement Monopoly detailed math explainer with redundancy discount illustration <!-- id: 112, priority: high -->
+- [x] Verify compilation and test build <!-- id: 113, priority: critical -->
+
+## Phase 22: Scrollytelling Narrative Content Rewrite & Limitations Visuals
+- [x] Update narrative content in `Scrollytelling.tsx` to match final copy <!-- id: 114, priority: high -->
+- [x] Relocate Plinko simulation widget to Section 8 <!-- id: 115, priority: high -->
+- [x] Develop Limitations section (Section 9) with 4 custom styled CSS visuals <!-- id: 116, priority: critical -->
+- [x] Verify compilation and complete dashboard audit <!-- id: 117, priority: critical -->
+
+
