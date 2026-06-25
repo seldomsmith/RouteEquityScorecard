@@ -628,6 +628,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               )}
             </div>
+          </section>
+
           {/* ================= SECTION 6: Transit Monopoly ================= */}
           <section className="flex flex-col gap-6">
             {/* Visual Placeholder */}
