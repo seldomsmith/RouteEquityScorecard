@@ -61,9 +61,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
               <br />
               Scorecard
             </h1>
-            <p className="text-blue-100 text-sm md:text-base font-semibold tracking-wider uppercase mt-2 opacity-90">
-              Edmonton Transit Service Policy Impact Dashboard
-            </p>
           </header>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto">
