@@ -302,12 +302,18 @@ export const MonteCarloPlinko: React.FC = () => {
 
           // Physics update
           if (p.y < dividerY) {
+            // Apply a continuous horizontal steering force toward targetX
+            const steerDir = p.targetX > p.x ? 1 : -1;
+            const distToTarget = Math.abs(p.targetX - p.x);
+            const steerForce = Math.min(0.04, distToTarget * 0.0035);
+            p.vx += steerDir * steerForce;
+
             p.vy += gravity;
             p.x += p.vx;
             p.y += p.vy;
 
             // Damp horizontal speed to prevent out-of-bounds escape
-            p.vx *= 0.99;
+            p.vx *= 0.98;
 
             // Bounce off walls
             if (p.x < p.radius) {
@@ -463,16 +469,13 @@ export const MonteCarloPlinko: React.FC = () => {
       <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+            <span className="p-1.5 bg-blue-50 text-blue-900 rounded-lg">
               <BarChart2 className="w-4 h-4" />
             </span>
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">
-              Monte Carlo Policy Simulation
+              Equity Stability Simulation
             </h3>
           </div>
-          <p className="text-[11px] text-slate-400 font-bold uppercase mt-1">
-            Plinko Dispersion: Essential Coverage Resiliency vs. Dynamic Corridor Volatility
-          </p>
         </div>
 
         {/* Action Controls */}
@@ -480,10 +483,10 @@ export const MonteCarloPlinko: React.FC = () => {
           <button
             onClick={triggerSimulation}
             disabled={isSimulating}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-sm ${
               isSimulating
                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95'
+                : 'bg-blue-950 text-white hover:bg-blue-900 hover:shadow active:scale-95'
             }`}
           >
             <Play className="w-3.5 h-3.5 fill-current" />
@@ -491,7 +494,7 @@ export const MonteCarloPlinko: React.FC = () => {
           </button>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-600 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-white border border-blue-950/20 text-blue-950 hover:bg-slate-50 hover:border-blue-950/40 active:scale-95 transition-all shadow-sm"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset
@@ -512,10 +515,6 @@ export const MonteCarloPlinko: React.FC = () => {
               <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">
                 High Equity Resiliency
               </span>
-            </div>
-            <div className="text-right">
-              <div className="text-[8px] font-black text-slate-400 uppercase">Target Score</div>
-              <div className="text-xs font-black text-slate-700">65 - 75</div>
             </div>
           </div>
 
@@ -596,10 +595,6 @@ export const MonteCarloPlinko: React.FC = () => {
                 High Policy Volatility
               </span>
             </div>
-            <div className="text-right">
-              <div className="text-[8px] font-black text-slate-400 uppercase">Target Score</div>
-              <div className="text-xs font-black text-slate-700">10 - 60</div>
-            </div>
           </div>
 
           <div className="relative">
@@ -671,15 +666,15 @@ export const MonteCarloPlinko: React.FC = () => {
       </div>
 
       {/* Info Footnote block */}
-      <footer className="mt-6 bg-slate-50 border border-slate-200/60 p-4 rounded-xl flex items-start gap-3">
-        <CheckCircle2 className="w-4.5 h-4.5 text-indigo-500 mt-0.5 flex-shrink-0" />
-        <div className="text-[10px] text-slate-500 leading-relaxed">
-          <strong className="text-slate-800 font-bold uppercase tracking-wide block mb-1">
+      <footer className="mt-6 bg-slate-50 border border-slate-200/60 p-5 rounded-xl flex items-start gap-3">
+        <CheckCircle2 className="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+        <div className="text-xs md:text-sm text-slate-600 leading-relaxed">
+          <strong className="text-slate-900 font-bold uppercase tracking-wide block mb-1">
             Understanding Plinko Policy Dissemination
           </strong>
           Each falling particle simulates the composite impact of a randomly sampled weight configuration across 4 core policy pillars. 
-          The <span className="font-semibold text-slate-700">Bedrock Route (002)</span> exhibits tight clusters due to high correlation with spatial demographics, showing that scores remain resilient under standard weight shifting.
-          The <span className="font-semibold text-slate-700">Corridor Route (003)</span> disperses widely, demonstrating extreme sensitivity to priority parameters and high political swing risks.
+          The <span className="font-semibold text-slate-800">Bedrock Route (002)</span> exhibits tight clusters due to high correlation with spatial demographics, showing that scores remain resilient under standard weight shifting.
+          The <span className="font-semibold text-slate-800">Corridor Route (003)</span> disperses widely, demonstrating extreme sensitivity to priority parameters and high political swing risks.
         </div>
       </footer>
     </div>
