@@ -428,7 +428,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
                       <div className="font-bold text-center text-teal-700">
-                        \[ V_{\text{route}} = \frac{\sum (V_{\text{DA}} \times \text{Population}_{\text{DA}})}{\sum \text{Population}_{\text{DA}}} \]
+                        {"\\[ V_{\\text{route}} = \\frac{\\sum (V_{\\text{DA}} \\times \\text{Population}_{\\text{DA}})}{\\sum \\text{Population}_{\\text{DA}}} \\]"}
                       </div>
                       <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
                         We then normalize this weighted score to a scale of 0 to 100 relative to all other routes in Edmonton.
@@ -524,7 +524,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
                       <div className="font-bold text-center text-teal-700">
-                        \[ O_{\text{route}} = \frac{O_{\text{raw}} - O_{\text{min}}}{O_{\text{max}} - O_{\text{min}}} \times 100 \]
+                        {"\\[ O_{\\text{route}} = \\frac{O_{\\text{raw}} - O_{\\text{min}}}{O_{\\text{max}} - O_{\\text{min}}} \\times 100 \\]"}
                       </div>
                       <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
                         This guarantees that routes serving a high variety of vital destinations score close to 100, while hyper-local feeder routes score lower.
@@ -617,7 +617,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
                       <div className="font-bold text-center text-teal-700">
-                        \[ OP_{\text{route}} = \frac{P_{\text{Evening}} + P_{\text{Night}} + P_{\text{Saturday}} + P_{\text{Sunday}}}{4} \]
+                        {"\\[ OP_{\\text{route}} = \\frac{P_{\\text{Evening}} + P_{\\text{Night}} + P_{\\text{Saturday}} + P_{\\text{Sunday}}}{4} \\]"}
                       </div>
                       <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
                         For example, a route with 15-minute headway on Saturday (70 pts) but no service at Night (10 pts) will see its overall score reflect that gap.
@@ -715,7 +715,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 font-mono text-xs text-slate-700 flex flex-col gap-2">
                       <div className="font-bold text-center text-teal-700">
-                        \[ M_{\text{route}} = \text{Normalize}\left(\frac{\sum (FMI_{i,r} \times \text{Pop}_i)}{\sum \text{Pop}_i}\right) \times 100 \]
+                        {"\\[ M_{\\text{route}} = \\text{Normalize}\\left(\\frac{\\sum (FMI_{i,r} \\times \\text{Pop}_i)}{\\sum \\text{Pop}_i}\\right) \\times 100 \\]"}
                       </div>
                       <div className="text-[10px] text-slate-400 text-center border-t border-slate-200/60 pt-2 mt-1">
                         A route that serves areas with multiple high-frequency lines gets a score close to 0, indicating that riders have plenty of choices.
