@@ -388,7 +388,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="pt-2 flex justify-center">
                 <button
                   onClick={() => setShowVulnerabilityMath(!showVulnerabilityMath)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
+                  className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
                 >
                   <span>{showVulnerabilityMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
                 </button>
@@ -480,7 +480,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="pt-2 flex justify-center">
                 <button
                   onClick={() => setShowOpportunityMath(!showOpportunityMath)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
+                  className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
                 >
                   <span>{showOpportunityMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
                 </button>
@@ -580,7 +580,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="pt-2 flex justify-center">
                 <button
                   onClick={() => setShowOffPeakMath(!showOffPeakMath)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
+                  className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
                 >
                   <span>{showOffPeakMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
                 </button>
@@ -672,7 +672,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="pt-2 flex justify-center">
                 <button
                   onClick={() => setShowMonopolyMath(!showMonopolyMath)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
+                  className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
                 >
                   <span>{showMonopolyMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
                 </button>
