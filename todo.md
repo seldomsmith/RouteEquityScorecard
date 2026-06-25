@@ -138,3 +138,13 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Added a global "Simulate 100 Scenarios" trigger that cascades 100 particles on both boards simultaneously with a staggered drop rate.
   - Integrated interactive live histograms and digital stats at the bottom of each board calculating the real-time Mean score and Standard Deviation (Spread) as particles land in their bins.
   - Custom-styled the board with deep navy backgrounds, glowing particle trails, pulsing peg indicators, and a clean white border layout matching the Route Equity Scorecard premium visual standards.
+- **Detailed Math Explainers & Horizontal Route Layout (Phase 21)**:
+  - Redesigned the layout for Route 002 and Route 003 comparisons across Sections 1, 3, 4, 5, and 6 to display horizontally on desktop (`md:flex-row`).
+  - Added desktop breakout classes (`md:-mx-12 lg:-mx-24`) to visual blocks so the comparison elements span wider than standard paragraph blocks.
+  - Built interactive "Tell me more about the math" toggle pages under the four core policy weight sections (Vulnerability, Destination Opportunity, Off-Peak Service, and Transit Monopoly).
+  - Designed tailored visual representations for each methodology section, including demographic flag tables, weighted opportunity progress bars, headway point brackets, and FMI discount calculations.
+- **Narrative Content Rewrite & Limitations Visuals (Phase 22)**:
+  - Rewrote the narrative structure across all sections to align with the final approved text copy.
+  - Relocated the Monte Carlo Plinko physics simulation widget to its logical home in Section 8 (Stability Focus).
+  - Designed and developed a brand-new Section 9 containing a detailed breakdown of the four core scorecard limitations (Ecological Fallacy, Static Schedules, Physical Barriers, and Destination Quality vs. Quantity).
+  - Implemented custom CSS-styled diagrams for each of the four limitations (Macro vs. Micro demographic split grids, Scheduled vs. Real-World timelines, Circular buffer vs. jagged walking boundary diagrams, and Raw vs. Equity-Adjusted utility cards).
