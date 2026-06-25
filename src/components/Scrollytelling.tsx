@@ -266,7 +266,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">The ETS Route Equity Score - Explained</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">1. The ETS Route Equity Score - Explained</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit users, particularly those in equity-seeking communities.
               </p>
@@ -332,7 +332,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">The Four Pillars of Transit Equity</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars:
               </p>
@@ -360,7 +360,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Vulnerability</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">3. Transit Vulnerability</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 The Transit Vulnerability pillar measures who lives near a bus route. We look at the population of low-income households, seniors, youth, lone parents, and visible minorities in the neighbourhoods served by each line.
               </p>
@@ -391,7 +391,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
                 >
                   <span>{showVulnerabilityMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-                  <span className="text-blue-600 font-semibold font-mono">🧮</span>
                 </button>
               </div>
 
@@ -453,7 +452,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Destination Opportunity</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">4. Destination Opportunity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 The Destination Opportunity pillar evaluates how well a bus route connects riders to critical locations. These locations include major employment centres, medical facilities, post-secondary schools, and grocery stores.
               </p>
@@ -484,14 +483,13 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
                 >
                   <span>{showOpportunityMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-                  <span className="text-blue-600 font-semibold font-mono">🧮</span>
                 </button>
               </div>
 
               {showOpportunityMath && (
                 <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
                   <div className="border-b border-slate-100 pb-3">
-                    <h3 className="text-lg font-extrabold text-slate-900">Opportunity Methodology: Catchment and Weights</h3>
+                    <h3 className="text-lg font-extrabold text-slate-900">Opportunity Methodology: Point of Interest Weights</h3>
                     <p className="text-xs text-slate-500 mt-0.5">How destination accessibility weights influence the overall score.</p>
                   </div>
                   
@@ -503,15 +501,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     {/* Visual Category Progress/Contribution Bars */}
                     <div className="space-y-2 py-2">
                       {[
-                        { label: 'Employment Centres (Jobs)', percent: 40, color: 'bg-indigo-650' },
-                        { label: 'Hospitals & Medical Facilities', percent: 30, color: 'bg-emerald-600' },
-                        { label: 'Supermarkets & Food Markets', percent: 20, color: 'bg-amber-500' },
-                        { label: 'Schools & Educational Institutions', percent: 10, color: 'bg-teal-500' }
+                        { label: 'Hospitals & Medical Facilities', weight: '5.0 multiplier', percent: 100, color: 'bg-emerald-600' },
+                        { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-650' },
+                        { label: 'Post-Secondary Campuses', weight: '3.0 multiplier', percent: 60, color: 'bg-teal-500' },
+                        { label: 'Supermarkets & Food Markets', weight: '2.0 multiplier', percent: 40, color: 'bg-amber-500' },
+                        { label: 'Primary & Secondary Schools', weight: '1.0 multiplier', percent: 20, color: 'bg-slate-400' }
                       ].map((item, index) => (
                         <div key={index} className="flex flex-col gap-1">
                           <div className="flex justify-between text-xs font-bold text-slate-700">
                             <span>{item.label}</span>
-                            <span>{item.percent}% weight</span>
+                            <span>{item.weight}</span>
                           </div>
                           <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                             <div className={`h-full ${item.color}`} style={{ width: `${item.percent}%` }} />
@@ -531,6 +530,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         This guarantees that routes serving a high variety of vital destinations score close to 100, while hyper-local feeder routes score lower.
                       </div>
                     </div>
+
+                    <p className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 leading-relaxed">
+                      <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight (default 35%) emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for transit planners.
+                    </p>
                   </div>
                 </div>
               )}
@@ -549,7 +552,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Off Peak Service</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">5. Off Peak Service</h2>
               <p className="text-slate-655 text-base leading-relaxed">
                 The Off Peak Service pillar measures the frequency and reliability of a bus route outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
               </p>
@@ -580,7 +583,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
                 >
                   <span>{showOffPeakMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-                  <span className="text-blue-600 font-semibold font-mono">🧮</span>
                 </button>
               </div>
 
@@ -642,7 +644,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Transit Monopoly</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Transit Monopoly</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 The Transit Monopoly pillar measures how dependent a neighbourhood is on a single bus route. If a neighbourhood lacks other bus routes or LRT stations within walking distance, the active route operates as a transit monopoly. Although some monopolies are planned to prevent overlapping services, planners must carefully consider this reliance when making service decisions.
               </p>
@@ -673,7 +675,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs md:text-sm shadow-sm transition-all duration-200 flex items-center gap-2 hover:border-slate-300"
                 >
                   <span>{showMonopolyMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-                  <span className="text-blue-600 font-semibold font-mono">🧮</span>
                 </button>
               </div>
 
@@ -738,7 +739,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             )}
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Section 6.5: On Demand Transit (ODT)</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
               </p>
@@ -763,7 +764,23 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
           <section className="flex flex-col gap-6">
-            
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Policy Weights</h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                After evaluating the four individual pillars, transit planners must combine them to generate a total equity score for each route. Determining the exact weight or priority given to each pillar represents a fundamental policy choice.
+              </p>
+              <p className="text-slate-600 text-base leading-relaxed">
+                Under a balanced policy with equal 25% weights across all four pillars, the model translates scores into academic-style letter grades from A (representing the highest equity priority) to F (representing the lowest equity priority). With equal weighting, Route 002 receives a B grade with a score of 68.1, showing that its strong performance in vulnerability, monopoly, and destination opportunity makes it a high priority for service protection. In contrast, Route 003 receives an E grade with a score of 18.6, representing a low equity priority because it serves higher-income neighbourhoods and features multiple alternative transit options.
+              </p>
+              <p className="text-slate-600 text-base leading-relaxed">
+                When policy priorities shift, these scores adjust accordingly. For example, if a policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+              </p>
+              <ul className="list-disc list-inside flex flex-col gap-2 text-slate-600 text-base pl-2">
+                <li><strong className="text-blue-950 font-bold">Route 002 decreases from 68.1 to 63.8</strong>: Although its demographic vulnerability weight is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.</li>
+                <li><strong className="text-blue-950 font-bold">Route 003 increases from 18.6 to 24.4</strong>: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.</li>
+              </ul>
+            </div>
+
             {/* Interactive Weight Sliders Simulator Widget */}
             <div className="p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm">
               <div className="flex flex-col items-center">
@@ -844,23 +861,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Section 7: Balancing the Different Policy Weights</h2>
-              <p className="text-slate-600 text-base leading-relaxed">
-                After evaluating the four individual pillars, transit planners must combine them to generate a total equity score for each route. Determining the exact weight or priority given to each pillar represents a fundamental policy choice.
-              </p>
-              <p className="text-slate-600 text-base leading-relaxed">
-                Under a balanced policy with equal 25% weights across all four pillars, the model translates scores into academic-style letter grades from A (representing the highest equity priority) to F (representing the lowest equity priority). With equal weighting, Route 002 receives a B grade with a score of 68.1, showing that its strong performance in vulnerability, monopoly, and destination opportunity makes it a high priority for service protection. In contrast, Route 003 receives an E grade with a score of 18.6, representing a low equity priority because it serves higher-income neighbourhoods and features multiple alternative transit options.
-              </p>
-              <p className="text-slate-600 text-base leading-relaxed">
-                When policy priorities shift, these scores adjust accordingly. For example, if a policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
-              </p>
-              <ul className="list-disc list-inside flex flex-col gap-2 text-slate-600 text-base pl-2">
-                <li><strong className="text-blue-950 font-bold">Route 002 decreases from 68.1 to 63.8</strong>: Although its demographic vulnerability weight is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.</li>
-                <li><strong className="text-blue-950 font-bold">Route 003 increases from 18.6 to 24.4</strong>: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.</li>
-              </ul>
             </div>
           </section>
 
@@ -979,7 +979,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Section 8: How can we move past trying to perfect the balance?</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 To identify how different policy weights impact route equity scores across the entire city, we expanded our analysis beyond our two main examples. We ran a Monte Carlo simulation to test all possible weight combinations against all 170 routes in the Edmonton network (1,771 weight combinations × 170 routes = 301,070 simulations). This analysis reveals that every route in the city falls into one of four distinct stability classifications, helping us understand which services require the most protection during policy shifts:
               </p>
@@ -1010,7 +1010,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           {/* ================= SECTION 9: Limitations of the Scorecard Model ================= */}
           <section className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Section 9: Limitations of the Scorecard Model</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">9. Limitations of the Scorecard Model</h2>
               <p className="text-slate-605 text-base leading-relaxed">
                 While the Route Equity Scorecard provides an equity framework and analytical tool, we must keep several methodological limitations in mind:
               </p>
@@ -1067,18 +1067,18 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Timeline (Scheduled GTFS)</span>
                       <div className="relative w-full h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-xs text-emerald-700">
-                        <span>0:00 (✅)</span>
-                        <span>0:15 (✅)</span>
-                        <span>0:30 (✅)</span>
-                        <span>0:45 (✅)</span>
+                        <span>0:00 (On Time)</span>
+                        <span>0:15 (On Time)</span>
+                        <span>0:30 (On Time)</span>
+                        <span>0:45 (On Time)</span>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bottom Timeline (Real-World Tracking)</span>
                       <div className="relative w-full h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-xs">
-                        <span className="text-amber-600">0:08 (⚠️ Late)</span>
-                        <span className="text-rose-600">0:30 (❌ Cancelled)</span>
-                        <span className="text-emerald-700">0:45 (✅ Bunched)</span>
+                        <span className="text-amber-600">0:08 (Late)</span>
+                        <span className="text-rose-600">0:30 (Cancelled)</span>
+                        <span className="text-emerald-700">0:45 (Bunched)</span>
                       </div>
                     </div>
                   </div>
@@ -1154,7 +1154,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           {/* ================= SECTION 10: Applying the Scorecard to Planning Decisions ================= */}
           <section className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">Section 10: Applying the Scorecard to Planning Decisions</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">10. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
                 Scoring transit routes across the four pillars and simulating their stability provides analytical data to help planners design and schedule routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing planners to predict how service adjustments might impact neighbourhoods – for better or for worse.
               </p>
@@ -1167,7 +1167,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           {/* ================= BOTTOM CALL TO ACTION (Section 11) ================= */}
           <section className="mt-12 pt-12 border-t border-slate-200 flex flex-col items-center gap-6 text-center">
             <div className="max-w-md space-y-2">
-              <h3 className="text-2xl font-black text-blue-950">Section 11: Explore the Route Equity Scorecard Tool</h3>
+              <h3 className="text-2xl font-black text-blue-950">11. Explore the Route Equity Scorecard Tool</h3>
               <p className="text-sm text-slate-500">
                 You can use the spotlight search to find specific routes, adjust weights with zero-sum policy sliders, filter the map by grade badges or stability classifications, and analyse diagnostics using waterfall charts, pedestrian walk isochrones, and the interactive Dissemination Area vulnerability matrix.
               </p>

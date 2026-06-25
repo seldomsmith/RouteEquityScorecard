@@ -64,7 +64,7 @@ export const MonteCarloPlinko: React.FC = () => {
   const rightPegs = useRef<Peg[]>([]);
 
   // Simulation parameters
-  const canvasWidth = 380;
+  const canvasWidth = 480;
   const canvasHeight = 420;
   const gravity = 0.16;
   const bounceRestitution = 0.45;
@@ -80,7 +80,7 @@ export const MonteCarloPlinko: React.FC = () => {
     const rows = 9;
     const startY = 70;
     const rowHeight = 28;
-    const horizontalSpacing = 32;
+    const horizontalSpacing = canvasWidth / 12;
 
     for (let r = 0; r < rows; r++) {
       const isAlternating = r % 2 === 1;
@@ -88,7 +88,7 @@ export const MonteCarloPlinko: React.FC = () => {
       const colCount = isAlternating ? 11 : 12;
 
       for (let c = 0; c < colCount; c++) {
-        const x = xOffset + c * horizontalSpacing + 14;
+        const x = xOffset + c * horizontalSpacing + horizontalSpacing / 2;
         const y = startY + r * rowHeight;
         
         // Keep pegs centered and within bounds
@@ -503,8 +503,8 @@ export const MonteCarloPlinko: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-items-center">
         
         {/* Left Board Card: Route 002 */}
-        <div className="flex flex-col w-full max-w-[380px] bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+        <div className="flex flex-col w-full max-w-[480px] bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white min-h-[64px]">
             <div>
               <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
                 Route 002: Bedrock Essential
@@ -586,8 +586,8 @@ export const MonteCarloPlinko: React.FC = () => {
         </div>
 
         {/* Right Board Card: Route 003 */}
-        <div className="flex flex-col w-full max-w-[380px] bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+        <div className="flex flex-col w-full max-w-[480px] bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white min-h-[64px]">
             <div>
               <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
                 Route 003: Policy Swing Corridor
