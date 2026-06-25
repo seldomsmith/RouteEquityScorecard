@@ -45,6 +45,33 @@ const CLASS_LABELS: Record<string, string> = {
   'Moderate Stability': 'Moderate Stability',
 };
 
+// Safe Highlight Tooltip for the Scatter Chart
+const CustomChartTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  if (!d) return null;
+
+  return (
+    <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3 py-2 text-xs max-w-xs">
+      <p className="font-bold text-slate-900">{d?.name || 'Unknown Route'}</p>
+      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
+        {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
+      </p>
+      <div className="mt-1.5 space-y-0.5 text-slate-600 border-t border-slate-100 pt-1.5">
+        <div className="flex justify-between gap-4">
+          <span>Mean Score:</span>
+          <span className="font-bold text-slate-800">{(typeof d?.score_mean === 'number') ? d.score_mean.toFixed(1) : 'N/A'}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span>Volatility:</span>
+          <span className="font-bold text-slate-800">{(typeof d?.score_std === 'number') ? d.score_std.toFixed(2) : 'N/A'}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -191,32 +218,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
     return { route2: score2, route3: score3 };
   }, [weights]);
-
-  // Safe Highlight Tooltip for the Scatter Chart
-  const CustomChartTooltip = ({ active, payload }: any) => {
-    if (!active || !payload?.length) return null;
-    const d = payload[0].payload;
-    if (!d) return null;
-
-    return (
-      <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3 py-2 text-xs max-w-xs">
-        <p className="font-bold text-slate-900">{d?.name || 'Unknown Route'}</p>
-        <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-          {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
-        </p>
-        <div className="mt-1.5 space-y-0.5 text-slate-600 border-t border-slate-100 pt-1.5">
-          <div className="flex justify-between gap-4">
-            <span>Mean Score:</span>
-            <span className="font-bold text-slate-800">{(typeof d?.score_mean === 'number') ? d.score_mean.toFixed(1) : 'N/A'}</span>
-          </div>
-          <div className="flex justify-between gap-4">
-            <span>Volatility:</span>
-            <span className="font-bold text-slate-800">{(typeof d?.score_std === 'number') ? d.score_std.toFixed(2) : 'N/A'}</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
