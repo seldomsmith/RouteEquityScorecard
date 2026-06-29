@@ -59,3 +59,16 @@ Concrete rules derived from production bugs. Every entry describes a failure mod
 - Navigation drawers, modals, and screen overlays should always use `position: fixed; height: 100vh;` and reference the viewport directly, rather than relying on absolute positioning relative to parent containers that might have height limits.
 - Make components robust: design them to render correctly regardless of where they are mounted in the DOM.
 
+---
+
+## 5. Narrative Content Audits: Eliminate layout and text duplication
+
+**Date:** 2026-06-29  
+**Failure:** Section 2 of the Scrollytelling walkthrough repeated a static bulleted list defining the four pillars of transit equity directly adjacent to a custom interactive card grid (`FourPillars.tsx`) that displayed the exact same descriptions when flipped. This created redundant reading material and visual clutter.
+
+**Defensive Rules:**
+- Avoid presenting the same text information in multiple formats (e.g. lists, tables, or text blocks) directly alongside interactive controls (e.g. cards, accordions, or tooltips) that reveal the same copy.
+- Structure layouts to let interactive explainer widgets handle detailed definitions, keeping the surrounding narrative body light and introductory.
+- Maintain strict vocabulary consistency (e.g. standardizing on "transit riders" rather than mixing "transit users" and "riders").
+
+
