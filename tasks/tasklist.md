@@ -340,4 +340,12 @@
 - [x] Develop Limitations section (Section 9) with 4 custom styled CSS visuals <!-- id: 116, priority: critical -->
 - [x] Verify compilation and complete dashboard audit <!-- id: 117, priority: critical -->
 
+## Phase 23: Map Visualization & Sidebar Menu Layout Polish
+- [x] Fix Mapbox linear interpolation syntax mismatch in `InteractiveToggleMap.tsx` (replace 'linear' with ['linear']) <!-- id: 118, priority: critical -->
+- [x] Apply a consistent, high-contrast blue/indigo vulnerability sequential color scale matching the map legend across routes <!-- id: 119, priority: high -->
+- [x] Update `CatchmentBarrierMap.tsx` detour line and marker coordinates using high-fidelity street-snapped walking path coordinates <!-- id: 120, priority: high -->
+- [x] Adjust staggered navigation menu panel and prelayers positioning to `position: fixed` and `height: 100vh` in `StaggeredMenu.css` to fix the constrained height bug <!-- id: 121, priority: critical -->
+- [x] Verify compilation and push working codes to git <!-- id: 122, priority: critical -->
+
+
 
