@@ -174,7 +174,7 @@ export const MonteCarloPlinko: React.FC = () => {
           vx: (Math.random() - 0.5) * 1.5,
           vy: 0.5,
           radius: particleRadius,
-          color: 'rgba(99, 102, 241, 0.95)', // Indigo-500
+          color: 'rgba(234, 196, 8, 0.95)', // Transit Yellow
           targetX: rightTargetX,
           landed: false,
           history: [],
@@ -591,7 +591,7 @@ export const MonteCarloPlinko: React.FC = () => {
               <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
                 Route 003: Policy Swing Corridor
               </h4>
-              <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase">
+              <span className="text-[9px] font-black text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full uppercase">
                 High Policy Volatility
               </span>
             </div>
@@ -613,9 +613,9 @@ export const MonteCarloPlinko: React.FC = () => {
                 <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Landed</div>
                 <div className="text-sm font-black text-slate-800 leading-none pb-1">{rightStats.landedCount}</div>
               </div>
-              <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100 flex flex-col justify-between h-[64px]">
-                <div className="text-[8px] font-black text-indigo-600 uppercase leading-normal min-h-[20px] flex items-center justify-center">Mean REI</div>
-                <div className="text-sm font-black text-indigo-700 leading-none pb-1">{rightStats.mean}</div>
+              <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-yellow-700 uppercase leading-normal min-h-[20px] flex items-center justify-center">Mean REI</div>
+                <div className="text-sm font-black text-yellow-800 leading-none pb-1">{rightStats.mean}</div>
               </div>
               <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between h-[64px]">
                 <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Std Dev (Spread)</div>
@@ -641,7 +641,7 @@ export const MonteCarloPlinko: React.FC = () => {
                       <div 
                         className={`w-full rounded-t-sm transition-all duration-300 ${
                           isTargetRange 
-                            ? 'bg-gradient-to-t from-indigo-500 to-purple-400 shadow-[0_0_8px_rgba(99,102,241,0.3)]' 
+                            ? 'bg-gradient-to-t from-yellow-500 to-amber-400 shadow-[0_0_8px_rgba(234,179,8,0.3)]' 
                             : 'bg-slate-200 hover:bg-slate-300'
                         }`}
                         style={{ height: heightPercent }}
@@ -656,7 +656,7 @@ export const MonteCarloPlinko: React.FC = () => {
               </div>
               <div className="flex justify-between text-[7px] font-bold text-slate-400 uppercase mt-1">
                 <span>0 score</span>
-                <span className="text-indigo-600 font-black">10-60 Range</span>
+                <span className="text-yellow-600 font-black">10-60 Range</span>
                 <span>100 score</span>
               </div>
             </div>

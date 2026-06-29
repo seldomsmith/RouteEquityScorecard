@@ -27,6 +27,7 @@ import { OdtExplainerMap } from './widgets/OdtExplainerMap';
 import { FourPillars } from './widgets/FourPillars';
 import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
+import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -309,7 +310,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="flex flex-col gap-2 w-full md:w-1/2">
                   <RouteTicket 
                     routeNumber="003" 
-                    theme="orange" 
+                    theme="yellow" 
                     title="Route 003: Westmount - Stadium" 
                     description="A shorter connection route linking central hubs."
                   />
@@ -373,7 +374,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
                     routeNumber="003" 
-                    theme="orange" 
+                    theme="yellow" 
                     title="Route 003: Low Vulnerability (Score: 17.5)" 
                     description="Route 003 serves 13,664 people across 25 neighbourhoods. Because these areas generally have higher average household incomes, they present lower vulnerability index rankings."
                   />
@@ -428,12 +429,17 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {route2Data && route3Data && daGeoJson && (
-              <InteractiveToggleMap 
-                route2Data={route2Data} 
-                route3Data={route3Data} 
-                daGeoJson={daGeoJson} 
-                mode="vulnerability" 
-              />
+              <>
+                <InteractiveToggleMap 
+                  route2Data={route2Data} 
+                  route3Data={route3Data} 
+                  daGeoJson={daGeoJson} 
+                  mode="vulnerability" 
+                />
+                <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
+                  The maps illustrate Dissemination Areas (DAs) colored by vulnerability index, highlighting Route 002's traversal through several high-vulnerability pockets in East Edmonton, compared to Route 003's path through lower-priority central residential areas.
+                </p>
+              </>
             )}
           </section>
 
@@ -457,7 +463,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
                     routeNumber="003" 
-                    theme="orange" 
+                    theme="yellow" 
                     title="Route 003: Local Hub Connection (Score: 18.9)" 
                     description="Route 003 covers a shorter distance and connects fewer major hubs, indicating that riders on Route 003 must transfer more frequently to reach key destinations across Edmonton."
                   />
@@ -520,12 +526,17 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {route2Data && route3Data && daGeoJson && (
-              <InteractiveToggleMap 
-                route2Data={route2Data} 
-                route3Data={route3Data} 
-                daGeoJson={daGeoJson} 
-                mode="opportunity" 
-              />
+              <>
+                <InteractiveToggleMap 
+                  route2Data={route2Data} 
+                  route3Data={route3Data} 
+                  daGeoJson={daGeoJson} 
+                  mode="opportunity" 
+                />
+                <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
+                  The maps display key Points of Interest (POIs) clustered near bus stops, demonstrating Route 002's connectivity to multiple medical, commercial, and employment centers, while Route 003 serves primarily local residential nodes with fewer direct hub connections.
+                </p>
+              </>
             )}
           </section>
 
@@ -549,7 +560,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
                     routeNumber="003" 
-                    theme="orange" 
+                    theme="yellow" 
                     title="Route 003: Consistent Off Peak (Score: 38.0)" 
                     description="Route 003 maintains regular frequency during late-night hours and weekends, providing dependable service throughout the entire week."
                   />
@@ -604,6 +615,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <OffPeakFrequencyChart />
+            <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
+              The line chart plots service headways throughout the day, illustrating that Route 003 maintains consistent headways during evening and weekend hours compared to Route 002's drop in service frequency.
+            </p>
           </section>
 
           {/* ================= SECTION 6: Transit Monopoly ================= */}
@@ -626,7 +640,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
                     routeNumber="003" 
-                    theme="orange" 
+                    theme="yellow" 
                     title="Route 003: Multiple Transit Alternatives (Score: 0.0)" 
                     description="Route 003 runs through central areas with overlapping transit options, including several bus routes, local connections, and nearby LRT stations. Because residents can easily access alternative transit lines, the route scores zero on this pillar."
                   />
@@ -688,12 +702,17 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {route2Data && route3Data && daGeoJson && (
-              <InteractiveToggleMap 
-                route2Data={route2Data} 
-                route3Data={route3Data} 
-                daGeoJson={daGeoJson} 
-                mode="monopoly" 
-              />
+              <>
+                <InteractiveToggleMap 
+                  route2Data={route2Data} 
+                  route3Data={route3Data} 
+                  daGeoJson={daGeoJson} 
+                  mode="monopoly" 
+                />
+                <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
+                  The maps overlay alternative transit lines in silver, demonstrating that Route 003 overlaps with multiple corridor options and LRT links, while Route 002 serves isolated suburban segments with zero alternatives.
+                </p>
+              </>
             )}
           </section>
 
@@ -1110,24 +1129,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Theoretical vs. Actual Walkway (Upgraded to high fidelity) */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🟢 Theoretical Access</span>
-                      <div className="relative w-28 h-28 rounded-full border-4 border-dashed border-teal-500/60 bg-teal-500/10 flex items-center justify-center">
-                        <span className="text-[10px] text-teal-800 font-black uppercase tracking-wider">400m Buffer</span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 mt-4 leading-relaxed">Ideal 5-Minute Walk</p>
-                    </div>
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🔴 Actual Accessibility</span>
-                      <div className="relative w-28 h-28 border-2 border-rose-400 bg-rose-50/20 rounded-2xl flex items-center justify-center overflow-hidden">
-                        <div className="absolute w-full h-1.5 bg-red-650/80 -rotate-12 shadow-sm" title="Highway Corridor Barrier" />
-                        <span className="text-[10px] text-rose-800 font-black uppercase tracking-wider relative z-10 bg-white/95 px-2 py-0.5 rounded border border-rose-200 shadow-sm">Barrier Detour</span>
-                      </div>
-                      <p className="text-[11px] text-rose-600 font-bold mt-4 leading-relaxed">1.2km Actual Pedestrian Route</p>
-                    </div>
-                  </div>
+                  <CatchmentBarrierMap />
                 </div>
 
                 {/* Limitation 4 */}

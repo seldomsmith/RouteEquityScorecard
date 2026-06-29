@@ -14,14 +14,14 @@ interface InteractiveToggleMapProps {
 }
 
 const ROUTE_CENTERS = {
-  '002': { center: [-113.46, 53.53] as [number, number], zoom: 10.3 },
+  '002': { center: [-113.435, 53.535] as [number, number], zoom: 11.2 }, // Balanced center coordinates for Route 002
   '003': { center: [-113.525, 53.548] as [number, number], zoom: 12.0 },
 };
 
 const GRADE_COLORS = {
   A: '#10B981',
   B: '#3B82F6',
-  C: '#F59E0B',
+  C: '#eab308', // Transit yellow
   D: '#F97316',
   E: '#EF4444',
 };
@@ -29,7 +29,7 @@ const GRADE_COLORS = {
 const GRADE_HEATMAP_COLORS = {
   A: ['#ECFDF5', '#D1FAE5', '#A7F3D0', '#34D399', '#059669', '#064E3B'],
   B: ['#EFF6FF', '#DBEAFE', '#BFDBFE', '#60A5FA', '#2563EB', '#1E3A8A'],
-  C: ['#FFFDF5', '#FEF3C7', '#FDE68A', '#FBBF24', '#D97706', '#78350F'],
+  C: ['#FEFDF0', '#FEF9C3', '#FEF08A', '#FDE047', '#CA8A04', '#713F12'], // Yellow heatmap gradient
   D: ['#FFF7ED', '#FFEDD5', '#FED7AA', '#FB923C', '#EA580C', '#7C2D12'],
   E: ['#FEF2F2', '#FEE2E2', '#FCA5A5', '#F87171', '#DC2626', '#7F1D1D'],
 };
@@ -157,7 +157,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
       source: 'active-route-source',
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': GRADE_COLORS[grade],
+        'line-color': activeRouteId === '003' ? '#eab308' : GRADE_COLORS[grade],
         'line-width': 4.5,
       },
     });
@@ -197,7 +197,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         paint: {
           'fill-color': [
             'interpolate',
-            ['linear'],
+            'linear',
             ['get', 'vulnerability_index'],
             0, heatmapColors[0],
             20, heatmapColors[1],
@@ -347,9 +347,6 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
             {mode === 'opportunity' && 'Opportunities walk catchment mapping'}
             {mode === 'monopoly' && 'Alternative transit options mapping'}
           </span>
-          <span className="text-[10px] text-slate-400 font-semibold mt-1 block">
-            Select a route below to view its profile, flying across the city
-          </span>
         </div>
 
         <div className="flex gap-2.5">
@@ -367,7 +364,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
             onClick={() => setActiveRouteId('003')}
             className={`px-4 py-2 rounded-full text-xs font-black transition-all duration-200 border ${
               activeRouteId === '003'
-                ? 'bg-orange-600 border-orange-600 text-white shadow-sm'
+                ? 'bg-yellow-500 border-yellow-500 text-white shadow-sm shadow-yellow-500/20'
                 : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
             }`}
           >
@@ -382,7 +379,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         {/* Legend panel inside map overlay */}
         <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-650 flex flex-col gap-1.5 shadow-sm max-w-[200px]">
           <div className="flex items-center gap-1.5">
-            <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F97316' }} />
+            <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F59E0B' }} />
             <span className="font-bold text-slate-800">Active Route {activeRouteId}</span>
           </div>
 
