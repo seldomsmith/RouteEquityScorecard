@@ -1017,6 +1017,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget (Wider to match Route 2 & 3 cards) */}
+            <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-4">
+              <MonteCarloPlinko />
             </div>
           </section>
 
