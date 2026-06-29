@@ -203,6 +203,28 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       { id: 'int3', xPct: 42, yPct: 62, glow: 0 },
     ];
 
+    // Track hover coordinates relative to the canvas
+    let mousePos: Point | null = null;
+    let hoveredLineColor: string | null = null;
+
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      mousePos = {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+      };
+    };
+
+    const onPointerLeave = () => {
+      mousePos = null;
+      hoveredLineColor = null;
+    };
+
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerleave', onPointerLeave);
+
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * (window.devicePixelRatio || 1);
@@ -217,6 +239,38 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
         x: (pctX / 100) * width,
         y: (pctY / 100) * height,
       };
+    };
+
+    // Helper: perpendicular distance from point to segment
+    const getDistanceToSegment = (p: Point, a: Point, b: Point): number => {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const lenSq = dx * dx + dy * dy;
+      if (lenSq === 0) {
+        const adx = p.x - a.x;
+        const ady = p.y - a.y;
+        return Math.sqrt(adx * adx + ady * ady);
+      }
+      let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / lenSq;
+      t = Math.max(0, Math.min(1, t));
+      const projX = a.x + t * dx;
+      const projY = a.y + t * dy;
+      const pdx = p.x - projX;
+      const pdy = p.y - projY;
+      return Math.sqrt(pdx * pdx + pdy * pdy);
+    };
+
+    const getDistanceToPath = (p: Point, path: PathNode[], width: number, height: number): number => {
+      if (path.length < 2) return Infinity;
+      const pxPoints = path.map(node => getPixelCoords(node.xPct, node.yPct, width, height));
+      let minDistance = Infinity;
+      for (let i = 0; i < pxPoints.length - 1; i++) {
+        const dist = getDistanceToSegment(p, pxPoints[i], pxPoints[i+1]);
+        if (dist < minDistance) {
+          minDistance = dist;
+        }
+      }
+      return minDistance;
     };
 
     const getPositionOnPath = (path: PathNode[], progress: number, width: number, height: number): Point => {
@@ -257,6 +311,28 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
+
+      // Check distance to cursor to locate hovered route
+      if (mousePos) {
+        let minRouteDistance = Infinity;
+        let bestLineColor: string | null = null;
+        lines.forEach(line => {
+          const dist = getDistanceToPath(mousePos!, line.path, w, h);
+          if (dist < minRouteDistance) {
+            minRouteDistance = dist;
+            bestLineColor = line.color;
+          }
+        });
+        
+        // Spotlight active within 60px proximity
+        if (minRouteDistance < 60) {
+          hoveredLineColor = bestLineColor;
+        } else {
+          hoveredLineColor = null;
+        }
+      } else {
+        hoveredLineColor = null;
+      }
 
       lines.forEach(line => {
         line.trains.forEach(train => {
@@ -313,7 +389,11 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
         }
       });
 
+      // Draw background track paths with spotlight highlights
       lines.forEach(line => {
+        const isHovered = hoveredLineColor === line.color;
+        const anyHovered = hoveredLineColor !== null;
+
         ctx.beginPath();
         line.path.forEach((node, idx) => {
           const pt = getPixelCoords(node.xPct, node.yPct, w, h);
@@ -324,17 +404,22 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
           }
         });
         ctx.strokeStyle = line.color;
-        ctx.globalAlpha = 0.15;
-        ctx.lineWidth = line.strokeWidth;
+        ctx.globalAlpha = isHovered ? 0.9 : anyHovered ? 0.05 : 0.15;
+        ctx.lineWidth = isHovered ? line.strokeWidth * 1.8 : line.strokeWidth;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.stroke();
       });
 
+      // Draw trains with spotlight highlights
       lines.forEach(line => {
+        const isHovered = hoveredLineColor === line.color;
+        const anyHovered = hoveredLineColor !== null;
+        if (anyHovered && !isHovered) return; // Completely dim trains of non-hovered routes
+
         line.trains.forEach(train => {
           const segmentsCount = 30;
-          ctx.lineWidth = line.strokeWidth;
+          ctx.lineWidth = isHovered ? line.strokeWidth * 1.8 : line.strokeWidth;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
 
@@ -352,7 +437,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
             ctx.lineTo(pt2.x, pt2.y);
 
             const opacityMultiplier = Math.pow(1 - (i / segmentsCount), 2);
-            ctx.globalAlpha = opacityMultiplier * 0.9;
+            ctx.globalAlpha = opacityMultiplier * (isHovered ? 1.0 : 0.9);
             ctx.strokeStyle = line.color;
             ctx.stroke();
           }
@@ -360,35 +445,39 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
           const headPos = getPositionOnPath(line.path, train.progress, w, h);
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
-          ctx.arc(headPos.x, headPos.y, line.strokeWidth * 0.8, 0, Math.PI * 2);
+          ctx.arc(headPos.x, headPos.y, (isHovered ? line.strokeWidth * 1.8 : line.strokeWidth) * 0.8, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
-          ctx.shadowBlur = 15;
+          ctx.shadowBlur = isHovered ? 25 : 15;
           ctx.shadowColor = line.color;
           ctx.fill();
           ctx.shadowBlur = 0;
         });
       });
 
+      // Draw stations with spotlight highlights
       lines.forEach(line => {
+        const isHovered = hoveredLineColor === line.color;
+        const anyHovered = hoveredLineColor !== null;
+
         line.stations.forEach(station => {
           const pt = getPixelCoords(station.xPct, station.yPct, w, h);
-          ctx.globalAlpha = 1.0;
+          ctx.globalAlpha = isHovered ? 1.0 : anyHovered ? 0.15 : 1.0;
 
           ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+          ctx.arc(pt.x, pt.y, isHovered ? 11 : 8, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
           ctx.strokeStyle = line.color;
-          ctx.lineWidth = 4;
+          ctx.lineWidth = isHovered ? 5 : 4;
           ctx.fill();
           ctx.stroke();
 
           if (station.glow > 0) {
-            ctx.globalAlpha = station.glow;
+            ctx.globalAlpha = station.glow * (isHovered ? 1.0 : anyHovered ? 0.15 : 1.0);
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
+            ctx.arc(pt.x, pt.y, isHovered ? 15 : 12, 0, Math.PI * 2);
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 2;
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = isHovered ? 15 : 10;
             ctx.shadowColor = line.color;
             ctx.stroke();
             ctx.shadowBlur = 0;
@@ -396,9 +485,11 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
         });
       });
 
+      // Draw interchange stations with basic overlay highlights
       interchanges.forEach(interchange => {
         const pt = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
-        ctx.globalAlpha = 1.0;
+        const anyHovered = hoveredLineColor !== null;
+        ctx.globalAlpha = anyHovered ? 0.4 : 1.0;
 
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
@@ -409,7 +500,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
         ctx.stroke();
 
         if (interchange.glow > 0) {
-          ctx.globalAlpha = interchange.glow;
+          ctx.globalAlpha = interchange.glow * (anyHovered ? 0.4 : 1.0);
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, 16, 0, Math.PI * 2);
           ctx.strokeStyle = '#3b82f6';
@@ -427,6 +518,8 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
     animate();
 
     return () => {
+      canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
@@ -438,7 +531,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       className="absolute inset-0 w-full h-full"
       style={{
         opacity,
-        pointerEvents: 'none',
+        pointerEvents: 'auto', // Enabled pointer events to capture cursors
       }}
     />
   );

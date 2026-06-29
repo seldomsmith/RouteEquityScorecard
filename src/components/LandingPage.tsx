@@ -71,7 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-4 group">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-blue-950 tracking-tighter transition-all duration-300 group-hover:text-white group-hover:[text-shadow:0_0_30px_rgba(255,255,255,0.8),0_0_60px_rgba(59,130,246,0.6)] cursor-default select-none">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-blue-950 tracking-tighter transition-all duration-300 group-hover:[text-shadow:0_0_40px_rgba(37,99,235,0.25)] cursor-default select-none">
                 ETS Route Equity
                 <br />
                 Scorecard
