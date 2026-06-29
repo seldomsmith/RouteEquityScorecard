@@ -63,6 +63,7 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
 interface WaterfallProps {
   route: ScoredRoute | null;
   networkStats: NetworkStats;
+  sensitivityData?: any;
 }
 
 const GRADE_BG: Record<string, string> = {
@@ -274,21 +275,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
               0
             </text>
 
-            {/* Grid Line 50 (Baseline) */}
+            {/* Grid Line 50 (Baseline - Fixed to center at 50) */}
             <text x={LABEL_W - 4} y={4} textAnchor="end" fontSize={9} fontWeight={600} fill="#64748B">
               Baseline
             </text>
             <line
-              x1={LABEL_W + toPixel(baseline)}
+              x1={LABEL_W + toPixel(50)}
               y1={-4}
-              x2={LABEL_W + toPixel(baseline)}
+              x2={LABEL_W + toPixel(50)}
               y2={(shap.length + 2.3) * ROW_HEIGHT + BAR_HEIGHT - ROW_HEIGHT * 0.5}
               stroke="#CBD5E1"
               strokeDasharray="3 3"
               strokeWidth={1}
             />
             <text
-              x={LABEL_W + toPixel(baseline)}
+              x={LABEL_W + toPixel(50)}
               y={-8}
               textAnchor="middle"
               fontSize={8}
@@ -350,7 +351,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                   />
                 )}
 
-                {/* Bar */}
+                 {/* Bar */}
                 <motion.rect
                   initial={{
                     x: LABEL_W + toPixel(bar.startX),
@@ -368,7 +369,20 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                   opacity={0.85}
                 />
 
-                {/* Value label */}
+                {/* Overlaid numeric score value directly inside/over the bar if wide enough, otherwise centered just above it */}
+                <text
+                  x={x1 + barW / 2}
+                  y={BAR_HEIGHT / 2 + 3}
+                  textAnchor="middle"
+                  fontSize={8}
+                  fontWeight={800}
+                  fill="#FFFFFF"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {bar.value >= 0 ? `+${bar.value.toFixed(1)}` : bar.value.toFixed(1)}
+                </text>
+
+                {/* Value label in right margin */}
                 <AnimatedTextValue
                   value={bar.value}
                   x={LABEL_W + CHART_W + 6}
