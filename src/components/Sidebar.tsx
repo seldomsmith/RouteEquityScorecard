@@ -95,9 +95,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
       <div className="p-5 border-b border-slate-100">
-        <h1 className="text-lg font-black tracking-tight text-slate-900">REI OS</h1>
+        <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity</h1>
         <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-          Route Equity Intelligence
+          Scorecard
         </p>
       </div>
 
