@@ -493,6 +493,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   />
                 </div>
               </div>
+            </div>
 
             {route2Data && route3Data && daGeoJson && (
               <>
@@ -737,7 +738,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   </div>
                 </div>
               )}
-            </div>
           </section>
 
           {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
