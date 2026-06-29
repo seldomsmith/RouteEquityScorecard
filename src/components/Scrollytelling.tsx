@@ -305,7 +305,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">1. The ETS Route Equity Score - Explained</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit users, particularly those in equity-seeking communities.
+                Every day, thousands of Edmontonians rely on transit to travel to work, purchase groceries, visit healthcare facilities, and see family. Because not all transit services are experienced equally, the Route Equity Scorecard measures how well each route assists transit riders, particularly those in equity-seeking communities.
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
                 We will examine two contrasting routes throughout this walkthrough:
@@ -352,7 +352,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </div>
 
               <p className="text-slate-600 text-base leading-relaxed">
-                When developing a transit network that meets the needs of Edmonton residents, we must identify which routes provide an essential service to equity-seeking communities, and this scorecard provides the data to make those decisions.
+                When developing a transit network that meets the needs of Edmonton residents, we must identify which routes provide an essential service to equity-seeking communities, and this scorecard provides the data to inform those decisions.
               </p>
             </div>
           </section>
@@ -362,20 +362,15 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars:
-              </p>
-              <ul className="space-y-3 pl-2 text-slate-600 text-base">
-                <li><strong className="text-blue-950 font-bold">1. Transit Vulnerability</strong>: The demographic makeup of the neighbourhoods along the route.</li>
-                <li><strong className="text-blue-950 font-bold">2. Destination Opportunity</strong>: The connection of riders to essential locations, including employment areas, hospitals, supermarkets, and schools.</li>
-                <li><strong className="text-blue-950 font-bold">3. Off Peak Service</strong>: The availability of the route during evenings, nights, and weekends.</li>
-                <li><strong className="text-blue-950 font-bold">4. Transit Monopoly</strong>: The reliance of neighbourhoods on a single route without alternative options, such as the LRT or nearby frequent bus lines.</li>
-              </ul>
-              <p className="text-slate-600 text-base leading-relaxed">
-                Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score.
+                Rather than guessing where transit needs are greatest, the model evaluates every route across four distinct pillars. Click each card below to inspect its methodology definition:
               </p>
             </div>
 
             <FourPillars />
+
+            <p className="text-slate-600 text-base leading-relaxed">
+              Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score.
+            </p>
           </section>
 
           {/* ================= SECTION 3: Vulnerability ================= */}

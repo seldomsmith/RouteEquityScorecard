@@ -345,6 +345,9 @@
 - [x] Apply a consistent, high-contrast blue/indigo vulnerability sequential color scale matching the map legend across routes <!-- id: 119, priority: high -->
 - [x] Update `CatchmentBarrierMap.tsx` detour line and marker coordinates using high-fidelity street-snapped walking path coordinates <!-- id: 120, priority: high -->
 - [x] Adjust staggered navigation menu panel and prelayers positioning to `position: fixed` and `height: 100vh` in `StaggeredMenu.css` to fix the constrained height bug <!-- id: 121, priority: critical -->
+- [x] Standardize terminology: replace 'transit users' with 'transit riders' in Scrollytelling.tsx <!-- id: 123, priority: medium -->
+- [x] Phrasing adjustment: change Section 1 ending sentence to end with 'inform those decisions' <!-- id: 124, priority: medium -->
+- [x] Eliminate Section 2 duplication: remove static bulleted list and introduce interactive cards directly <!-- id: 125, priority: high -->
 - [x] Verify compilation and push working codes to git <!-- id: 122, priority: critical -->
 
 
