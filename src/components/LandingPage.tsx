@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { RouteWaterfall } from './RouteWaterfall';
+import { BorderGlow } from './BorderGlow';
 
 interface LandingPageProps {
   onTellMeHow: () => void;
@@ -50,37 +51,50 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
       </div>
       */}
 
-      {/* Main Center Title Card */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] bg-blue-600 p-10 md:p-20 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden transition-all duration-300">
-        {/* Glow Spheres */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-900 opacity-20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+      {/* Main Center Title Card wrapped in BorderGlow */}
+      <BorderGlow
+        animated
+        edgeSensitivity={40}
+        glowRadius={50}
+        glowIntensity={1.5}
+        coneSpread={28}
+        borderRadius={56} // Matches desktop md:rounded-[3.5rem] (56px)
+        backgroundColor="#2563eb" // Original bg-blue-600 color
+        glowColor="220 90 60" // Bright blue/cyan HSL glow
+        colors={['#22c55e', '#eab308', '#ef4444', '#3b82f6']} // Transit lines color scheme
+        className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300"
+      >
+        <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
+          {/* Glow Spheres */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-900 opacity-20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col items-center w-full gap-8">
-          <header className="flex flex-col gap-4">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-blue-950 tracking-tighter">
-              ETS Route Equity
-              <br />
-              Scorecard
-            </h1>
-          </header>
+          <div className="relative z-10 flex flex-col items-center w-full gap-8">
+            <header className="flex flex-col gap-4">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-blue-950 tracking-tighter">
+                ETS Route Equity
+                <br />
+                Scorecard
+              </h1>
+            </header>
 
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto">
-            <button
-              onClick={onTellMeHow}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-blue-900 font-bold text-lg hover:bg-slate-50 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95"
-            >
-              Tell me how this works!
-            </button>
-            <button
-              onClick={onJumpIn}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-950 text-white font-bold text-lg hover:bg-blue-900 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-95"
-            >
-              Let me jump in!
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto">
+              <button
+                onClick={onTellMeHow}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-blue-900 font-bold text-lg hover:bg-slate-50 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95"
+              >
+                Tell me how this works!
+              </button>
+              <button
+                onClick={onJumpIn}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-950 text-white font-bold text-lg hover:bg-blue-900 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-95"
+              >
+                Let me jump in!
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </BorderGlow>
     </main>
   );
 };
