@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { RouteWaterfall } from './RouteWaterfall';
 
 interface LandingPageProps {
   onTellMeHow: () => void;
@@ -10,43 +11,44 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn }) => {
   return (
     <main className="min-h-screen w-full flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24 relative overflow-hidden bg-slate-50 font-sans">
-      {/* Subway Line Background SVG */}
+      {/* Route Waterfall Animated Background */}
+      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <RouteWaterfall opacity={0.35} />
+      </div>
+
+      {/* SVG Subway Line Background (Original Fallback - Commented for Revertability)
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <svg className="w-full h-full opacity-30" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 800">
-          {/* Green Line */}
           <path d="M-100 200 L 300 200 L 500 400 L 1100 400 L 1300 600 L 1540 600" fill="none" stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
           <circle cx="300" cy="200" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
           <circle cx="500" cy="400" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
           <circle cx="1100" cy="400" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
           <circle cx="1300" cy="600" fill="white" r="8" stroke="#22c55e" strokeWidth="4" />
 
-          {/* Yellow Line */}
           <path d="M400 -100 L 400 300 L 600 500 L 600 900" fill="none" stroke="#eab308" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
           <circle cx="400" cy="100" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
           <circle cx="400" cy="300" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
           <circle cx="600" cy="500" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
           <circle cx="600" cy="700" fill="white" r="8" stroke="#eab308" strokeWidth="4" />
 
-          {/* Red Line */}
           <path d="M-100 600 L 200 600 L 400 400 L 1200 400 L 1400 200 L 1540 200" fill="none" stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
           <circle cx="200" cy="600" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
           <circle cx="400" cy="400" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
           <circle cx="1200" cy="400" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
           <circle cx="1400" cy="200" fill="white" r="8" stroke="#ef4444" strokeWidth="4" />
 
-          {/* Blue Line */}
           <path d="M1000 -100 L 1000 200 L 800 400 L 800 600 L 600 800 L -100 800" fill="none" stroke="#3b82f6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12" />
           <circle cx="1000" cy="200" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
           <circle cx="800" cy="400" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
           <circle cx="800" cy="600" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
           <circle cx="600" cy="800" fill="white" r="8" stroke="#3b82f6" strokeWidth="4" />
 
-          {/* Connecting Stations (Interchanges) */}
           <circle cx="400" cy="400" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
           <circle cx="800" cy="400" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
           <circle cx="600" cy="500" fill="white" r="12" stroke="#1f2937" strokeWidth="4" />
         </svg>
       </div>
+      */}
 
       {/* Main Center Title Card */}
       <div className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] bg-blue-600 p-10 md:p-20 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden transition-all duration-300">
