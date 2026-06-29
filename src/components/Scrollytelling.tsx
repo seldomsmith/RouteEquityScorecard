@@ -242,7 +242,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             <Home className="w-5 h-5" />
           </button>
           <div className="flex flex-col">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Transit Equity Explainer</span>
+            <span className="text-xs font-black text-blue-900 uppercase tracking-widest leading-none">ETS Route Equity Scorecard</span>
             <span className="text-xs font-semibold text-teal-650 leading-none mt-1">Scroll down to read</span>
           </div>
         </div>
@@ -553,18 +553,18 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="flex flex-col md:flex-row gap-6 py-2 md:-mx-12 lg:-mx-24 justify-between items-stretch">
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
-                    routeNumber="003" 
-                    theme="orange" 
-                    title="Route 003: Consistent Off Peak (Score: 38.0)" 
-                    description="Route 003 maintains regular frequency during late-night hours and weekends, providing dependable service throughout the entire week."
-                  />
-                </div>
-                <div className="w-full md:w-1/2 flex flex-col">
-                  <RouteTicket 
                     routeNumber="002" 
                     theme="blue" 
                     title="Route 002: Reduced Night Hours (Score: 31.3)" 
                     description="Although Route 002 has high frequency during weekdays, its frequency drops significantly during off-peak times, making travel more difficult for late-night shift workers."
+                  />
+                </div>
+                <div className="w-full md:w-1/2 flex flex-col">
+                  <RouteTicket 
+                    routeNumber="003" 
+                    theme="orange" 
+                    title="Route 003: Consistent Off Peak (Score: 38.0)" 
+                    description="Route 003 maintains regular frequency during late-night hours and weekends, providing dependable service throughout the entire week."
                   />
                 </div>
               </div>
@@ -758,11 +758,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </ul>
             </div>
 
-            {/* Interactive Weight Sliders Simulator Widget */}
-            <div className="p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm">
+            {/* Interactive Weight Sliders Simulator Widget (Wider to match Route 2 & 3 cards) */}
+            <div className="p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
               <div className="flex flex-col items-center">
                 <Zap className="w-8 h-8 text-teal-600 mb-1" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Policy Weights Simulator</span>
+                <span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Policy Weights Simulator</span>
                 <span className="text-xs text-slate-400 mt-0.5 text-center">Adjust weights to see how route scores shift instantly</span>
               </div>
               
@@ -843,9 +843,15 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
           {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
           <section className="flex flex-col gap-6">
-            
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                To identify how different policy weights impact route equity scores across the entire city, we expanded our analysis beyond our two main examples. We ran a Monte Carlo simulation to test all possible weight combinations against all 170 routes in the Edmonton network (1,771 weight combinations × 170 routes = 301,070 simulations). This analysis reveals that every route in the city falls into one of four distinct stability classifications, helping us understand which services require the most protection during policy shifts:
+              </p>
+            </div>
+
             {/* 📊 Actual Interactive Scatter Plot (Moved here, resized, and legend repositioned to top) */}
-            <div className="w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col">
+            <div className="w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
               <div className="text-center mb-4">
                 <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Policy Risk Map: Mean Score vs. Volatility</span>
                 <p className="text-xs text-slate-500 mt-1">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
@@ -955,10 +961,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
-              <p className="text-slate-600 text-base leading-relaxed">
-                To identify how different policy weights impact route equity scores across the entire city, we expanded our analysis beyond our two main examples. We ran a Monte Carlo simulation to test all possible weight combinations against all 170 routes in the Edmonton network (1,771 weight combinations × 170 routes = 301,070 simulations). This analysis reveals that every route in the city falls into one of four distinct stability classifications, helping us understand which services require the most protection during policy shifts:
-              </p>
               <ul className="space-y-3 pl-2 text-slate-600 text-base">
                 <li>
                   <strong className="text-blue-950 font-bold">Bedrock Essentials (Always High Equity)</strong>: 
@@ -982,8 +984,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </p>
             </div>
 
-            {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget */}
-            <div className="w-full mt-4">
+            {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget (Wider to match Route 2 & 3 cards) */}
+            <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-4">
               <MonteCarloPlinko />
             </div>
           </section>
@@ -1147,9 +1149,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
           {/* ================= BOTTOM CALL TO ACTION (Section 11) ================= */}
           <section className="mt-12 pt-12 border-t border-slate-200 flex flex-col items-center gap-6 text-center">
-            <div className="max-w-md space-y-2">
-              <h3 className="text-2xl font-black text-blue-950">11. Explore the Route Equity Scorecard Tool</h3>
-              <p className="text-sm text-slate-500">
+            <div className="max-w-2xl space-y-4">
+              <h3 className="text-3xl font-black text-blue-900 leading-tight">Explore the Route Equity Scorecard Tool</h3>
+              <p className="text-slate-600 text-base leading-relaxed">
                 You can use the spotlight search to find specific routes, adjust weights with zero-sum policy sliders, filter the map by grade badges or stability classifications, and analyse diagnostics using waterfall charts, pedestrian walk isochrones, and the interactive Dissemination Area vulnerability matrix.
               </p>
             </div>

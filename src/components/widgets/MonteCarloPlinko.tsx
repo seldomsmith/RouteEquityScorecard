@@ -529,18 +529,18 @@ export const MonteCarloPlinko: React.FC = () => {
 
           {/* Histogram and stats summary */}
           <div className="p-4 bg-white border-t border-slate-100 flex flex-col gap-3">
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                <div className="text-[8px] font-black text-slate-400 uppercase">Landed</div>
-                <div className="text-sm font-black text-slate-800">{leftStats.landedCount}</div>
+            <div className="grid grid-cols-3 gap-2 text-center items-stretch">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Landed</div>
+                <div className="text-sm font-black text-slate-800 leading-none pb-1">{leftStats.landedCount}</div>
               </div>
-              <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                <div className="text-[8px] font-black text-emerald-600 uppercase">Mean REI</div>
-                <div className="text-sm font-black text-emerald-700">{leftStats.mean}</div>
+              <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-emerald-600 uppercase leading-normal min-h-[20px] flex items-center justify-center">Mean REI</div>
+                <div className="text-sm font-black text-emerald-700 leading-none pb-1">{leftStats.mean}</div>
               </div>
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                <div className="text-[8px] font-black text-slate-400 uppercase">Std Dev (Spread)</div>
-                <div className="text-sm font-black text-slate-800">±{leftStats.stdDev}</div>
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Std Dev (Spread)</div>
+                <div className="text-sm font-black text-slate-800 leading-none pb-1">±{leftStats.stdDev}</div>
               </div>
             </div>
 
@@ -608,18 +608,18 @@ export const MonteCarloPlinko: React.FC = () => {
 
           {/* Histogram and stats summary */}
           <div className="p-4 bg-white border-t border-slate-100 flex flex-col gap-3">
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                <div className="text-[8px] font-black text-slate-400 uppercase">Landed</div>
-                <div className="text-sm font-black text-slate-800">{rightStats.landedCount}</div>
+            <div className="grid grid-cols-3 gap-2 text-center items-stretch">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Landed</div>
+                <div className="text-sm font-black text-slate-800 leading-none pb-1">{rightStats.landedCount}</div>
               </div>
-              <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100">
-                <div className="text-[8px] font-black text-indigo-600 uppercase">Mean REI</div>
-                <div className="text-sm font-black text-indigo-700">{rightStats.mean}</div>
+              <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-indigo-600 uppercase leading-normal min-h-[20px] flex items-center justify-center">Mean REI</div>
+                <div className="text-sm font-black text-indigo-700 leading-none pb-1">{rightStats.mean}</div>
               </div>
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                <div className="text-[8px] font-black text-slate-400 uppercase">Std Dev (Spread)</div>
-                <div className="text-sm font-black text-slate-800">±{rightStats.stdDev}</div>
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between h-[64px]">
+                <div className="text-[8px] font-black text-slate-400 uppercase leading-normal min-h-[20px] flex items-center justify-center">Std Dev (Spread)</div>
+                <div className="text-sm font-black text-slate-800 leading-none pb-1">±{rightStats.stdDev}</div>
               </div>
             </div>
 
