@@ -404,6 +404,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   />
                 </div>
               </div>
+            </div>
 
             {route2Data && route3Data && daGeoJson && (
               <>
@@ -588,6 +589,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   />
                 </div>
               </div>
+            </div>
 
             <OffPeakFrequencyChart />
             <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
@@ -667,6 +669,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   />
                 </div>
               </div>
+            </div>
 
             {route2Data && route3Data && daGeoJson && (
               <>
