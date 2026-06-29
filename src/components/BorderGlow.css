@@ -14,7 +14,7 @@
   display: grid;
   border: 1px solid rgb(255 255 255 / 15%);
   background: var(--card-bg, #120F17);
-  overflow: visible;
+  overflow: visible; /* CRITICAL: Must be visible to show outer glow */
   box-shadow:
     rgba(0, 0, 0, 0.1) 0px 1px 2px,
     rgba(0, 0, 0, 0.1) 0px 2px 4px,
@@ -32,7 +32,7 @@
   inset: 0;
   border-radius: inherit;
   transition: opacity 0.25s ease-out;
-  z-index: -1;
+  z-index: 1; /* Bring above card background but below inner content */
 }
 
 .border-glow-card:not(:hover):not(.sweep-active)::before,
@@ -100,7 +100,7 @@
 .border-glow-card > .edge-light {
   inset: calc(var(--glow-padding) * -1);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2; /* Position above card border but below children */
 
   mask-image:
     conic-gradient(
@@ -136,6 +136,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: auto;
-  z-index: 1;
+  overflow: hidden; /* Clip internal content to matches card border radius */
+  border-radius: inherit;
+  z-index: 10;
 }
