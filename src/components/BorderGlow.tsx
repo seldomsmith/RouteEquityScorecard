@@ -170,15 +170,26 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
     ...glowVars,
     ...buildGradientVars(colors),
   };
+  const gradientVars = buildGradientVars(colors);
 
   return (
     <div
       ref={cardRef}
       onPointerMove={handlePointerMove}
       className={`border-glow-card ${className}`}
-      style={mergedStyle}
+      style={{
+        ...glowVars,
+        ...gradientVars,
+        '--edge-sensitivity': edgeSensitivity,
+        '--glow-padding': `${glowRadius}px`,
+        '--border-radius': `${borderRadius}px`,
+        '--cone-spread': coneSpread,
+        '--fill-opacity': fillOpacity,
+        '--card-bg': backgroundColor,
+        background: backgroundColor,
+      } as CSSVariables}
     >
-      <span className="edge-light" />
+      <div className="edge-light" />
       <div className="border-glow-inner">
         {children}
       </div>
