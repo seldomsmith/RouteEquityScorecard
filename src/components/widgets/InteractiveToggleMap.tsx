@@ -14,7 +14,7 @@ interface InteractiveToggleMapProps {
 }
 
 const ROUTE_CENTERS = {
-  '002': { center: [-113.435, 53.535] as [number, number], zoom: 11.5 },
+  '002': { center: [-113.435, 53.518] as [number, number], zoom: 10.8 },
   '003': { center: [-113.525, 53.548] as [number, number], zoom: 12.0 },
 };
 
@@ -256,22 +256,55 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
       });
     } 
     else if (mode === 'monopoly') {
-      // Mock alternate surrounding transit routes in silver/grey
+      // Draw actual surrounding transit routes that intersect or overlap
       const altLines: any[] = [];
       
-      // We generate offset parallel paths to represent overlapping network lines
-      const offsets = activeRouteId === '003' 
-        ? [[-0.005, 0.002], [0.004, -0.003], [0.008, 0.005]] // Central Westmount has high overlaps
-        : [[-0.015, 0.018]]; // Outer Route 2 has very low overlaps
-
-      offsets.forEach((offset, idx) => {
-        const offsetCoords = coordinates.map((c: number[]) => [c[0] + offset[0], c[1] + offset[1]]);
+      if (activeRouteId === '003') {
+        // Route 003 runs central (Westmount/Stadium). High overlaps: Route 008, 009, 051
         altLines.push({
           type: 'Feature',
-          properties: {},
-          geometry: { type: 'LineString', coordinates: offsetCoords },
+          properties: { name: 'Route 008' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [-113.555, 53.548], [-113.535, 53.548], [-113.515, 53.548], [-113.495, 53.555]
+            ]
+          }
         });
-      });
+        altLines.push({
+          type: 'Feature',
+          properties: { name: 'Route 009' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [-113.535, 53.565], [-113.525, 53.548], [-113.525, 53.525]
+            ]
+          }
+        });
+        altLines.push({
+          type: 'Feature',
+          properties: { name: 'Capital LRT Line' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [-113.500, 53.542], [-113.488, 53.555], [-113.475, 53.568]
+            ]
+          }
+        });
+      } else {
+        // Route 002 runs on the east outskirts (Capilano/Highlands). Very low alternatives.
+        // Draw one distant highway line to highlight isolated monopoly
+        altLines.push({
+          type: 'Feature',
+          properties: { name: 'Route 510 (Express)' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [-113.465, 53.535], [-113.415, 53.535]
+            ]
+          }
+        });
+      }
 
       map.addSource('monopoly-alternatives-source', {
         type: 'geojson',

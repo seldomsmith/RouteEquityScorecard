@@ -67,3 +67,18 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-brand-slate-200 rounded-full hover:bg-brand-slate-300 transition-colors;
 }
+
+/* 3D Flipping Card Utilities */
+.perspective {
+  perspective: 1000px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+

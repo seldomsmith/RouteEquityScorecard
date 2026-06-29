@@ -673,8 +673,8 @@ export const MonteCarloPlinko: React.FC = () => {
             Understanding Plinko Policy Dissemination
           </strong>
           Each falling particle simulates the composite impact of a randomly sampled weight configuration across 4 core policy pillars. 
-          The <span className="font-semibold text-slate-800">Bedrock Route (002)</span> exhibits tight clusters due to high correlation with spatial demographics, showing that scores remain resilient under standard weight shifting.
-          The <span className="font-semibold text-slate-800">Corridor Route (003)</span> disperses widely, demonstrating extreme sensitivity to priority parameters and high political swing risks.
+          The <span className="font-semibold text-slate-800">Always High Equity Route (002)</span> exhibits tight clusters due to high correlation with spatial demographics, showing that scores remain resilient under standard weight shifting.
+          The <span className="font-semibold text-slate-800">Policy Swing Route (003)</span> disperses widely, demonstrating extreme sensitivity to priority parameters and high political swing risks.
         </div>
       </footer>
     </div>
