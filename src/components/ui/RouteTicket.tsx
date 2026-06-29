@@ -20,9 +20,9 @@ export const RouteTicket: React.FC<RouteTicketProps> = ({
   const isBlue = theme === 'blue';
   
   // Theme styling definitions
-  const stripeColor = isBlue ? 'bg-blue-600' : 'bg-amber-500';
-  const textColor = isBlue ? 'text-blue-900' : 'text-amber-900';
-  const ringColor = isBlue ? 'focus:ring-blue-500' : 'focus:ring-amber-500';
+  const stripeColor = isBlue ? 'bg-blue-600' : 'bg-yellow-500';
+  const textColor = isBlue ? 'text-blue-900' : 'text-yellow-800';
+  const ringColor = isBlue ? 'focus:ring-blue-500' : 'focus:ring-yellow-500';
 
   return (
     <div className="flex w-full min-h-[180px] bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
