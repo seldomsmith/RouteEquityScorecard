@@ -50,14 +50,20 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   useEffect(() => {
     if (!mapContainerRef.current || !route2Data || !route3Data || !daGeoJson) return;
 
-    const initialCenter = ROUTE_CENTERS['002'].center;
-    const initialZoom = ROUTE_CENTERS['002'].zoom;
+    const coordinates = route2Data.coords.map((c: any) => [c[1], c[0]]);
+    const initialBounds = coordinates.reduce(
+      (acc: any, coord: any) => [
+        [Math.min(acc[0][0], coord[0]), Math.min(acc[0][1], coord[1])],
+        [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
+      ],
+      [[coordinates[0][0], coordinates[0][1]], [coordinates[0][0], coordinates[0][1]]]
+    );
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: initialCenter,
-      zoom: initialZoom,
+      bounds: initialBounds as mapboxgl.LngLatBoundsLike,
+      fitBoundsOptions: { padding: 40 },
       interactive: false,
       attributionControl: false,
     });
@@ -81,14 +87,22 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   // Handle route swaps and map updates
   useEffect(() => {
     if (isLoadedRef.current && mapRef.current && activeRouteData) {
-      // Fly across the city with animation
-      const targetCamera = ROUTE_CENTERS[activeRouteId];
-      mapRef.current.flyTo({
-        center: targetCamera.center,
-        zoom: targetCamera.zoom,
-        speed: 1.2,
-        curve: 1.42,
-        essential: true
+      // Calculate bounds dynamically matching ExplainerMap's auto-bounding logic to ensure perfectly centered alignment
+      const coordinates = activeRouteData.coords.map((c: any) => [c[1], c[0]]);
+      const bounds = coordinates.reduce(
+        (acc: any, coord: any) => {
+          return [
+            [Math.min(acc[0][0], coord[0]), Math.min(acc[0][1], coord[1])],
+            [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
+          ];
+        },
+        [[coordinates[0][0], coordinates[0][1]], [coordinates[0][0], coordinates[0][1]]]
+      );
+
+      mapRef.current.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
+        padding: 40,
+        linear: true,
+        duration: 800
       });
 
       updateMapData();

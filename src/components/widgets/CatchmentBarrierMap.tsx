@@ -12,14 +12,28 @@ export const CatchmentBarrierMap: React.FC = () => {
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Center on Grierson Hill / North Saskatchewan River ravine corridor in Edmonton
-    const center: [number, number] = [-113.483, 53.541];
+    // Detour coordinates points
+    const detourCoords = [
+      [-113.489, 53.543], // Start Stop A
+      [-113.489, 53.546], 
+      [-113.478, 53.546], 
+      [-113.478, 53.543], 
+      [-113.479, 53.541], // Destination B
+    ];
+
+    const bounds = detourCoords.reduce(
+      (acc: any, coord: any) => [
+        [Math.min(acc[0][0], coord[0]), Math.min(acc[0][1], coord[1])],
+        [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
+      ],
+      [[detourCoords[0][0], detourCoords[0][1]], [detourCoords[0][0], detourCoords[0][1]]]
+    );
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: center,
-      zoom: 14.5,
+      bounds: bounds as mapboxgl.LngLatBoundsLike,
+      fitBoundsOptions: { padding: 40 },
       interactive: false,
       attributionControl: false,
     });
