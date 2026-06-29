@@ -134,6 +134,67 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
           { progress: 0.8, speed: 0.0027, length: 0.16 },
         ],
       },
+      {
+        color: '#f97316', // Orange line flowing diagonally from top-right to bottom-left
+        strokeWidth: 10,
+        path: [
+          { xPct: 110, yPct: 15 },
+          { xPct: 85, yPct: 15 },
+          { xPct: 65, yPct: 35 },
+          { xPct: 35, yPct: 35 },
+          { xPct: 15, yPct: 60 },
+          { xPct: -10, yPct: 60 },
+        ],
+        stations: [
+          { id: 'o1', xPct: 85, yPct: 15, glow: 0 },
+          { id: 'o2', xPct: 65, yPct: 35, glow: 0 },
+          { id: 'o3', xPct: 35, yPct: 35, glow: 0 },
+          { id: 'o4', xPct: 15, yPct: 60, glow: 0 },
+        ],
+        trains: [
+          { progress: 0.15, speed: 0.0032, length: 0.14 },
+          { progress: 0.65, speed: 0.0028, length: 0.14 },
+        ],
+      },
+      {
+        color: '#06b6d4', // Cyan line flowing vertically on the right
+        strokeWidth: 10,
+        path: [
+          { xPct: 85, yPct: -10 },
+          { xPct: 85, yPct: 40 },
+          { xPct: 95, yPct: 60 },
+          { xPct: 95, yPct: 110 },
+        ],
+        stations: [
+          { id: 'c1', xPct: 85, yPct: 15, glow: 0 },
+          { id: 'c2', xPct: 85, yPct: 40, glow: 0 },
+          { id: 'c3', xPct: 95, yPct: 60, glow: 0 },
+          { id: 'c4', xPct: 95, yPct: 85, glow: 0 },
+        ],
+        trains: [
+          { progress: 0.4, speed: 0.0036, length: 0.17 },
+          { progress: 0.9, speed: 0.0031, length: 0.17 },
+        ],
+      },
+      {
+        color: '#a855f7', // Purple line crossing centrally
+        strokeWidth: 10,
+        path: [
+          { xPct: 50, yPct: -10 },
+          { xPct: 50, yPct: 45 },
+          { xPct: 20, yPct: 75 },
+          { xPct: 20, yPct: 110 },
+        ],
+        stations: [
+          { id: 'p1', xPct: 50, yPct: 20, glow: 0 },
+          { id: 'p2', xPct: 50, yPct: 45, glow: 0 },
+          { id: 'p3', xPct: 20, yPct: 75, glow: 0 },
+        ],
+        trains: [
+          { progress: 0.05, speed: 0.0029, length: 0.15 },
+          { progress: 0.55, speed: 0.0034, length: 0.15 },
+        ],
+      },
     ];
 
     const interchanges = [
