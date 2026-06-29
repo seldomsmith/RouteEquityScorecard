@@ -135,7 +135,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               obj[h] = Number(val || 0);
             }
           });
-          if (obj.route_id) {
+          
+          // Exclude school specials (e.g. routes starting with S, containing 'school' or 'special')
+          const isSchoolOrSpecial = 
+            obj.short_name?.startsWith('S') || 
+            obj.short_name?.toLowerCase().includes('school') ||
+            obj.short_name?.toLowerCase().includes('special') ||
+            obj.name?.toLowerCase().includes('school') ||
+            obj.name?.toLowerCase().includes('special');
+
+          if (obj.route_id && !isSchoolOrSpecial) {
             list.push(obj);
           }
         }
@@ -832,20 +841,29 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
-          {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
-          <section className="flex flex-col gap-6">
-            
-            {/* 📊 Actual Interactive Scatter Plot */}
-            <div className="w-full h-96 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col">
-              <div className="text-center mb-3">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Policy Risk Map: Mean Score vs. Volatility</span>
-                <p className="text-[10px] text-slate-400 mt-0.5">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
+            {/* 📊 Actual Interactive Scatter Plot (Moved here, resized, and legend repositioned to top) */}
+            <div className="w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col">
+              <div className="text-center mb-4">
+                <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Policy Risk Map: Mean Score vs. Volatility</span>
+                <p className="text-xs text-slate-500 mt-1">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
+              </div>
+
+              {/* Legend placed clean at the top */}
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4 text-xs font-bold border-b border-slate-100 pb-3 flex-wrap">
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 shadow-sm">
+                  <span className="w-3 h-3 rounded-full bg-[#2563EB] inline-block border border-[#1D4ED8]" />
+                  <span className="text-blue-950">Route 002: Bedrock Essential</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 shadow-sm">
+                  <span className="w-3 h-3 rounded-full bg-[#EA580C] inline-block border border-[#C2410C]" />
+                  <span className="text-orange-950">Route 003: Policy Swing Corridor</span>
+                </div>
               </div>
 
               {sensitivityData.length > 0 ? (
                 <div className="flex-1 min-h-0 relative">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
+                    <ScatterChart margin={{ top: 15, right: 25, bottom: 35, left: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                       <XAxis
                         type="number"
@@ -853,15 +871,15 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         name="Mean Score"
                         domain={[0, 100]}
                         tickCount={6}
-                        stroke="#94A3B8"
-                        fontSize={9}
+                        stroke="#64748B"
+                        fontSize={11}
                         label={{
                           value: 'Mean Score (Overall Priority Rank)',
                           position: 'bottom',
-                          offset: 5,
-                          fontSize: 9,
-                          fill: '#64748B',
-                          fontWeight: 600
+                          offset: 15,
+                          fontSize: 11,
+                          fill: '#334155',
+                          fontWeight: 700
                         }}
                       />
                       <YAxis
@@ -870,16 +888,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         name="Volatility"
                         domain={[0, 40]}
                         tickCount={5}
-                        stroke="#94A3B8"
-                        fontSize={9}
+                        stroke="#64748B"
+                        fontSize={11}
                         label={{
                           value: 'Robustness Index (Rr) — Volatility',
                           angle: -90,
                           position: 'insideLeft',
-                          offset: -5,
-                          fontSize: 9,
-                          fill: '#64748B',
-                          fontWeight: 600
+                          offset: -10,
+                          fontSize: 11,
+                          fill: '#334155',
+                          fontWeight: 700
                         }}
                       />
                       <Tooltip content={<CustomChartTooltip />} cursor={{ strokeDasharray: '3 3' }} />
@@ -892,23 +910,23 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                           
                           // Style highlight for Route 002 and 003
                           let fill = (entry.stability_class && CLASS_COLORS[entry.stability_class]) || '#64748B';
-                          let radius = 3.5;
-                          let fillOpacity = 0.25;
+                          let radius = 6.0; // Scaled up from 3.5
+                          let fillOpacity = 0.35; // Increased opacity
                           let stroke = 'transparent';
                           let strokeWidth = 0;
 
                           if (isRoute2) {
                             fill = '#2563EB'; // Bright blue for Route 2
-                            radius = 8;
+                            radius = 12; // Scaled up from 8
                             fillOpacity = 1.0;
                             stroke = '#1D4ED8';
-                            strokeWidth = 2;
+                            strokeWidth = 2.5;
                           } else if (isRoute3) {
                             fill = '#EA580C'; // Bright orange for Route 3
-                            radius = 8;
+                            radius = 12; // Scaled up from 8
                             fillOpacity = 1.0;
                             stroke = '#C2410C';
-                            strokeWidth = 2;
+                            strokeWidth = 2.5;
                           }
 
                           return (
@@ -925,14 +943,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       </Scatter>
                     </ScatterChart>
                   </ResponsiveContainer>
-
-                  {/* Manual Overlay Labels for Route 002 and Route 003 */}
-                  <div className="absolute top-2 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-blue-650 shadow-sm pointer-events-none">
-                    🔵 Route 002: Bedrock Essential (Low Volatility / High Score)
-                  </div>
-                  <div className="absolute bottom-10 left-6 bg-slate-50/90 backdrop-blur-sm border border-slate-200 rounded px-2 py-1 text-[9px] font-bold text-orange-605 shadow-sm pointer-events-none">
-                    🟠 Route 003: Policy Swing Corridor (Low Volatility / Low Score)
-                  </div>
                 </div>
               ) : (
                 <div className="flex-1 flex items-center justify-center text-xs text-slate-400 font-mono">
@@ -964,7 +974,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   These routes consistently receive lower equity scores across all possible policy weight combinations. They tend to serve higher-income areas with low demographic risk, feature abundant overlapping transit choices, or bypass major employment and service hubs. Route 524 (Bonnie Doon – Holyrood) falls into this category, averaging a score of just 8.9 out of 100 across all configurations.
                 </li>
               </ul>
-              <p className="text-slate-600 text-base leading-relaxed">
+              <p className="text-slate-605 text-base leading-relaxed">
                 Identifying these classifications for each route helps us identify which routes should be protected and how different service changes may impact specific routes.
               </p>
             </div>
