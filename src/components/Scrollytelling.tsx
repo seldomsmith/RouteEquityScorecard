@@ -841,6 +841,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
+          {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
+          <section className="flex flex-col gap-6">
+            
             {/* 📊 Actual Interactive Scatter Plot (Moved here, resized, and legend repositioned to top) */}
             <div className="w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col">
               <div className="text-center mb-4">
