@@ -24,6 +24,9 @@ import { RouteTicket } from './ui/RouteTicket';
 import { ExplainerMap } from './widgets/ExplainerMap';
 import { MonteCarloPlinko } from './widgets/MonteCarloPlinko';
 import { OdtExplainerMap } from './widgets/OdtExplainerMap';
+import { FourPillars } from './widgets/FourPillars';
+import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
+import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -331,15 +334,6 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
           {/* ================= SECTION 2: Four Pillars ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Compass className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: The Four Pillars of Transit Equity</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Visualizing Vulnerability, Off Peak, Monopoly, and Opportunity weight pillars.
-              </p>
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -355,19 +349,12 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score.
               </p>
             </div>
+
+            <FourPillars />
           </section>
 
           {/* ================= SECTION 3: Vulnerability ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Bus className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Transit Vulnerability comparison</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Demographic metrics comparison for low income, seniors, and minorities on Route 002 vs Route 003.
-              </p>
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">3. Transit Vulnerability</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -439,19 +426,19 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               )}
             </div>
+
+            {route2Data && route3Data && daGeoJson && (
+              <InteractiveToggleMap 
+                route2Data={route2Data} 
+                route3Data={route3Data} 
+                daGeoJson={daGeoJson} 
+                mode="vulnerability" 
+              />
+            )}
           </section>
 
           {/* ================= SECTION 4: Opportunity ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Compass className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Destination Opportunity network maps</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Route reach to major employment hubs, hospitals, and post-secondary campuses.
-              </p>
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">4. Destination Opportunity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -531,19 +518,19 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               )}
             </div>
+
+            {route2Data && route3Data && daGeoJson && (
+              <InteractiveToggleMap 
+                route2Data={route2Data} 
+                route3Data={route3Data} 
+                daGeoJson={daGeoJson} 
+                mode="opportunity" 
+              />
+            )}
           </section>
 
           {/* ================= SECTION 5: Off Peak Service ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <Clock className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Off-Peak service clock</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Operating hours and reliability timeline comparisons for evening and weekend service.
-              </p>
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">5. Off Peak Service</h2>
               <p className="text-slate-655 text-base leading-relaxed">
@@ -615,19 +602,12 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               )}
             </div>
+
+            <OffPeakFrequencyChart />
           </section>
 
           {/* ================= SECTION 6: Transit Monopoly ================= */}
           <section className="flex flex-col gap-6">
-            {/* Visual Placeholder */}
-            <div className="w-full h-72 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 font-bold select-none shadow-sm gap-2 p-6 text-center">
-              <ShieldCheck className="w-10 h-10 text-slate-350" />
-              <span className="text-xs font-mono tracking-widest uppercase mt-2">Visualisation: Transit Monopoly buffer catchments</span>
-              <p className="text-[11px] text-slate-400 max-w-md font-medium mt-1">
-                Highlighting areas that are solely reliant on one specific route without alternative transit corridors.
-              </p>
-            </div>
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Transit Monopoly</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -666,7 +646,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               {showMonopolyMath && (
                 <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
                   <div className="border-b border-slate-100 pb-3">
-                    <h3 className="text-lg font-extrabold text-slate-900">Monopoly Methodology: Functional Redundancy</h3>
+                    <h3 className="text-lg font-extrabold text-slate-950">Monopoly Methodology: Functional Redundancy</h3>
                     <p className="text-xs text-slate-500 mt-0.5">How alternative transit service capacity reduces dependency and scores.</p>
                   </div>
                   
@@ -706,20 +686,32 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               )}
             </div>
+
+            {route2Data && route3Data && daGeoJson && (
+              <InteractiveToggleMap 
+                route2Data={route2Data} 
+                route3Data={route3Data} 
+                daGeoJson={daGeoJson} 
+                mode="monopoly" 
+              />
+            )}
           </section>
 
           {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
           <section className="flex flex-col gap-6">
-            {/* Dynamic Map Visualization */}
-            {odtGeoJson && (
-              <OdtExplainerMap odtGeoJson={odtGeoJson} routeData={route727Data} />
-            )}
-
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
               </p>
+
+              {/* Dynamic Map Visualization - Relocated right under the specified ODT description line */}
+              {odtGeoJson && (
+                <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                  <OdtExplainerMap odtGeoJson={odtGeoJson} routeData={route727Data} />
+                </div>
+              )}
+
               <p className="text-slate-600 text-base leading-relaxed">
                 By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which terminates at the Capilano Transit Centre – a primary hub for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
               </p>
