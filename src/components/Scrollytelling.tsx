@@ -1000,30 +1000,61 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Macro vs. Micro Split-View */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2">
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Macro View (DA Average)</span>
-                      <div className="w-24 h-24 rounded-2xl bg-rose-500/20 border-2 border-rose-500 mt-4 flex items-center justify-center text-rose-700 font-extrabold text-sm">
-                        Score: 80.0
+                  {/* Visual: Macro vs. Micro Split-View (Upgraded to high fidelity match) */}
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                    <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl text-center relative">
+                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🗺️ Macro View</span>
+                      <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide">Zone Average</h4>
+                      
+                      {/* High-Fidelity SVG Circular Ring Indicator */}
+                      <div className="relative w-36 h-36 mt-4 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle cx="72" cy="72" r="54" stroke="#E2E8F0" strokeWidth="10" fill="transparent" />
+                          <circle cx="72" cy="72" r="54" stroke="#0D9488" strokeWidth="10" fill="transparent" strokeDasharray="339.3" strokeDashoffset="67.8" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute flex flex-col items-center justify-center">
+                          <span className="text-2xl font-black text-slate-800 leading-none">80.0</span>
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Score</span>
+                        </div>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-3 font-semibold uppercase">High Vulnerability DA</p>
+                      
+                      <p className="text-[11px] text-slate-500 mt-4 leading-relaxed max-w-xs">
+                        Appears broadly adequate when viewed as a single, homogenous block.
+                      </p>
                     </div>
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Micro View (Individual Reality)</span>
-                      <div className="grid grid-cols-5 gap-2 mt-4">
-                        {Array.from({ length: 15 }).map((_, i) => (
-                          <div 
-                            key={i} 
-                            className={`w-3.5 h-3.5 rounded-full ${i < 10 ? 'bg-rose-500' : 'bg-blue-500'}`} 
-                            title={i < 10 ? 'High-need Household' : 'Low-need Household'}
-                          />
-                        ))}
+
+                    <div className="w-full md:w-1/2 flex flex-col justify-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl relative">
+                      <div className="text-center mb-4">
+                        <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">🎯 Micro View</span>
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide mt-3">Granular Breakdown</h4>
                       </div>
-                      <div className="flex gap-4 mt-4 text-[10px] font-bold">
-                        <span className="text-rose-600">🔴 70% High-need</span>
-                        <span className="text-blue-600">🔵 30% Low-need</span>
+                      
+                      {/* High-Fidelity Progress Bars */}
+                      <div className="space-y-4 my-2">
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex justify-between text-xs font-bold text-slate-700">
+                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-600" /> High-need Segments</span>
+                            <span className="text-rose-650 font-black text-sm">70%</span>
+                          </div>
+                          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-rose-500 to-red-650 rounded-full" style={{ width: '70%' }} />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex justify-between text-xs font-bold text-slate-700">
+                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-600" /> Low-need Segments</span>
+                            <span className="text-emerald-700 font-black text-sm">30%</span>
+                          </div>
+                          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-550 rounded-full" style={{ width: '30%' }} />
+                          </div>
+                        </div>
                       </div>
+                      
+                      <p className="text-[11px] text-slate-500 mt-4 leading-relaxed text-center">
+                        Reveals deep disparities masked by the aggregated zone average.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1037,23 +1068,34 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Timeline Drift Comparison */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col gap-4 mt-2">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Timeline (Scheduled GTFS)</span>
-                      <div className="relative w-full h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-xs text-emerald-700">
+                  {/* Visual: Timeline Drift Comparison (Upgraded to high fidelity) */}
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col gap-6 mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">🗓️ Scheduled GTFS</span>
+                        <span className="text-[9px] text-slate-450 font-bold uppercase tracking-wider">Perfect Interval</span>
+                      </div>
+                      <div className="relative w-full h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-[10px] md:text-xs text-emerald-700 font-bold shadow-inner">
                         <span>0:00 (On Time)</span>
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                         <span>0:15 (On Time)</span>
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                         <span>0:30 (On Time)</span>
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                         <span>0:45 (On Time)</span>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bottom Timeline (Real-World Tracking)</span>
-                      <div className="relative w-full h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-xs">
-                        <span className="text-amber-600">0:08 (Late)</span>
-                        <span className="text-rose-600">0:30 (Cancelled)</span>
-                        <span className="text-emerald-700">0:45 (Bunched)</span>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">⚠️ Real-World Tracking</span>
+                        <span className="text-[9px] text-slate-450 font-bold uppercase tracking-wider text-rose-600">Timeline Drift</span>
+                      </div>
+                      <div className="relative w-full h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-[10px] md:text-xs shadow-inner">
+                        <span className="text-amber-600 font-bold">0:08 (Late)</span>
+                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping" />
+                        <span className="text-rose-600 font-black">0:30 (Cancelled)</span>
+                        <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />
+                        <span className="text-emerald-700 font-bold">0:45 (Bunched)</span>
                       </div>
                     </div>
                   </div>
@@ -1068,22 +1110,22 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Theoretical vs. Actual Walkway */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2">
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Layer A (Theoretical Access)</span>
-                      <div className="relative w-24 h-24 rounded-full border-4 border-dashed border-teal-500/60 bg-teal-500/10 mt-4 flex items-center justify-center">
-                        <span className="text-[10px] text-teal-800 font-bold uppercase tracking-wider">400m Buffer</span>
+                  {/* Visual: Theoretical vs. Actual Walkway (Upgraded to high fidelity) */}
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
+                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🟢 Theoretical Access</span>
+                      <div className="relative w-28 h-28 rounded-full border-4 border-dashed border-teal-500/60 bg-teal-500/10 flex items-center justify-center">
+                        <span className="text-[10px] text-teal-800 font-black uppercase tracking-wider">400m Buffer</span>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-3 font-semibold uppercase">Ideal 5-Minute Walk</p>
+                      <p className="text-[11px] text-slate-500 mt-4 leading-relaxed">Ideal 5-Minute Walk</p>
                     </div>
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Layer B (Actual Accessibility)</span>
-                      <div className="relative w-24 h-24 border border-rose-500 bg-rose-50/20 mt-4 rounded-xl flex items-center justify-center">
-                        <div className="absolute top-1/2 left-0 w-full h-1 bg-red-600 -rotate-12" title="Ravine / Highway Barrier" />
-                        <span className="text-[10px] text-rose-800 font-bold uppercase tracking-wider relative z-10">Detour Required</span>
+                    <div className="w-full sm:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
+                      <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🔴 Actual Accessibility</span>
+                      <div className="relative w-28 h-28 border-2 border-rose-400 bg-rose-50/20 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <div className="absolute w-full h-1.5 bg-red-650/80 -rotate-12 shadow-sm" title="Highway Corridor Barrier" />
+                        <span className="text-[10px] text-rose-800 font-black uppercase tracking-wider relative z-10 bg-white/95 px-2 py-0.5 rounded border border-rose-200 shadow-sm">Barrier Detour</span>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-3 font-semibold uppercase text-rose-600">1.2km Actual Walk</p>
+                      <p className="text-[11px] text-rose-600 font-bold mt-4 leading-relaxed">1.2km Actual Pedestrian Route</p>
                     </div>
                   </div>
                 </div>
@@ -1097,25 +1139,27 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Utility Discount Split Card */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2">
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Raw View</span>
-                      <div className="mt-4 flex flex-col items-center justify-center bg-white p-3 rounded-xl border border-slate-200/60 shadow-inner">
-                        <span className="text-xs font-bold text-slate-800">2 Grocery Stores</span>
-                        <span className="text-[10px] text-slate-400 mt-1">Equal 100% Spatial Access</span>
+                  {/* Visual: Utility Discount Split Card (Upgraded to high fidelity) */}
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
+                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">Raw View</span>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/65 shadow-sm flex flex-col items-center">
+                        <span className="text-sm font-black text-slate-800">2 Grocery Stores</span>
+                        <span className="text-[10px] text-slate-400 font-semibold mt-1">Equal 100% Spatial Access</span>
                       </div>
                     </div>
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Equity-Adjusted View</span>
-                      <div className="mt-4 space-y-2 text-left bg-white p-3 rounded-xl border border-slate-200/60 shadow-inner">
+                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-6 bg-slate-50 border border-slate-100 rounded-2xl">
+                      <div className="text-center mb-3">
+                        <span className="text-[10px] font-black text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Equity-Adjusted View</span>
+                      </div>
+                      <div className="space-y-2.5 bg-white p-4 rounded-xl border border-slate-200/65 shadow-sm">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-slate-700">Discount Grocery</span>
-                          <span className="text-teal-600 font-extrabold">100% Utility</span>
+                          <span className="text-teal-600 font-extrabold bg-teal-50 px-2 py-0.5 rounded-full">100% Utility</span>
                         </div>
-                        <div className="flex justify-between items-center text-xs border-t border-slate-100 pt-2">
-                          <span className="font-bold text-slate-500">Luxury specialty grocer</span>
-                          <span className="text-rose-600 font-extrabold">-80% Utility</span>
+                        <div className="flex justify-between items-center text-xs border-t border-slate-100 pt-2.5">
+                          <span className="font-bold text-slate-500">Luxury Specialty Grocer</span>
+                          <span className="text-rose-600 font-extrabold bg-rose-50 px-2 py-0.5 rounded-full">-80% Utility</span>
                         </div>
                       </div>
                     </div>
