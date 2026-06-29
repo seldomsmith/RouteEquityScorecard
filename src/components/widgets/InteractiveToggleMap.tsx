@@ -203,7 +203,9 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         data: { type: 'FeatureCollection', features: filteredDaFeatures },
       });
 
-      const heatmapColors = GRADE_HEATMAP_COLORS[grade] || GRADE_HEATMAP_COLORS.C;
+      // Use a consistent blue/indigo sequential color scale for vulnerability map representation
+      // that matches the legend gradient from light slate-blue to deep indigo
+      const vulnerabilityColors = ['#EFF6FF', '#DBEAFE', '#BFDBFE', '#60A5FA', '#2563EB', '#1E3A8A'];
       map.addLayer({
         id: 'da-heatmap-layer',
         type: 'fill',
@@ -211,16 +213,16 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         paint: {
           'fill-color': [
             'interpolate',
-            'linear',
+            ['linear'],
             ['get', 'vulnerability_index'],
-            0, heatmapColors[0],
-            20, heatmapColors[1],
-            40, heatmapColors[2],
-            60, heatmapColors[3],
-            80, heatmapColors[4],
-            100, heatmapColors[5],
+            0, vulnerabilityColors[0],
+            20, vulnerabilityColors[1],
+            40, vulnerabilityColors[2],
+            60, vulnerabilityColors[3],
+            80, vulnerabilityColors[4],
+            100, vulnerabilityColors[5],
           ],
-          'fill-opacity': 0.5,
+          'fill-opacity': 0.55,
           'fill-outline-color': '#CBD5E1',
         },
       }, 'active-route-casing');

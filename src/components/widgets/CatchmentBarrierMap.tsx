@@ -12,13 +12,27 @@ export const CatchmentBarrierMap: React.FC = () => {
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Detour coordinates points
+    // Detour coordinates points (high-fidelity street-snapped walking path)
     const detourCoords = [
-      [-113.489, 53.543], // Start Stop A
-      [-113.489, 53.546], 
-      [-113.478, 53.546], 
-      [-113.478, 53.543], 
-      [-113.479, 53.541], // Destination B
+      [-113.489041, 53.542998],
+      [-113.489082, 53.543349],
+      [-113.488272, 53.543418],
+      [-113.48644, 53.543819],
+      [-113.486196, 53.543236],
+      [-113.485779, 53.543296],
+      [-113.485768, 53.543262],
+      [-113.485676, 53.543252],
+      [-113.482293, 53.543851],
+      [-113.482094, 53.54347],
+      [-113.481836, 53.543602],
+      [-113.48153, 53.542909],
+      [-113.481026, 53.542973],
+      [-113.480714, 53.54308],
+      [-113.48017, 53.543111],
+      [-113.480107, 53.542936],
+      [-113.48029, 53.542906],
+      [-113.479438, 53.540869],
+      [-113.478974, 53.540956]
     ];
 
     const bounds = detourCoords.reduce(
@@ -47,8 +61,8 @@ export const CatchmentBarrierMap: React.FC = () => {
           geometry: {
             type: 'LineString',
             coordinates: [
-              [-113.489, 53.543], // Stop A (Grierson Hill edge)
-              [-113.479, 53.541], // Destination B (River Bank valley landing - 400m direct straight-line)
+              [-113.489041, 53.542998], // Stop A
+              [-113.478974, 53.540956], // Destination B
             ],
           },
           properties: {},
@@ -83,13 +97,7 @@ export const CatchmentBarrierMap: React.FC = () => {
           type: 'Feature',
           geometry: {
             type: 'LineString',
-            coordinates: [
-              [-113.489, 53.543], // Start Stop A
-              [-113.489, 53.546], // Detour North along 95th Street
-              [-113.478, 53.546], // Cross bridge walkway
-              [-113.478, 53.543], // Detour South back down
-              [-113.479, 53.541], // Destination B (1.2km walk detour)
-            ],
+            coordinates: detourCoords,
           },
           properties: {},
         },
@@ -121,7 +129,7 @@ export const CatchmentBarrierMap: React.FC = () => {
       startMarker.innerHTML = 'A';
 
       new mapboxgl.Marker(startMarker)
-        .setLngLat([-113.489, 53.543])
+        .setLngLat([-113.489041, 53.542998])
         .addTo(map);
 
       const destMarker = document.createElement('div');
@@ -129,7 +137,7 @@ export const CatchmentBarrierMap: React.FC = () => {
       destMarker.innerHTML = 'B';
 
       new mapboxgl.Marker(destMarker)
-        .setLngLat([-113.479, 53.541])
+        .setLngLat([-113.478974, 53.540956])
         .addTo(map);
     });
 
