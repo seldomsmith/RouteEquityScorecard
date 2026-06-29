@@ -63,7 +63,7 @@ export const FourPillars: React.FC = () => {
             <div 
               key={idx}
               onClick={() => toggleFlip(idx)}
-              className="cursor-pointer group relative perspective w-full h-[220px]"
+              className="cursor-pointer group relative perspective w-full h-[250px]"
             >
               {/* Inner card with 3D rotation transition */}
               <div 
@@ -85,11 +85,11 @@ export const FourPillars: React.FC = () => {
                     colors={[p.color]}
                     className="w-full h-full rounded-2xl shadow-md"
                   >
-                    <div className="w-full h-full p-6 flex flex-col justify-between items-center text-center text-white">
+                    <div className="w-full h-full p-8 flex flex-col justify-between items-center text-center text-white">
                       <div className="p-3 bg-white/10 rounded-xl border border-white/20 mt-4">
                         <Icon className="w-8 h-8 text-white" />
                       </div>
-                      <span className="text-sm font-black uppercase tracking-wider leading-tight mb-2">
+                      <span className="text-sm font-black uppercase tracking-wider leading-tight mb-4">
                         {p.title}
                       </span>
                     </div>
@@ -97,18 +97,14 @@ export const FourPillars: React.FC = () => {
                 </div>
 
                 {/* BACK SIDE (White/Slate Details Card with border layout) */}
-                <div className="absolute inset-0 backface-hidden w-full h-full rotate-y-180 bg-white border border-slate-200 rounded-2xl p-5 shadow-md flex flex-col justify-between select-none">
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-wider mb-2" style={{ color: p.color }}>
+                <div className="absolute inset-0 backface-hidden w-full h-full rotate-y-180 bg-white border border-slate-200 rounded-2xl p-6 shadow-md flex flex-col justify-center select-none">
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-black uppercase tracking-wider" style={{ color: p.color }}>
                       {p.title}
                     </h4>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">
                       {p.description}
                     </p>
-                  </div>
-                  <div className="border-t border-slate-100 pt-2.5 flex justify-between items-center text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                    <span>Click to Flip back</span>
-                    <span style={{ color: p.color }}>Active Metric</span>
                   </div>
                 </div>
               </div>

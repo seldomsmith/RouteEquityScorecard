@@ -14,7 +14,7 @@ interface InteractiveToggleMapProps {
 }
 
 const ROUTE_CENTERS = {
-  '002': { center: [-113.435, 53.518] as [number, number], zoom: 10.8 },
+  '002': { center: [-113.46, 53.53] as [number, number], zoom: 10.3 },
   '003': { center: [-113.525, 53.548] as [number, number], zoom: 12.0 },
 };
 
