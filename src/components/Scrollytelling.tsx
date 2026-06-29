@@ -28,6 +28,7 @@ import { FourPillars } from './widgets/FourPillars';
 import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
+import { StaggeredMenu } from './widgets/StaggeredMenu';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -238,9 +239,32 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
       {/* 🚌 Fixed Scrollytelling Header with Scroll Progress Tracker */}
       <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
+          <StaggeredMenu
+            position="left"
+            isFixed={false}
+            displaySocials={false}
+            displayItemNumbering={true}
+            menuButtonColor="#2563EB"
+            openMenuButtonColor="#2563EB"
+            colors={['#EFF6FF', '#DBEAFE', '#93C5FD']}
+            accentColor="#2563EB"
+            items={[
+              { label: 'Introduction', ariaLabel: 'Introduction section', link: '#section-1' },
+              { label: 'Four Pillars', ariaLabel: 'Four Pillars section', link: '#section-2' },
+              { label: 'Vulnerability', ariaLabel: 'Vulnerability section', link: '#section-3' },
+              { label: 'Opportunity', ariaLabel: 'Opportunity section', link: '#section-4' },
+              { label: 'Off Peak Service', ariaLabel: 'Off Peak Service section', link: '#section-5' },
+              { label: 'Transit Monopoly', ariaLabel: 'Transit Monopoly section', link: '#section-6' },
+              { label: 'On Demand Transit', ariaLabel: 'On Demand Transit section', link: '#section-odt' },
+              { label: 'Policy weights', ariaLabel: 'Policy weights section', link: '#section-7' },
+              { label: 'Stability Index', ariaLabel: 'Stability Index section', link: '#section-8' },
+              { label: 'Limitations', ariaLabel: 'Limitations section', link: '#section-9' },
+              { label: 'Planning Decisions', ariaLabel: 'Planning Decisions section', link: '#section-10' }
+            ]}
+          />
           <button 
             onClick={onBack}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200"
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200 ml-12"
             title="Return to Home"
           >
             <Home className="w-5 h-5" />
@@ -275,7 +299,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
         <div className="w-full max-w-3xl px-6 flex flex-col gap-24">
           
           {/* ================= SECTION 1: Introduction ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-1" className="flex flex-col gap-6">
             
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
@@ -334,7 +358,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 2: Four Pillars ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-2" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -355,7 +379,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 3: Vulnerability ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-3" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">3. Transit Vulnerability</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -443,7 +467,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 4: Opportunity ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-4" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">4. Destination Opportunity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -467,7 +491,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     description="Route 003 covers a shorter distance and connects fewer major hubs, indicating that riders on Route 003 must transfer more frequently to reach key destinations across Edmonton."
                   />
                 </div>
-                         {route2Data && route3Data && daGeoJson && (
+              </div>
+
+            {route2Data && route3Data && daGeoJson && (
               <>
                 <InteractiveToggleMap 
                   route2Data={route2Data} 
@@ -537,7 +563,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 5: Off Peak Service ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-5" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">5. Off Peak Service</h2>
               <p className="text-slate-655 text-base leading-relaxed">
@@ -616,7 +642,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 6: Transit Monopoly ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-6" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Transit Monopoly</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -712,7 +738,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-odt" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -746,7 +772,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-7" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Policy Weights</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -848,7 +874,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-8" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -991,13 +1017,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget (Wider to match Route 2 & 3 cards) */}
-            <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-4">
-              <MonteCarloPlinko />
             </div>
           </section>
 
           {/* ================= SECTION 9: Limitations of the Scorecard Model ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-9" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">9. Limitations of the Scorecard Model</h2>
               <p className="text-slate-605 text-base leading-relaxed">
@@ -1009,7 +1033,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">1. The Ecological Fallacy</h3>
-                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Evaluating demographic data aggregated at the Dissemination Area (DA) level, which is the smallest geographic unit used by Statistics Canada, assumes that individual residents match their neighbourhood average. In reality, affluent residents live in vulnerable DAs, and transit-dependent families live in wealthy areas. Because the model scores geography rather than individuals, isolated pockets of need can be obscured by broader neighbourhood averages.
                     </p>
                   </div>
@@ -1048,7 +1072,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         <div className="flex flex-col gap-1.5">
                           <div className="flex justify-between text-xs font-bold text-slate-700">
                             <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-600" /> High-need Segments</span>
-                            <span className="text-rose-650 font-black text-sm">70%</span>
+                            <span className="text-rose-655 font-black text-sm">70%</span>
                           </div>
                           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                             <div className="h-full bg-gradient-to-r from-rose-500 to-red-650 rounded-full" style={{ width: '70%' }} />
@@ -1077,7 +1101,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">2. Static Schedules vs. Real-World Reliability</h3>
-                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Off-peak scores are calculated using static General Transit Feed Specification (GTFS) schedules, which are the digital timetables published by the city. This approach assumes buses run on time. The model ignores real-world detours, weather delays, and cancellations, which influence whether a resident chooses to use transit. A scheduled 15-minute route that experiences regular delays is often less useful to riders than a highly reliable, uninterrupted 30-minute route.
                     </p>
                   </div>
@@ -1102,7 +1126,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     <div className="flex flex-col gap-2">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">⚠️ Real-World Tracking</span>
-                        <span className="text-[9px] text-slate-450 font-bold uppercase tracking-wider text-rose-600">Timeline Drift</span>
+                        <span className="text-[9px] text-slate-450 font-bold uppercase tracking-wider text-rose-605">Timeline Drift</span>
                       </div>
                       <div className="relative w-full h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between px-6 font-mono text-[10px] md:text-xs shadow-inner">
                         <span className="text-amber-600 font-bold">0:08 (Late)</span>
@@ -1119,7 +1143,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">3. Catchment Buffers vs. Physical Barriers</h3>
-                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Walking catchments assume ideal pedestrian access and uniform walking speeds. The model cannot detect micro-level barriers, such as broken sidewalks, snow-blocked paths, missing crosswalks, or major highway crossings, that make walking unsafe or impossible for seniors and residents with mobility aids.
                     </p>
                   </div>
@@ -1131,7 +1155,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 <div className="flex flex-col gap-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">4. Destination Quantity vs. Quality</h3>
-                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       The Destination Opportunity pillar counts the presence of services but ignores their affordability or capacity. It treats a luxury organic market and a discount grocery store as identical food destinations, despite their vastly different utility to low-income riders.
                     </p>
                   </div>
@@ -1168,7 +1192,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
 
           {/* ================= SECTION 10: Applying the Scorecard to Planning Decisions ================= */}
-          <section className="flex flex-col gap-6">
+          <section id="section-10" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">10. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
