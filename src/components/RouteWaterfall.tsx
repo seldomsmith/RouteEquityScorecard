@@ -392,7 +392,6 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       // Draw background track paths with spotlight highlights
       lines.forEach(line => {
         const isHovered = hoveredLineColor === line.color;
-        const anyHovered = hoveredLineColor !== null;
 
         ctx.beginPath();
         line.path.forEach((node, idx) => {
@@ -404,7 +403,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
           }
         });
         ctx.strokeStyle = line.color;
-        ctx.globalAlpha = isHovered ? 0.9 : anyHovered ? 0.05 : 0.15;
+        ctx.globalAlpha = isHovered ? 0.9 : 0.15; // Maintain baseline 0.15 opacity for non-hovered lines
         ctx.lineWidth = isHovered ? line.strokeWidth * 1.8 : line.strokeWidth;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -414,8 +413,6 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       // Draw trains with spotlight highlights
       lines.forEach(line => {
         const isHovered = hoveredLineColor === line.color;
-        const anyHovered = hoveredLineColor !== null;
-        if (anyHovered && !isHovered) return; // Completely dim trains of non-hovered routes
 
         line.trains.forEach(train => {
           const segmentsCount = 30;
@@ -457,11 +454,10 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       // Draw stations with spotlight highlights
       lines.forEach(line => {
         const isHovered = hoveredLineColor === line.color;
-        const anyHovered = hoveredLineColor !== null;
 
         line.stations.forEach(station => {
           const pt = getPixelCoords(station.xPct, station.yPct, w, h);
-          ctx.globalAlpha = isHovered ? 1.0 : anyHovered ? 0.15 : 1.0;
+          ctx.globalAlpha = 1.0;
 
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, isHovered ? 11 : 8, 0, Math.PI * 2);
@@ -472,7 +468,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
           ctx.stroke();
 
           if (station.glow > 0) {
-            ctx.globalAlpha = station.glow * (isHovered ? 1.0 : anyHovered ? 0.15 : 1.0);
+            ctx.globalAlpha = station.glow;
             ctx.beginPath();
             ctx.arc(pt.x, pt.y, isHovered ? 15 : 12, 0, Math.PI * 2);
             ctx.strokeStyle = '#ffffff';
@@ -488,8 +484,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       // Draw interchange stations with basic overlay highlights
       interchanges.forEach(interchange => {
         const pt = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
-        const anyHovered = hoveredLineColor !== null;
-        ctx.globalAlpha = anyHovered ? 0.4 : 1.0;
+        ctx.globalAlpha = 1.0;
 
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
@@ -500,7 +495,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
         ctx.stroke();
 
         if (interchange.glow > 0) {
-          ctx.globalAlpha = interchange.glow * (anyHovered ? 0.4 : 1.0);
+          ctx.globalAlpha = interchange.glow;
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, 16, 0, Math.PI * 2);
           ctx.strokeStyle = '#3b82f6';
