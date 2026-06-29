@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Users, Target, Clock, Shield } from 'lucide-react';
-import { BorderGlow } from './BorderGlow';
+import { BorderGlow } from '../BorderGlow';
 
 export const FourPillars: React.FC = () => {
   const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
