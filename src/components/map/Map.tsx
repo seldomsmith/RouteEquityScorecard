@@ -297,7 +297,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       style: 'mapbox://styles/mapbox/light-v11',
       center: [-113.4938, 53.5461],
       zoom: 11,
-      projection: { name: 'mercator' }
+      projection: { name: 'mercator' },
+      cooperativeGestures: true
     });
 
     map.current.on('load', () => {
