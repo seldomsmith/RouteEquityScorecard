@@ -805,6 +805,33 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       <p className="leading-relaxed">
                         The overall Off-Peak Score is calculated by averaging the points earned across all four time windows (Evenings, Nights, Saturdays, and Sundays). For example, if a route runs frequently on Saturdays (earning 70 points) but has no service late at night (earning only 10 points), the final score will be dragged down to reflect that lack of late-night service.
                       </p>
+
+                      {/* Methodological Assumptions Section */}
+                      <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                          Methodological Assumptions and Justifications
+                        </h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          To maintain transparency for decision-makers, it is important to outline the mathematical assumptions and limitations of this calculation:
+                        </p>
+                        <div className="flex flex-col gap-4 text-xs text-slate-650">
+                          <div className="space-y-1">
+                            <span className="font-bold text-slate-900 block">Focus on Service Retention Over Absolute Frequency:</span>
+                            <p className="leading-relaxed">
+                              This metric measures relative service stability rather than the absolute number of buses running. For example, a route that runs once every 60 minutes in the morning and maintains that same once-an-hour frequency at night will receive a perfect score of 100%. A major corridor route that runs every 5 minutes in the morning but drops to every 15 minutes at night will receive a score of 33%, despite still offering more total buses. This design choice is intentional: it acts as a "Service Retention Index" to protect outer neighborhoods from losing their basic transit lifelines during off-peak hours.
+                            </p>
+                          </div>
+                          <div className="space-y-1 border-t border-slate-100 pt-3">
+                            <span className="font-bold text-slate-900 block">Representative Time Windows:</span>
+                            <p className="leading-relaxed">
+                              The formula uses specific one-hour windows (7:30 AM–8:30 AM for peak morning, and 9:30 PM–10:30 PM for late night) as proxies for service span. While this does not capture midday or weekend service, it provides a highly transparent, easily calculated, and reproducible metric. More complex alternatives, such as tracking total operating hours or absolute trip counts, tend to over-prioritize busy downtown lines at the expense of necessary community coverage routes.
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-550 border-t border-slate-100 pt-3 leading-relaxed">
+                          By using this retention-based approach, the scorecard remains a clear and defensible tool for protecting vulnerable transit riders from losing essential late-night service.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
