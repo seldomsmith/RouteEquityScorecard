@@ -20,28 +20,28 @@ export const FourPillars: React.FC = () => {
       icon: Users,
       color: '#EF4444', // Red
       glowColor: '0 90 60',
-      description: 'Measures demographic need along a route. Full priority points go to stops immediately adjacent to households with low-income, senior, youth, lone-parent, or visible minority residents.',
+      description: 'Tracks demographic data along a route. Priority points go to stops adjacent to households with low-income, senior, youth, lone-parent, or visible minority residents.',
     },
     {
       title: 'Destination Opportunity',
       icon: Target,
       color: '#4F46E5', // Indigo
       glowColor: '240 90 60',
-      description: 'Evaluates direct connections to key destinations. Points are awarded based on hospitals, employment centers, post-secondary schools, grocery stores, and primary/secondary schools within walking distance.',
+      description: 'Evaluates connections to specific destinations. Points are awarded based on hospitals, employment centres, post-secondary schools, grocery stores, and primary/secondary schools within walking distance.',
     },
     {
       title: 'Off-Peak Service',
       icon: Clock,
       color: '#10B981', // Emerald Green
       glowColor: '150 90 60',
-      description: 'Compares how frequently buses run late at night (9:30–10:30 PM) versus morning peak hours to evaluate transit service reliability for late night transit riders.',
+      description: 'Compares how frequently buses run late at night (9:30 PM to 10:30 PM) versus morning peak hours to evaluate transit reliability for late night riders.',
     },
     {
       title: 'Transit Monopoly',
       icon: Shield,
       color: '#F59E0B', // Amber
       glowColor: '35 90 60',
-      description: 'Identifies neighborhoods where a single route is the sole access provider. Areas without walking-distance alternatives score high, signaling dynamic transit isolation.',
+      description: 'Identifies neighbourhoods where a single route is the only transit provider. Areas without walking-distance alternatives score high.',
     },
   ];
 
