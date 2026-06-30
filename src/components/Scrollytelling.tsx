@@ -18,7 +18,9 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer, 
-  Cell
+  Cell,
+  AreaChart,
+  Area
 } from 'recharts';
 import { RouteTicket } from './ui/RouteTicket';
 import { ExplainerMap } from './widgets/ExplainerMap';
@@ -50,26 +52,82 @@ const CLASS_LABELS: Record<string, string> = {
   'Moderate Stability': 'Moderate Stability',
 };
 
-// Safe Highlight Tooltip for the Scatter Chart
+// Helper to generate a normal distribution curve
+function generateNormalDistribution(mean: number, std: number) {
+  // If std is extremely small or missing, add a tiny bit of width for rendering
+  const validStd = (std && std > 0) ? std : 0.5;
+  const points = [];
+  
+  // Create 50 points from 0 to 100 for an absolute scale
+  for (let x = 0; x <= 100; x += 2) {
+    const exponent = Math.exp(-Math.pow(x - mean, 2) / (2 * Math.pow(validStd, 2)));
+    const y = (1 / (validStd * Math.sqrt(2 * Math.PI))) * exponent;
+    points.push({ x, y });
+  }
+  return points;
+}
+
+// Safe Highlight Tooltip for the Scatter Chart with Hover-State Sparkline
 const CustomChartTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   if (!d) return null;
 
+  const mean = typeof d?.score_mean === 'number' ? d.score_mean : 0;
+  const std = typeof d?.score_std === 'number' ? d.score_std : 1;
+  const sparklineData = generateNormalDistribution(mean, std);
+  const color = CLASS_COLORS[d.stability_class] || '#94a3b8'; // default slate-400
+
   return (
-    <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3 py-2 text-xs max-w-xs">
-      <p className="font-bold text-slate-900">{d?.name || 'Unknown Route'}</p>
-      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-        {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
-      </p>
-      <div className="mt-1.5 space-y-0.5 text-slate-600 border-t border-slate-100 pt-1.5">
-        <div className="flex justify-between gap-4">
-          <span>Mean Score:</span>
-          <span className="font-bold text-slate-800">{(typeof d?.score_mean === 'number') ? d.score_mean.toFixed(1) : 'N/A'}</span>
+    <div className="bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-4 text-xs w-64 text-white overflow-hidden relative">
+      {/* Background glow matching the class color */}
+      <div 
+        className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-30 pointer-events-none"
+        style={{ backgroundColor: color }}
+      />
+      
+      <div className="relative z-10">
+        <p className="font-black text-white text-sm truncate">{d?.name || 'Unknown Route'}</p>
+        <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-1">
+          {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
+        </p>
+        
+        <div className="mt-4 mb-2 flex justify-between items-end">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold">Mean</span>
+            <span className="font-bold text-lg leading-none" style={{ color }}>{mean.toFixed(1)}</span>
+          </div>
+          <div className="flex flex-col text-right">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold">Volatility (Std)</span>
+            <span className="font-bold text-lg leading-none text-white">{std.toFixed(2)}</span>
+          </div>
         </div>
-        <div className="flex justify-between gap-4">
-          <span>Volatility:</span>
-          <span className="font-bold text-slate-800">{(typeof d?.score_std === 'number') ? d.score_std.toFixed(2) : 'N/A'}</span>
+
+        {/* Sparkline Micro-chart */}
+        <div className="h-16 w-full -mx-2 mt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={sparklineData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id={`colorGradient-${d.route_id || 'tooltip'}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={color} stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor={color} stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <Area 
+                type="monotone" 
+                dataKey="y" 
+                stroke={color} 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill={`url(#colorGradient-${d.route_id || 'tooltip'})`} 
+                isAnimationActive={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex justify-between w-full text-[8px] text-slate-500 font-bold mt-1 px-2">
+          <span>0 (Low Equity)</span>
+          <span>100 (High Equity)</span>
         </div>
       </div>
     </div>
