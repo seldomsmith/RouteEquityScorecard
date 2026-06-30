@@ -82,13 +82,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
                 onClick={onTellMeHow}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-blue-900 font-bold text-lg hover:bg-slate-50 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95"
               >
-                Tell me how this works!
+                Read Methodology
               </button>
               <button
                 onClick={onJumpIn}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-950 text-white font-bold text-lg hover:bg-blue-900 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-95"
               >
-                Let me jump in!
+                View Scorecard
               </button>
             </div>
           </div>
