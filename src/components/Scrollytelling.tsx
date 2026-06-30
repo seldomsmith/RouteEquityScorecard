@@ -949,6 +949,99 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         <p className="leading-relaxed">
                           The final route score is calculated by taking the average of these monopoly values across all neighbourhoods served, weighted by population. We then scale the result from 0 to 100. A route that runs through areas with many other bus routes and LRT lines will get a score close to 0, indicating that riders have plenty of other travel options.
                         </p>
+
+                        {/* Mathematical Formulation */}
+                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                            2. Mathematical Formulation
+                          </h4>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            For any given Dissemination Area (DA) \(i\) and route \(r\):
+                          </p>
+                          <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
+                            <li className="space-y-0.5">
+                              <strong className="text-slate-900 block">Active Route Set (\(R_i\)):</strong>
+                              <p className="leading-relaxed">Let \(R_i\) be the set of all transit routes that stop within 400m of the boundary of DA \(i\).</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Destination Catchment (\(D_r\)):</strong>
+                              <p className="leading-relaxed">For each route \(r\), we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Alternative Routes (\(A_{i,r}\)):</strong>
+                              <p className="leading-relaxed">For a specific route \(r\) serving DA \(i\), its alternative routes are defined as: \(A_{i,r} = R_i \setminus \{r\}\).</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Shared Destination Volume (\(S_{i,r}\)):</strong>
+                              <p className="leading-relaxed">We calculate the unique set of destinations reachable by the alternatives that overlap with the destinations reachable by route \(r\): \(S_{i,r} = D_r \cap \left( \bigcup_{a \in A_{i,r}} D_a \right)\).</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Functional Redundancy (\(FR_{i,r}\)):</strong>
+                              <p className="leading-relaxed">The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \(FR_{i,r} = \frac{|S_{i,r}|}{|D_r|}\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas).</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
+                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20 percent (\(FR_{i,r} < 0.20\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \(r\) is then classified as a Functional Monopoly for DA \(i\).</p>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Policy and Scoring Impact */}
+                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                            3. Policy and Scoring Impact
+                          </h4>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            Shifting from physical stops to destination overlap reshapes how routes are prioritized on the scorecard:
+                          </p>
+                          <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
+                            <li className="space-y-0.5">
+                              <strong className="text-slate-900 block">Suburban Feeder and Radial Routes:</strong>
+                              <p className="leading-relaxed">Cross-town feeders and suburban radial lines see their Monopoly Scores rise significantly. Although they may run parallel to or cross other routes near regional transit centers (which disqualified them under spatial scoring), they diverge to serve unique industrial parks, schools, or hospitals. Their functional uniqueness is now recognized.</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Core Urban Corridors:</strong>
+                              <p className="leading-relaxed">High-frequency routes running parallel to downtown (e.g., along main arterials) remain correctly classified as low-monopoly. Because they share extensive destination overlaps (with multiple routes heading to the downtown core), cancelling one route leaves riders with viable alternatives to reach the same hubs.</p>
+                            </li>
+                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Equity Realignment:</strong>
+                              <p className="leading-relaxed">By isolating true functional dependence, the model directs equity priority points toward coverage routes in peripheral neighborhoods where a cut would completely sever access to employment and education.</p>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Limitations Section */}
+                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest text-rose-700">
+                            4. Methodological Limitations
+                          </h4>
+                          <ul className="flex flex-col gap-3 text-xs text-slate-655 pl-1">
+                            <li className="space-y-1">
+                              <strong className="text-slate-900 block">Disparity in Level of Service Among Multiple Routes in a DA:</strong>
+                              <p className="leading-relaxed">
+                                The current binary "all-or-nothing" definition (either a route is the only option or it is not) has limitations. For example, if a DA is served by a high-frequency route and a minor route that runs once a day, neither is classified as a monopoly, even though the minor route's contribution is practically negligible.
+                              </p>
+                              <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mt-1.5 space-y-2">
+                                <span className="font-bold text-slate-800 block text-[10px] uppercase tracking-wider">Proposed Continuous Transition Index:</span>
+                                <p className="font-mono text-center text-sm py-1 bg-white border border-slate-200 rounded-lg text-slate-800">
+                                  Redundancy Index = 1 - \(\left(\frac{\text{Route Capacity}}{\text{Alternative Capacity}}\right)\)
+                                </p>
+                                <p className="text-[11px] text-slate-500 leading-relaxed">
+                                  This proposed index will replace the binary count with a gradient. It measures the share of total transit capacity a route provides to an area relative to overlapping lines. If a route provides 95% of the seats in a neighborhood, its redundancy index will be near 1.0 (indicating a near-total monopoly), even if a secondary route technically exists.
+                                </p>
+                              </div>
+                            </li>
+                            <li className="space-y-1 border-t border-slate-100 pt-2">
+                              <strong className="text-slate-900 block">Spatial vs. Functional Redundancy:</strong>
+                              <p className="leading-relaxed">
+                                A key limitation of the current Monopoly calculation is its reliance on spatial proximity rather than functional destination. The model treats any overlapping route within 400 meters as an "alternative."
+                              </p>
+                              <p className="leading-relaxed">
+                                However, routes that overlap spatially often do not overlap functionally. For example, a Dissemination Area (DA) might be served by two routes: one running north-south and the other running east-west. Because their destinations do not align, a rider traveling to a specific job hub or post-secondary campus is functionally dependent on only one of those routes. If that route is cut, the remaining route does not provide a true backup.
+                              </p>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
