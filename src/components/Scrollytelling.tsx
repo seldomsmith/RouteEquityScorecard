@@ -965,20 +965,20 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <p className="leading-relaxed">For each route \(r\), we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Alternative Routes (\(A_{i,r}\)):</strong>
-                              <p className="leading-relaxed">For a specific route \(r\) serving DA \(i\), its alternative routes are defined as: \(A_{i,r} = R_i \setminus \{r\}\).</p>
+                              <strong className="text-slate-900 block">{"Alternative Routes (\\(A_{i,r}\\)):"}</strong>
+                              <p className="leading-relaxed">{"For a specific route \\(r\\) serving DA \\(i\\), its alternative routes are defined as: \\(A_{i,r} = R_i \\setminus \\{r\\}\\)."}</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Shared Destination Volume (\(S_{i,r}\)):</strong>
-                              <p className="leading-relaxed">We calculate the unique set of destinations reachable by the alternatives that overlap with the destinations reachable by route \(r\): \(S_{i,r} = D_r \cap \left( \bigcup_{a \in A_{i,r}} D_a \right)\).</p>
+                              <strong className="text-slate-900 block">{"Shared Destination Volume (\\(S_{i,r}\\)):"}</strong>
+                              <p className="leading-relaxed">{"We calculate the unique set of destinations reachable by the alternatives that overlap with the destinations reachable by route \\(r\\): \\(S_{i,r} = D_r \\cap \\left( \\bigcup_{a \\in A_{i,r}} D_a \\right)\\)."}</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Functional Redundancy (\(FR_{i,r}\)):</strong>
-                              <p className="leading-relaxed">The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \(FR_{i,r} = \frac{|S_{i,r}|}{|D_r|}\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas).</p>
+                              <strong className="text-slate-900 block">{"Functional Redundancy (\\(FR_{i,r}\\)):"}</strong>
+                              <p className="leading-relaxed">{"The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \\(FR_{i,r} = \\frac{|S_{i,r}|}{|D_r|}\\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas)."}</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20 percent (\(FR_{i,r} &lt; 0.20\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \(r\) is then classified as a Functional Monopoly for DA \(i\).</p>
+                              <p className="leading-relaxed font-semibold text-slate-800">{"If the Functional Redundancy ratio is less than 20 percent (\\(FR_{i,r} < 0.20\\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \\(r\\) is then classified as a Functional Monopoly for DA \\(i\\)."}</p>
                             </li>
                           </ul>
                         </div>
@@ -1021,7 +1021,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mt-1.5 space-y-2">
                                 <span className="font-bold text-slate-800 block text-[10px] uppercase tracking-wider">Proposed Continuous Transition Index:</span>
                                 <p className="font-mono text-center text-sm py-1 bg-white border border-slate-200 rounded-lg text-slate-800">
-                                  Redundancy Index = 1 - \(\left(\frac{\text{Route Capacity}}{\text{Alternative Capacity}}\right)\)
+                                  {"Redundancy Index = 1 - \\(\\left(\\frac{\\text{Route Capacity}}{\\text{Alternative Capacity}}\\right)\\)"}
                                 </p>
                                 <p className="text-[11px] text-slate-500 leading-relaxed">
                                   This proposed index will replace the binary count with a gradient. It measures the share of total transit capacity a route provides to an area relative to overlapping lines. If a route provides 95% of the seats in a neighborhood, its redundancy index will be near 1.0 (indicating a near-total monopoly), even if a secondary route technically exists.
