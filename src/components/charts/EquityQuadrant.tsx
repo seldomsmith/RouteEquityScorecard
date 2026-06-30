@@ -133,7 +133,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes }) => {
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
   const setSelectedRoute = useRouteStore((state) => state.setSelectedRoute);
-  const [xAxisMetric, setXAxisMetric] = React.useState<'pop_served' | 'weekly_cost' | 'hourly_cost' | 'equity_efficiency'>('pop_served');
+  const [xAxisMetric, setXAxisMetric] = React.useState<'pop_served' | 'weekly_cost' | 'equity_efficiency'>('pop_served');
 
   // Pre-calculate and map the cost variables onto the datasets for graphing
   // (hooks must always run, even when data is empty)
@@ -212,7 +212,6 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes 
             [
               { key: 'pop_served', label: 'Pop. Served' },
               { key: 'weekly_cost', label: 'Weekly Cost' },
-              { key: 'hourly_cost', label: 'Hourly Cost' },
               { key: 'equity_efficiency', label: 'Cost/REI Point' }
             ] as const
           ).map((item) => (
