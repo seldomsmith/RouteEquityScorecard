@@ -785,6 +785,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-655 text-base leading-relaxed">
                 The Off Peak Service pillar tracks route frequency outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
               </p>
+              <p className="text-slate-655 text-sm leading-relaxed p-4 bg-slate-100 rounded-xl border border-slate-200 shadow-sm mt-2">
+                <strong>Note:</strong> The scorecard measures the equity value of the <em>existing</em> route, rather than the unmet deficit of a neighbourhood. If a route does not operate at night, it is not currently functioning as an off-peak equity lifeline and receives a lower priority score.
+              </p>
               
               <div className="flex flex-col md:flex-row gap-6 py-2 md:-mx-12 lg:-mx-24 justify-between items-stretch">
                 <div className="w-full md:w-1/2 flex flex-col">
