@@ -589,35 +589,117 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       <p className="text-xs text-slate-500 mt-1">How destination accessibility weights influence the overall score.</p>
                     </div>
                     
-                    <div className="text-sm text-slate-600 space-y-4">
+                    <div className="text-sm text-slate-600 space-y-5">
                       <p className="leading-relaxed">
                         The Destination Opportunity index evaluates points of interest (POIs) located within the route's walking buffer catchment (typically 400m from all stops). Rather than summing all destinations equally, the model weighs them by societal utility categories:
                       </p>
-                      
-                      {/* Visual Category Progress/Contribution Bars */}
-                      <div className="space-y-3 py-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                        {[
-                          { label: 'Hospitals & Medical Facilities', weight: '5.0 multiplier', percent: 100, color: 'bg-emerald-600' },
-                          { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-600' },
-                          { label: 'Post-Secondary Campuses', weight: '3.0 multiplier', percent: 60, color: 'bg-teal-500' },
-                          { label: 'Supermarkets & Food Markets', weight: '2.0 multiplier', percent: 40, color: 'bg-amber-500' },
-                          { label: 'Primary & Secondary Schools', weight: '1.0 multiplier', percent: 20, color: 'bg-slate-400' }
-                        ].map((item, index) => (
-                          <div key={index} className="flex flex-col gap-1">
-                            <div className="flex justify-between text-xs font-bold text-slate-700">
-                              <span>{item.label}</span>
-                              <span>{item.weight}</span>
-                            </div>
-                            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                              <div className={`h-full ${item.color}`} style={{ width: `${item.percent}%` }} />
-                            </div>
-                          </div>
-                        ))}
+
+                      {/* POI Table */}
+                      <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                              <th className="px-4 py-3">POI Category</th>
+                              <th className="px-4 py-3">Registry Key</th>
+                              <th className="px-4 py-3 text-right">Total Mapped POIs</th>
+                              <th className="px-4 py-3 text-right font-black">Weight</th>
+                              <th className="px-4 py-3 pl-6">Description</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Emergency and Hospital Care</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">hospital / emergency_room</td>
+                              <td className="px-4 py-2.5 text-right font-mono">35 <span className="text-[10px] text-slate-400 font-semibold">(23 Hosp + 12 ER)</span></td>
+                              <td className="px-4 py-2.5 text-right font-bold text-teal-650">5.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Critical trauma and emergency medical services</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Employment Centres</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">employment</td>
+                              <td className="px-4 py-2.5 text-right font-mono">29,894</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-teal-650">3.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Primary workplaces and industrial/commercial hubs</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Post-Secondary Campuses</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">post_secondary</td>
+                              <td className="px-4 py-2.5 text-right font-mono">5</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-teal-650">3.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Major universities and technical colleges</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Primary Care</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">primary_care</td>
+                              <td className="px-4 py-2.5 text-right font-mono">127</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-teal-650">3.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Family doctors and non-specialty health clinics</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Grocery Stores & Supermarkets</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">grocery</td>
+                              <td className="px-4 py-2.5 text-right font-mono">62</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-teal-600">2.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Grocery stores that have fresh produce</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">K-12 Schools</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">school</td>
+                              <td className="px-4 py-2.5 text-right font-mono">460</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-slate-550">1.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Public and separate primary/secondary schools</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Municipal Rec Centres</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">recreation</td>
+                              <td className="px-4 py-2.5 text-right font-mono">47</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-slate-550">1.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Public pools, arenas, and community spaces</td>
+                            </tr>
+                            <tr>
+                              <td className="px-4 py-2.5 font-bold text-slate-900">Edmonton Public Libraries</td>
+                              <td className="px-4 py-2.5 font-mono text-slate-500">library</td>
+                              <td className="px-4 py-2.5 text-right font-mono">31</td>
+                              <td className="px-4 py-2.5 text-right font-bold text-slate-550">1.0</td>
+                              <td className="px-4 py-2.5 pl-6 text-slate-500">Public study rooms and community internet nodes</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
 
                       <p className="leading-relaxed">
                         These weighted counts are summed together to create a raw opportunity score. This raw score is then converted to a scale of 0 to 100 by comparing it to all other routes in Edmonton. Routes connecting to a wide variety of high-priority destinations score close to 100, while local feeder routes that serve fewer key hubs score lower.
                       </p>
+
+                      {/* Data Pipeline Section */}
+                      <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                          3.0 Data Pipeline and Methodology: Score Computation
+                        </h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          To calculate these scores, the data pipeline combines three primary sources:
+                        </p>
+                        <ul className="flex flex-col gap-2.5 text-xs text-slate-650">
+                          <li className="flex items-start gap-2">
+                            <span className="text-teal-600 mt-1 flex-shrink-0">•</span>
+                            <span className="flex-1">
+                              <strong className="text-slate-900">OpenStreetMap (OSM) via Overpass API:</strong> This source provides geographic coordinates for schools, universities, community centres, grocery stores, and medical facilities.
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-teal-600 mt-1 flex-shrink-0">•</span>
+                            <span className="flex-1">
+                              <strong className="text-slate-900">Edmonton Business Census (2025/2026):</strong> This dataset provides granular business registration data, which allows the model to count commercial and industrial employment density along transit corridors instead of relying on general zoning maps.
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-teal-600 mt-1 flex-shrink-0">•</span>
+                            <span className="flex-1">
+                              <strong className="text-slate-900">GTFS Stop Coordinates:</strong> These files establish the precise locations of transit stops to construct the 400-metre walking catchments.
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
 
                       <p className="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
                         <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
