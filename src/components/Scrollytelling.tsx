@@ -236,52 +236,80 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   return (
     <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
       
-      {/* 🚌 Fixed Scrollytelling Header with Scroll Progress Tracker */}
+      {/* 🚌 Fixed Scrollytelling Header with Subway Map Scroll Progress Tracker */}
       <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <StaggeredMenu
-            position="left"
-            isFixed={false}
-            displaySocials={false}
-            displayItemNumbering={true}
-            menuButtonColor="#2563EB"
-            openMenuButtonColor="#2563EB"
-            colors={['#EFF6FF', '#DBEAFE', '#93C5FD']}
-            accentColor="#2563EB"
-            items={[
-              { label: 'Introduction', ariaLabel: 'Introduction section', link: '#section-1' },
-              { label: 'Four Pillars', ariaLabel: 'Four Pillars section', link: '#section-2' },
-              { label: 'Vulnerability', ariaLabel: 'Vulnerability section', link: '#section-3' },
-              { label: 'Opportunity', ariaLabel: 'Opportunity section', link: '#section-4' },
-              { label: 'Off Peak Service', ariaLabel: 'Off Peak Service section', link: '#section-5' },
-              { label: 'Transit Monopoly', ariaLabel: 'Transit Monopoly section', link: '#section-6' },
-              { label: 'On Demand Transit', ariaLabel: 'On Demand Transit section', link: '#section-odt' },
-              { label: 'Policy weights', ariaLabel: 'Policy weights section', link: '#section-7' },
-              { label: 'Stability Index', ariaLabel: 'Stability Index section', link: '#section-8' },
-              { label: 'Limitations', ariaLabel: 'Limitations section', link: '#section-9' },
-              { label: 'Planning Decisions', ariaLabel: 'Planning Decisions section', link: '#section-10' }
-            ]}
-          />
           <button 
             onClick={onBack}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200 ml-12"
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200"
             title="Return to Home"
           >
             <Home className="w-5 h-5" />
           </button>
           <div className="flex flex-col">
             <span className="text-xs font-black text-blue-900 uppercase tracking-widest leading-none">ETS Route Equity Scorecard</span>
-            <span className="text-xs font-semibold text-teal-650 leading-none mt-1">Scroll down to read</span>
+            <span className="text-[10px] font-semibold text-teal-650 leading-none mt-1">Scroll down to read</span>
           </div>
         </div>
 
-        {/* Scroll Progress Bar */}
-        <div className="flex-1 max-w-xl mx-8 relative hidden md:block">
-          <div className="w-full h-1 bg-slate-100 rounded-full">
-            <div 
-              className="h-full bg-teal-500 rounded-full transition-all duration-75"
-              style={{ width: `${scrollProgress * 100}%` }}
-            />
+        {/* Subway Map Progress Bar */}
+        <div className="flex-1 max-w-xl mx-8 relative hidden md:block px-4">
+          {/* Base track */}
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 rounded-full" />
+          {/* Active progress track */}
+          <div 
+            className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2 rounded-full transition-all duration-75"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
+          {/* Subway dots representing the 11 sections (sections 1-10 + section-odt) */}
+          <div className="relative flex justify-between items-center w-full">
+            {[
+              { id: 'section-1', label: '1. Introduction' },
+              { id: 'section-2', label: '2. Four Pillars' },
+              { id: 'section-3', label: '3. Vulnerability' },
+              { id: 'section-4', label: '4. Opportunity' },
+              { id: 'section-5', label: '5. Off Peak Service' },
+              { id: 'section-6', label: '6. Transit Monopoly' },
+              { id: 'section-odt', label: 'ODT: On Demand' },
+              { id: 'section-7', label: '7. Policy Weights' },
+              { id: 'section-8', label: '8. Stability Index' },
+              { id: 'section-9', label: '9. Limitations' },
+              { id: 'section-10', label: '10. Decisions' },
+            ].map((section, idx, arr) => {
+              const fraction = idx / (arr.length - 1);
+              const isPassed = scrollProgress >= fraction - 0.02;
+
+              return (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  title={section.label}
+                  className="group relative flex items-center justify-center focus:outline-none"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  {/* Outer glow ring on hover or active */}
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-255 border-2 ${
+                    isPassed 
+                      ? 'border-blue-500 bg-white hover:bg-blue-50' 
+                      : 'border-slate-300 bg-white hover:bg-slate-50'
+                  }`}>
+                    {/* Inner core dot */}
+                    <span className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      isPassed ? 'bg-blue-500' : 'bg-slate-350'
+                    }`} />
+                  </span>
+                  
+                  {/* Tooltip */}
+                  <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold py-1 px-2.5 rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                    {section.label}
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </div>
 
