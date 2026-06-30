@@ -300,9 +300,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   </span>
                   
                   {/* Tooltip */}
-                  <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold py-1 px-2.5 rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                  <span className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold py-1 px-2.5 rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
                     {section.label}
-                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-slate-800" />
                   </span>
                 </a>
               );
@@ -451,8 +451,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showVulnerabilityMath && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+              <div 
+                onClick={() => setShowVulnerabilityMath(false)}
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
+              >
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
+                >
                   
                   {/* Header / Top Control Row */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
@@ -561,8 +567,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showOpportunityMath && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+              <div 
+                onClick={() => setShowOpportunityMath(false)}
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
+              >
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
+                >
                   
                   {/* Header / Top Control Row */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
@@ -671,7 +683,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       {/* Data Pipeline Section */}
                       <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
                         <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                          3.0 Data Pipeline and Methodology: Score Computation
+                          Data Pipeline and Methodology: Score Computation
                         </h4>
                         <p className="text-xs text-slate-500 leading-relaxed">
                           To calculate these scores, the data pipeline combines three primary sources:
@@ -752,8 +764,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showOffPeakMath && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+              <div 
+                onClick={() => setShowOffPeakMath(false)}
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
+              >
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
+                >
                   
                   {/* Header / Top Control Row */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
@@ -889,8 +907,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </div>
 
               {showMonopolyMath && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                  <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+                <div 
+                  onClick={() => setShowMonopolyMath(false)}
+                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
+                >
+                  <div 
+                    onClick={(e) => e.stopPropagation()}
+                    className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
+                  >
                     
                     {/* Header / Top Control Row */}
                     <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
@@ -922,13 +946,13 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         {/* Visual flow of discounts */}
                         <div className="flex flex-col gap-2.5 py-2">
                           <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                            <span className="font-bold text-slate-800">1. Base Monopoly Value</span>
+                            <span className="font-bold text-slate-800">Base Monopoly Value</span>
                             <span className="text-xs font-black text-indigo-650 bg-indigo-50 px-2.5 py-0.5 rounded-full">1.0 (Sole Route)</span>
                           </div>
                           
                           <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
                             <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">2. Alternative Service Discount</span>
+                              <span className="font-bold text-slate-800">Alternative Service Discount</span>
                               <span className="text-[10px] text-slate-400">Based on capacity/frequency of other stops</span>
                             </div>
                             <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Up to -0.8</span>
@@ -936,7 +960,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
                           <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
                             <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">3. On-Demand Transit (ODT) Discount</span>
+                              <span className="font-bold text-slate-800">On-Demand Transit (ODT) Discount</span>
                               <span className="text-[10px] text-slate-400">Mitigation applied if served by dynamic shuttles</span>
                             </div>
                             <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI × 0.5)</span>
@@ -950,35 +974,35 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         {/* Mathematical Formulation */}
                         <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
                           <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                            2. Mathematical Formulation
+                            Mathematical Formulation
                           </h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            For any given Dissemination Area (DA) \(i\) and route \(r\):
+                            For any given Dissemination Area (DA) i and route r:
                           </p>
                           <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
                             <li className="space-y-0.5">
-                              <strong className="text-slate-900 block">Active Route Set (\(R_i\)):</strong>
-                              <p className="leading-relaxed">Let \(R_i\) be the set of all transit routes that stop within 400m of the boundary of DA \(i\).</p>
+                              <strong className="text-slate-900 block">Active Route Set - R(i):</strong>
+                              <p className="leading-relaxed">Let R(i) be the set of all transit routes that stop within 400m of the boundary of DA i.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Destination Catchment (\(D_r\)):</strong>
-                              <p className="leading-relaxed">For each route \(r\), we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
+                              <strong className="text-slate-900 block">Destination Catchment - D(r):</strong>
+                              <p className="leading-relaxed">For each route r, we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">{"Alternative Routes (\\(A_{i,r}\\)):"}</strong>
-                              <p className="leading-relaxed">{"For a specific route \\(r\\) serving DA \\(i\\), its alternative routes are defined as: \\(A_{i,r} = R_i \\setminus \\{r\\}\\)."}</p>
+                              <strong className="text-slate-900 block">"Alternative Routes - A(i,r):"</strong>
+                              <p className="leading-relaxed">"For a specific route r serving DA i, its alternative routes are defined as the routes in R(i) other than route r."</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">{"Shared Destination Volume (\\(S_{i,r}\\)):"}</strong>
-                              <p className="leading-relaxed">{"We calculate the unique set of destinations reachable by the alternatives that overlap with the destinations reachable by route \\(r\\): \\(S_{i,r} = D_r \\cap \\left( \\bigcup_{a \\in A_{i,r}} D_a \\right)\\)."}</p>
+                              <strong className="text-slate-900 block">"Shared Destination Volume - S(i,r):"</strong>
+                              <p className="leading-relaxed">"We calculate the unique set of destinations reachable by alternative routes that overlap with the destinations reachable by route r."</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">{"Functional Redundancy (\\(FR_{i,r}\\)):"}</strong>
+                              <strong className="text-slate-900 block">"Functional Redundancy - FR(i,r):"</strong>
                               <p className="leading-relaxed">{"The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \\(FR_{i,r} = \\frac{|S_{i,r}|}{|D_r|}\\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas)."}</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">{"If the Functional Redundancy ratio is less than 20 percent (\\(FR_{i,r} < 0.20\\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \\(r\\) is then classified as a Functional Monopoly for DA \\(i\\)."}</p>
+                              <p className="leading-relaxed font-semibold text-slate-800">"If the Functional Redundancy ratio is less than 20% (FR(i,r) < 0.20), it indicates that alternative routes do not connect residents to the destinations they need. Route r is then classified as a Functional Monopoly for DA i."</p>
                             </li>
                           </ul>
                         </div>
@@ -986,7 +1010,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         {/* Policy and Scoring Impact */}
                         <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
                           <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                            3. Policy and Scoring Impact
+                            Policy and Scoring Impact
                           </h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
                             Shifting from physical stops to destination overlap reshapes how routes are prioritized on the scorecard:
@@ -1010,7 +1034,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         {/* Limitations Section */}
                         <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
                           <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest text-rose-700">
-                            4. Methodological Limitations
+                            Methodological Limitations
                           </h4>
                           <ul className="flex flex-col gap-3 text-xs text-slate-655 pl-1">
                             <li className="space-y-1">
@@ -1064,14 +1088,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-600 text-base leading-relaxed">
                 By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
               </p>
-              <ul className="space-y-3 pl-2 text-slate-600 text-base">
+              <ul className="list-disc pl-6 space-y-3 text-slate-600 text-base">
                 <li>
                   <strong className="text-blue-950 font-bold">Vulnerability Score Reduction (-10%)</strong>: 
-                  DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index ({"$V_i \\times 0.90$"}) because local feeder shuttles help ease geographic isolation.
+                  DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index (V_i * 0.90) because local feeder shuttles help ease geographic isolation.
                 </li>
                 <li>
                   <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
-                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index ({"$FMI_{i,r} \\times 0.50$"}) to reflect that residents have a flexible, bookable connection to the wider transit network.
+                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index (FMI(i,r) * 0.50) to reflect that residents have a flexible, bookable connection to the wider transit network.
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1175,17 +1199,39 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                 </div>
               </div>
 
-              {/* Live score comparison inside weight card */}
-              <div className="p-4 bg-white/70 border border-slate-200 rounded-xl flex flex-col gap-1.5 shadow-inner">
+              {/* Live simulated results visual bar chart */}
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Live Simulated Result</span>
-                <div className="flex flex-col gap-1 text-xs font-bold text-slate-700">
-                  <div className="flex justify-between">
-                    <span>Route 002 Score:</span>
-                    <span className="text-blue-650 font-mono font-black">{liveScores.route2.toFixed(1)}</span>
+                
+                <div className="h-44 w-full flex items-end justify-center gap-12 relative px-8 pb-6 pt-4 bg-slate-50/50 rounded-xl border border-slate-100">
+                  {/* Grid Lines & Y Axis Labels */}
+                  <div className="absolute inset-x-0 bottom-6 top-4 flex flex-col justify-between pointer-events-none px-6">
+                    {[100, 75, 50, 25, 0].map((val) => (
+                      <div key={val} className="w-full flex items-center relative">
+                        <span className="absolute -left-7 font-mono text-[9px] text-slate-400 font-bold w-6 text-right">{val}</span>
+                        <div className="w-full border-t border-slate-200/60 border-dashed" />
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex justify-between">
-                    <span>Route 003 Score:</span>
-                    <span className="text-amber-600 font-mono font-black">{liveScores.route3.toFixed(1)}</span>
+
+                  {/* Route 002 Bar */}
+                  <div className="flex flex-col items-center gap-1.5 h-full justify-end relative z-10 w-20">
+                    <span className="text-xs font-black text-blue-600 font-mono">{liveScores.route2.toFixed(1)}</span>
+                    <div 
+                      className="w-12 rounded-t-lg bg-gradient-to-t from-blue-600 to-blue-400 shadow-md transition-all duration-300 ease-out hover:brightness-105"
+                      style={{ height: `${Math.max(4, (liveScores.route2 / 100) * 110)}px` }}
+                    />
+                    <span className="text-[10px] font-bold text-blue-900 absolute -bottom-5">Route 002</span>
+                  </div>
+
+                  {/* Route 003 Bar */}
+                  <div className="flex flex-col items-center gap-1.5 h-full justify-end relative z-10 w-20">
+                    <span className="text-xs font-black text-amber-600 font-mono">{liveScores.route3.toFixed(1)}</span>
+                    <div 
+                      className="w-12 rounded-t-lg bg-gradient-to-t from-amber-500 to-amber-300 shadow-md transition-all duration-300 ease-out hover:brightness-105"
+                      style={{ height: `${Math.max(4, (liveScores.route3 / 100) * 110)}px` }}
+                    />
+                    <span className="text-[10px] font-bold text-amber-800 absolute -bottom-5">Route 003</span>
                   </div>
                 </div>
               </div>
