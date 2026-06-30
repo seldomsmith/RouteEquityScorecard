@@ -20,7 +20,7 @@ export const FourPillars: React.FC = () => {
       icon: Users,
       color: '#EF4444', // Red
       glowColor: '0 90 60',
-      description: 'Measures the demographic makeup along the route. High density of low-income, senior, youth, single-parent, and visible minority households represents high vulnerability priority.',
+      description: 'Measures demographic need along a route. Full priority points go to stops immediately adjacent to households with low-income, senior, youth, lone-parent, or visible minority residents.',
     },
     {
       title: 'Destination Opportunity',
@@ -34,14 +34,14 @@ export const FourPillars: React.FC = () => {
       icon: Clock,
       color: '#10B981', // Emerald Green
       glowColor: '150 90 60',
-      description: 'Measures bus route service frequency and availability outside peak hours (evenings, late nights, Saturdays, and Sundays). Helps assess service for late-shift workers.',
+      description: 'Compares how frequently buses run late at night (9:30–10:30 PM) versus morning peak hours to evaluate transit service reliability for late night transit riders.',
     },
     {
       title: 'Transit Monopoly',
       icon: Shield,
       color: '#F59E0B', // Amber
       glowColor: '35 90 60',
-      description: 'Assesses neighborhood reliance on a single route. Areas without nearby alternative bus lines, ODT zones, or LRT stations score high, representing high monopoly dependence.',
+      description: 'Identifies neighborhoods where a single route is the sole access provider. Areas without walking-distance alternatives score high, signaling dynamic transit isolation.',
     },
   ];
 

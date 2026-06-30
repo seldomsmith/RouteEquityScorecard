@@ -734,7 +734,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     routeNumber="002" 
                     theme="blue" 
                     title="Route 002: Reduced Night Hours (Score: 31.3)" 
-                    description="Although Route 002 has high frequency during weekdays, its frequency drops significantly during off-peak times, making travel more difficult for late-night shift workers."
+                    description="Although Route 002 has high frequency during weekdays, its frequency drops significantly during off-peak times, making travel more difficult for late-night shift workers and transit riders."
                   />
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col">
@@ -829,7 +829,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         <p className="text-xs text-slate-500 leading-relaxed">
                           To maintain transparency for decision-makers, it is important to outline the mathematical assumptions and limitations of this calculation:
                         </p>
-                        <div className="flex flex-col gap-4 text-xs text-slate-650">
+                        <div className="flex flex-col gap-4 text-xs text-slate-655">
                           <div className="space-y-1">
                             <span className="font-bold text-slate-900 block">Focus on Service Retention Over Absolute Frequency:</span>
                             <p className="leading-relaxed">
@@ -867,16 +867,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   <RouteTicket 
                     routeNumber="002" 
                     theme="blue" 
-                    title="Route 002: Sole Connection (Score: 67.6)" 
-                    description="Route 002 serves outer neighbourhoods where no other transit options exist. If the city reduces this service, residents will have no alternative public transportation."
+                    title="Route 002: Vital Monopoly Link (Score: 67.6)" 
+                    description="Route 002 serves several dissemination areas in East Edmonton where it is the sole operating transit line. Removing Route 002 would leave these neighborhoods without transit service."
                   />
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col">
                   <RouteTicket 
                     routeNumber="003" 
                     theme="yellow" 
-                    title="Route 003: Multiple Transit Alternatives (Score: 0.0)" 
-                    description="Route 003 runs through central areas with overlapping transit options, including several bus routes, local connections, and nearby LRT stations. Because residents can easily access alternative transit lines, the route scores zero on this pillar."
+                    title="Route 003: Overlapping Network (Score: 0.0)" 
+                    description="Route 003 overlaps with multiple other bus routes and LRT lines along its path, indicating that riders have numerous alternative options if Route 003 is adjusted."
                   />
                 </div>
               </div>
@@ -891,7 +891,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps overlay alternative transit lines in silver, showing that although Route 002 crosses paths with multiple routes in central hubs, its outer suburban sectors (like Stadium/Clareview) lack any comparable alternative routes connecting riders to similar destinations. In contrast, Route 003 runs directly parallel to multiple high-frequency lines that can easily absorb its ridership.
+                  The maps show Dissemination Areas (DAs) colored by monopoly classification. Note the high-monopoly red blocks served by Route 002 compared to the green, low-monopoly zones surrounding Route 003.
                 </p>
               </>
             )}
@@ -1021,87 +1021,35 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <p className="leading-relaxed">Cross-town feeders and suburban radial lines see their Monopoly Scores rise significantly. Although they may run parallel to or cross other routes near regional transit centers (which disqualified them under spatial scoring), they diverge to serve unique industrial parks, schools, or hospitals. Their functional uniqueness is now recognized.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Core Urban Corridors:</strong>
+                              <strong className="text-slate-900 block">Urban Core Overlaps:</strong>
                               <p className="leading-relaxed">High-frequency routes running parallel to downtown (e.g., along main arterials) remain correctly classified as low-monopoly. Because they share extensive destination overlaps (with multiple routes heading to the downtown core), cancelling one route leaves riders with viable alternatives to reach the same hubs.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Equity Realignment:</strong>
-                              <p className="leading-relaxed">By isolating true functional dependence, the model directs equity priority points toward coverage routes in peripheral neighborhoods where a cut would completely sever access to employment and education.</p>
                             </li>
                           </ul>
                         </div>
 
-                        {/* Limitations Section */}
-                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
-                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest text-rose-700">
-                            Methodological Limitations
+                        {/* Advanced Methodology Box */}
+                        <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm space-y-3">
+                          <h4 className="text-sm font-black text-indigo-900 uppercase tracking-widest flex items-center gap-1.5">
+                            <HelpCircle className="w-4 h-4" /> Future Refinement: Capacity-Weighted FMI
                           </h4>
-                          <ul className="flex flex-col gap-3 text-xs text-slate-655 pl-1">
-                            <li className="space-y-1">
-                              <strong className="text-slate-900 block">Disparity in Level of Service Among Multiple Routes in a DA:</strong>
-                              <p className="leading-relaxed">
-                                The current binary "all-or-nothing" definition (either a route is the only option or it is not) has limitations. For example, if a DA is served by a high-frequency route and a minor route that runs once a day, neither is classified as a monopoly, even though the minor route's contribution is practically negligible.
-                              </p>
-                              <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mt-1.5 space-y-2">
-                                <span className="font-bold text-slate-800 block text-[10px] uppercase tracking-wider">Proposed Continuous Transition Index:</span>
-                                <p className="font-mono text-center text-sm py-1 bg-white border border-slate-200 rounded-lg text-slate-800">
-                                  Redundancy Index = Alternative Route Capacity / Route Capacity
-                                </p>
-                                <p className="text-[11px] text-slate-500 leading-relaxed">
-                                  This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, if alternative routes only provide 5% of the seats in a neighborhood, the Redundancy Index is 0.05, signaling a near-total monopoly. If alternative routes provide equivalent or greater capacity, the index reaches 1.0 or higher, showing high redundancy.
-                                </p>
-                              </div>
-                            </li>
-                            <li className="space-y-1 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Spatial vs. Functional Redundancy:</strong>
-                              <p className="leading-relaxed">
-                                A key limitation of the current Monopoly calculation is its reliance on spatial proximity rather than functional destination. The model treats any overlapping route within 400 meters as an "alternative."
-                              </p>
-                              <p className="leading-relaxed">
-                                However, routes that overlap spatially often do not overlap functionally. For example, a Dissemination Area (DA) might be served by two routes: one running north-south and the other running east-west. Because their destinations do not align, a rider traveling to a specific job hub or post-secondary campus is functionally dependent on only one of those routes. If that route is cut, the remaining route does not provide a true backup.
-                              </p>
-                            </li>
-                          </ul>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            The current binary "all-or-nothing" definition (either a route is the only option or it is not) has limitations. For example, if a DA is served by a high-frequency route and a minor route that runs once a day, neither is classified as a monopoly, even though the minor route's contribution is practically negligible.
+                          </p>
+                          <p className="text-xs text-slate-655 leading-relaxed">
+                            The proposed Capacity-Weighted FMI replaces the binary cutoff with an Index of Capacity Share:
+                          </p>
+                          <div className="p-3 bg-white border border-slate-200 rounded-xl font-mono text-[11px] text-indigo-950 overflow-x-auto">
+                            FMI(i,r) = 1 - Sum [ Capacity(alt) / (Capacity(r) + Capacity(alt)) ]
+                          </div>
+                          <p className="text-xs text-slate-655 leading-relaxed">
+                            This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, if alternative routes only provide 5% of the seats in a neighborhood, the Redundancy Index is 0.05, signaling a near-total monopoly. If alternative routes provide equivalent or greater capacity, the index reaches 1.0 or higher, showing high redundancy.
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-          </section>
-
-          {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
-          <section id="section-odt" className="flex flex-col gap-6">
-            <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">6.5. Mitigation: On-Demand Transit (ODT)</h2>
-              <p className="text-slate-600 text-base leading-relaxed">
-                Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
-              </p>
-
-              {/* Dynamic Map Visualization - Relocated right under the specified ODT description line */}
-              {odtGeoJson && (
-                <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-                  <OdtExplainerMap odtGeoJson={odtGeoJson} routeData={route727Data} />
-                </div>
-              )}
-
-              <p className="text-slate-600 text-base leading-relaxed">
-                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
-              </p>
-              <ul className="list-disc pl-6 space-y-3 text-slate-600 text-base">
-                <li>
-                  <strong className="text-blue-950 font-bold">Vulnerability Score Reduction (-10%)</strong>: 
-                  DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index (V_i * 0.90) because local feeder shuttles help ease geographic isolation.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
-                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index (FMI(i,r) * 0.50) to reflect that residents have a flexible, bookable connection to the wider transit network.
-                </li>
-              </ul>
-              <p className="text-slate-600 text-base leading-relaxed">
-                These adjustments ensure that route equity scores are not artificially inflated in areas where ODT is already successfully bridging the service gap.
-              </p>
-            </div>
           </section>
 
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
@@ -1238,22 +1186,18 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
-          {/* ================= SECTION 8: Stability Focus Scatter Plot & Plinko ================= */}
+          {/* ================= SECTION 8: Route Stability & Policy Elasticity ================= */}
           <section id="section-8" className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. How can we move past trying to perfect the balance?</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability & Policy Elasticity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                To identify how different policy weights impact route equity scores across the entire city, we expanded our analysis beyond our two main examples. We ran a Monte Carlo simulation to test all possible weight combinations against all 170 routes in the Edmonton network (1,771 weight combinations × 170 routes = 301,070 simulations). This analysis reveals that every route in the city falls into one of four distinct stability classifications, helping us understand which services require the most protection during policy shifts:
+                When policy priorities change, some routes shift dramatically in grade, while others remain stable. To model this behavior, we ran a sensitivity simulation calculating route scores across 1,000 distinct policy weight combinations.
               </p>
-            </div>
+              <p className="text-slate-655 text-base leading-relaxed font-semibold">
+                This simulation reveals four distinct route stability classifications:
+              </p>
 
-            {/* Premium Interactive Monte Carlo Plinko Physics Simulation Widget (Swapped to top of Section 8) */}
-            <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-2">
-              <MonteCarloPlinko />
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex flex-col gap-6 pl-2">
+              <div className="flex flex-col gap-6 pl-2 py-2">
                 {/* 1. Bedrock Essentials */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
@@ -1262,7 +1206,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       Bedrock Essentials (Always High Equity)
                     </span>
                   </div>
-                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                  <p className="text-slate-655 text-base leading-relaxed pl-3.5">
                     These routes score highly across all weight scenarios, maintaining high equity ranking robustness regardless of the active policy configuration.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
@@ -1278,7 +1222,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       Policy Swing Route
                     </span>
                   </div>
-                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                  <p className="text-slate-655 text-base leading-relaxed pl-3.5">
                     Routes in this category have scores that fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
@@ -1294,7 +1238,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       Moderate Stability (Consistent Mid-Range Scores)
                     </span>
                   </div>
-                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                  <p className="text-slate-655 text-base leading-relaxed pl-3.5">
                     These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to policy changes, representing stable baseline operations.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
@@ -1310,7 +1254,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       Bedrock Resilient (Always Low Equity)
                     </span>
                   </div>
-                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                  <p className="text-slate-655 text-base leading-relaxed pl-3.5">
                     These routes consistently receive lower equity scores across all possible policy weight combinations, typically running through affluent sectors.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
