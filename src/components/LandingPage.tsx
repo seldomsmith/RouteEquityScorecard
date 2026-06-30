@@ -62,7 +62,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
         borderRadius={56} // Matches desktop md:rounded-[3.5rem] (56px)
         backgroundColor="#2563eb" // Original bg-blue-600 color
         glowColor="220 70 50" // Slate blue/indigo HSL glow
-        colors={['#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a']} // Deep blues & indigos monochromatic theme
+        colors={['#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a']} // Deep blues and indigos monochromatic theme
         className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300"
       >
         <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
