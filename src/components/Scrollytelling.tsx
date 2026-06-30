@@ -486,7 +486,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         {[
                           { label: 'Low Income', desc: 'Worst 20%', val: '+1.0' },
                           { label: 'Seniors (65+)', desc: 'Worst 20%', val: '+1.0' },
-                          { label: 'Youth (<18)', desc: 'Worst 20%', val: '+1.0' },
+                          { label: 'Youth (\\x3c18)', desc: 'Worst 20%', val: '+1.0' },
                           { label: 'Lone Parents', desc: 'Worst 20%', val: '+1.0' },
                           { label: 'Visible Minorities', desc: 'Worst 20%', val: '+1.0' }
                         ].map((item, index) => (
@@ -787,7 +787,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                       {/* Visual Headway Matrix */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
                         {[
-                          { range: '< 15 mins', points: '100 pts', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+                          { range: '\u003c 15 mins', points: '100 pts', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
                           { range: '15 – 30 mins', points: '70 pts', color: 'bg-blue-50 text-blue-750 border-blue-100' },
                           { range: '30 – 60 mins', points: '40 pts', color: 'bg-amber-50 text-amber-750 border-amber-100' },
                           { range: '> 60 mins / None', points: '10 pts', color: 'bg-rose-50 text-rose-700 border-rose-105' }
