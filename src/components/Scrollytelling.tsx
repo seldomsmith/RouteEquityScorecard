@@ -454,37 +454,58 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showVulnerabilityMath && (
-              <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-lg font-extrabold text-slate-900">Vulnerability Methodology: Additive Scoring</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">How demographic profiles along a route generate the final score.</p>
-                </div>
-                
-                <div className="text-sm text-slate-600 space-y-3">
-                  <p>
-                    The Transit Vulnerability index is calculated at the Dissemination Area (DA) level. Each DA starts with a base score of 0. For each of the five core socio-demographic risk groups, we check if the DA falls within the top 20% (quintile 5) network-wide:
-                  </p>
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                   
-                  {/* Visual Grid representing demographic categories */}
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 py-2">
-                    {[
-                      { label: 'Low Income', desc: 'Worst 20%', val: '+1.0' },
-                      { label: 'Seniors (65+)', desc: 'Worst 20%', val: '+1.0' },
-                      { label: 'Youth (<18)', desc: 'Worst 20%', val: '+1.0' },
-                      { label: 'Lone Parents', desc: 'Worst 20%', val: '+1.0' },
-                      { label: 'Visible Minorities', desc: 'Worst 20%', val: '+1.0' }
-                    ].map((item, index) => (
-                      <div key={index} className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center">
-                        <span className="text-xs font-bold text-slate-800 leading-tight">{item.label}</span>
-                        <span className="text-[10px] text-slate-400 font-medium mt-1">{item.desc}</span>
-                        <span className="text-xs font-black text-teal-600 mt-2 bg-teal-50 px-2.5 py-0.5 rounded-full">{item.val}</span>
-                      </div>
-                    ))}
+                  {/* Header / Top Control Row */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                    <button
+                      onClick={() => setShowVulnerabilityMath(false)}
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
+                      title="Close methodology panel"
+                    >
+                      <span className="font-extrabold text-sm">✕</span>
+                    </button>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      Methodology Details
+                    </span>
+                    <div className="w-8 h-8 opacity-0" aria-hidden="true" />
                   </div>
 
-                  <p>
-                    A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then converted to a scale of 0 to 100 relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents score higher.
-                  </p>
+                  {/* Scrollable Modal Content */}
+                  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+                    <div className="border-b border-slate-200 pb-4">
+                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Vulnerability Methodology: Additive Scoring</h3>
+                      <p className="text-xs text-slate-500 mt-1">How demographic profiles along a route generate the final score.</p>
+                    </div>
+                    
+                    <div className="text-sm text-slate-600 space-y-4">
+                      <p className="leading-relaxed">
+                        The Transit Vulnerability index is calculated at the Dissemination Area (DA) level. Each DA starts with a base score of 0. For each of the five core socio-demographic risk groups, we check if the DA falls within the top 20% (quintile 5) network-wide:
+                      </p>
+                      
+                      {/* Visual Grid representing demographic categories */}
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 py-2">
+                        {[
+                          { label: 'Low Income', desc: 'Worst 20%', val: '+1.0' },
+                          { label: 'Seniors (65+)', desc: 'Worst 20%', val: '+1.0' },
+                          { label: 'Youth (<18)', desc: 'Worst 20%', val: '+1.0' },
+                          { label: 'Lone Parents', desc: 'Worst 20%', val: '+1.0' },
+                          { label: 'Visible Minorities', desc: 'Worst 20%', val: '+1.0' }
+                        ].map((item, index) => (
+                          <div key={index} className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-200 text-center shadow-sm">
+                            <span className="text-xs font-bold text-slate-800 leading-tight">{item.label}</span>
+                            <span className="text-[10px] text-slate-400 font-medium mt-1">{item.desc}</span>
+                            <span className="text-xs font-black text-teal-600 mt-2 bg-teal-50 px-2.5 py-0.5 rounded-full">{item.val}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="leading-relaxed">
+                        A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then converted to a scale of 0 to 100 relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents score higher.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -543,45 +564,66 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showOpportunityMath && (
-              <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-lg font-extrabold text-slate-900">Opportunity Methodology: Point of Interest Weights</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">How destination accessibility weights influence the overall score.</p>
-                </div>
-                
-                <div className="text-sm text-slate-600 space-y-3">
-                  <p>
-                    The Destination Opportunity index evaluates points of interest (POIs) located within the route's walking buffer catchment (typically 400m from all stops). Rather than summing all destinations equally, the model weighs them by societal utility categories:
-                  </p>
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                   
-                  {/* Visual Category Progress/Contribution Bars */}
-                  <div className="space-y-2 py-2">
-                    {[
-                      { label: 'Hospitals & Medical Facilities', weight: '5.0 multiplier', percent: 100, color: 'bg-emerald-600' },
-                      { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-600' },
-                      { label: 'Post-Secondary Campuses', weight: '3.0 multiplier', percent: 60, color: 'bg-teal-500' },
-                      { label: 'Supermarkets & Food Markets', weight: '2.0 multiplier', percent: 40, color: 'bg-amber-500' },
-                      { label: 'Primary & Secondary Schools', weight: '1.0 multiplier', percent: 20, color: 'bg-slate-400' }
-                    ].map((item, index) => (
-                      <div key={index} className="flex flex-col gap-1">
-                        <div className="flex justify-between text-xs font-bold text-slate-700">
-                          <span>{item.label}</span>
-                          <span>{item.weight}</span>
-                        </div>
-                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className={`h-full ${item.color}`} style={{ width: `${item.percent}%` }} />
-                        </div>
-                      </div>
-                    ))}
+                  {/* Header / Top Control Row */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                    <button
+                      onClick={() => setShowOpportunityMath(false)}
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
+                      title="Close methodology panel"
+                    >
+                      <span className="font-extrabold text-sm">✕</span>
+                    </button>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      Methodology Details
+                    </span>
+                    <div className="w-8 h-8 opacity-0" aria-hidden="true" />
                   </div>
 
-                  <p>
-                    These weighted counts are summed together to create a raw opportunity score. This raw score is then converted to a scale of 0 to 100 by comparing it to all other routes in Edmonton. Routes connecting to a wide variety of high-priority destinations score close to 100, while local feeder routes that serve fewer key hubs score lower.
-                  </p>
+                  {/* Scrollable Modal Content */}
+                  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+                    <div className="border-b border-slate-200 pb-4">
+                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Opportunity Methodology: Point of Interest Weights</h3>
+                      <p className="text-xs text-slate-500 mt-1">How destination accessibility weights influence the overall score.</p>
+                    </div>
+                    
+                    <div className="text-sm text-slate-600 space-y-4">
+                      <p className="leading-relaxed">
+                        The Destination Opportunity index evaluates points of interest (POIs) located within the route's walking buffer catchment (typically 400m from all stops). Rather than summing all destinations equally, the model weighs them by societal utility categories:
+                      </p>
+                      
+                      {/* Visual Category Progress/Contribution Bars */}
+                      <div className="space-y-3 py-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        {[
+                          { label: 'Hospitals & Medical Facilities', weight: '5.0 multiplier', percent: 100, color: 'bg-emerald-600' },
+                          { label: 'Employment Centres (Jobs)', weight: '3.0 multiplier', percent: 60, color: 'bg-indigo-600' },
+                          { label: 'Post-Secondary Campuses', weight: '3.0 multiplier', percent: 60, color: 'bg-teal-500' },
+                          { label: 'Supermarkets & Food Markets', weight: '2.0 multiplier', percent: 40, color: 'bg-amber-500' },
+                          { label: 'Primary & Secondary Schools', weight: '1.0 multiplier', percent: 20, color: 'bg-slate-400' }
+                        ].map((item, index) => (
+                          <div key={index} className="flex flex-col gap-1">
+                            <div className="flex justify-between text-xs font-bold text-slate-700">
+                              <span>{item.label}</span>
+                              <span>{item.weight}</span>
+                            </div>
+                            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className={`h-full ${item.color}`} style={{ width: `${item.percent}%` }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
 
-                  <p className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 leading-relaxed">
-                    <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
-                  </p>
+                      <p className="leading-relaxed">
+                        These weighted counts are summed together to create a raw opportunity score. This raw score is then converted to a scale of 0 to 100 by comparing it to all other routes in Edmonton. Routes connecting to a wide variety of high-priority destinations score close to 100, while local feeder routes that serve fewer key hubs score lower.
+                      </p>
+
+                      <p className="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
+                        <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -631,37 +673,58 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
 
             {showOffPeakMath && (
-              <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-lg font-extrabold text-slate-900">Off-Peak Methodology: Headway-Based Scores</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">How transit frequency during off-peak windows converts into scores.</p>
-                </div>
-                
-                <div className="text-sm text-slate-600 space-y-3">
-                  <p>
-                    Service quality is evaluated across four distinct off-peak time bands: <strong>Evenings</strong> (18:00 - 22:00 weekdays), <strong>Nights</strong> (22:00 - 05:00 weekdays), <strong>Saturdays</strong> (All day), and <strong>Sundays</strong> (All day).
-                  </p>
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+                <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                   
-                  <p className="text-xs text-slate-500 font-bold">Headway-to-Points Conversion Scale:</p>
-                  
-                  {/* Visual Headway Matrix */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
-                    {[
-                      { range: '< 15 mins', points: '100 pts', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-                      { range: '15 – 30 mins', points: '70 pts', color: 'bg-blue-50 text-blue-750 border-blue-100' },
-                      { range: '30 – 60 mins', points: '40 pts', color: 'bg-amber-50 text-amber-750 border-amber-100' },
-                      { range: '> 60 mins / None', points: '10 pts', color: 'bg-rose-50 text-rose-700 border-rose-105' }
-                    ].map((item, index) => (
-                      <div key={index} className={`flex flex-col items-center justify-center p-3 rounded-2xl border ${item.color} text-center`}>
-                        <span className="text-xs font-bold leading-tight">{item.range}</span>
-                        <span className="text-xs font-black mt-2 bg-white px-2.5 py-0.5 rounded-full border border-black/5">{item.points}</span>
-                      </div>
-                    ))}
+                  {/* Header / Top Control Row */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                    <button
+                      onClick={() => setShowOffPeakMath(false)}
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
+                      title="Close methodology panel"
+                    >
+                      <span className="font-extrabold text-sm">✕</span>
+                    </button>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      Methodology Details
+                    </span>
+                    <div className="w-8 h-8 opacity-0" aria-hidden="true" />
                   </div>
 
-                  <p>
-                    The overall Off-Peak Score is calculated by averaging the points earned across all four time windows (Evenings, Nights, Saturdays, and Sundays). For example, if a route runs frequently on Saturdays (earning 70 points) but has no service late at night (earning only 10 points), the final score will be dragged down to reflect that lack of late-night service.
-                  </p>
+                  {/* Scrollable Modal Content */}
+                  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+                    <div className="border-b border-slate-200 pb-4">
+                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Off-Peak Methodology: Headway-Based Scores</h3>
+                      <p className="text-xs text-slate-500 mt-1">How transit frequency during off-peak windows converts into scores.</p>
+                    </div>
+                    
+                    <div className="text-sm text-slate-600 space-y-4">
+                      <p className="leading-relaxed">
+                        Service quality is evaluated across four distinct off-peak time bands: <strong>Evenings</strong> (18:00 - 22:00 weekdays), <strong>Nights</strong> (22:00 - 05:00 weekdays), <strong>Saturdays</strong> (All day), and <strong>Sundays</strong> (All day).
+                      </p>
+                      
+                      <p className="text-xs text-slate-500 font-bold">Headway-to-Points Conversion Scale:</p>
+                      
+                      {/* Visual Headway Matrix */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
+                        {[
+                          { range: '< 15 mins', points: '100 pts', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+                          { range: '15 – 30 mins', points: '70 pts', color: 'bg-blue-50 text-blue-750 border-blue-100' },
+                          { range: '30 – 60 mins', points: '40 pts', color: 'bg-amber-50 text-amber-750 border-amber-100' },
+                          { range: '> 60 mins / None', points: '10 pts', color: 'bg-rose-50 text-rose-700 border-rose-105' }
+                        ].map((item, index) => (
+                          <div key={index} className={`flex flex-col items-center justify-center p-3 rounded-2xl border bg-white shadow-sm ${item.color} text-center`}>
+                            <span className="text-xs font-bold leading-tight">{item.range}</span>
+                            <span className="text-xs font-black mt-2 bg-slate-50 px-2.5 py-0.5 rounded-full border border-black/5">{item.points}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="leading-relaxed">
+                        The overall Off-Peak Score is calculated by averaging the points earned across all four time windows (Evenings, Nights, Saturdays, and Sundays). For example, if a route runs frequently on Saturdays (earning 70 points) but has no service late at night (earning only 10 points), the final score will be dragged down to reflect that lack of late-night service.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -720,44 +783,65 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </div>
 
               {showMonopolyMath && (
-                <div className="mt-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm transition-all duration-300 animate-fadeIn space-y-4">
-                  <div className="border-b border-slate-100 pb-3">
-                    <h3 className="text-lg font-extrabold text-slate-950">Monopoly Methodology: Functional Redundancy</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">How alternative transit service capacity reduces dependency and scores.</p>
-                  </div>
-                  
-                  <div className="text-sm text-slate-600 space-y-3">
-                    <p>
-                      The model calculates a <strong>Functional Monopoly Index (FMI)</strong> for each Dissemination Area. If a DA has alternative transit services within a 400m walk, the monopoly score is discounted.
-                    </p>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+                  <div className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                     
-                    {/* Visual flow of discounts */}
-                    <div className="flex flex-col gap-2.5 py-2">
-                      <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-150">
-                        <span className="font-bold text-slate-800">1. Base Monopoly Value</span>
-                        <span className="text-xs font-black text-indigo-650 bg-indigo-50 px-2.5 py-0.5 rounded-full">1.0 (Sole Route)</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-150">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-slate-800">2. Alternative Service Discount</span>
-                          <span className="text-[10px] text-slate-400">Based on capacity/frequency of other stops</span>
-                        </div>
-                        <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Up to -0.8</span>
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-150">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-slate-800">3. On-Demand Transit (ODT) Discount</span>
-                          <span className="text-[10px] text-slate-400">Mitigation applied if served by dynamic shuttles</span>
-                        </div>
-                        <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI × 0.5)</span>
-                      </div>
+                    {/* Header / Top Control Row */}
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                      <button
+                        onClick={() => setShowMonopolyMath(false)}
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
+                        title="Close methodology panel"
+                      >
+                        <span className="font-extrabold text-sm">✕</span>
+                      </button>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        Methodology Details
+                      </span>
+                      <div className="w-8 h-8 opacity-0" aria-hidden="true" />
                     </div>
 
-                    <p>
-                      The final route score is calculated by taking the average of these monopoly values across all neighbourhoods served, weighted by population. We then scale the result from 0 to 100. A route that runs through areas with many other bus routes and LRT lines will get a score close to 0, indicating that riders have plenty of other travel options.
-                    </p>
+                    {/* Scrollable Modal Content */}
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+                      <div className="border-b border-slate-200 pb-4">
+                        <h3 className="text-2xl font-black text-slate-900 leading-tight">Monopoly Methodology: Functional Redundancy</h3>
+                        <p className="text-xs text-slate-500 mt-1">How alternative transit service capacity reduces dependency and scores.</p>
+                      </div>
+                      
+                      <div className="text-sm text-slate-600 space-y-4">
+                        <p className="leading-relaxed">
+                          The model calculates a <strong>Functional Monopoly Index (FMI)</strong> for each Dissemination Area. If a DA has alternative transit services within a 400m walk, the monopoly score is discounted.
+                        </p>
+                        
+                        {/* Visual flow of discounts */}
+                        <div className="flex flex-col gap-2.5 py-2">
+                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                            <span className="font-bold text-slate-800">1. Base Monopoly Value</span>
+                            <span className="text-xs font-black text-indigo-650 bg-indigo-50 px-2.5 py-0.5 rounded-full">1.0 (Sole Route)</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-slate-800">2. Alternative Service Discount</span>
+                              <span className="text-[10px] text-slate-400">Based on capacity/frequency of other stops</span>
+                            </div>
+                            <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Up to -0.8</span>
+                          </div>
+
+                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-slate-800">3. On-Demand Transit (ODT) Discount</span>
+                              <span className="text-[10px] text-slate-400">Mitigation applied if served by dynamic shuttles</span>
+                            </div>
+                            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI × 0.5)</span>
+                          </div>
+                        </div>
+
+                        <p className="leading-relaxed">
+                          The final route score is calculated by taking the average of these monopoly values across all neighbourhoods served, weighted by population. We then scale the result from 0 to 100. A route that runs through areas with many other bus routes and LRT lines will get a score close to 0, indicating that riders have plenty of other travel options.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
