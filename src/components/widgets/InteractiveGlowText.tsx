@@ -96,14 +96,11 @@ const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, mousePos, isHovered
   const isNear = distance < maxRadius;
   const proximityRatio = isNear ? 1 - distance / maxRadius : 0;
 
-  // Monochromatic Blue/Indigo Glow target color
-  const glowColor = 'rgba(59, 130, 246, 0.95)'; // Indigo/Blue (#3b82f6)
-
-  // Default color is a deep dark navy blue (#0f172a / slate-900) instead of black (#020617)
-  const defaultColor = '#0f172a';
+  // Deep navy blue color
+  const navyColor = '#0f172a';
 
   const textShadowStyle = isNear
-    ? `0 0 ${10 * proximityRatio}px ${glowColor}, 0 0 ${20 * proximityRatio}px ${glowColor}`
+    ? `0 0 ${12 * proximityRatio}px rgba(15, 23, 42, 0.6)`
     : 'none';
 
   return (
@@ -111,12 +108,8 @@ const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, mousePos, isHovered
       ref={spanRef}
       className="inline-block transition-all duration-300 ease-out font-black"
       style={{
-        color: isNear ? undefined : defaultColor,
-        backgroundImage: isNear 
-          ? 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%)' 
-          : 'none',
-        WebkitBackgroundClip: isNear ? 'text' : 'unset',
-        WebkitTextFillColor: isNear ? 'transparent' : 'unset',
+        color: navyColor,
+        WebkitTextStroke: `1.5px ${navyColor}`,
         textShadow: textShadowStyle,
         transform: isNear ? `scale(${1 + 0.04 * proximityRatio})` : 'scale(1)',
       }}
