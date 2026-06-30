@@ -211,27 +211,24 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     setWeights(newWeights);
   };
 
-  // Live Score Calculator for weights simulator
-  const liveScores = useMemo(() => {
-    const r2 = { vulnerability: 80.8, offPeak: 31.3, monopoly: 67.6, opportunity: 92.7 };
-    const r3 = { vulnerability: 17.5, offPeak: 38.0, monopoly: 0.0, opportunity: 18.9 };
+  const r2 = { vulnerability: 80.8, offPeak: 31.3, monopoly: 67.6, opportunity: 92.7 };
+  const r3 = { vulnerability: 17.5, offPeak: 38.0, monopoly: 0.0, opportunity: 18.9 };
 
-    const score2 = (
+  const liveScores = {
+    route2: (
       r2.vulnerability * (weights.vulnerability / 100) +
       r2.offPeak * (weights.offPeak / 100) +
       r2.monopoly * (weights.monopoly / 100) +
       r2.opportunity * (weights.opportunity / 100)
-    );
-
-    const score3 = (
+    ),
+    route3: (
       r3.vulnerability * (weights.vulnerability / 100) +
       r3.offPeak * (weights.offPeak / 100) +
       r3.monopoly * (weights.monopoly / 100) +
       r3.opportunity * (weights.opportunity / 100)
-    );
+    )
+  };
 
-    return { route2: score2, route3: score3 };
-  }, [weights]);
 
   return (
     <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
@@ -981,7 +978,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20 percent (\(FR_{i,r} < 0.20\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \(r\) is then classified as a Functional Monopoly for DA \(i\).</p>
+                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20 percent (\(FR_{i,r} &lt; 0.20\)), it indicates that alternative routes do not connect residents to the destinations they need. Route \(r\) is then classified as a Functional Monopoly for DA \(i\).</p>
                             </li>
                           </ul>
                         </div>
