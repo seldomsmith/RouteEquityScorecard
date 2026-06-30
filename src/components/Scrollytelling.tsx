@@ -1045,10 +1045,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mt-1.5 space-y-2">
                                 <span className="font-bold text-slate-800 block text-[10px] uppercase tracking-wider">Proposed Continuous Transition Index:</span>
                                 <p className="font-mono text-center text-sm py-1 bg-white border border-slate-200 rounded-lg text-slate-800">
-                                  {"Redundancy Index = 1 - \\(\\left(\\frac{\\text{Route Capacity}}{\\text{Alternative Capacity}}\\right)\\)"}
+                                  Redundancy Index = Alternative Route Capacity / Route Capacity
                                 </p>
                                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                                  This proposed index will replace the binary count with a gradient. It measures the share of total transit capacity a route provides to an area relative to overlapping lines. If a route provides 95% of the seats in a neighborhood, its redundancy index will be near 1.0 (indicating a near-total monopoly), even if a secondary route technically exists.
+                                  This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, if alternative routes only provide 5% of the seats in a neighborhood, the Redundancy Index is 0.05, signaling a near-total monopoly. If alternative routes provide equivalent or greater capacity, the index reaches 1.0 or higher, showing high redundancy.
                                 </p>
                               </div>
                             </li>
