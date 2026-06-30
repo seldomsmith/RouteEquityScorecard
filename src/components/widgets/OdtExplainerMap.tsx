@@ -118,7 +118,7 @@ export const OdtExplainerMap: React.FC<OdtExplainerMapProps> = ({ odtGeoJson, ro
   return (
     <div className="relative w-full h-64 border border-slate-200 rounded-2xl overflow-hidden shadow-inner bg-slate-50">
       <div ref={mapContainerRef} className="w-full h-full" />
-      <div className="absolute bottom-2.5 left-2.5 z-10 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-slate-200 text-[9px] font-semibold text-slate-600 flex flex-col gap-1 shadow-sm select-none">
+      <div className="absolute top-2.5 left-2.5 z-10 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-slate-200 text-[9px] font-semibold text-slate-600 flex flex-col gap-1 shadow-sm select-none">
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-1.5 bg-teal-500 opacity-60 rounded-sm inline-block" />
           <span>Active ODT Zones (Chappelle/Allard)</span>

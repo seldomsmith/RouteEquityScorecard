@@ -393,7 +393,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
         
         {/* Legend panel inside map overlay */}
-        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-650 flex flex-col gap-1.5 shadow-sm max-w-[200px]">
+        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-650 flex flex-col gap-1.5 shadow-sm max-w-[200px] z-10">
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F59E0B' }} />
             <span className="font-bold text-slate-800">Active Route {activeRouteId}</span>

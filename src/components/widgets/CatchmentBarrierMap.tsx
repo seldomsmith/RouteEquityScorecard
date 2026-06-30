@@ -161,7 +161,7 @@ export const CatchmentBarrierMap: React.FC = () => {
         <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Legend */}
-        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-bold text-slate-650 flex flex-col gap-1.5 shadow-sm">
+        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-bold text-slate-650 flex flex-col gap-1.5 shadow-sm z-10">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-0.5 border-t-2 border-dashed border-[#10B981] inline-block" />
             <span>Theoretical Direct Walk (400m Buffer)</span>
