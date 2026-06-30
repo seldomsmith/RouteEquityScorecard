@@ -252,3 +252,10 @@
     width: 280px;
   }
 }
+
+/* Force opacity to 1 when the menu is open, resolving any GSAP mount/timing issues */
+.staggered-menu-wrapper[data-open] .staggered-menu-panel,
+.staggered-menu-wrapper[data-open] .sm-prelayers,
+.staggered-menu-wrapper[data-open] .sm-prelayer {
+  opacity: 1 !important;
+}
