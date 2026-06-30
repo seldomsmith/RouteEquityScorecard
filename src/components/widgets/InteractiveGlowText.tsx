@@ -6,13 +6,6 @@ interface InteractiveGlowTextProps {
   text: string;
 }
 
-const TRANSIT_COLORS = [
-  'rgba(34, 197, 94, 0.95)',  // Emerald Green (#22c55e)
-  'rgba(234, 179, 8, 0.95)',  // Yellow (#eab308)
-  'rgba(239, 68, 68, 0.95)',  // Red (#ef4444)
-  'rgba(59, 130, 246, 0.95)', // Blue (#3b82f6)
-];
-
 export const InteractiveGlowText: React.FC<InteractiveGlowTextProps> = ({ text }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
@@ -33,7 +26,6 @@ export const InteractiveGlowText: React.FC<InteractiveGlowTextProps> = ({ text }
     setMousePos({ x: -1000, y: -1000 });
   };
 
-  // Convert the text into individual characters (keeping newlines)
   const lines = text.split('\n');
 
   return (
@@ -42,20 +34,15 @@ export const InteractiveGlowText: React.FC<InteractiveGlowTextProps> = ({ text }
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative select-none cursor-default py-2"
+      className="relative select-none cursor-default py-2 flex flex-col items-center"
     >
       {lines.map((line, lineIdx) => (
-        <div key={lineIdx} className="flex justify-center flex-wrap">
+        <div key={lineIdx} className="flex justify-center flex-wrap relative">
           {line.split('').map((char, charIdx) => {
-            const globalIdx = lineIdx * 100 + charIdx;
-            const transitColor = TRANSIT_COLORS[globalIdx % TRANSIT_COLORS.length];
-
-            // Render single character with dynamic inline mouse-proximity calculations
             return (
               <CharacterGlow
                 key={charIdx}
                 char={char}
-                color={transitColor}
                 mousePos={mousePos}
                 isHovered={isHovered}
               />
@@ -69,12 +56,11 @@ export const InteractiveGlowText: React.FC<InteractiveGlowTextProps> = ({ text }
 
 interface CharacterGlowProps {
   char: string;
-  color: string;
   mousePos: { x: number; y: number };
   isHovered: boolean;
 }
 
-const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, color, mousePos, isHovered }) => {
+const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, mousePos, isHovered }) => {
   const spanRef = useRef<HTMLSpanElement>(null);
   const [distance, setDistance] = useState(9999);
 
@@ -87,10 +73,9 @@ const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, color, mousePos, is
     const updateDistance = () => {
       if (!spanRef.current) return;
       const rect = spanRef.current.getBoundingClientRect();
-      const parentRect = spanRef.current.parentElement?.parentElement?.parentElement?.getBoundingClientRect();
+      const parentRect = spanRef.current.parentElement?.parentElement?.getBoundingClientRect();
       if (!parentRect) return;
 
-      // Span relative coordinates inside container
       const charX = (rect.left + rect.width / 2) - parentRect.left;
       const charY = (rect.top + rect.height / 2) - parentRect.top;
 
@@ -107,17 +92,18 @@ const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, color, mousePos, is
     return <span className="w-[0.27em]">&nbsp;</span>;
   }
 
-  // Calculate opacity/intensity based on proximity radius (e.g. 150px)
-  const maxRadius = 130;
+  const maxRadius = 150;
   const isNear = distance < maxRadius;
-  const proximityRatio = isNear ? 1 - distance / maxRadius : 0; // 1 at center, 0 at outer edge
+  const proximityRatio = isNear ? 1 - distance / maxRadius : 0;
 
-  // Text color transitions from deep navy text-blue-955 to the transit spectrum color
-  const mixColor = isNear ? color : '#020617';
+  // Monochromatic Blue/Indigo Glow target color
+  const glowColor = 'rgba(59, 130, 246, 0.95)'; // Indigo/Blue (#3b82f6)
 
-  // Apply a drop shadow glow matching the character's designated transit line color
+  // Default color is a deep dark navy blue (#0f172a / slate-900) instead of black (#020617)
+  const defaultColor = '#0f172a';
+
   const textShadowStyle = isNear
-    ? `0 0 ${12 * proximityRatio}px ${color}, 0 0 ${24 * proximityRatio}px ${color}`
+    ? `0 0 ${10 * proximityRatio}px ${glowColor}, 0 0 ${20 * proximityRatio}px ${glowColor}`
     : 'none';
 
   return (
@@ -125,9 +111,14 @@ const CharacterGlow: React.FC<CharacterGlowProps> = ({ char, color, mousePos, is
       ref={spanRef}
       className="inline-block transition-all duration-300 ease-out font-black"
       style={{
-        color: mixColor,
+        color: isNear ? undefined : defaultColor,
+        backgroundImage: isNear 
+          ? 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%)' 
+          : 'none',
+        WebkitBackgroundClip: isNear ? 'text' : 'unset',
+        WebkitTextFillColor: isNear ? 'transparent' : 'unset',
         textShadow: textShadowStyle,
-        transform: isNear ? `scale(${1 + 0.05 * proximityRatio})` : 'scale(1)',
+        transform: isNear ? `scale(${1 + 0.04 * proximityRatio})` : 'scale(1)',
       }}
     >
       {char}

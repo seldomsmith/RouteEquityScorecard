@@ -56,13 +56,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
       <BorderGlow
         animated
         edgeSensitivity={40}
-        glowRadius={50}
-        glowIntensity={1.5}
-        coneSpread={28}
+        glowRadius={40}
+        glowIntensity={0.8}
+        coneSpread={22}
         borderRadius={56} // Matches desktop md:rounded-[3.5rem] (56px)
-        backgroundColor="#2563eb" // Original bg-blue-600 color
-        glowColor="220 90 60" // Bright blue/cyan HSL glow
-        colors={['#22c55e', '#eab308', '#ef4444', '#3b82f6']} // Transit lines color scheme
+        backgroundColor="#1e293b" // Slate-800 background for the card
+        glowColor="220 70 50" // Slate blue/indigo HSL glow
+        colors={['#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a']} // Deep blues & indigos monochromatic theme
         className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300"
       >
         <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
