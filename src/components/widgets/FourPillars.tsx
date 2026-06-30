@@ -63,7 +63,7 @@ export const FourPillars: React.FC = () => {
             <div 
               key={idx}
               onClick={() => toggleFlip(idx)}
-              className="cursor-pointer group relative perspective w-full h-[250px]"
+              className="cursor-pointer group relative perspective w-full h-[290px]"
             >
               {/* Inner card with 3D rotation transition */}
               <div 
