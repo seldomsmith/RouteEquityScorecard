@@ -767,7 +767,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps overlay alternative transit lines in silver, showing that although Route 002 crosses paths with multiple routes in central hubs, its outer suburban sectors (like Capilano/Highlands) lack any comparable alternative routes connecting riders to similar destinations. In contrast, Route 003 runs directly parallel to multiple high-frequency lines that can easily absorb its ridership.
+                  The maps overlay alternative transit lines in silver, showing that although Route 002 crosses paths with multiple routes in central hubs, its outer suburban sectors (like Stadium/Clareview) lack any comparable alternative routes connecting riders to similar destinations. In contrast, Route 003 runs directly parallel to multiple high-frequency lines that can easily absorb its ridership.
                 </p>
               </>
             )}
@@ -850,7 +850,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
           <section id="section-odt" className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">6.5. Mitigation: On-Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
               </p>
@@ -863,16 +863,16 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               )}
 
               <p className="text-slate-600 text-base leading-relaxed">
-                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which terminates at the Capilano Transit Centre – a primary hub for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
+                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
               </p>
               <ul className="space-y-3 pl-2 text-slate-600 text-base">
                 <li>
                   <strong className="text-blue-950 font-bold">Vulnerability Score Reduction (-10%)</strong>: 
-                  DAs served by the Capilano ODT receive a 10% reduction on their vulnerability index ({"$V_i \\times 0.90$"}) because local feeder shuttles help ease geographic isolation.
+                  DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index ({"$V_i \\times 0.90$"}) because local feeder shuttles help ease geographic isolation.
                 </li>
                 <li>
                   <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
-                  DAs within the Capilano ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index ({"$FMI_{i,r} \\times 0.50$"}) to reflect that residents have a flexible, bookable connection to the wider transit network.
+                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index ({"$FMI_{i,r} \\times 0.50$"}) to reflect that residents have a flexible, bookable connection to the wider transit network.
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
