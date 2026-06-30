@@ -985,8 +985,8 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <p className="leading-relaxed">Let R(i) be the set of all transit routes that stop within 400m of the boundary of DA i.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Destination Catchment - D(r):</strong>
-                              <p className="leading-relaxed">For each route r, we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
+                              <strong className="text-slate-900 block">Destination Catchment, D(r):</strong>
+                              <p className="leading-relaxed">For each route r, we index all Points of Interest (POIs), including employment hubs, schools, grocery stores, and medical services, that are reachable within 400m of any stop along that route.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Alternative Routes - A(i,r):</strong>
@@ -1318,7 +1318,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                         stroke="#64748B"
                         fontSize={11}
                         label={{
-                          value: 'Robustness Index (Rr) — Volatility',
+                          value: 'Robustness Index (Rr), Volatility',
                           angle: -90,
                           position: 'insideLeft',
                           offset: -10,

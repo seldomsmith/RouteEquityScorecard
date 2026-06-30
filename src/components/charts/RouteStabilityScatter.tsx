@@ -157,7 +157,7 @@ export const RouteStabilityScatter: React.FC<RouteStabilityScatterProps> = ({ se
               stroke="#94A3B8"
               fontSize={10}
               label={{
-                value: 'Robustness Index (Rr) — Volatility',
+                value: 'Robustness Index (Rr), Volatility',
                 angle: -90,
                 position: 'insideLeft',
                 offset: -10,
