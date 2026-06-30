@@ -989,20 +989,20 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                               <p className="leading-relaxed">For each route r, we index all Points of Interest (POIs)—including employment hubs, schools, grocery stores, and medical services—that are reachable within 400m of any stop along that route.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">"Alternative Routes - A(i,r):"</strong>
-                              <p className="leading-relaxed">"For a specific route r serving DA i, its alternative routes are defined as the routes in R(i) other than route r."</p>
+                              <strong className="text-slate-900 block">Alternative Routes - A(i,r):</strong>
+                              <p className="leading-relaxed">For a specific route r serving DA i, its alternative routes are defined as the routes in R(i) other than route r.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">"Shared Destination Volume - S(i,r):"</strong>
-                              <p className="leading-relaxed">"We calculate the unique set of destinations reachable by alternative routes that overlap with the destinations reachable by route r."</p>
+                              <strong className="text-slate-900 block">Shared Destination Volume - S(i,r):</strong>
+                              <p className="leading-relaxed">We calculate the unique set of destinations reachable by alternative routes that overlap with the destinations reachable by route r.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">"Functional Redundancy - FR(i,r):"</strong>
+                              <strong className="text-slate-900 block">Functional Redundancy - FR(i,r):</strong>
                               <p className="leading-relaxed">{"The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \\(FR_{i,r} = \\frac{|S_{i,r}|}{|D_r|}\\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas)."}</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">"If the Functional Redundancy ratio is less than 20% (FR(i,r) < 0.20), it indicates that alternative routes do not connect residents to the destinations they need. Route r is then classified as a Functional Monopoly for DA i."</p>
+                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20% (FR(i,r) &lt; 0.20), it indicates that alternative routes do not connect residents to the destinations they need. Route r is then classified as a Functional Monopoly for DA i.</p>
                             </li>
                           </ul>
                         </div>
