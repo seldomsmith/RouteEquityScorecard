@@ -767,7 +767,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps overlay alternative transit lines in silver, demonstrating that Route 003 overlaps with multiple corridor options and LRT links, while Route 002 serves isolated suburban segments with zero alternatives.
+                  The maps overlay alternative transit lines in silver, showing that although Route 002 crosses paths with multiple routes in central hubs, its outer suburban sectors (like Capilano/Highlands) lack any comparable alternative routes connecting riders to similar destinations. In contrast, Route 003 runs directly parallel to multiple high-frequency lines that can easily absorb its ridership.
                 </p>
               </>
             )}
@@ -896,13 +896,13 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </p>
               <ul className="flex flex-col gap-2.5 text-slate-600 text-base">
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1.5 flex-shrink-0">•</span>
+                  <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
                   <span className="flex-1">
                     <strong className="text-blue-950 font-bold">Route 002 decreases from 68.1 to 63.8</strong>: Although its demographic vulnerability weight is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1.5 flex-shrink-0">•</span>
+                  <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
                   <span className="flex-1">
                     <strong className="text-blue-950 font-bold">Route 003 increases from 18.6 to 24.4</strong>: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
                   </span>
@@ -1007,25 +1007,73 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <MonteCarloPlinko />
             </div>
 
-            <div className="space-y-4">
-              <ul className="space-y-3 pl-2 text-slate-600 text-base">
-                <li>
-                  <strong className="text-blue-950 font-bold">Bedrock Essentials (Always High Equity)</strong>: 
-                  These routes score highly across all weight scenarios. Route 002 is a Bedrock Essential because it consistently receives a high route equity score regardless of how we weight the model. This classification is due to Route 002 scoring exceptionally high on three of the four pillars: Vulnerability (80.8), Monopoly (67.6), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize the demographic weights and heavily favor Off-Peak Service (its lowest scoring policy weight at 31.3), Route 002's scores on the other three policy weights ensure it remains a high scoring route for equity.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">Policy Swing Route</strong>: 
-                  Routes in this category have scores that fluctuate wildly depending on weight selections. Route 003 is a Policy Swing Corridor because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, Route 003 maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When policy shifts to favor demographic need or route dependency, Route 003's score collapses, making its funding priority highly dependent on the active political administration.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">Moderate Stability (Consistent Mid-Range Scores)</strong>: 
-                  These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to policy changes, representing stable baseline operations. For example, Route 913 (West Edmonton Mall – Jamieson Place) does not feature extreme highs or absolute zeros in any single category. Under the simulation, its scores remain remarkably stable, maintaining an average score of 50.03 with a very low standard deviation of just 4.88.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">Bedrock Resilient (Always Low Equity)</strong>: 
-                  These routes consistently receive lower equity scores across all possible policy weight combinations. They tend to serve higher-income areas with low demographic risk, feature abundant overlapping transit choices, or bypass major employment and service hubs. Route 524 (Bonnie Doon – Holyrood) falls into this category, averaging a score of just 8.9 out of 100 across all configurations.
-                </li>
-              </ul>
+            <div className="space-y-6">
+              <div className="flex flex-col gap-6 pl-2">
+                {/* 1. Bedrock Essentials */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
+                      Bedrock Essentials (Always High Equity)
+                    </span>
+                  </div>
+                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                    These routes score highly across all weight scenarios, maintaining high equity ranking robustness regardless of the active policy configuration.
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
+                    Route 002 is a Bedrock Essential because it consistently receives a high route equity score regardless of how we weight the model. This classification is due to Route 002 scoring exceptionally high on three of the four pillars: Vulnerability (80.8), Monopoly (67.6), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize the demographic weights and heavily favor Off-Peak Service (its lowest scoring policy weight at 31.3), Route 002's scores on the other three policy weights ensure it remains a high scoring route for equity.
+                  </p>
+                </div>
+
+                {/* 2. Policy Swing Route */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                      Policy Swing Route
+                    </span>
+                  </div>
+                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                    Routes in this category have scores that fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
+                    Route 003 is a Policy Swing Corridor because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, Route 003 maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When policy shifts to favor demographic need or route dependency, Route 003's score collapses, making its funding priority highly dependent on the active political administration.
+                  </p>
+                </div>
+
+                {/* 3. Moderate Stability */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                      Moderate Stability (Consistent Mid-Range Scores)
+                    </span>
+                  </div>
+                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                    These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to policy changes, representing stable baseline operations.
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
+                    For example, Route 913 (West Edmonton Mall – Jamieson Place) does not feature extreme highs or absolute zeros in any single category. Under the simulation, its scores remain remarkably stable, maintaining an average score of 50.03 with a very low standard deviation of just 4.88.
+                  </p>
+                </div>
+
+                {/* 4. Bedrock Resilient */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-slate-55 text-slate-700 border border-slate-200">
+                      Bedrock Resilient (Always Low Equity)
+                    </span>
+                  </div>
+                  <p className="text-slate-650 text-base leading-relaxed pl-3.5">
+                    These routes consistently receive lower equity scores across all possible policy weight combinations, typically running through affluent sectors.
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
+                    Route 524 (Bonnie Doon – Holyrood) falls into this category, averaging a score of just 8.9 out of 100 across all configurations.
+                  </p>
+                </div>
+              </div>
+
               <p className="text-slate-605 text-base leading-relaxed">
                 Identifying these classifications for each route helps us identify which routes should be protected and how different service changes may impact specific routes.
               </p>
