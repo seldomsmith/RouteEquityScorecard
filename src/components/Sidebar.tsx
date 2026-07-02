@@ -6,13 +6,14 @@ import { RoutePoint } from '@/components/charts/EquityQuadrant';
 
 interface SidebarProps {
   routes: RoutePoint[];
+  onViewDirectory?: () => void;
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#64748B' },
+  vulnerability: { label: 'Vulnerability',  desc: 'Demographics of Dissemination Area', color: '#64748B' },
   resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
   monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
-  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#64748B' },
+  opportunity:   { label: 'Opportunity',     desc: 'The value of destinations',       color: '#64748B' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -30,7 +31,7 @@ const STABILITY_DOT: Record<string, string> = {
   'Moderate Stability': 'bg-slate-400',
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
@@ -94,11 +95,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="p-5 border-b border-slate-100">
-        <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity</h1>
-        <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-          Scorecard
-        </p>
+      <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div>
+          <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity</h1>
+          <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
+            Scorecard
+          </p>
+        </div>
+        {onViewDirectory && (
+          <button
+            onClick={onViewDirectory}
+            className="px-2.5 py-1 text-[10px] font-bold text-blue-650 hover:text-blue-750 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-100 transition-colors uppercase tracking-wider shadow-sm"
+          >
+            Directory
+          </button>
+        )}
       </div>
 
       {/* Weight Sliders — Zero-Sum System */}
@@ -224,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
           <>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Grade Isolator
+                Grade
               </h2>
               {selectedGrade && (
                 <button
