@@ -8,7 +8,7 @@ interface DataExplorerModalProps {
   allRoutesData: any[];
   weights: {
     vulnerability: number;
-    offPeak: number;
+    resilience: number;
     monopoly: number;
     opportunity: number;
   };
@@ -40,7 +40,7 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
     // Calculate raw live scores
     let routesWithScores = allRoutesData.map((route: any) => {
       const v = (route.pillar_1_vulnerability || 0) * (weights.vulnerability / 100);
-      const t = (route.pillar_2_temporal || 0) * (weights.offPeak / 100);
+      const t = (route.pillar_2_temporal || 0) * (weights.resilience / 100);
       const m = (route.pillar_3_monopoly || 0) * (weights.monopoly / 100);
       const o = (route.pillar_4_opportunity || 0) * (weights.opportunity / 100);
       
