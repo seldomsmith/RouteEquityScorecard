@@ -140,17 +140,17 @@ const CustomChartTooltip = ({ active, payload }: any) => {
 
 
 export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef(null as HTMLDivElement | null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [sensitivityData, setSensitivityData] = useState<any[]>([]);
+  const [sensitivityData, setSensitivityData] = useState([] as any[]);
 
   // States to hold route geometry & boundaries for the inline ExplainerMaps
-  const [route2Data, setRoute2Data] = useState<any>(null);
-  const [route3Data, setRoute3Data] = useState<any>(null);
-  const [route727Data, setRoute727Data] = useState<any>(null);
-  const [allRoutesData, setAllRoutesData] = useState<any[]>([]);
-  const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
-  const [daGeoJson, setDaGeoJson] = useState<any>(null);
+  const [route2Data, setRoute2Data] = useState(null as any);
+  const [route3Data, setRoute3Data] = useState(null as any);
+  const [route727Data, setRoute727Data] = useState(null as any);
+  const [allRoutesData, setAllRoutesData] = useState([] as any[]);
+  const [odtGeoJson, setOdtGeoJson] = useState(null as any);
+  const [daGeoJson, setDaGeoJson] = useState(null as any);
 
   // Policy Sliders state for Step 7 (Policy Weights)
   const [weights, setWeights] = useState({
@@ -161,7 +161,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   });
   
   // State for toggling route in the simulator waterfall chart
-  const [activeSimulatorRouteId, setActiveSimulatorRouteId] = useState<'002' | '003'>('002');
+  const [activeSimulatorRouteId, setActiveSimulatorRouteId] = useState('002' as '002' | '003');
   
   // State for fullscreen scatterplot
   const [showFullscreenScatterplot, setShowFullscreenScatterplot] = useState(false);
@@ -256,7 +256,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
   const handleWeightChange = (key: keyof typeof weights, val: number) => {
     const diff = val - weights[key];
-    const otherKeys = (Object.keys(weights) as Array<keyof typeof weights>).filter(k => k !== key);
+    const otherKeys = (Object.keys(weights) as (keyof typeof weights)[]).filter(k => k !== key);
     
     // Distribute the difference proportionally among the other weights
     const sumOthers = otherKeys.reduce((sum, k) => sum + weights[k], 0);
