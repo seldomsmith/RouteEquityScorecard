@@ -12,6 +12,7 @@ import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
+import { DataExplorerModal } from '@/components/widgets/DataExplorerModal';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -29,6 +30,7 @@ export const CommandCentre = () => {
   const [sensitivityData4Pillar, setSensitivityData4Pillar] = React.useState<Record<string, any>>({});
   const [sensitivityData2Pillar, setSensitivityData2Pillar] = React.useState<Record<string, any>>({});
   const [daAreaMap, setDaAreaMap] = React.useState<Record<string, number>>({});
+  const [showDataExplorer, setShowDataExplorer] = React.useState(false);
 
   const sensitivityData = is2PillarActive ? sensitivityData2Pillar : sensitivityData4Pillar;
 
@@ -241,7 +243,7 @@ export const CommandCentre = () => {
     <div className="w-full h-full flex">
       {/* Sidebar */}
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
-        <Sidebar routes={scoredRoutes} />
+        <Sidebar routes={scoredRoutes} onViewDirectory={() => setShowDataExplorer(true)} />
       </div>
 
       {/* Main Content — scrollable */}
@@ -267,20 +269,6 @@ export const CommandCentre = () => {
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <div className="flex justify-between items-center mb-1 border-b border-slate-100 pb-1.5">
                 <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest">Score Breakdown</span>
-                <div className="flex gap-1.5">
-                  <button 
-                    onClick={() => useRouteStore.getState().setSelectedRoute('002')}
-                    className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase transition-all duration-200 border ${selectedRoute === '002' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-                  >
-                    Rt 002
-                  </button>
-                  <button 
-                    onClick={() => useRouteStore.getState().setSelectedRoute('003')}
-                    className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase transition-all duration-200 border ${selectedRoute === '003' ? 'bg-amber-500 border-amber-500 text-white shadow-sm shadow-amber-500/20' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-                  >
-                    Rt 003
-                  </button>
-                </div>
               </div>
               <div className="flex-1 min-h-0 mt-1">
                 <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
@@ -316,6 +304,14 @@ export const CommandCentre = () => {
         </div>
       </div>
       <SpotlightSearch routes={scoredRoutes} />
+      
+      <DataExplorerModal 
+        isOpen={showDataExplorer} 
+        onClose={() => setShowDataExplorer(false)} 
+        allRoutesData={scoredRoutes}
+        weights={weights} 
+        sensitivityData={Object.values(sensitivityData)}
+      />
     </div>
   );
 };
