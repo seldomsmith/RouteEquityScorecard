@@ -82,27 +82,27 @@ const CustomChartTooltip = ({ active, payload }: any) => {
   const color = CLASS_COLORS[d.stability_class] || '#94a3b8'; // default slate-400
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-4 text-xs w-64 text-white overflow-hidden relative">
+    <div className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl p-4 text-xs w-64 text-slate-900 overflow-hidden relative">
       {/* Background glow matching the class color */}
       <div 
-        className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-30 pointer-events-none"
+        className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-15 pointer-events-none"
         style={{ backgroundColor: color }}
       />
       
       <div className="relative z-10">
-        <p className="font-black text-white text-sm truncate">{d?.name || 'Unknown Route'}</p>
-        <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-1">
+        <p className="font-black text-slate-900 text-sm truncate">{d?.name || 'Unknown Route'}</p>
+        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
           {(d?.stability_class ? (CLASS_LABELS[d.stability_class] || d.stability_class) : 'Unknown Stability')} (Route {d?.short_name || '?'})
         </p>
         
         <div className="mt-4 mb-2 flex justify-between items-end">
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Mean</span>
+            <span className="text-[10px] text-slate-500 uppercase font-semibold">Mean</span>
             <span className="font-bold text-lg leading-none" style={{ color }}>{mean.toFixed(1)}</span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Volatility (Std)</span>
-            <span className="font-bold text-lg leading-none text-white">{std.toFixed(2)}</span>
+            <span className="text-[10px] text-slate-500 uppercase font-semibold">Volatility (Std)</span>
+            <span className="font-bold text-lg leading-none text-slate-900">{std.toFixed(2)}</span>
           </div>
         </div>
 
@@ -1265,12 +1265,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     }}
                   />
                 </div>
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 rounded-b-3xl">
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the policy weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
-                  </p>
-                </div>
               </div>
+              
+              <p className="text-slate-605 text-base leading-relaxed mt-4">
+                <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the policy weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
+              </p>
             </div>
           </section>
 
