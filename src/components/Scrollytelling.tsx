@@ -1556,6 +1556,19 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       </div>
                     </div>
                     <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl text-center relative">
+                      <div className="text-center mb-4">
+                        <span className="text-[10px] font-black text-slate-450 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">🗺️ Macro View</span>
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide mt-3">Zone Average</h4>
+                      </div>
+                      
+                      {/* High-Fidelity SVG Circular Ring Indicator */}
+                      <div className="relative w-36 h-36 mt-4 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle cx="72" cy="72" r="54" stroke="#E2E8F0" strokeWidth="10" fill="transparent" />
+                          <circle cx="72" cy="72" r="54" stroke="#0D9488" strokeWidth="10" fill="transparent" strokeDasharray="339.3" strokeDashoffset="67.8" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute flex flex-col items-center justify-center">
+                          <span className="text-2xl font-black text-slate-800 leading-none">80.0</span>
                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Score</span>
                         </div>
                       </div>
