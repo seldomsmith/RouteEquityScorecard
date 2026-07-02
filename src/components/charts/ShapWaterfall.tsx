@@ -246,7 +246,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
       </div>
 
       {/* Waterfall Chart */}
-      <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-visible pt-4 mt-2">
         <svg
           width="100%"
           height={(shap.length + 3.6) * ROW_HEIGHT}
@@ -369,23 +369,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                   opacity={0.85}
                 />
 
-                {/* Overlaid numeric score value directly inside/over the bar if wide enough, otherwise centered just above it */}
-                <text
-                  x={x1 + barW / 2}
-                  y={BAR_HEIGHT / 2 + 3}
-                  textAnchor="middle"
-                  fontSize={8}
-                  fontWeight={800}
-                  fill="#FFFFFF"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {bar.value >= 0 ? `+${bar.value.toFixed(1)}` : bar.value.toFixed(1)}
-                </text>
-
-                {/* Value label in right margin */}
+                {/* Value label to the right of the bar */}
                 <AnimatedTextValue
                   value={bar.value}
-                  x={LABEL_W + CHART_W + 6}
+                  x={x1 + barW + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontWeight={700}
@@ -423,7 +410,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                 />
                 <AnimatedTextValue
                   value={rawComposite}
-                  x={LABEL_W + CHART_W + 6}
+                  x={LABEL_W + toPixel(Math.max(baseline, rawComposite)) + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontWeight={800}
@@ -469,7 +456,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                 />
                 <AnimatedTextValue
                   value={route.composite_score}
-                  x={LABEL_W + CHART_W + 6}
+                  x={LABEL_W + toPixel(Math.max(minVal, route.composite_score)) + 6}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={11}
                   fontWeight={900}
@@ -501,11 +488,11 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
       <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
         {isStabilityMode ? (
           <>
-            <strong>How to read this:</strong> This policy sensitivity waterfall chart decomposes how your current weight selections shift the route's score relative to its long-term simulation mean. Each bar shows the delta contribution of a weight deviation ($\beta_j \times (w_j - 25\%)$). Positive shifts (emerald) indicate that your current policy weights favor this route, while negative shifts (rose) show they penalize it relative to the uniform baseline.
+            <strong>How to read this:</strong> This waterfall chart shows how your current policy weights change the route's score compared to its long-term average. Each bar represents the impact of a specific policy choice. Green bars indicate that your current weights boost the route's score, while red bars indicate they lower it.
           </>
         ) : (
           <>
-            <strong>How to read this:</strong> This waterfall chart decomposes the route's raw score starting from the Edmonton network baseline (50.0). Each bar shows the dynamic SHAP contribution of a pillar ($\phi_j = w_j \times (score_j - \mu_j)$). Positive contributions (emerald) push the raw score up, while negative contributions (rose) pull it down. The <strong>FINAL</strong> score is computed by passing the raw sum through the calibration sigmoid curve, yielding the final grade quintile (A–E).
+            <strong>How to read this:</strong> This chart breaks down the route's score, starting from the city-wide average of 50.0. Each bar shows how much a specific category adds to or subtracts from the route's score based on your selected weights. Green bars increase the score, while red bars decrease it. The <strong>FINAL</strong> score is then translated into a letter grade from A to E.
           </>
         )}
       </p>
