@@ -42,14 +42,14 @@ interface ScrollytellingProps {
 }
 
 // Color map aligning with the user's Policy Risk Map design:
-const CLASS_COLORS: Record<string, string> = {
+const CLASS_COLORS: { [key: string]: string } = {
   'Bedrock Essential': '#2E4057',       // Always High Equity
   'Bedrock Resilient': '#68889E',       // Always Low Equity
   'Policy Swing Corridor': '#E85F5C',   // High Swing Routes
   'Moderate Stability': '#F4B942',      // Moderate Stability
 };
 
-const CLASS_LABELS: Record<string, string> = {
+const CLASS_LABELS: { [key: string]: string } = {
   'Bedrock Essential': 'Always High Equity',
   'Bedrock Resilient': 'Always Low Equity',
   'Policy Swing Corridor': 'High Swing Routes',
@@ -63,7 +63,7 @@ function generateNormalDistribution(mean: number, std: number) {
   const points = [];
   
   // Create 50 points from 0 to 100 for an absolute scale
-  for (let x = 0; x <= 100; x += 2) {
+  for (let x = 0; 100 >= x; x += 2) {
     const exponent = Math.exp(-Math.pow(x - mean, 2) / (2 * Math.pow(validStd, 2)));
     const y = (1 / (validStd * Math.sqrt(2 * Math.PI))) * exponent;
     points.push({ x, y });
@@ -139,7 +139,7 @@ const CustomChartTooltip = ({ active, payload }: any) => {
 };
 
 
-export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn }) => {
+export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   const containerRef = useRef(null as HTMLDivElement | null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sensitivityData, setSensitivityData] = useState([] as any[]);
