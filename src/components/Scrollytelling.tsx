@@ -32,6 +32,8 @@ import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
 import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
+import { GroceryFlowViz } from './widgets/GroceryFlowViz';
+import { Maximize2, X } from 'lucide-react';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -158,6 +160,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   
   // State for toggling route in the simulator waterfall chart
   const [activeSimulatorRouteId, setActiveSimulatorRouteId] = useState<'002' | '003'>('002');
+  
+  // State for fullscreen scatterplot
+  const [showFullscreenScatterplot, setShowFullscreenScatterplot] = useState(false);
 
   // State hooks for detailed math expanders
   const [showVulnerabilityMath, setShowVulnerabilityMath] = useState(false);
@@ -1264,10 +1269,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
-          {/* ================= SECTION 8: Route Stability & Policy Elasticity ================= */}
+          {/* ================= SECTION 8: Route Stability and Elasticity ================= */}
           <section id="section-8" className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability & Policy Elasticity</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Elasticity: What's the Perfect Mix?</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 When policy priorities change, some routes shift dramatically in grade, while others remain stable. To model this behaviour, we ran a sensitivity simulation calculating route scores across 1,000 policy weight combinations.
               </p>
@@ -1344,11 +1349,27 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-605 text-base leading-relaxed">
                 Identifying these classifications for each route helps us identify which routes should be protected and how different service changes may impact specific routes.
               </p>
+              <p className="text-slate-605 text-base leading-relaxed">
+                <strong>There is no perfect mix of policy weights but this analysis shows us which routes are performing a high equity service no matter how we weight them.</strong>
+              </p>
             </div>
 
             {/* 📊 Actual Interactive Scatter Plot (Swapped to bottom of Section 8) */}
-            <div className="w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-4">
-              <div className="text-center mb-4">
+            {showFullscreenScatterplot && (
+              <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowFullscreenScatterplot(false)} />
+            )}
+            <div className={showFullscreenScatterplot ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] h-[85vh] max-w-6xl bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl flex flex-col" : "w-full h-[550px] bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-4 relative"}>
+              
+              {/* Expand / Close Button */}
+              <button 
+                onClick={() => setShowFullscreenScatterplot(!showFullscreenScatterplot)}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors z-10"
+                title={showFullscreenScatterplot ? "Close Fullscreen" : "Expand to Fullscreen"}
+              >
+                {showFullscreenScatterplot ? <X className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              </button>
+
+              <div className="text-center mb-4 mt-2">
                 <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Policy Risk Map: Mean Score vs. Volatility</span>
                 <p className="text-xs text-slate-500 mt-1">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
               </div>
@@ -1483,12 +1504,12 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             </div>
           </section>
 
-          {/* ================= SECTION 9: Limitations of the Scorecard Model ================= */}
+          {/* ================= SECTION 9: Methodological Limitations ================= */}
           <section id="section-9" className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">9. Limitations of the Scorecard Model</h2>
-              <p className="text-slate-605 text-base leading-relaxed">
-                The Route Equity Scorecard has several methodological limitations:
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">9. What the Scorecard Misses</h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                No mathematical model perfectly captures the lived experience of transit riders. The ETS Route Equity Scorecard has several methodological limitations:
               </p>
               
               <div className="flex flex-col gap-8 mt-6">
@@ -1623,31 +1644,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     </p>
                   </div>
                   
-                  {/* Visual: Utility Discount Split Card (Upgraded to high fidelity) */}
-                  <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col sm:flex-row gap-6 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">Raw View</span>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200/65 shadow-sm flex flex-col items-center">
-                        <span className="text-sm font-black text-slate-800">2 Grocery Stores</span>
-                        <span className="text-[10px] text-slate-400 font-semibold mt-1">Equal 100% Spatial Access</span>
-                      </div>
-                    </div>
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-6 bg-slate-50 border border-slate-100 rounded-2xl">
-                      <div className="text-center mb-3">
-                        <span className="text-[10px] font-black text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Equity-Adjusted View</span>
-                      </div>
-                      <div className="space-y-2.5 bg-white p-4 rounded-xl border border-slate-200/65 shadow-sm">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-700">Discount Grocery</span>
-                          <span className="text-teal-600 font-extrabold bg-teal-50 px-2 py-0.5 rounded-full">100% Utility</span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs border-t border-slate-100 pt-2.5">
-                          <span className="font-bold text-slate-500">Luxury Specialty Grocer</span>
-                          <span className="text-rose-600 font-extrabold bg-rose-50 px-2 py-0.5 rounded-full">-80% Utility</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <GroceryFlowViz />
                 </div>
 
               </div>
