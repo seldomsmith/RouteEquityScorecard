@@ -54,10 +54,16 @@ const config: Config = {
             'background-size': '200% 200%',
             'background-position': 'right center'
           }
+        },
+        flow: {
+          '0%': { strokeDashoffset: '100' },
+          '100%': { strokeDashoffset: '0' },
         }
       },
       animation: {
         'gradient-x': 'gradient-x 12s ease infinite',
+        'flow': 'flow 2s linear infinite',
+        'flow-slow': 'flow 10s linear infinite',
       }
     },
   },
