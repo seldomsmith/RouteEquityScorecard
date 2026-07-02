@@ -1265,6 +1265,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                     }}
                   />
                 </div>
+                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 rounded-b-3xl">
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the policy weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
+                  </p>
+                </div>
               </div>
             </div>
           </section>
