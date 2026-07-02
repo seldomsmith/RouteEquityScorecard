@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Store, ShoppingCart, User } from 'lucide-react';
 
 export const GroceryFlowViz = () => {
   const [isEquityAdjusted, setIsEquityAdjusted] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsEquityAdjusted(prev => !prev);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col gap-6 mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
@@ -116,7 +123,7 @@ export const GroceryFlowViz = () => {
          <p className="text-xs text-slate-500 italic transition-opacity duration-300">
            {isEquityAdjusted 
              ? "The luxury store remains physically accessible, but its high prices form an economic barrier, severely reducing its practical utility to low-income riders."
-             : "In a raw spatial analysis, both stores are treated as providing equal destination value to the rider simply because they are physically reachable."}
+             : "In our spatial analysis of opportunity destinations, both grocery stores are treated as providing equal value to the rider simply because they are physically reachable but if one grocery store is for luxury or higher-end products, they may not provide the same value to a member of an equity seeking community."}
          </p>
       </div>
 
