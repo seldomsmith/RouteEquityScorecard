@@ -298,7 +298,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       center: [-113.4938, 53.5461],
       zoom: 11,
       projection: { name: 'mercator' },
-      cooperativeGestures: true
+      cooperativeGestures: false
     });
 
     map.current.on('load', () => {
