@@ -1,4 +1,4 @@
-# Next.js
+# Next.js & Build Artifacts
 .next
 out
 build
@@ -10,20 +10,20 @@ node_modules
 npm-debug.log
 npm-error.log
 yarn-error.log
-package-lock.json
 
 # Version control
 .git
 .gitignore
 .github
 
-# IDE
+# IDE & OS
 .vscode
 .idea
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
 
 # Environment
 .env
@@ -34,14 +34,9 @@ package-lock.json
 coverage
 .jest
 
-# OS
-Thumbs.db
-.DS_Store
-
-# Data files (keep only if needed in production)
+# Data files (Allowed package.json, but blocking large data)
 *.csv
 *.geojson
-*.json
 data/
 
 # Python
@@ -53,12 +48,7 @@ __pycache__
 venv
 env
 
-# Build artifacts
-.next
-out
-dist
-
-# Documentation
+# Documentation & Scripts
 docs/
 README*.md
 DEPLOYMENT_GUIDE.md
@@ -67,8 +57,6 @@ README_MIGRATION.md
 lessons.md
 todo.md
 tasks/
-
-# Scripts (if not needed in production)
 scripts/
 analysis/
 analyses/
