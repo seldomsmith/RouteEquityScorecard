@@ -45,18 +45,17 @@ const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
   const sign = prefix === '+' && displayVal >= 0 ? '+' : '';
 
   return (
-    <motion.text
+    <text
       x={x}
-      animate={{ x }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       y={y}
       fontSize={fontSize}
       fontFamily="ui-monospace, monospace"
       fontWeight={fontWeight}
       fill={fill}
+      textAnchor="start"
     >
       {sign}{displayVal.toFixed(precision)}
-    </motion.text>
+    </text>
   );
 };
 
@@ -372,7 +371,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                 {/* Value label to the right of the bar */}
                 <AnimatedTextValue
                   value={bar.value}
-                  x={x1 + barW + 6}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontWeight={700}
@@ -410,7 +409,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                 />
                 <AnimatedTextValue
                   value={rawComposite}
-                  x={LABEL_W + toPixel(Math.max(baseline, rawComposite)) + 6}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
                   fontWeight={800}
@@ -456,7 +455,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                 />
                 <AnimatedTextValue
                   value={route.composite_score}
-                  x={LABEL_W + toPixel(Math.max(minVal, route.composite_score)) + 6}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={11}
                   fontWeight={900}

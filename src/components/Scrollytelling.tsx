@@ -1729,6 +1729,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
         onClose={() => setShowDataExplorer(false)} 
         allRoutesData={allRoutesData}
         weights={weights} 
+        sensitivityData={sensitivityData}
       />
     </div>
   );
