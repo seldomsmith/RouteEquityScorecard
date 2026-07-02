@@ -197,7 +197,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
         if (lines.length === 0) return;
         const headers = lines[0].split(',').map((h) => h.trim());
         const list: any[] = [];
-        for (let i = 1; i < lines.length; i++) {
+        for (let i = 1; lines.length > i; i++) {
           const line = lines[i].trim();
           if (!line) continue;
           const values = line.split(',').map((v) => v.trim());
