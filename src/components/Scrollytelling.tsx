@@ -33,6 +33,7 @@ import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
 import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
+import { DataExplorerModal } from './widgets/DataExplorerModal';
 import { Maximize2, X } from 'lucide-react';
 
 interface ScrollytellingProps {
@@ -170,6 +171,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   const [showOpportunityMath, setShowOpportunityMath] = useState(false);
   const [showOffPeakMath, setShowOffPeakMath] = useState(false);
   const [showMonopolyMath, setShowMonopolyMath] = useState(false);
+  const [showDataExplorer, setShowDataExplorer] = useState(false);
 
   // Track container scroll progress for the top indicator
   useEffect(() => {
@@ -1275,6 +1277,14 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-605 text-base leading-relaxed mt-4">
                 <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the policy weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
               </p>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => setShowDataExplorer(true)}
+                  className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg shadow-md transition-colors flex items-center gap-2"
+                >
+                  <Maximize2 className="w-4 h-4" /> View Full Network Directory
+                </button>
+              </div>
             </div>
           </section>
 
@@ -1700,6 +1710,13 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
           </section>
         </div>
       </main>
+
+      <DataExplorerModal 
+        isOpen={showDataExplorer} 
+        onClose={() => setShowDataExplorer(false)} 
+        allRoutesData={allRoutesData}
+        weights={weights} 
+      />
     </div>
   );
 };
