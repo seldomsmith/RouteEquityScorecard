@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 
 interface RouteWaterfallProps {
   opacity?: number;
+  interactive?: boolean;
 }
 
 interface Point {
@@ -35,7 +36,7 @@ interface TransitLine {
   }[];
 }
 
-export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }) => {
+export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, interactive = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -526,7 +527,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35 }
       className="absolute inset-0 w-full h-full"
       style={{
         opacity,
-        pointerEvents: 'auto', // Enabled pointer events to capture cursors
+        pointerEvents: interactive ? 'auto' : 'none',
       }}
     />
   );
