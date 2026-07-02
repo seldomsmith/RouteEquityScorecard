@@ -1387,11 +1387,11 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4 text-xs font-bold border-b border-slate-100 pb-3 flex-wrap">
                 <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 shadow-sm">
                   <span className="w-3 h-3 rounded-full bg-[#2563EB] inline-block border border-[#1D4ED8]" />
-                  <span className="text-blue-950">Route 002: Bedrock Essential</span>
+                  <span className="text-blue-950">Route 002</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 shadow-sm">
                   <span className="w-3 h-3 rounded-full bg-[#EA580C] inline-block border border-[#C2410C]" />
-                  <span className="text-orange-950">Route 003: Policy Swing Corridor</span>
+                  <span className="text-orange-950">Route 003</span>
                 </div>
               </div>
 
