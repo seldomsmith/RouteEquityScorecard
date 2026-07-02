@@ -3,7 +3,6 @@
 import React from 'react';
 import { RouteWaterfall } from './RouteWaterfall';
 import { BorderGlow } from './BorderGlow';
-import { InteractiveGlowText } from './widgets/InteractiveGlowText';
 
 interface LandingPageProps {
   onTellMeHow: () => void;
@@ -72,8 +71,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-4 w-full justify-center">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none text-center w-full">
-                <InteractiveGlowText text="ETS Route Equity&#10;Scorecard" />
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full bg-gradient-to-br from-[#140069] via-[#1e3a8a] to-[#3b82f6] text-transparent bg-clip-text pb-2">
+                ETS Route Equity<br />Scorecard
               </h1>
             </header>
 
@@ -82,13 +81,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
                 onClick={onTellMeHow}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-blue-900 font-bold text-lg hover:bg-slate-50 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95"
               >
-                Read Methodology
+                Explain this to me!
               </button>
               <button
                 onClick={onJumpIn}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-950 text-white font-bold text-lg hover:bg-blue-900 transition-all duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-95"
               >
-                View Scorecard
+                Let's jump in!
               </button>
             </div>
           </div>
