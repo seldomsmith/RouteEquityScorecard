@@ -147,6 +147,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
   const [route2Data, setRoute2Data] = useState<any>(null);
   const [route3Data, setRoute3Data] = useState<any>(null);
   const [route727Data, setRoute727Data] = useState<any>(null);
+  const [allRoutesData, setAllRoutesData] = useState<any[]>([]);
   const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
 
@@ -246,6 +247,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
         setRoute2Data(r2);
         setRoute3Data(r3);
         setRoute727Data(r727);
+        setAllRoutesData(data.routes);
       })
       .catch((err) => console.error("❌ Explainer Map failed to load golden route records:", err));
   }, []);
@@ -397,10 +399,10 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">1. The ETS Route Equity Score - Explained</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                Transit services are not experienced equally. The Route Equity Scorecard measures how effectively each route serves riders, specifically those in equity-seeking communities.
+                Transit services are not experienced equally. The Route Equity Scorecard measures how effectively each route serves riders, specifically those in equity-seeking communities. When developing a transit network that meets the needs of Edmonton residents, policymakers must identify which routes provide essential service to equity-seeking communities. This scorecard provides the data to inform those decisions.
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
-                This analysis contrasts two routes:
+                For this explanation, we will use two routes to show our methodology:
               </p>
               
               <div className="flex flex-col md:flex-row gap-6 py-4 md:-mx-12 lg:-mx-24 justify-between items-stretch">
@@ -499,6 +501,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   route2Data={route2Data} 
                   route3Data={route3Data} 
                   daGeoJson={daGeoJson} 
+                  allRoutesData={allRoutesData} 
                   mode="vulnerability" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
@@ -615,6 +618,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   route2Data={route2Data} 
                   route3Data={route3Data} 
                   daGeoJson={daGeoJson} 
+                  allRoutesData={allRoutesData} 
                   mode="opportunity" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
@@ -958,6 +962,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   route2Data={route2Data} 
                   route3Data={route3Data} 
                   daGeoJson={daGeoJson} 
+                  allRoutesData={allRoutesData} 
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
@@ -1135,15 +1140,15 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               <p className="text-slate-600 text-base leading-relaxed">
                 When policy priorities shift, these scores adjust accordingly. For example, if a policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
               </p>
-              <ul className="flex flex-col gap-2.5 text-slate-600 text-base">
+              <ul className="text-sm text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
                     <strong className="text-blue-950 font-bold">Route 002 decreases from 68.1 to 63.8</strong>: Although its demographic vulnerability weight is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
                     <strong className="text-blue-950 font-bold">Route 003 increases from 18.6 to 24.4</strong>: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
                   </span>
@@ -1220,7 +1225,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               {/* Live simulated results visual bar chart */}
               <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner min-h-[400px]">
                 <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Simulated Result</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Policy Weight Equity Scoring</span>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setActiveSimulatorRouteId('002')}
@@ -1375,7 +1380,7 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
 
               <div className="text-center mb-4 mt-2">
                 <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Policy Risk Map: Mean Score vs. Volatility</span>
-                <p className="text-xs text-slate-500 mt-1">Route 002 & Route 003 highlighted relative to all 170 network routes</p>
+                <p className="text-xs text-slate-500 mt-1">Route 002 and Route 003 highlighted relative to all 170 network routes. Hover over each route for more detail.</p>
               </div>
 
               {/* Legend placed clean at the top */}
@@ -1528,18 +1533,19 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
                   
                   {/* Visual: Macro vs. Micro Split-View (Upgraded to high fidelity match) */}
                   <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                    {/* Text Headers Side by Side */}
+                    <div className="flex justify-between items-center w-full px-8 pt-4 pb-2">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Zone Average</span>
+                        <span className="text-[10px] text-slate-500">(15% Vulnerable)</span>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-slate-300" />
+                      <div className="flex flex-col text-right">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Granular Breakdown</span>
+                        <span className="text-[10px] text-slate-500">(True Dissemination)</span>
+                      </div>
+                    </div>
                     <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl text-center relative">
-                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-4">🗺️ Macro View</span>
-                      <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide">Zone Average</h4>
-                      
-                      {/* High-Fidelity SVG Circular Ring Indicator */}
-                      <div className="relative w-36 h-36 mt-4 flex items-center justify-center">
-                        <svg className="w-full h-full transform -rotate-90">
-                          <circle cx="72" cy="72" r="54" stroke="#E2E8F0" strokeWidth="10" fill="transparent" />
-                          <circle cx="72" cy="72" r="54" stroke="#0D9488" strokeWidth="10" fill="transparent" strokeDasharray="339.3" strokeDashoffset="67.8" strokeLinecap="round" />
-                        </svg>
-                        <div className="absolute flex flex-col items-center justify-center">
-                          <span className="text-2xl font-black text-slate-800 leading-none">80.0</span>
                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Score</span>
                         </div>
                       </div>

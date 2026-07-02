@@ -190,8 +190,8 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
   const LABEL_W = 80;
   const VALUE_W = 45;
   const rightPadding = 12;
-  // Dynamic CHART_W guarantees no horizontal scrollbars on shrink
-  const CHART_W = Math.max(100, width - LABEL_W - VALUE_W - rightPadding - 8);
+  // Dynamic CHART_W guarantees no horizontal scrollbars on shrink, leaving room for VALUE_W + padding
+  const CHART_W = Math.max(100, width - LABEL_W - VALUE_W - rightPadding - 24);
 
   const toPixel = (val: number) => ((val - minVal) / range) * CHART_W;
 

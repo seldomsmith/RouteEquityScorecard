@@ -10,6 +10,7 @@ interface InteractiveToggleMapProps {
   route2Data: any;
   route3Data: any;
   daGeoJson: any;
+  allRoutesData?: any[];
   mode: 'vulnerability' | 'opportunity' | 'monopoly';
 }
 
@@ -38,6 +39,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   route2Data,
   route3Data,
   daGeoJson,
+  allRoutesData,
   mode,
 }) => {
   const [activeRouteId, setActiveRouteId] = useState<'002' | '003'>('002');
@@ -273,53 +275,19 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
     } 
     else if (mode === 'monopoly') {
       // Draw actual surrounding transit routes that intersect or overlap
-      const altLines: any[] = [];
+      let altLines: any[] = [];
       
-      if (activeRouteId === '003') {
-        // Route 003 runs central (Westmount/Stadium). High overlaps: Route 008, 009, 051
-        altLines.push({
-          type: 'Feature',
-          properties: { name: 'Route 008' },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [-113.555, 53.548], [-113.535, 53.548], [-113.515, 53.548], [-113.495, 53.555]
-            ]
-          }
-        });
-        altLines.push({
-          type: 'Feature',
-          properties: { name: 'Route 009' },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [-113.535, 53.565], [-113.525, 53.548], [-113.525, 53.525]
-            ]
-          }
-        });
-        altLines.push({
-          type: 'Feature',
-          properties: { name: 'Capital LRT Line' },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [-113.500, 53.542], [-113.488, 53.555], [-113.475, 53.568]
-            ]
-          }
-        });
-      } else {
-        // Route 002 runs on the east outskirts (Capilano/Highlands). Very low alternatives.
-        // Draw one distant highway line to highlight isolated monopoly
-        altLines.push({
-          type: 'Feature',
-          properties: { name: 'Route 510 (Express)' },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [-113.465, 53.535], [-113.415, 53.535]
-            ]
-          }
-        });
+      if (allRoutesData && allRoutesData.length > 0) {
+        altLines = allRoutesData
+          .filter(r => r.route_id !== activeRouteId && r.coords && r.coords.length > 0)
+          .map(r => ({
+            type: 'Feature',
+            properties: { name: r.short_name || r.name || r.route_id },
+            geometry: {
+              type: 'LineString',
+              coordinates: r.coords.map((c: number[]) => [c[1], c[0]])
+            }
+          }));
       }
 
       map.addSource('monopoly-alternatives-source', {
@@ -333,10 +301,10 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         source: 'monopoly-alternatives-source',
         paint: {
           'line-color': '#FFFFFF',
-          'line-width': 4,
+          'line-width': 3,
           'line-opacity': 0.8,
         },
-      });
+      }, 'active-route-casing');
 
       map.addLayer({
         id: 'monopoly-alternative-lines',
@@ -344,10 +312,35 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         source: 'monopoly-alternatives-source',
         paint: {
           'line-color': '#94A3B8', // Silver/Grey
-          'line-width': 2,
-          'line-opacity': 0.65,
+          'line-width': 1.5,
+          'line-opacity': 0.4,
         },
-      });
+      }, 'active-route-casing');
+
+      // Add labels for the routes
+      map.addLayer({
+        id: 'monopoly-alternative-labels',
+        type: 'symbol',
+        source: 'monopoly-alternatives-source',
+        layout: {
+          'symbol-placement': 'line',
+          'text-field': ['get', 'name'],
+          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-size': 10,
+          'text-offset': [0, 1],
+          'text-max-angle': 30,
+          'symbol-spacing': 250,
+        },
+        paint: {
+          'text-color': '#64748b',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1.5,
+        }
+      }, 'active-route-casing');
+      
+      // We also highlight the Dissemination Areas (DAs) based on Monopoly
+      const servedDaIds = new Set(activeRouteData.da_metadata.map((d: any) => String(d.id)));
+      const daMap = new Map(activeRouteData.da_metadata.map((d: any) => [String(d.id), d]));
     }
 
     // Force redraw layout
