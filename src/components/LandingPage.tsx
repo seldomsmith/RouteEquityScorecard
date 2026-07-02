@@ -71,7 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-4 w-full justify-center">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full bg-gradient-to-br from-[#140069] via-[#1e3a8a] to-[#3b82f6] text-transparent bg-clip-text pb-2">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full bg-gradient-to-r from-[#140069] via-[#eab308] to-[#140069] bg-[length:200%_auto] animate-gradient-x text-transparent bg-clip-text pb-2">
                 ETS Route Equity<br />Scorecard
               </h1>
             </header>
@@ -93,36 +93,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
           </div>
         </div>
       </BorderGlow>
-
-      {/* Screen Overlay for Text Window Effect */}
-      <div aria-hidden="true" className="absolute inset-0 z-50 pointer-events-none" style={{ mixBlendMode: 'screen' }}>
-        <div className="absolute inset-0 bg-black">
-          <RouteWaterfall opacity={1.0} interactive={false} showStations={false} />
-          
-          {/* Mask layer: exactly replicates the Layout to position the title */}
-          <div className="absolute inset-0 bg-black flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24" style={{ mixBlendMode: 'multiply' }}>
-            <div className="w-full max-w-5xl mx-auto border border-transparent">
-              <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
-                <div className="relative z-10 flex flex-col items-center w-full gap-8">
-                  <header className="flex flex-col gap-4 w-full justify-center">
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full text-white pb-2">
-                      ETS Route Equity<br />Scorecard
-                    </h1>
-                  </header>
-                  <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto invisible">
-                    <button className="w-full sm:w-auto px-8 py-4 font-bold text-lg">
-                      Explain this to me!
-                    </button>
-                    <button className="w-full sm:w-auto px-8 py-4 font-bold text-lg">
-                      Let's jump in!
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
   );
 };

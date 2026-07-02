@@ -265,8 +265,24 @@ export const CommandCentre = () => {
         {/* Analytical Panels Row */}
         <div className="glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative" style={{ minHeight: '400px' }}>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
-              <div className="flex-1 min-h-0">
+              <div className="flex justify-between items-center mb-1 border-b border-slate-100 pb-1.5">
+                <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest">Score Breakdown</span>
+                <div className="flex gap-1.5">
+                  <button 
+                    onClick={() => useRouteStore.getState().setSelectedRoute('002')}
+                    className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase transition-all duration-200 border ${selectedRoute === '002' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                  >
+                    Rt 002
+                  </button>
+                  <button 
+                    onClick={() => useRouteStore.getState().setSelectedRoute('003')}
+                    className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase transition-all duration-200 border ${selectedRoute === '003' ? 'bg-amber-500 border-amber-500 text-white shadow-sm shadow-amber-500/20' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                  >
+                    Rt 003
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 min-h-0 mt-1">
                 <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
               </div>
           </div>
