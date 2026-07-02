@@ -97,7 +97,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
       {/* Screen Overlay for Text Window Effect */}
       <div aria-hidden="true" className="absolute inset-0 z-50 pointer-events-none" style={{ mixBlendMode: 'screen' }}>
         <div className="absolute inset-0 bg-black">
-          <RouteWaterfall opacity={1.0} interactive={false} />
+          <RouteWaterfall opacity={1.0} interactive={false} showStations={false} />
           
           {/* Mask layer: exactly replicates the Layout to position the title */}
           <div className="absolute inset-0 bg-black flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24" style={{ mixBlendMode: 'multiply' }}>
