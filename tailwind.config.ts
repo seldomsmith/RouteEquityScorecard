@@ -57,7 +57,7 @@ const config: Config = {
         }
       },
       animation: {
-        'gradient-x': 'gradient-x 4s ease infinite',
+        'gradient-x': 'gradient-x 12s ease infinite',
       }
     },
   },

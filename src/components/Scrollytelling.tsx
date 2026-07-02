@@ -31,6 +31,7 @@ import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
 import { StaggeredMenu } from './widgets/StaggeredMenu';
+import { ShapWaterfall } from './charts/ShapWaterfall';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -154,6 +155,9 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
     monopoly: 25,
     opportunity: 25,
   });
+  
+  // State for toggling route in the simulator waterfall chart
+  const [activeSimulatorRouteId, setActiveSimulatorRouteId] = useState<'002' | '003'>('002');
 
   // State hooks for detailed math expanders
   const [showVulnerabilityMath, setShowVulnerabilityMath] = useState(false);
@@ -1209,39 +1213,52 @@ export const Scrollytelling: React.FC<ScrollytellingProps> = ({ onBack, onJumpIn
               </div>
 
               {/* Live simulated results visual bar chart */}
-              <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Live Simulated Result</span>
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner min-h-[400px]">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Simulated Result</span>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setActiveSimulatorRouteId('002')}
+                      className={`px-3 py-1 rounded-md text-[10px] font-black uppercase transition-all duration-200 border ${activeSimulatorRouteId === '002' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                    >
+                      Route 002
+                    </button>
+                    <button 
+                      onClick={() => setActiveSimulatorRouteId('003')}
+                      className={`px-3 py-1 rounded-md text-[10px] font-black uppercase transition-all duration-200 border ${activeSimulatorRouteId === '003' ? 'bg-amber-500 border-amber-500 text-white shadow-sm shadow-amber-500/20' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                    >
+                      Route 003
+                    </button>
+                  </div>
+                </div>
                 
-                <div className="h-44 w-full flex items-end justify-center gap-12 relative px-8 pb-6 pt-4 bg-slate-50/50 rounded-xl border border-slate-100">
-                  {/* Grid Lines & Y Axis Labels */}
-                  <div className="absolute inset-x-0 bottom-6 top-4 flex flex-col justify-between pointer-events-none px-6">
-                    {[100, 75, 50, 25, 0].map((val) => (
-                      <div key={val} className="w-full flex items-center relative">
-                        <span className="absolute -left-7 font-mono text-[9px] text-slate-400 font-bold w-6 text-right">{val}</span>
-                        <div className="w-full border-t border-slate-200/60 border-dashed" />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Route 002 Bar */}
-                  <div className="flex flex-col items-center gap-1.5 h-full justify-end relative z-10 w-20">
-                    <span className="text-xs font-black text-blue-600 font-mono">{liveScores.route2.toFixed(1)}</span>
-                    <div 
-                      className="w-12 rounded-t-lg bg-gradient-to-t from-blue-600 to-blue-400 shadow-md transition-all duration-300 ease-out hover:brightness-105"
-                      style={{ height: `${Math.max(4, (liveScores.route2 / 100) * 110)}px` }}
-                    />
-                    <span className="text-[10px] font-bold text-blue-900 absolute -bottom-5">Route 002</span>
-                  </div>
-
-                  {/* Route 003 Bar */}
-                  <div className="flex flex-col items-center gap-1.5 h-full justify-end relative z-10 w-20">
-                    <span className="text-xs font-black text-amber-600 font-mono">{liveScores.route3.toFixed(1)}</span>
-                    <div 
-                      className="w-12 rounded-t-lg bg-gradient-to-t from-amber-500 to-amber-300 shadow-md transition-all duration-300 ease-out hover:brightness-105"
-                      style={{ height: `${Math.max(4, (liveScores.route3 / 100) * 110)}px` }}
-                    />
-                    <span className="text-[10px] font-bold text-amber-800 absolute -bottom-5">Route 003</span>
-                  </div>
+                <div className="flex-1 w-full relative pt-2">
+                  <ShapWaterfall 
+                    route={{
+                      route_id: activeSimulatorRouteId,
+                      short_name: activeSimulatorRouteId,
+                      name: activeSimulatorRouteId === '002' ? 'Highlands - Downtown' : 'Westmount - Stadium',
+                      grade: (activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3) > 80 ? 'A' : (activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3) > 60 ? 'B' : (activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3) > 40 ? 'C' : (activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3) > 20 ? 'D' : 'E',
+                      composite_score: activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3,
+                      total_pop_served: 0, category: 'bus', trip_count: 0, route_length_km: 0, coords: [], da_data: [],
+                      pillar_1: activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability,
+                      pillar_2: activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak,
+                      pillar_3: activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly,
+                      pillar_4: activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity,
+                      shap: [
+                        { pillar: 'vuln', label: 'Vulnerability', value: (activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100)), color: ((activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.vulnerability/100 },
+                        { pillar: 'temp', label: 'Off Peak', value: (activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak) * (weights.offPeak / 100) - (50 * (weights.offPeak/100)), color: ((activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak) * (weights.offPeak / 100) - (50 * (weights.offPeak/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.offPeak/100 },
+                        { pillar: 'mono', label: 'Monopoly', value: (activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly) * (weights.monopoly / 100) - (50 * (weights.monopoly/100)), color: ((activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly) * (weights.monopoly / 100) - (50 * (weights.monopoly/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.monopoly/100 },
+                        { pillar: 'opp', label: 'Opportunity', value: (activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100)), color: ((activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.opportunity/100 }
+                      ]
+                    } as any}
+                    networkStats={{
+                      sigmoidMidpoint: 50,
+                      sigmoidSteepness: 0.1,
+                      quintileCuts: [20, 40, 60, 80],
+                      pillarMeans: { pillar_1_vulnerability: 50, pillar_2_temporal: 50, pillar_3_monopoly: 50, pillar_4_opportunity: 50 }
+                    }}
+                  />
                 </div>
               </div>
             </div>
