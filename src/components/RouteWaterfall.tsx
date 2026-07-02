@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 interface RouteWaterfallProps {
   opacity?: number;
   interactive?: boolean;
+  showStations?: boolean;
 }
 
 interface Point {
@@ -36,7 +37,7 @@ interface TransitLine {
   }[];
 }
 
-export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, interactive = true }) => {
+export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, interactive = true, showStations = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -453,60 +454,64 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
       });
 
       // Draw stations with spotlight highlights
-      lines.forEach(line => {
-        const isHovered = hoveredLineColor === line.color;
+      if (showStations) {
+        lines.forEach(line => {
+          const isHovered = hoveredLineColor === line.color;
 
-        line.stations.forEach(station => {
-          const pt = getPixelCoords(station.xPct, station.yPct, w, h);
+          line.stations.forEach(station => {
+            const pt = getPixelCoords(station.xPct, station.yPct, w, h);
+            ctx.globalAlpha = 1.0;
+
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, isHovered ? 11 : 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = line.color;
+            ctx.lineWidth = isHovered ? 5 : 4;
+            ctx.fill();
+            ctx.stroke();
+
+            if (station.glow > 0) {
+              ctx.globalAlpha = station.glow;
+              ctx.beginPath();
+              ctx.arc(pt.x, pt.y, isHovered ? 15 : 12, 0, Math.PI * 2);
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 2;
+              ctx.shadowBlur = isHovered ? 15 : 10;
+              ctx.shadowColor = line.color;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
+          });
+        });
+      }
+
+      // Draw interchange stations with basic overlay highlights
+      if (showStations) {
+        interchanges.forEach(interchange => {
+          const pt = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
           ctx.globalAlpha = 1.0;
 
           ctx.beginPath();
-          ctx.arc(pt.x, pt.y, isHovered ? 11 : 8, 0, Math.PI * 2);
+          ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = line.color;
-          ctx.lineWidth = isHovered ? 5 : 4;
+          ctx.strokeStyle = '#1f2937';
+          ctx.lineWidth = 4;
           ctx.fill();
           ctx.stroke();
 
-          if (station.glow > 0) {
-            ctx.globalAlpha = station.glow;
+          if (interchange.glow > 0) {
+            ctx.globalAlpha = interchange.glow;
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, isHovered ? 15 : 12, 0, Math.PI * 2);
-            ctx.strokeStyle = '#ffffff';
+            ctx.arc(pt.x, pt.y, 16, 0, Math.PI * 2);
+            ctx.strokeStyle = '#3b82f6';
             ctx.lineWidth = 2;
-            ctx.shadowBlur = isHovered ? 15 : 10;
-            ctx.shadowColor = line.color;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#ffffff';
             ctx.stroke();
             ctx.shadowBlur = 0;
           }
         });
-      });
-
-      // Draw interchange stations with basic overlay highlights
-      interchanges.forEach(interchange => {
-        const pt = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
-        ctx.globalAlpha = 1.0;
-
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#1f2937';
-        ctx.lineWidth = 4;
-        ctx.fill();
-        ctx.stroke();
-
-        if (interchange.glow > 0) {
-          ctx.globalAlpha = interchange.glow;
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 16, 0, Math.PI * 2);
-          ctx.strokeStyle = '#3b82f6';
-          ctx.lineWidth = 2;
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = '#ffffff';
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        }
-      });
+      }
 
       animationFrameId = requestAnimationFrame(animate);
     };
