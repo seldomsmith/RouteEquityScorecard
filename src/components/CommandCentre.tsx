@@ -250,13 +250,7 @@ export const CommandCentre = () => {
       <div className="flex-1 h-full overflow-y-auto custom-scrollbar">
         {/* Fixed-height top section */}
         <div className="relative" style={{ height: '65vh', minHeight: '500px' }}>
-          {/* Engine Status */}
-          <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
-            <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
-            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
-              {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
-            </span>
-          </div>
+
 
           {/* Map */}
           <div className="w-full h-full">
@@ -296,8 +290,7 @@ export const CommandCentre = () => {
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
             <div className="mb-2">
-              <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">System-Wide Health Diagnostics</h2>
-              <p className="text-xs text-slate-500">Aggregate performance distribution across the network.</p>
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Network Wide Metrics</h2>
             </div>
             <NetworkDistribution data={filteredRoutes} />
           </div>

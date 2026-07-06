@@ -350,5 +350,17 @@
 - [x] Eliminate Section 2 duplication: remove static bulleted list and introduce interactive cards directly <!-- id: 125, priority: high -->
 - [x] Verify compilation and push working codes to git <!-- id: 122, priority: critical -->
 
+## Phase 24: Scorecard Layout, Content, and Directory Score Fixes
+- [x] Swap monopoly description text in `Scrollytelling.tsx` <!-- id: 126, priority: medium -->
+- [x] Standardize RouteTicket heights in `RouteTicket.tsx` <!-- id: 127, priority: high -->
+- [x] Make stability classification bubbles 2x bigger in `Scrollytelling.tsx` <!-- id: 128, priority: medium -->
+- [x] Remove Engine Status overlay in `CommandCentre.tsx` <!-- id: 129, priority: high -->
+- [x] Rename "System-Wide Health Diagnostics" in `CommandCentre.tsx` and remove subheading <!-- id: 130, priority: medium -->
+- [x] Correct route count (235 -> 170) in `NetworkDistribution.tsx` <!-- id: 131, priority: medium -->
+- [x] Rephrase sigmoid score distribution explanation in `NetworkDistribution.tsx` <!-- id: 132, priority: medium -->
+- [x] Fix missing live scores and baseline grade comparisons in `DataExplorerModal.tsx` and `useReactiveScoring.ts` <!-- id: 133, priority: critical -->
+- [x] Verify compilation (manually audited source files) <!-- id: 134, priority: critical -->
+
+
 
 

@@ -148,3 +148,14 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Relocated the Monte Carlo Plinko physics simulation widget to its logical home in Section 8 (Stability Focus).
   - Designed and developed a brand-new Section 9 containing a detailed breakdown of the four core scorecard limitations (Ecological Fallacy, Static Schedules, Physical Barriers, and Destination Quality vs. Quantity).
   - Implemented custom CSS-styled diagrams for each of the four limitations (Macro vs. Micro demographic split grids, Scheduled vs. Real-World timelines, Circular buffer vs. jagged walking boundary diagrams, and Raw vs. Equity-Adjusted utility cards).
+- **Scorecard Layout, Content, and Directory Score Fixes (Phase 24)**:
+  - Swapped the monopoly description text under the monopoly map in `Scrollytelling.tsx` to the revised explanation focusing on alternative transit routes.
+  - Standardized the height of `RouteTicket` cards using `h-[220px] sm:h-[200px] md:h-[180px]` to keep all cards uniform across the scrollyteller.
+  - Enlarged the stability classification bubbles (Bedrock Essentials, Policy Swing, Moderate Stability, Bedrock Resilient) in `Scrollytelling.tsx` to `text-xs md:text-sm` with wider padding and `w-2.5 h-2.5` bullet dots.
+  - Removed the `ENGINE SECURE` status indicator overlay in `CommandCentre.tsx` to eliminate overlap with the Map's red deselect button.
+  - Renamed "System-Wide Health Diagnostics" to "Network Wide Metrics" and removed its subheading in `CommandCentre.tsx`.
+  - Corrected the route count in the distribution table description inside `NetworkDistribution.tsx` from 235 to 170.
+  - Rephrased the sigmoid S-Curve score distribution description inside `NetworkDistribution.tsx` to be accessible and non-technical.
+  - Fixed the missing live scores in the Data Directory by mapping both `pillar_N` and `pillar_N_XXXX` properties in `DataExplorerModal.tsx`.
+  - Fixed the baseline grade comparison and CSV export in the directory table by storing the baseline grade in a new `baseline_grade` field on each scored route object inside `useReactiveScoring.ts`.
+
