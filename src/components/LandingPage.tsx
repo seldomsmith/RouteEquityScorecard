@@ -51,18 +51,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
       </div>
       */}
 
-      {/* Main Center Title Card wrapped in BorderGlow */}
-      <BorderGlow
-        animated
-        edgeSensitivity={40}
-        glowRadius={40}
-        glowIntensity={0.8}
-        coneSpread={22}
-        borderRadius={56} // Matches desktop md:rounded-[3.5rem] (56px)
-        backgroundColor="#2563eb" // Original bg-blue-600 color
-        glowColor="220 70 50" // Slate blue/indigo HSL glow
-        colors={['#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a']} // Deep blues and indigos monochromatic theme
-        className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300"
+      <div 
+        className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300 bg-[#2563eb] border border-white/10"
       >
         <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
           {/* Glow Spheres */}
@@ -71,12 +61,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-4 w-full justify-center">
-              <h1 
-                className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full pb-2 text-[#eff6ff]"
-                style={{ WebkitTextStroke: '1.5px #eff6ff' }}
+              <BorderGlow
+                animated={false}
+                edgeSensitivity={30}
+                glowRadius={30}
+                glowIntensity={1.0}
+                coneSpread={25}
+                borderRadius={24}
+                backgroundColor="transparent"
+                glowColor="220 70 50"
+                colors={['#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a']}
+                className="mx-auto"
               >
-                ETS Route Equity<br />Scorecard
-              </h1>
+                <h1 
+                  className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full pb-2 text-[#eff6ff] px-8 py-6 cursor-default"
+                  style={{ WebkitTextStroke: '1.5px #eff6ff' }}
+                >
+                  ETS Route Equity<br />Scorecard
+                </h1>
+              </BorderGlow>
             </header>
 
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-6 w-full sm:w-auto">
@@ -95,7 +98,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
             </div>
           </div>
         </div>
-      </BorderGlow>
+      </div>
     </main>
   );
 };
