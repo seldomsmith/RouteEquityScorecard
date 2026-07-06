@@ -1547,22 +1547,9 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   
                   {/* Visual: Macro vs. Micro Split-View (Upgraded to high fidelity match) */}
                   <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 justify-center items-stretch mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-                    {/* Text Headers Side by Side */}
-                    <div className="flex justify-between items-center w-full px-8 pt-4 pb-2">
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Zone Average</span>
-                        <span className="text-[10px] text-slate-500">(15% Vulnerable)</span>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-slate-300" />
-                      <div className="flex flex-col text-right">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Granular Breakdown</span>
-                        <span className="text-[10px] text-slate-500">(True Dissemination)</span>
-                      </div>
-                    </div>
                     <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl text-center relative">
                       <div className="text-center mb-4">
-                        <span className="text-[10px] font-black text-slate-450 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">🗺️ Macro View</span>
-                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide mt-3">Zone Average</h4>
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide">Zone Average</h4>
                       </div>
                       
                       {/* High-Fidelity SVG Circular Ring Indicator */}
@@ -1584,8 +1571,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
                     <div className="w-full md:w-1/2 flex flex-col justify-center p-6 bg-slate-50/50 border border-slate-100 rounded-2xl relative">
                       <div className="text-center mb-4">
-                        <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">🎯 Micro View</span>
-                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide mt-3">Granular Breakdown</h4>
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide">Granular Breakdown</h4>
                       </div>
                       
                       {/* High-Fidelity Progress Bars */}
