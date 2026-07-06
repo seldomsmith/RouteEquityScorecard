@@ -14,11 +14,15 @@ interface SimulationResult {
   r3Score: number;
 }
 
-interface LandedDot {
+interface Dot {
   id: number;
+  route: 2 | 3;
   x: number;
   y: number;
+  targetX: number;
+  targetY: number;
   score: number;
+  landed: boolean;
 }
 
 export const MonteCarloPlinko: React.FC = () => {
@@ -32,9 +36,7 @@ export const MonteCarloPlinko: React.FC = () => {
   });
 
   const [simResults, setSimResults] = useState<SimulationResult[]>([]);
-  const [activeDots, setActiveDots] = useState<{ id: number; route: 2 | 3; x: number; y: number; targetX: number; targetY: number; opacity: number; score: number }[]>([]);
-  const [landedDots2, setLandedDots2] = useState<LandedDot[]>([]);
-  const [landedDots3, setLandedDots3] = useState<LandedDot[]>([]);
+  const [dots, setDots] = useState<Dot[]>([]);
 
   const animFrameId = useRef<number | null>(null);
   const simInterval = useRef<NodeJS.Timeout | null>(null);
@@ -52,7 +54,6 @@ export const MonteCarloPlinko: React.FC = () => {
   const graphWidth = 260;
   const startOffset = 40;
   const bottomY = 180;
-  const maxCurveHeight = 120;
 
   const mapX = (score: number) => startOffset + (score / 100) * graphWidth;
 
@@ -71,9 +72,7 @@ export const MonteCarloPlinko: React.FC = () => {
     setIsSimulating(false);
     setProgress(0);
     setSimResults([]);
-    setActiveDots([]);
-    setLandedDots2([]);
-    setLandedDots3([]);
+    setDots([]);
     setCurrentWeights({
       vulnerability: 25,
       offPeak: 25,
@@ -124,7 +123,7 @@ export const MonteCarloPlinko: React.FC = () => {
       const dot2Id = nextDotId.current++;
       const dot3Id = nextDotId.current++;
 
-      setActiveDots(prev => [
+      setDots(prev => [
         ...prev,
         {
           id: dot2Id,
@@ -133,8 +132,8 @@ export const MonteCarloPlinko: React.FC = () => {
           y: 10,
           targetX: mapX(r2Score),
           targetY: bottomY,
-          opacity: 1,
-          score: r2Score
+          score: r2Score,
+          landed: false
         },
         {
           id: dot3Id,
@@ -143,8 +142,8 @@ export const MonteCarloPlinko: React.FC = () => {
           y: 10,
           targetX: mapX(r3Score),
           targetY: bottomY,
-          opacity: 1,
-          score: r3Score
+          score: r3Score,
+          landed: false
         }
       ]);
 
@@ -152,51 +151,63 @@ export const MonteCarloPlinko: React.FC = () => {
     }, 60);
   };
 
-  // Animation frame loop to move falling dots and land them
+  // Animation frame loop to move falling dots and land them with stacking rules
   useEffect(() => {
     const updateDots = () => {
-      setActiveDots(prev => {
-        const stillFalling: typeof prev = [];
-        
-        prev.forEach(dot => {
+      setDots(prev => {
+        // Build a map of currently landed dots to compute stacking heights on the fly
+        const landedCountMap2: { [key: number]: number } = {};
+        const landedCountMap3: { [key: number]: number } = {};
+
+        return prev.map(dot => {
+          if (dot.landed) {
+            // Keep track of stacking coordinates
+            const bin = Math.round(dot.score);
+            if (dot.route === 2) {
+              const count = landedCountMap2[bin] || 0;
+              landedCountMap2[bin] = count + 1;
+              return {
+                ...dot,
+                y: Math.max(bottomY - 3 - count * 4.5, 30) // Cap stack height to stay in container bounds
+              };
+            } else {
+              const count = landedCountMap3[bin] || 0;
+              landedCountMap3[bin] = count + 1;
+              return {
+                ...dot,
+                y: Math.max(bottomY - 3 - count * 4.5, 30)
+              };
+            }
+          }
+
           const dy = dot.targetY - dot.y;
           const dx = dot.targetX - dot.x;
           
           if (dy > 3) {
-            stillFalling.push({
+            return {
               ...dot,
               y: dot.y + dy * 0.15,
               x: dot.x + dx * 0.15
-            });
+            };
           } else {
-            // Dot has landed. Add it to the permanent stacked landed array.
-            const scoreBin = Math.round(dot.score);
-
+            // Mark as landed
+            const bin = Math.round(dot.score);
+            let count = 0;
             if (dot.route === 2) {
-              setLandedDots2(curr => {
-                const count = curr.filter(d => Math.round(d.score) === scoreBin).length;
-                return [...curr, {
-                  id: dot.id,
-                  x: dot.targetX,
-                  y: bottomY - 3 - (count * 5),
-                  score: dot.score
-                }];
-              });
+              count = landedCountMap2[bin] || 0;
+              landedCountMap2[bin] = count + 1;
             } else {
-              setLandedDots3(curr => {
-                const count = curr.filter(d => Math.round(d.score) === scoreBin).length;
-                return [...curr, {
-                  id: dot.id,
-                  x: dot.targetX,
-                  y: bottomY - 3 - (count * 5),
-                  score: dot.score
-                }];
-              });
+              count = landedCountMap3[bin] || 0;
+              landedCountMap3[bin] = count + 1;
             }
+            return {
+              ...dot,
+              landed: true,
+              x: dot.targetX,
+              y: Math.max(bottomY - 3 - count * 4.5, 30)
+            };
           }
         });
-        
-        return stillFalling;
       });
       animFrameId.current = requestAnimationFrame(updateDots);
     };
@@ -232,12 +243,16 @@ export const MonteCarloPlinko: React.FC = () => {
     if (simResults.length === 0) return '';
     const points = [];
     const validStd = std > 0 ? std : 1.5;
+    
+    // Low volatility curves (like Route 2 with std 0.51) are scaled taller to show concentration
+    const maxCurveHeightForRoute = std < 5 ? 135 : 65;
 
-    for (let s = 0; s <= 100; s += 2) {
+    // Use higher resolution sampling (0.5 steps) to capture narrow peaks perfectly
+    for (let s = 0; s <= 100; s += 0.5) {
       const x = startOffset + (s / 100) * graphWidth;
       const exponent = Math.exp(-Math.pow(s - mean, 2) / (2 * Math.pow(validStd, 2)));
       
-      const y = bottomY - exponent * maxCurveHeight * progressFraction;
+      const y = bottomY - exponent * maxCurveHeightForRoute * progressFraction;
       points.push(`${x},${y}`);
     }
 
@@ -255,13 +270,13 @@ export const MonteCarloPlinko: React.FC = () => {
           Policy Sensitivity Simulation
         </span>
         <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Weight Sweep and Score Distribution</h3>
-        <p className="text-xs text-slate-500 max-w-lg mx-auto mt-1 leading-relaxed">
+        <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
           Simulating 150 combinations of policy weights in real time. Watch how Route 002 clusters tightly while Route 003 spreads out widely.
         </p>
       </div>
 
       {/* Simulator Controls & Weight Sweep Panel */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-55 border border-slate-200 p-5 rounded-2xl mb-8 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 border border-slate-200 p-5 rounded-2xl mb-8 items-center">
         
         {/* Play/Reset buttons */}
         <div className="flex flex-col gap-3 justify-center">
@@ -375,33 +390,21 @@ export const MonteCarloPlinko: React.FC = () => {
                 </>
               )}
 
-              {/* Landed particles (Histogram effect) */}
-              {landedDots2.map(dot => (
+              {/* Stacked landed and falling particles */}
+              {dots.filter(d => d.route === 2).map(dot => (
                 <circle 
                   key={dot.id} 
                   cx={dot.x} 
                   cy={dot.y} 
-                  r={2} 
-                  fill="#2563EB" 
-                  opacity={0.8}
-                />
-              ))}
-
-              {/* Falling particles */}
-              {activeDots.filter(d => d.route === 2).map(dot => (
-                <circle 
-                  key={dot.id} 
-                  cx={dot.x} 
-                  cy={dot.y} 
-                  r={2.5} 
-                  fill="#3B82F6" 
-                  opacity={dot.opacity} 
+                  r={dot.landed ? 2 : 2.5} 
+                  fill={dot.landed ? "#2563EB" : "#3B82F6"} 
+                  opacity={dot.landed ? 0.8 : 1}
                 />
               ))}
             </svg>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans min-h-[60px]">
+          <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans min-h-[60px]">
             <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
             <p>
               <strong>Analysis:</strong> Composite scores stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
@@ -463,27 +466,15 @@ export const MonteCarloPlinko: React.FC = () => {
                 </>
               )}
 
-              {/* Landed particles (Histogram effect) */}
-              {landedDots3.map(dot => (
+              {/* Stacking and falling particles */}
+              {dots.filter(d => d.route === 3).map(dot => (
                 <circle 
                   key={dot.id} 
                   cx={dot.x} 
                   cy={dot.y} 
-                  r={2} 
-                  fill="#EA580C" 
-                  opacity={0.8}
-                />
-              ))}
-
-              {/* Falling particles */}
-              {activeDots.filter(d => d.route === 3).map(dot => (
-                <circle 
-                  key={dot.id} 
-                  cx={dot.x} 
-                  cy={dot.y} 
-                  r={2.5} 
-                  fill="#F97316" 
-                  opacity={dot.opacity} 
+                  r={dot.landed ? 2 : 2.5} 
+                  fill={dot.landed ? "#EA580C" : "#F97316"} 
+                  opacity={dot.landed ? 0.8 : 1}
                 />
               ))}
             </svg>
