@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, RotateCcw, Info } from 'lucide-react';
+import { Play, RotateCcw, Info, Maximize2, X } from 'lucide-react';
 
 interface SimulationResult {
   weights: {
@@ -27,6 +27,7 @@ interface Dot {
 
 export const MonteCarloPlinko: React.FC = () => {
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentWeights, setCurrentWeights] = useState({
     vulnerability: 25,
@@ -262,15 +263,30 @@ export const MonteCarloPlinko: React.FC = () => {
   const progressFraction = simResults.length / totalRuns;
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-6 overflow-hidden">
+    <>
+      {isFullscreen && (
+        <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsFullscreen(false)} />
+      )}
       
-      {/* Title */}
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Mean Score vs. Volatility Simulation</h3>
-        <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
-          This simulation shows how Route 002 and Route 003 score when we try every possible policy weight combination.
-        </p>
-      </div>
+      <div className={isFullscreen 
+        ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] h-[85vh] max-w-6xl bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl flex flex-col overflow-y-auto" 
+        : "w-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] mt-6 overflow-hidden relative"}>
+        
+        <button 
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors absolute top-4 right-4 z-10"
+          title={isFullscreen ? "Close Fullscreen" : "Expand to Fullscreen"}
+        >
+          {isFullscreen ? <X className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+        </button>
+
+        {/* Title */}
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Mean Score vs. Volatility Simulation</h3>
+          <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
+            This simulation shows how Route 002 and Route 003 score when we try every possible policy weight combination.
+          </p>
+        </div>
 
       {/* Simulator Controls & Weight Sweep Panel */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 border border-slate-200 p-5 rounded-2xl mb-8 items-center">
@@ -486,7 +502,6 @@ export const MonteCarloPlinko: React.FC = () => {
         </div>
 
       </div>
-
-    </div>
+    </>
   );
 };

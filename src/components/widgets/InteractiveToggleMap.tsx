@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Maximize2, X } from 'lucide-react';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -43,8 +44,17 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   mode,
 }) => {
   const [activeRouteId, setActiveRouteId] = useState<'002' | '003'>('002');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      setTimeout(() => {
+        mapRef.current?.resize();
+      }, 150);
+    }
+  }, [isFullscreen]);
 
   const activeRouteData = activeRouteId === '002' ? route2Data : route3Data;
   const isLoadedRef = useRef(false);
@@ -348,84 +358,101 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col gap-4 md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-4">
-        <div>
-          <span className="text-xs font-black text-blue-900 uppercase tracking-widest block">
-            {mode === 'vulnerability' && 'Vulnerability demographic mapping'}
-            {mode === 'opportunity' && 'Opportunities walk catchment mapping'}
-            {mode === 'monopoly' && 'Alternative transit options mapping'}
-          </span>
-        </div>
-
-        <div className="flex gap-2.5">
-          <button
-            onClick={() => setActiveRouteId('002')}
-            className={`px-4 py-2 rounded-full text-xs font-black transition-all duration-200 border ${
-              activeRouteId === '002'
-                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
-            }`}
-          >
-            Route 002: Bedrock Essential
-          </button>
-          <button
-            onClick={() => setActiveRouteId('003')}
-            className={`px-4 py-2 rounded-full text-xs font-black transition-all duration-200 border ${
-              activeRouteId === '003'
-                ? 'bg-yellow-500 border-yellow-500 text-white shadow-sm shadow-yellow-500/20'
-                : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
-            }`}
-          >
-            Route 003: Swing Corridor
-          </button>
-        </div>
-      </div>
-
-      <div className="relative w-full h-[360px] rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-50">
-        <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
+    <>
+      {isFullscreen && (
+        <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsFullscreen(false)} />
+      )}
+      
+      <div className={isFullscreen 
+        ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] h-[85vh] max-w-6xl bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl flex flex-col gap-4" 
+        : "w-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col gap-4 md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] relative"}>
         
-        {/* Legend panel inside map overlay */}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-650 flex flex-col gap-1.5 shadow-sm max-w-[200px] z-10">
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F59E0B' }} />
-            <span className="font-bold text-slate-800">Active Route {activeRouteId}</span>
+        <button 
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors absolute top-4 right-4 z-10"
+          title={isFullscreen ? "Close Fullscreen" : "Expand to Fullscreen"}
+        >
+          {isFullscreen ? <X className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+        </button>
+
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-4 pr-12">
+          <div>
+            <span className="text-xs font-black text-blue-900 uppercase tracking-widest block">
+              {mode === 'vulnerability' && 'Vulnerability demographic mapping'}
+              {mode === 'opportunity' && 'Opportunities walk catchment mapping'}
+              {mode === 'monopoly' && 'Alternative transit options mapping'}
+            </span>
           </div>
 
-          {mode === 'vulnerability' && (
-            <div className="flex flex-col gap-1">
-              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Demographic vulnerability:</span>
-              <div className="h-2 w-full rounded-full bg-gradient-to-r from-slate-100 to-indigo-800" />
-              <div className="flex justify-between text-[7px] text-slate-400 font-bold">
-                <span>LOW</span>
-                <span>HIGH INDEX</span>
-              </div>
-            </div>
-          )}
+          <div className="flex gap-2.5">
+            <button
+              onClick={() => setActiveRouteId('002')}
+              className={`px-4 py-2 rounded-full text-xs font-black transition-all duration-200 border ${
+                activeRouteId === '002'
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                  : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
+              }`}
+            >
+              Route 002: Bedrock Essential
+            </button>
+            <button
+              onClick={() => setActiveRouteId('003')}
+              className={`px-4 py-2 rounded-full text-xs font-black transition-all duration-200 border ${
+                activeRouteId === '003'
+                  ? 'bg-yellow-500 border-yellow-500 text-white shadow-sm shadow-yellow-500/20'
+                  : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
+              }`}
+            >
+              Route 003: Swing Corridor
+            </button>
+          </div>
+        </div>
 
-          {mode === 'opportunity' && (
-            <div className="flex flex-col gap-1">
-              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Opportunities walking catchments:</span>
-              <div className="grid grid-cols-2 gap-1.5 text-[8px]">
-                <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" /> <span>Jobs</span></div>
-                <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> <span>Clinics</span></div>
-                <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" /> <span>Markets</span></div>
-                <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]" /> <span>Schools</span></div>
-              </div>
+        <div className={`relative w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-50 ${isFullscreen ? 'flex-1 min-h-0' : 'h-[360px]'}`}>
+          <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
+          
+          {/* Legend panel inside map overlay */}
+          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-655 flex flex-col gap-1.5 shadow-sm max-w-[200px] z-10">
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F59E0B' }} />
+              <span className="font-bold text-slate-800">Active Route {activeRouteId}</span>
             </div>
-          )}
 
-          {mode === 'monopoly' && (
-            <div className="flex flex-col gap-1">
-              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Alternative transit options:</span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-4 h-1 bg-slate-350 rounded-sm inline-block" />
-                <span>Overlapping Route Tracks</span>
+            {mode === 'vulnerability' && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Demographic vulnerability:</span>
+                <div className="h-2 w-full rounded-full bg-gradient-to-r from-slate-100 to-indigo-800" />
+                <div className="flex justify-between text-[7px] text-slate-400 font-bold">
+                  <span>LOW</span>
+                  <span>HIGH INDEX</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {mode === 'opportunity' && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Opportunities walking catchments:</span>
+                <div className="grid grid-cols-2 gap-1.5 text-[8px]">
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" /> <span>Jobs</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> <span>Clinics</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" /> <span>Markets</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]" /> <span>Schools</span></div>
+                </div>
+              </div>
+            )}
+
+            {mode === 'monopoly' && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Alternative transit options:</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-4 h-1 bg-slate-350 rounded-sm inline-block" />
+                  <span>Overlapping Route Tracks</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

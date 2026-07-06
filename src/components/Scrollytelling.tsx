@@ -165,6 +165,9 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   
   // State for fullscreen scatterplot
   const [showFullscreenScatterplot, setShowFullscreenScatterplot] = useState(false);
+  
+  // State for fullscreen simulator
+  const [showFullscreenSimulator, setShowFullscreenSimulator] = useState(false);
 
   // State hooks for detailed math expanders
   const [showVulnerabilityMath, setShowVulnerabilityMath] = useState(false);
@@ -1159,7 +1162,22 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
             </div>
 
             {/* Interactive Weight Sliders Simulator Widget (Wider to match Route 2 & 3 cards) */}
-            <div className="p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+            {showFullscreenSimulator && (
+              <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowFullscreenSimulator(false)} />
+            )}
+            
+            <div className={showFullscreenSimulator 
+              ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] h-[85vh] max-w-6xl bg-slate-100 border border-slate-200 rounded-3xl p-8 shadow-2xl flex flex-col gap-5 overflow-y-auto" 
+              : "p-6 bg-slate-100 border border-slate-200 rounded-3xl flex flex-col gap-5 shadow-sm md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)] relative"}>
+              
+              <button 
+                onClick={() => setShowFullscreenSimulator(!showFullscreenSimulator)}
+                className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-full transition-colors absolute top-4 right-4 z-10"
+                title={showFullscreenSimulator ? "Close Fullscreen" : "Expand to Fullscreen"}
+              >
+                {showFullscreenSimulator ? <X className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              </button>
+
               <div className="flex flex-col items-center">
                 <Zap className="w-8 h-8 text-teal-600 mb-1" />
                 <span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Policy Weights Simulator</span>
@@ -1225,7 +1243,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               </div>
 
               {/* Live simulated results visual bar chart */}
-              <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner min-h-[400px]">
+              <div className={`p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner ${showFullscreenSimulator ? 'flex-1 min-h-[400px]' : 'min-h-[400px]'}`}>
                 <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Policy Weight Equity Scoring</span>
                   <div className="flex gap-2">
