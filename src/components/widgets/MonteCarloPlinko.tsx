@@ -224,15 +224,21 @@ export const MonteCarloPlinko: React.FC = () => {
     if (simResults.length === 0) {
       return {
         mean: route === 2 ? r2Mean : r3Mean,
-        std: route === 2 ? r2Std : r3Std
+        std: route === 2 ? r2Std : r3Std,
+        min: route === 2 ? 98.1 : 30.2,
+        max: route === 2 ? 99.8 : 98.4
       };
     }
     const scores = simResults.map(r => route === 2 ? r.r2Score : r.r3Score);
     const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
     const variance = scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / scores.length;
+    const min = Math.min(...scores);
+    const max = Math.max(...scores);
     return {
       mean,
-      std: Math.sqrt(variance)
+      std: Math.sqrt(variance),
+      min,
+      max
     };
   };
 
@@ -365,8 +371,8 @@ export const MonteCarloPlinko: React.FC = () => {
           </div>
 
           {/* Graph Container */}
-          <div className="relative w-full h-48 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner">
-            <svg width="100%" height="100%" className="block">
+          <div className={`relative w-full bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
+            <svg viewBox="0 0 340 200" width="100%" height="100%" className="block" preserveAspectRatio="none">
               {/* Grids */}
               <line x1={40} y1={20} x2={40} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
               <line x1={170} y1={20} x2={170} y2={180} stroke="#CBD5E1" strokeDasharray="3 3" />
@@ -441,8 +447,8 @@ export const MonteCarloPlinko: React.FC = () => {
           </div>
 
           {/* Graph Container */}
-          <div className="relative w-full h-48 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner">
-            <svg width="100%" height="100%" className="block">
+          <div className={`relative w-full bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
+            <svg viewBox="0 0 340 200" width="100%" height="100%" className="block" preserveAspectRatio="none">
               {/* Grids */}
               <line x1={40} y1={20} x2={40} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
               <line x1={170} y1={20} x2={170} y2={180} stroke="#CBD5E1" strokeDasharray="3 3" />
@@ -502,6 +508,79 @@ export const MonteCarloPlinko: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Fullscreen stats and history log */}
+      {isFullscreen && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-slate-100 pt-6">
+          {/* Column 1: Detailed Statistics Table */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+            <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">Simulation Summary Stats</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px] text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase text-[9px]">
+                    <th className="pb-2">Metric</th>
+                    <th className="pb-2 text-right text-blue-600">Route 002 (Essential Equity)</th>
+                    <th className="pb-2 text-right text-orange-600">Route 003 (High Swing)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-150 text-slate-655 font-semibold">
+                  <tr>
+                    <td className="py-2 font-bold text-slate-700">Mean Score</td>
+                    <td className="py-2 text-right font-mono font-bold text-blue-600">{r2Stats.mean.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono font-bold text-orange-600">{r3Stats.mean.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold text-slate-700">Volatility (σ)</td>
+                    <td className="py-2 text-right font-mono">{r2Stats.std.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono">{r3Stats.std.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold text-slate-700">Minimum Simulated Score</td>
+                    <td className="py-2 text-right font-mono">{r2Stats.min?.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono">{r3Stats.min?.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold text-slate-700">Maximum Simulated Score</td>
+                    <td className="py-2 text-right font-mono">{r2Stats.max?.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono">{r3Stats.max?.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Column 2: Live Log Panel */}
+          <div className="bg-slate-900 text-slate-300 font-mono text-[10px] rounded-2xl p-5 shadow-inner flex flex-col h-[180px]">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Live Run History Log</span>
+              <span className="text-[9px] bg-slate-800 text-teal-400 px-1.5 py-0.5 rounded font-bold">ACTIVE FEED</span>
+            </div>
+            <div className="flex-1 overflow-y-auto space-y-1.5 pr-1" style={{ scrollbarWidth: 'thin' }}>
+              {simResults.length === 0 ? (
+                <div className="text-slate-500 text-center py-8">No simulation data. Click "Run Simulation" above.</div>
+              ) : (
+                [...simResults].reverse().slice(0, 30).map((res, i) => (
+                  <div key={i} className="flex justify-between items-center hover:bg-slate-800 px-1 py-0.5 rounded">
+                    <span>
+                      <span className="text-slate-500">#{simResults.length - i}</span>{' '}
+                      <span className="text-blue-400">V:{res.weights.vulnerability}%</span>{' '}
+                      <span className="text-emerald-400">P:{res.weights.offPeak}%</span>{' '}
+                      <span className="text-amber-400">M:{res.weights.monopoly}%</span>{' '}
+                      <span className="text-teal-400">O:{res.weights.opportunity}%</span>
+                    </span>
+                    <span className="font-bold">
+                      <span className="text-blue-500">{res.r2Score.toFixed(1)}</span>
+                      <span className="text-slate-600 mx-1">|</span>
+                      <span className="text-orange-500">{res.r3Score.toFixed(1)}</span>
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   </>
   );
