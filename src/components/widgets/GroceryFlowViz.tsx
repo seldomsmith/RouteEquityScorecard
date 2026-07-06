@@ -15,14 +15,7 @@ export const GroceryFlowViz = () => {
     <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col gap-6 mt-2 md:-mx-12 lg:-mx-24 w-full md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
       
       {/* Header and Toggle */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div>
-          <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-            Destination Quality
-          </span>
-          <h4 className="text-sm font-black text-slate-700 uppercase tracking-wide mt-2">Utility Flow Simulation</h4>
-        </div>
-        
+      <div className="flex justify-end items-center gap-4 w-full">
         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
           <button
             onClick={() => setIsEquityAdjusted(false)}
@@ -81,7 +74,7 @@ export const GroceryFlowViz = () => {
             
             {/* Top Path (Discount Grocer to User) */}
             <path 
-              d="M 120,60 C 250,60 300,125 400,125" 
+              d="M 120,60 C 250,60 330,125 450,125" 
               fill="none" 
               stroke="url(#grad-green)" 
               strokeWidth="4" 
@@ -91,7 +84,7 @@ export const GroceryFlowViz = () => {
             
             {/* Bottom Path (Luxury Grocer to User) */}
             <path 
-              d="M 120,190 C 250,190 300,125 400,125" 
+              d="M 120,190 C 250,190 330,125 450,125" 
               fill="none" 
               stroke={isEquityAdjusted ? "url(#grad-red)" : "url(#grad-green)"} 
               strokeWidth={isEquityAdjusted ? "2" : "4"} 
@@ -104,7 +97,6 @@ export const GroceryFlowViz = () => {
 
         {/* Right Side: The Transit Rider */}
         <div className="flex flex-col items-center bg-white p-4 rounded-full border-4 border-blue-100 shadow-lg z-10 relative mr-4 sm:mr-12">
-          <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
           <User className="w-10 h-10 text-blue-600 mb-1" />
           <span className="text-xs font-black text-slate-800 uppercase">Transit Rider</span>
           
