@@ -82,33 +82,3 @@
   transform: rotateY(180deg);
 }
 
-.shimmer-text {
-  /* Default State: Solid clean white */
-  color: #ffffff;
-  background-image: linear-gradient(
-    120deg, 
-    #ffffff 35%, 
-    #dbeafe 50%, 
-    #ffffff 65%
-  );
-  /* Stretch the background so the shine starts hidden on the right side */
-  background-size: 250% 100%;
-  background-position: 100% 0;
-  
-  /* Apply the clip-path mask to the text */
-  -webkit-background-clip: text;
-  background-clip: text;
-  
-  /* Smoothly transition both the color transparency and the shimmer position */
-  transition: 
-    background-position 1.2s cubic-bezier(0.4, 0, 0.2, 1), 
-    -webkit-text-fill-color 1.2s ease;
-}
-
-.shimmer-text:hover {
-  /* Make the text color transparent to reveal the gradient moving underneath */
-  -webkit-text-fill-color: transparent;
-  /* Sweep the gradient from right to left */
-  background-position: 0% 0;
-}
-
