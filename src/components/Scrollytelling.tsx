@@ -1578,21 +1578,21 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       <div className="space-y-4 my-2">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex justify-between text-xs font-bold text-slate-700">
-                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-600" /> High-need Segments</span>
-                            <span className="text-rose-655 font-black text-sm">70%</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-600" /> Low-need Segments <span className="text-[10px] text-slate-400 font-medium">(80% of Zone)</span></span>
+                            <span className="text-emerald-700 font-black text-sm">90.0 <span className="text-[10px] text-slate-400 font-bold uppercase">Score</span></span>
                           </div>
                           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-rose-500 to-red-650 rounded-full" style={{ width: '70%' }} />
+                            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-550 rounded-full" style={{ width: '90%' }} />
                           </div>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
                           <div className="flex justify-between text-xs font-bold text-slate-700">
-                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-600" /> Low-need Segments</span>
-                            <span className="text-emerald-700 font-black text-sm">30%</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-600" /> High-need Segments <span className="text-[10px] text-slate-400 font-medium">(20% of Zone)</span></span>
+                            <span className="text-rose-655 font-black text-sm">40.0 <span className="text-[10px] text-slate-400 font-bold uppercase">Score</span></span>
                           </div>
                           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-550 rounded-full" style={{ width: '30%' }} />
+                            <div className="h-full bg-gradient-to-r from-rose-500 to-red-650 rounded-full" style={{ width: '40%' }} />
                           </div>
                         </div>
                       </div>
