@@ -44,10 +44,10 @@ interface ScrollytellingProps {
 
 // Color map aligning with the user's Policy Risk Map design:
 const CLASS_COLORS: { [key: string]: string } = {
-  'Essential Equity Routes': '#2E4057',       // Always High Equity
-  'Low Equity-Priority Routes': '#68889E',       // Always Low Equity
-  'High Swing Routes': '#E85F5C',   // High Swing Routes
-  'Moderate Swing Routes': '#F4B942',      // Moderate Swing Routes
+  'Essential Equity Routes': '#3B82F6',       // Always High Equity
+  'Low Equity-Priority Routes': '#10B981',    // Always Low Equity
+  'High Swing Routes': '#EF4444',             // High Swing Routes
+  'Moderate Swing Routes': '#F59E0B',         // Moderate Swing Routes
 };
 
 const CLASS_LABELS: { [key: string]: string } = {
@@ -1347,8 +1347,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 2. High Swing Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-red-50 text-red-700 border border-red-100">
                       High Swing Routes
                     </span>
                   </div>
@@ -1363,8 +1363,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 3. Moderate Swing Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
                       Moderate Swing Routes
                     </span>
                   </div>
@@ -1379,8 +1379,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 4. Low Equity-Priority Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
-                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-slate-55 text-slate-700 border border-slate-200">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
                       Low Equity-Priority Routes
                     </span>
                   </div>

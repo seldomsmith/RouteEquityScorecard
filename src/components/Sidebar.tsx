@@ -26,10 +26,10 @@ const GRADE_DOT: Record<string, string> = {
 };
 
 const STABILITY_DOT: Record<string, string> = {
-  'Essential Equity Routes': 'bg-indigo-600',
+  'Essential Equity Routes': 'bg-blue-600',
   'Low Equity-Priority Routes': 'bg-emerald-600',
-  'High Swing Routes': 'bg-amber-500',
-  'Moderate Swing Routes': 'bg-slate-400',
+  'High Swing Routes': 'bg-red-500',
+  'Moderate Swing Routes': 'bg-amber-500',
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => {
@@ -98,10 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
       {/* Header */}
       <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
         <div>
-          <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity</h1>
-          <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-            Scorecard
-          </p>
+          <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity Scorecard</h1>
         </div>
         {onViewDirectory && (
           <button
@@ -290,10 +287,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {([
-                { name: 'Essential Equity Routes', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
+                { name: 'Essential Equity Routes', color: 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm', labelColor: 'bg-blue-50/50 text-blue-700 hover:bg-blue-100 border-blue-100/50' },
                 { name: 'Low Equity-Priority Routes', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
-                { name: 'High Swing Routes', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
-                { name: 'Moderate Swing Routes', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-55 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
+                { name: 'High Swing Routes', color: 'bg-red-500 text-white border-red-500 font-bold shadow-sm', labelColor: 'bg-red-50/50 text-red-700 hover:bg-red-100 border-red-100/50' },
+                { name: 'Moderate Swing Routes', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.name);
                 const count = stabilityCounts[cls.name] || 0;

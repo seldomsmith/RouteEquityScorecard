@@ -31,15 +31,15 @@ interface RouteStabilityScatterProps {
 import { mapStabilityClass } from '@/utils/stability';
 
 // Color map aligning with the user's Policy Risk Map design:
-// Always High Equity (Essential Equity Routes) -> Dark Navy
-// Always Low Equity (Low Equity-Priority Routes) -> Steel Blue
-// High Swing Routes -> Coral / Rose
-// Moderate Swing Routes -> Yellow / Amber
+// Always High Equity (Essential Equity Routes) -> Blue
+// Always Low Equity (Low Equity-Priority Routes) -> Emerald
+// High Swing Routes -> Red
+// Moderate Swing Routes -> Yellow
 const CLASS_COLORS: Record<string, string> = {
-  'Essential Equity Routes': '#2E4057',       // Always High Equity
-  'Low Equity-Priority Routes': '#68889E',    // Always Low Equity
-  'High Swing Routes': '#E85F5C',             // High Swing Routes
-  'Moderate Swing Routes': '#F4B942',         // Moderate Swing Routes
+  'Essential Equity Routes': '#3B82F6',       // Blue
+  'Low Equity-Priority Routes': '#10B981',    // Emerald
+  'High Swing Routes': '#EF4444',             // Red
+  'Moderate Swing Routes': '#F59E0B',         // Yellow
 };
 
 const CLASS_LABELS: Record<string, string> = {
