@@ -115,12 +115,12 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
     const map = mapRef.current;
     if (!map || !activeRouteData || !daGeoJson) return;
 
-    // 1. Remove previous layers/sources to cleanly redraw
     const layersToRemove = [
       'da-heatmap-layer',
       'opportunity-dots-layer',
       'monopoly-casing-layer',
       'monopoly-alternative-lines',
+      'monopoly-alternative-labels',
       'active-route-line-layer',
       'active-route-casing'
     ];
