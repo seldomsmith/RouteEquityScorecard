@@ -1302,7 +1302,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
             <MonteCarloPlinko />
 
-            <div className="flex flex-col gap-6 pl-2 py-2">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-6 pl-2 py-2">
                 {/* 1. Bedrock Essentials */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
