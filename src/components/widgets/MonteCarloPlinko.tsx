@@ -502,6 +502,7 @@ export const MonteCarloPlinko: React.FC = () => {
         </div>
 
       </div>
-    </>
+    </div>
+  </>
   );
 };
