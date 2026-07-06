@@ -1373,6 +1373,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               </p>
             </div>
 
+            <MonteCarloPlinko />
+
             {/* 📊 Actual Interactive Scatter Plot (Swapped to bottom of Section 8) */}
             {showFullscreenScatterplot && (
               <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowFullscreenScatterplot(false)} />
