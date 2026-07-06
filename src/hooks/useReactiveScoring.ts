@@ -35,6 +35,7 @@ export interface ShapContribution {
 }
 
 export interface ScoredRoute extends RouteWithDAs {
+  baseline_grade?: string;
   composite_score: number;     // sigmoid-transformed final score
   composite_score_raw: number; // pre-sigmoid weighted sum
   grade: string;
@@ -176,6 +177,7 @@ export function useReactiveScoring(
 
       return {
         ...route,
+        baseline_grade: route.grade,
         composite_score: finalScores[i],
         composite_score_raw: Math.round(rawComposites[i] * 100) / 100,
         grade,

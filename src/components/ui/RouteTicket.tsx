@@ -25,7 +25,7 @@ export const RouteTicket: React.FC<RouteTicketProps> = ({
   const ringColor = isBlue ? 'focus:ring-blue-500' : 'focus:ring-yellow-500';
 
   return (
-    <div className="flex w-full min-h-[180px] bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <div className="flex w-full h-[220px] sm:h-[200px] md:h-[180px] bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
       {/* Left Vertical Route Stripe */}
       <div className={`w-14 flex-shrink-0 ${stripeColor} flex items-center justify-center relative select-none`}>
         {/* Vertical Text rotated bottom-to-top */}

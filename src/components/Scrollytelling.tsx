@@ -968,7 +968,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps show Dissemination Areas (DAs) colored by monopoly classification. Note the high-monopoly red blocks served by Route 002 compared to the green, low-monopoly zones surrounding Route 003.
+                  The maps shows the routes around Route 002 and Route 003 and the score in this category is related what other alternative transit routes are available to the riders of those routes should service be changed.
                 </p>
               </>
             )}
@@ -1307,8 +1307,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 1. Bedrock Essentials */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
                       Bedrock Essentials (Always High Equity)
                     </span>
                   </div>
@@ -1323,8 +1323,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 2. Policy Swing Route */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
                       Policy Swing Route
                     </span>
                   </div>
@@ -1339,8 +1339,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 3. Moderate Stability */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
                       Moderate Stability (Consistent Mid-Range Scores)
                     </span>
                   </div>
@@ -1355,8 +1355,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* 4. Bedrock Resilient */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-slate-55 text-slate-700 border border-slate-200">
+                    <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                    <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-slate-55 text-slate-700 border border-slate-200">
                       Bedrock Resilient (Always Low Equity)
                     </span>
                   </div>

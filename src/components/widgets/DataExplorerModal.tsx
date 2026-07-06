@@ -39,10 +39,15 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
 
     // Calculate raw live scores
     let routesWithScores = allRoutesData.map((route: any) => {
-      const v = (route.pillar_1_vulnerability || 0) * (weights.vulnerability / 100);
-      const t = (route.pillar_2_temporal || 0) * (weights.resilience / 100);
-      const m = (route.pillar_3_monopoly || 0) * (weights.monopoly / 100);
-      const o = (route.pillar_4_opportunity || 0) * (weights.opportunity / 100);
+      const p1 = typeof route.pillar_1 === 'number' ? route.pillar_1 : (route.pillar_1_vulnerability || 0);
+      const p2 = typeof route.pillar_2 === 'number' ? route.pillar_2 : (route.pillar_2_temporal || 0);
+      const p3 = typeof route.pillar_3 === 'number' ? route.pillar_3 : (route.pillar_3_monopoly || 0);
+      const p4 = typeof route.pillar_4 === 'number' ? route.pillar_4 : (route.pillar_4_opportunity || 0);
+
+      const v = p1 * (weights.vulnerability / 100);
+      const t = p2 * (weights.resilience / 100);
+      const m = p3 * (weights.monopoly / 100);
+      const o = p4 * (weights.opportunity / 100);
       
       const liveScore = v + t + m + o;
       const sens = sensitivityMap.get(String(route.route_id));
@@ -76,8 +81,9 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
       else if (p < 0.8) liveGrade = 'D';
       
       // Calculate Grade Diff
+      const baselineGrade = route.baseline_grade || route.grade || 'C';
       const grades = ['A', 'B', 'C', 'D', 'E'];
-      const oldIdx = grades.indexOf(route.grade || 'C');
+      const oldIdx = grades.indexOf(baselineGrade);
       const newIdx = grades.indexOf(liveGrade);
       let gradeDiff = 0; // 0 = same, >0 = improved (went from C to B), <0 = worse
       if (oldIdx !== -1 && newIdx !== -1) {
@@ -154,7 +160,7 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
       r.category,
       r.liveScore.toFixed(2),
       r.liveGrade,
-      r.grade || 'C',
+      r.baseline_grade || r.grade || 'C',
       r.v_contrib.toFixed(2),
       r.t_contrib.toFixed(2),
       r.m_contrib.toFixed(2),

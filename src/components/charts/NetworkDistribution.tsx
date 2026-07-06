@@ -92,7 +92,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
         <div>
           <h3 className="text-xs font-bold text-slate-800 mb-1 uppercase tracking-wider">Network Grade Distribution</h3>
           <p className="text-[10px] text-slate-500 mb-3 leading-relaxed">
-            The 235 routes are distributed across quintiles based on relative equity performance.
+            The 170 routes are distributed across quintiles based on relative equity performance.
           </p>
         </div>
         
@@ -132,7 +132,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
         <div className="mb-2">
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Composite Score Distribution (S-Curve)</h3>
           <p className="text-[10px] text-slate-500">
-            Density of route scores. The sigmoid transform stretches lifelines (right) and compresses standard coverage (middle).
+            How route scores are spread across the network. The scoring system separates high-priority lifeline routes (on the right) to make them stand out, while grouping standard routes closer together in the middle.
           </p>
         </div>
         
