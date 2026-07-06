@@ -190,18 +190,14 @@ export const MonteCarloPlinko: React.FC = () => {
     const graphWidth = 260;
     const startOffset = 40;
     const bottomY = 180;
-
-    // Scaling factor to make curves fit the graph height
-    // Route 2 std is 0.51 (narrow and tall), Route 3 std is 16.55 (wide and short)
-    const amp = std === r2Std ? 12 : 260; 
+    const maxCurveHeight = 130; // Max height of the peak in pixels
 
     for (let s = 0; s <= 100; s += 2) {
       const x = startOffset + (s / 100) * graphWidth;
       const exponent = Math.exp(-Math.pow(s - mean, 2) / (2 * Math.pow(validStd, 2)));
-      const density = (1 / (validStd * Math.sqrt(2 * Math.PI))) * exponent;
       
-      // Grow the curve proportional to simulation progress
-      const y = bottomY - density * amp * progressFraction;
+      // Grow the curve proportional to simulation progress, peaking at maxCurveHeight
+      const y = bottomY - exponent * maxCurveHeight * progressFraction;
       points.push(`${x},${y}`);
     }
 
