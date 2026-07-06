@@ -1298,8 +1298,11 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               <p className="text-slate-655 text-base leading-relaxed font-semibold">
                 This simulation reveals four route stability classifications:
               </p>
+            </div>
 
-              <div className="flex flex-col gap-6 pl-2 py-2">
+            <MonteCarloPlinko />
+
+            <div className="flex flex-col gap-6 pl-2 py-2">
                 {/* 1. Bedrock Essentials */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
@@ -1372,8 +1375,6 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 <strong>There is no perfect mix of policy weights but this analysis shows us which routes are performing a high equity service no matter how we weight them.</strong>
               </p>
             </div>
-
-            <MonteCarloPlinko />
 
             {/* 📊 Actual Interactive Scatter Plot (Swapped to bottom of Section 8) */}
             {showFullscreenScatterplot && (

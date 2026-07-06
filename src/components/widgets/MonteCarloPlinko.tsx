@@ -266,12 +266,9 @@ export const MonteCarloPlinko: React.FC = () => {
       
       {/* Title */}
       <div className="text-center mb-6">
-        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
-          Policy Sensitivity Simulation
-        </span>
-        <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Weight Sweep and Score Distribution</h3>
+        <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Mean Score vs. Volatility Simulation</h3>
         <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
-          Simulating 150 combinations of policy weights in real time. Watch how Route 002 clusters tightly while Route 003 spreads out widely.
+          This simulation shows how Route 002 and Route 003 score when we try every possible policy weight combination.
         </p>
       </div>
 
