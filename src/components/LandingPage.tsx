@@ -71,10 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-4 w-full justify-center">
-              <h1 
-                className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full pb-2 text-[#eff6ff]"
-                style={{ WebkitTextStroke: '1.5px #eff6ff' }}
-              >
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full pb-2 text-white title-lift-effect cursor-default">
                 ETS Route Equity<br />Scorecard
               </h1>
             </header>
