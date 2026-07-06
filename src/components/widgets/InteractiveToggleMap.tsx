@@ -393,7 +393,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
                   : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
               }`}
             >
-              Route 002: Bedrock Essential
+              Route 002: Essential Equity
             </button>
             <button
               onClick={() => setActiveRouteId('003')}
@@ -403,7 +403,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
                   : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
               }`}
             >
-              Route 003: Swing Corridor
+              Route 003: High Swing
             </button>
           </div>
         </div>

@@ -63,7 +63,7 @@ export const OffPeakFrequencyChart: React.FC = () => {
             <Line 
               type="monotone" 
               dataKey="route2" 
-              name="Route 002: Bedrock (Blue)" 
+              name="Route 002: Essential Equity (Blue)" 
               stroke="#3B82F6" 
               strokeWidth={3}
               activeDot={{ r: 6 }} 
@@ -71,7 +71,7 @@ export const OffPeakFrequencyChart: React.FC = () => {
             <Line 
               type="monotone" 
               dataKey="route3" 
-              name="Route 003: Corridor (Orange)" 
+              name="Route 003: High Swing (Orange)" 
               stroke="#F97316" 
               strokeWidth={3}
               activeDot={{ r: 6 }} 

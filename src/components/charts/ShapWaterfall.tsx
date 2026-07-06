@@ -197,10 +197,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
   // 🤖 Narrative Briefing Generator
   const generateNarrative = () => {
     if (isStabilityMode) {
-      const clsLabel = sensitivityRow.stability_class === 'Bedrock Essential' ? 'Always High Equity (Bedrock Essential)' :
-                       sensitivityRow.stability_class === 'Bedrock Resilient' ? 'Always Low Equity (Bedrock Resilient)' :
-                       sensitivityRow.stability_class === 'Policy Swing Corridor' ? 'High Swing Corridor (Policy Swing)' :
-                       'Moderate Stability Corridor';
+      const clsLabel = sensitivityRow.stability_class === 'Essential Equity Routes' ? 'Essential Equity Route (Always High Equity)' :
+                       sensitivityRow.stability_class === 'Low Equity-Priority Routes' ? 'Low Equity-Priority Route' :
+                       sensitivityRow.stability_class === 'High Swing Routes' ? 'High Swing Route' :
+                       'Moderate Swing Route';
       return `${route.short_name} is classified as a ${clsLabel} under Monte Carlo policy weight sweeps. Mean Score: ${sensitivityRow.score_mean.toFixed(1)}, Volatility (Rr): ${sensitivityRow.score_std.toFixed(2)}.`;
     }
 

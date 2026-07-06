@@ -28,23 +28,25 @@ interface RouteStabilityScatterProps {
   sensitivityData: Record<string, SensitivityRow>;
 }
 
+import { mapStabilityClass } from '@/utils/stability';
+
 // Color map aligning with the user's Policy Risk Map design:
-// Always High Equity (Bedrock Essential) -> Dark Navy
-// Always Low Equity (Bedrock Resilient) -> Steel Blue
-// High Swing Routes (Policy Swing Corridor) -> Coral / Rose
-// Moderate Stability -> Yellow / Amber
+// Always High Equity (Essential Equity Routes) -> Dark Navy
+// Always Low Equity (Low Equity-Priority Routes) -> Steel Blue
+// High Swing Routes -> Coral / Rose
+// Moderate Swing Routes -> Yellow / Amber
 const CLASS_COLORS: Record<string, string> = {
-  'Bedrock Essential': '#2E4057',       // Always High Equity
-  'Bedrock Resilient': '#68889E',       // Always Low Equity
-  'Policy Swing Corridor': '#E85F5C',   // High Swing Routes
-  'Moderate Stability': '#F4B942',      // Moderate Stability
+  'Essential Equity Routes': '#2E4057',       // Always High Equity
+  'Low Equity-Priority Routes': '#68889E',    // Always Low Equity
+  'High Swing Routes': '#E85F5C',             // High Swing Routes
+  'Moderate Swing Routes': '#F4B942',         // Moderate Swing Routes
 };
 
 const CLASS_LABELS: Record<string, string> = {
-  'Bedrock Essential': 'Always High Equity',
-  'Bedrock Resilient': 'Always Low Equity',
-  'Policy Swing Corridor': 'High Swing Routes',
-  'Moderate Stability': 'Moderate Stability',
+  'Essential Equity Routes': 'Always High Equity',
+  'Low Equity-Priority Routes': 'Always Low Equity',
+  'High Swing Routes': 'High Swing Routes',
+  'Moderate Swing Routes': 'Moderate Swing Routes',
 };
 
 const CustomTooltip = ({ active, payload }: any) => {

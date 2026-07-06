@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { useRouteStore, MetricKey } from '@/store/routeStore';
 import { METRICS } from '@/components/charts/EquityMatrix';
+import { mapStabilityClass } from '@/utils/stability';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -18,10 +19,10 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 const STABILITY_COLORS: Record<string, string> = {
-  'Bedrock Essential': '#4F46E5', // Indigo
-  'Bedrock Resilient': '#10B981', // Emerald
-  'Policy Swing Corridor': '#F59E0B', // Amber
-  'Moderate Stability': '#94A3B8', // Slate
+  'Essential Equity Routes': '#4F46E5', // Indigo
+  'Low Equity-Priority Routes': '#10B981', // Emerald
+  'High Swing Routes': '#F59E0B', // Amber
+  'Moderate Swing Routes': '#94A3B8', // Slate
 };
 
 const METRIC_GRADIENTS: Record<MetricKey, string> = {
@@ -332,8 +333,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
-            stability_class: (r as any).stability_class || 'Moderate Stability',
-            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
+            stability_class: mapStabilityClass((r as any).stability_class || 'Moderate Stability'),
+            stability_class_2_pillar: mapStabilityClass((r as any).stability_class_2_pillar || 'Moderate Stability'),
           },
           geometry: {
             type: 'LineString' as const,
@@ -697,8 +698,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
-            stability_class: (r as any).stability_class || 'Moderate Stability',
-            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
+            stability_class: mapStabilityClass((r as any).stability_class || 'Moderate Stability'),
+            stability_class_2_pillar: mapStabilityClass((r as any).stability_class_2_pillar || 'Moderate Stability'),
           },
           geometry: {
             type: 'LineString' as const,
@@ -776,10 +777,10 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       const lineExpr = mapFilterMode === 'stability'
         ? [
             'match', ['get', stabilityKey],
-            'Bedrock Essential', STABILITY_COLORS['Bedrock Essential'],
-            'Bedrock Resilient', STABILITY_COLORS['Bedrock Resilient'],
-            'Policy Swing Corridor', STABILITY_COLORS['Policy Swing Corridor'],
-            'Moderate Stability', STABILITY_COLORS['Moderate Stability'],
+            'Essential Equity Routes', STABILITY_COLORS['Essential Equity Routes'],
+            'Low Equity-Priority Routes', STABILITY_COLORS['Low Equity-Priority Routes'],
+            'High Swing Routes', STABILITY_COLORS['High Swing Routes'],
+            'Moderate Swing Routes', STABILITY_COLORS['Moderate Swing Routes'],
             '#94A3B8'
           ]
         : [
@@ -1080,10 +1081,10 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             </div>
             <div className="flex flex-col gap-1">
               {([
-                { name: 'Bedrock Essential', key: 'Bedrock Essential' },
-                { name: 'Bedrock Resilient', key: 'Bedrock Resilient' },
-                { name: 'Policy Swing', key: 'Policy Swing Corridor' },
-                { name: 'Moderate', key: 'Moderate Stability' }
+                { name: 'Essential Equity Routes', key: 'Essential Equity Routes' },
+                { name: 'Low Equity-Priority Routes', key: 'Low Equity-Priority Routes' },
+                { name: 'High Swing Routes', key: 'High Swing Routes' },
+                { name: 'Moderate Swing Routes', key: 'Moderate Swing Routes' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.key);
                 return (

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
+import { mapStabilityClass } from '@/utils/stability';
 
 interface SidebarProps {
   routes: RoutePoint[];
@@ -25,10 +26,10 @@ const GRADE_DOT: Record<string, string> = {
 };
 
 const STABILITY_DOT: Record<string, string> = {
-  'Bedrock Essential': 'bg-indigo-600',
-  'Bedrock Resilient': 'bg-emerald-600',
-  'Policy Swing Corridor': 'bg-amber-500',
-  'Moderate Stability': 'bg-slate-400',
+  'Essential Equity Routes': 'bg-indigo-600',
+  'Low Equity-Priority Routes': 'bg-emerald-600',
+  'High Swing Routes': 'bg-amber-500',
+  'Moderate Swing Routes': 'bg-slate-400',
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => {
@@ -52,8 +53,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
 
   const getStabilityClass = React.useCallback((r: any) => {
     return is2PillarActive
-      ? (r.stability_class_2_pillar || 'Moderate Stability')
-      : (r.stability_class || 'Moderate Stability');
+      ? mapStabilityClass(r.stability_class_2_pillar || 'Moderate Stability')
+      : mapStabilityClass(r.stability_class || 'Moderate Stability');
   }, [is2PillarActive]);
 
 
@@ -69,10 +70,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
 
   const stabilityCounts = React.useMemo(() => {
     const counts: Record<string, number> = {
-      'Bedrock Essential': 0,
-      'Bedrock Resilient': 0,
-      'Policy Swing Corridor': 0,
-      'Moderate Stability': 0,
+      'Essential Equity Routes': 0,
+      'Low Equity-Priority Routes': 0,
+      'High Swing Routes': 0,
+      'Moderate Swing Routes': 0,
     };
     routes.forEach((r) => {
       const cls = getStabilityClass(r);
@@ -289,10 +290,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {([
-                { name: 'Bedrock Essential', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
-                { name: 'Bedrock Resilient', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
-                { name: 'Policy Swing Corridor', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
-                { name: 'Moderate Stability', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
+                { name: 'Essential Equity Routes', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
+                { name: 'Low Equity-Priority Routes', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
+                { name: 'High Swing Routes', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
+                { name: 'Moderate Swing Routes', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-55 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.name);
                 const count = stabilityCounts[cls.name] || 0;
@@ -305,7 +306,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
                       isActive ? cls.color : cls.labelColor
                     }`}
                   >
-                    <span className="text-[10px] font-black">{cls.name.replace(' Corridor', '')}</span>
+                    <span className="text-[10px] font-black">{cls.name}</span>
                     <span className="text-[8px] font-mono font-semibold opacity-85 mt-0.5 leading-none">{count}</span>
                   </button>
                 );

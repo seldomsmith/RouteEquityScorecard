@@ -35,6 +35,7 @@ import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
 import { Maximize2, X } from 'lucide-react';
+import { mapStabilityClass } from '@/utils/stability';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -43,17 +44,17 @@ interface ScrollytellingProps {
 
 // Color map aligning with the user's Policy Risk Map design:
 const CLASS_COLORS: { [key: string]: string } = {
-  'Bedrock Essential': '#2E4057',       // Always High Equity
-  'Bedrock Resilient': '#68889E',       // Always Low Equity
-  'Policy Swing Corridor': '#E85F5C',   // High Swing Routes
-  'Moderate Stability': '#F4B942',      // Moderate Stability
+  'Essential Equity Routes': '#2E4057',       // Always High Equity
+  'Low Equity-Priority Routes': '#68889E',       // Always Low Equity
+  'High Swing Routes': '#E85F5C',   // High Swing Routes
+  'Moderate Swing Routes': '#F4B942',      // Moderate Swing Routes
 };
 
 const CLASS_LABELS: { [key: string]: string } = {
-  'Bedrock Essential': 'Always High Equity',
-  'Bedrock Resilient': 'Always Low Equity',
-  'Policy Swing Corridor': 'High Swing Routes',
-  'Moderate Stability': 'Moderate Stability',
+  'Essential Equity Routes': 'Always High Equity',
+  'Low Equity-Priority Routes': 'Always Low Equity',
+  'High Swing Routes': 'High Swing Routes',
+  'Moderate Swing Routes': 'Moderate Swing Routes',
 };
 
 // Helper to generate a normal distribution curve
@@ -208,7 +209,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           headers.forEach((h, idx) => {
             const val = values[idx];
             if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
-              obj[h] = val || '';
+              obj[h] = h === 'stability_class' ? mapStabilityClass(val || '') : (val || '');
             } else {
               obj[h] = Number(val || 0);
             }
@@ -246,13 +247,18 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
     fetch('/data/golden_route_record.json')
       .then((res) => res.json())
       .then((data) => {
-        const r2 = data.routes.find((r: any) => r.route_id === '002');
-        const r3 = data.routes.find((r: any) => r.route_id === '003');
-        const r727 = data.routes.find((r: any) => r.route_id === '727');
+        const mappedRoutes = data.routes.map((r: any) => ({
+          ...r,
+          stability_class: mapStabilityClass(r.stability_class || 'Moderate Stability'),
+          stability_class_2_pillar: mapStabilityClass(r.stability_class_2_pillar || 'Moderate Stability')
+        }));
+        const r2 = mappedRoutes.find((r: any) => r.route_id === '002');
+        const r3 = mappedRoutes.find((r: any) => r.route_id === '003');
+        const r727 = mappedRoutes.find((r: any) => r.route_id === '727');
         setRoute2Data(r2);
         setRoute3Data(r3);
         setRoute727Data(r727);
-        setAllRoutesData(data.routes);
+        setAllRoutesData(mappedRoutes);
       })
       .catch((err) => console.error("❌ Explainer Map failed to load golden route records:", err));
   }, []);
@@ -1322,12 +1328,12 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
             <div className="space-y-4">
               <div className="flex flex-col gap-6 pl-2 py-2">
-                {/* 1. Bedrock Essentials */}
+                {/* 1. Essential Equity Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
                     <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
-                      Bedrock Essentials (Always High Equity)
+                      Essential Equity Routes (Always High Equity)
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
@@ -1338,28 +1344,28 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   </p>
                 </div>
 
-                {/* 2. Policy Swing Route */}
+                {/* 2. High Swing Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                     <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-                      Policy Swing Route
+                      High Swing Routes
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
                     Scores for routes in this category fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    Route 003 is a Policy Swing Corridor because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, Route 003 maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When policy shifts to favor demographic need or route dependency, Route 003's score collapses, making its funding priority highly dependent on the active political administration.
+                    Route 003 is a High Swing Route because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, Route 003 maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When policy shifts to favor demographic need or route dependency, Route 003's score collapses, making its funding priority highly dependent on the active political administration.
                   </p>
                 </div>
 
-                {/* 3. Moderate Stability */}
+                {/* 3. Moderate Swing Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                     <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
-                      Moderate Stability (Consistent Mid-Range Scores)
+                      Moderate Swing Routes
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
@@ -1370,12 +1376,12 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   </p>
                 </div>
 
-                {/* 4. Bedrock Resilient */}
+                {/* 4. Low Equity-Priority Routes */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
                     <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-slate-55 text-slate-700 border border-slate-200">
-                      Bedrock Resilient (Always Low Equity)
+                      Low Equity-Priority Routes
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">

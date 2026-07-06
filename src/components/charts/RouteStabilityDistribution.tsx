@@ -7,16 +7,17 @@ import {
 } from 'recharts';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
+import { mapStabilityClass } from '@/utils/stability';
 
 interface RouteStabilityDistributionProps {
   data: RoutePoint[];
 }
 
 const STABILITY_COLORS: Record<string, string> = {
-  'Bedrock Essential': '#4F46E5',     // Indigo
-  'Bedrock Resilient': '#10B981',     // Emerald
-  'Policy Swing Corridor': '#F59E0B', // Amber
-  'Moderate Stability': '#94A3B8',    // Slate
+  'Essential Equity Routes': '#4F46E5',     // Indigo
+  'Low Equity-Priority Routes': '#10B981',     // Emerald
+  'High Swing Routes': '#F59E0B', // Amber
+  'Moderate Swing Routes': '#94A3B8',    // Slate
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -47,19 +48,19 @@ export const RouteStabilityDistribution: React.FC<RouteStabilityDistributionProp
   // Compute counts dynamically
   const counts = React.useMemo(() => {
     const c = {
-      'Bedrock Essential': 0,
-      'Bedrock Resilient': 0,
-      'Policy Swing Corridor': 0,
-      'Moderate Stability': 0,
+      'Essential Equity Routes': 0,
+      'Low Equity-Priority Routes': 0,
+      'High Swing Routes': 0,
+      'Moderate Swing Routes': 0,
     };
     
     data.forEach((r) => {
       const cls = is2PillarActive ? r.stability_class_2_pillar : r.stability_class;
-      const key = cls || 'Moderate Stability';
+      const key = mapStabilityClass(cls || 'Moderate Stability');
       if (key in c) {
         c[key as keyof typeof c]++;
       } else {
-        c['Moderate Stability']++;
+        c['Moderate Swing Routes']++;
       }
     });
     
