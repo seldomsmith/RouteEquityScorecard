@@ -354,7 +354,7 @@ export const MonteCarloPlinko: React.FC = () => {
           <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
             <div>
               <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-150">
-                Route 002: Bedrock Essential
+                Route 002: Essential Equity
               </span>
               <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Highlands — Downtown — Clareview</h4>
             </div>
@@ -430,7 +430,7 @@ export const MonteCarloPlinko: React.FC = () => {
           <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
             <div>
               <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-150">
-                Route 003: Moderate Stability / Swing
+                Route 003: High Swing
               </span>
               <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Westmount — Stadium</h4>
             </div>

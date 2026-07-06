@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { X, Download, ArrowUp, ArrowDown, Minus, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { mapStabilityClass } from '@/utils/stability';
 
 interface DataExplorerModalProps {
   isOpen: boolean;
@@ -53,7 +54,7 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
       const sens = sensitivityMap.get(String(route.route_id));
       const score_mean = sens ? sens.score_mean : liveScore;
       const score_std = sens ? sens.score_std : 0.0;
-      const stability_class = sens ? sens.stability_class : (route.stability_class || 'Moderate Stability');
+      const stability_class = mapStabilityClass(sens ? sens.stability_class : (route.stability_class || 'Moderate Stability'));
 
       return { 
         ...route, 
@@ -235,7 +236,7 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
             {/* Filter Pills */}
             <div className="flex flex-wrap gap-2">
-              {['Bedrock Essential', 'Policy Swing Corridor', 'Moderate Stability', 'Bedrock Resilient'].map(cat => (
+              {['Essential Equity Routes', 'High Swing Routes', 'Moderate Swing Routes', 'Low Equity-Priority Routes'].map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategoryFilter(activeCategoryFilter === cat ? null : cat)}

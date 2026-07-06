@@ -13,6 +13,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
 import { DataExplorerModal } from '@/components/widgets/DataExplorerModal';
+import { mapStabilityClass } from '@/utils/stability';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -71,7 +72,7 @@ export const CommandCentre = () => {
           headers.forEach((h, idx) => {
             const val = values[idx];
             if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
-              obj[h] = val || '';
+              obj[h] = h === 'stability_class' ? mapStabilityClass(val || '') : (val || '');
             } else {
               obj[h] = Number(val || 0);
             }
@@ -99,7 +100,7 @@ export const CommandCentre = () => {
           headers.forEach((h, idx) => {
             const val = values[idx];
             if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
-              obj[h] = val || '';
+              obj[h] = h === 'stability_class' ? mapStabilityClass(val || '') : (val || '');
             } else {
               obj[h] = Number(val || 0);
             }
@@ -216,8 +217,8 @@ export const CommandCentre = () => {
               pillar_4: Number(row.pillar_4_opportunity || 0),
               coords,
               da_data,
-              stability_class: String(row.stability_class || 'Moderate Stability'),
-              stability_class_2_pillar: String(row.stability_class_2_pillar || 'Moderate Stability'),
+              stability_class: mapStabilityClass(String(row.stability_class || 'Moderate Stability')),
+              stability_class_2_pillar: mapStabilityClass(String(row.stability_class_2_pillar || 'Moderate Stability')),
               trip_count: Number(row.trip_count || 0),
               category: String(row.category || 'bus_regular'),
               route_length_km: Number(row.route_length_km || 0),
