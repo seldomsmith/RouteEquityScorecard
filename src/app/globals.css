@@ -85,12 +85,20 @@
 .title-lift-effect {
   display: inline-block;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), text-shadow 0.3s ease;
-  transform: scale(1) translateY(0);
+  transform: scale(1) translate(0, 0);
   text-shadow: 0 0 0 rgba(239, 68, 68, 0);
 }
 
 .title-lift-effect:hover {
-  transform: scale(1.02) translateY(-3px);
-  text-shadow: 0 4px 12px rgba(239, 68, 68, 0.85), 0 0 4px rgba(239, 68, 68, 0.4);
+  transform: scale(1.02) translate(-6px, -6px);
+  text-shadow: 
+    1px 1px 0px #ef4444,
+    2px 2px 0px #ef4444,
+    3px 3px 0px #ef4444,
+    4px 4px 0px #ef4444,
+    5px 5px 0px #ef4444,
+    6px 6px 0px #ef4444,
+    7px 7px 0px #ef4444,
+    8px 8px 0px #ef4444;
 }
 
