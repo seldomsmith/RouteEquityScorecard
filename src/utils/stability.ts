@@ -17,15 +17,15 @@ export const mapStabilityClass = (cls: string): string => {
 };
 
 export const STABILITY_COLORS: Record<string, string> = {
-  'Essential Equity Routes': '#2E4057',       // Dark Navy / Indigo
-  'High Swing Routes': '#E85F5C',             // Coral / Rose
-  'Moderate Swing Routes': '#F4B942',         // Yellow / Amber
-  'Low Equity-Priority Routes': '#68889E',    // Steel Blue / Emerald
+  'Essential Equity Routes': '#3B82F6',       // Blue
+  'High Swing Routes': '#EF4444',             // Red
+  'Moderate Swing Routes': '#F59E0B',         // Yellow / Amber
+  'Low Equity-Priority Routes': '#10B981',    // Emerald
 };
 
 export const STABILITY_TAILWIND_COLORS: Record<string, string> = {
-  'Essential Equity Routes': 'bg-indigo-600',
-  'High Swing Routes': 'bg-amber-500',
-  'Moderate Swing Routes': 'bg-slate-400',
+  'Essential Equity Routes': 'bg-blue-600',
+  'High Swing Routes': 'bg-red-500',
+  'Moderate Swing Routes': 'bg-amber-500',
   'Low Equity-Priority Routes': 'bg-emerald-600',
 };

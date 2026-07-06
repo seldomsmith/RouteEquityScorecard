@@ -19,10 +19,10 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 const STABILITY_COLORS: Record<string, string> = {
-  'Essential Equity Routes': '#4F46E5', // Indigo
+  'Essential Equity Routes': '#3B82F6', // Blue
   'Low Equity-Priority Routes': '#10B981', // Emerald
-  'High Swing Routes': '#F59E0B', // Amber
-  'Moderate Swing Routes': '#94A3B8', // Slate
+  'High Swing Routes': '#EF4444', // Red
+  'Moderate Swing Routes': '#F59E0B', // Yellow
 };
 
 const METRIC_GRADIENTS: Record<MetricKey, string> = {
