@@ -1,10 +1,10 @@
-# Single-stage Dockerfile optimized for Google Cloud Run compatibility
-FROM node:20-alpine
+# Debian-based single-stage Dockerfile optimized for Google Cloud Run compatibility
+FROM node:20-slim
 
 WORKDIR /app
 
 # Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+RUN apt-get update && apt-get install -y dumb-init && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
