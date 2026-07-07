@@ -195,7 +195,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
     const sectionIds = [
       'section-1', 'section-2', 'section-3', 'section-4', 'section-5',
-      'section-6', 'section-7', 'section-8', 'section-9', 'section-10'
+      'section-6', 'section-odt', 'section-7', 'section-8', 'section-9', 'section-10'
     ];
 
     sectionIds.forEach((id) => {
@@ -1181,6 +1181,40 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   </div>
                 </div>
               )}
+          </section>
+
+          {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
+          <section id="section-odt" className={getSectionClass('section-odt')}>
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
+              </p>
+
+              {/* Dynamic Map Visualization - Relocated right under the specified ODT description line */}
+              {odtGeoJson && (
+                <div className="w-full md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+                  <OdtExplainerMap odtGeoJson={odtGeoJson} routeData={route727Data} />
+                </div>
+              )}
+
+              <p className="text-slate-600 text-base leading-relaxed">
+                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
+              </p>
+              <ul className="list-disc pl-6 space-y-3 text-slate-600 text-base">
+                <li>
+                  <strong className="text-blue-950 font-bold">Vulnerability Score Reduction (-10%)</strong>: 
+                  DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index (V_i * 0.90) because local feeder shuttles help ease geographic isolation.
+                </li>
+                <li>
+                  <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
+                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index (FMI(i,r) * 0.50) to reflect that residents have a flexible, bookable connection to the wider transit network.
+                </li>
+              </ul>
+              <p className="text-slate-600 text-base leading-relaxed">
+                These adjustments ensure that route equity scores are not artificially inflated in areas where ODT is already successfully bridging the service gap.
+              </p>
+            </div>
           </section>
 
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
