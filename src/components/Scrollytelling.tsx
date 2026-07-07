@@ -466,6 +466,9 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           <section id="section-2" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                There are four pillars that determine the route equity score of any particular route.
+              </p>
             </div>
 
             <FourPillars />
