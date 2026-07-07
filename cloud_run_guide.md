@@ -53,7 +53,24 @@ git commit -m "Refactor: describe your new changes"
 git push origin master
 ```
 
-### 🔍 Monitoring Deployment Progress
-1. Open the [Cloud Build History Console](https://console.cloud.google.com/cloud-build/builds).
-2. You will see a new build job running.
-3. Once the build turns **Green (Success)**, Cloud Run will redirect traffic to the new revision automatically.
+---
+
+## 💡 Important CD Mechanics (Must Know)
+
+To avoid confusion during updates, keep the following behaviors in mind:
+
+### 1. 🔄 `git pull` vs `git push`
+* **`git pull` does NOT trigger deployments:** Pulling only downloads updates from GitHub to your local machine. It does not send anything to GitHub, so Google Cloud doesn't trigger any builds.
+* **Only `git push` triggers deployments:** Only pushing local code changes to the GitHub repository triggers Cloud Build.
+
+### 2. 🗂️ Build Logs vs. Runtime Logs
+* **Build Logs:** Show the compile-time logs (Next.js compilation, TypeScript checking, and Docker packaging). Access these by clicking **Build History** or the active spinner on the Cloud Run **Service details** page.
+* **Runtime Logs:** Show web server traffic (GET/POST requests, errors, and page views) from the *currently active container*. Access these on the **Logs** tab of the Cloud Run console. If a new version is still compiling, these logs will only show activity for the old version.
+
+### 3. ⏳ Compilation & Zero-Downtime Swapping
+* **Compilation Time:** When you push, Next.js takes **3 to 5 minutes** to compile.
+* **Zero-Downtime:** The old version remains live handling users while the new one compiles. Once the new build succeeds, Cloud Run instantly routes 100% of traffic to the new revision, replacing the old one seamlessly.
+
+### 4. 📈 Rapid Successive Pushes (Queueing)
+* If you perform multiple `git push` commands in rapid succession, Google Cloud Build will queue the build jobs. 
+* Cloud Run automatically cancels or updates traffic allocation to the newest successfully compiled revision as soon as it is ready, meaning older pending builds won't get stuck serving traffic.
