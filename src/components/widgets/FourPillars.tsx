@@ -47,7 +47,7 @@ export const FourPillars: React.FC = () => {
           return (
             <div 
               key={idx}
-              className="group relative w-full h-[320px]"
+              className="group relative w-full"
             >
               <BorderGlow
                 animated={true}
@@ -80,7 +80,7 @@ export const FourPillars: React.FC = () => {
                   </div>
 
                   {/* Bottom Segment: White Text Body */}
-                  <div className="flex-1 p-5 flex flex-col justify-start bg-white overflow-y-auto custom-scrollbar">
+                  <div className="flex-1 p-5 flex flex-col justify-start bg-white">
                     <p className="text-[11px] text-slate-655 leading-relaxed font-semibold">
                       {p.description}
                     </p>
