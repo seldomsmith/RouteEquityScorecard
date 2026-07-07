@@ -14,17 +14,6 @@ interface SimulationResult {
   r3Score: number;
 }
 
-interface Dot {
-  id: number;
-  route: 2 | 3;
-  x: number;
-  y: number;
-  targetX: number;
-  targetY: number;
-  score: number;
-  landed: boolean;
-}
-
 export const MonteCarloPlinko: React.FC = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -37,11 +26,8 @@ export const MonteCarloPlinko: React.FC = () => {
   });
 
   const [simResults, setSimResults] = useState<SimulationResult[]>([]);
-  const [dots, setDots] = useState<Dot[]>([]);
 
-  const animFrameId = useRef<number | null>(null);
   const simInterval = useRef<NodeJS.Timeout | null>(null);
-  const nextDotId = useRef(0);
 
   // Real final scorecard score distribution parameters from the sensitivity analysis model
   // Route 2: Bedrock Essential (Always high, mean=99.35, std=0.51)
@@ -72,7 +58,6 @@ export const MonteCarloPlinko: React.FC = () => {
     setIsSimulating(false);
     setProgress(0);
     setSimResults([]);
-    setDots([]);
     setCurrentWeights({
       vulnerability: 25,
       offPeak: 25,
@@ -120,103 +105,9 @@ export const MonteCarloPlinko: React.FC = () => {
       setSimResults(prev => [...prev, newResult]);
       setProgress(Math.round(((runCount + 1) / totalRuns) * 100));
 
-      const dot2Id = nextDotId.current++;
-      const dot3Id = nextDotId.current++;
-
-      setDots(prev => [
-        ...prev,
-        {
-          id: dot2Id,
-          route: 2,
-          x: 170, // Drop from center top (50 mark)
-          y: 10,
-          targetX: mapX(r2Score),
-          targetY: bottomY,
-          score: r2Score,
-          landed: false
-        },
-        {
-          id: dot3Id,
-          route: 3,
-          x: 170, // Drop from center top (50 mark)
-          y: 10,
-          targetX: mapX(r3Score),
-          targetY: bottomY,
-          score: r3Score,
-          landed: false
-        }
-      ]);
-
       runCount++;
     }, 60);
   };
-
-  // Animation frame loop to move falling dots and land them with stacking rules
-  useEffect(() => {
-    const updateDots = () => {
-      setDots(prev => {
-        // Build a map of currently landed dots to compute stacking heights on the fly
-        const landedCountMap2: { [key: number]: number } = {};
-        const landedCountMap3: { [key: number]: number } = {};
-
-        return prev.map(dot => {
-          if (dot.landed) {
-            // Keep track of stacking coordinates
-            const bin = Math.round(dot.score);
-            if (dot.route === 2) {
-              const count = landedCountMap2[bin] || 0;
-              landedCountMap2[bin] = count + 1;
-              return {
-                ...dot,
-                y: Math.max(bottomY - 3 - count * 4.5, 30) // Cap stack height to stay in container bounds
-              };
-            } else {
-              const count = landedCountMap3[bin] || 0;
-              landedCountMap3[bin] = count + 1;
-              return {
-                ...dot,
-                y: Math.max(bottomY - 3 - count * 4.5, 30)
-              };
-            }
-          }
-
-          const dy = dot.targetY - dot.y;
-          const dx = dot.targetX - dot.x;
-          
-          if (dy > 3) {
-            return {
-              ...dot,
-              y: dot.y + dy * 0.15,
-              x: dot.x + dx * 0.15
-            };
-          } else {
-            // Mark as landed
-            const bin = Math.round(dot.score);
-            let count = 0;
-            if (dot.route === 2) {
-              count = landedCountMap2[bin] || 0;
-              landedCountMap2[bin] = count + 1;
-            } else {
-              count = landedCountMap3[bin] || 0;
-              landedCountMap3[bin] = count + 1;
-            }
-            return {
-              ...dot,
-              landed: true,
-              x: dot.targetX,
-              y: Math.max(bottomY - 3 - count * 4.5, 30)
-            };
-          }
-        });
-      });
-      animFrameId.current = requestAnimationFrame(updateDots);
-    };
-
-    animFrameId.current = requestAnimationFrame(updateDots);
-    return () => {
-      if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
-    };
-  }, []);
 
   // Compute dynamic stats from simulation results
   const getStats = (route: 2 | 3) => {
@@ -408,17 +299,6 @@ export const MonteCarloPlinko: React.FC = () => {
                 </>
               )}
 
-              {/* Stacked landed and falling particles */}
-              {dots.filter(d => d.route === 2).map(dot => (
-                <circle 
-                  key={dot.id} 
-                  cx={dot.x} 
-                  cy={dot.y} 
-                  r={dot.landed ? 2 : 2.5} 
-                  fill={dot.landed ? "#2563EB" : "#3B82F6"} 
-                  opacity={dot.landed ? 0.8 : 1}
-                />
-              ))}
             </svg>
           </div>
 
@@ -484,17 +364,6 @@ export const MonteCarloPlinko: React.FC = () => {
                 </>
               )}
 
-              {/* Stacking and falling particles */}
-              {dots.filter(d => d.route === 3).map(dot => (
-                <circle 
-                  key={dot.id} 
-                  cx={dot.x} 
-                  cy={dot.y} 
-                  r={dot.landed ? 2 : 2.5} 
-                  fill={dot.landed ? "#EA580C" : "#F97316"} 
-                  opacity={dot.landed ? 0.8 : 1}
-                />
-              ))}
             </svg>
           </div>
 
