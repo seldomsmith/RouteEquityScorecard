@@ -361,6 +361,17 @@
 - [x] Fix missing live scores and baseline grade comparisons in `DataExplorerModal.tsx` and `useReactiveScoring.ts` <!-- id: 133, priority: critical -->
 - [x] Verify compilation (manually audited source files) <!-- id: 134, priority: critical -->
 
+## Backlog: Future Layout Redesign
 
+- [ ] **Split-Screen Sticky Panels** — Redesign scrollytelling from single-column stacked to a two-panel split-screen (40% text / 60% sticky visual). Full plan: [split_screen_sticky_panels_plan.md](./split_screen_sticky_panels_plan.md) <!-- id: 135, priority: backlog -->
+  - [ ] Create `SplitScreenLayout.tsx` wrapper with IntersectionObserver logic
+  - [ ] Extract section narratives and visuals into separate fragments
+  - [ ] Wire crossfade transitions between sticky visuals
+  - [ ] Implement mobile fallback (stacked below `md` breakpoint)
+  - [ ] Migrate scroll progress tracking to left-panel scrollTop
+  - [ ] Handle Section 7 slider/visual co-location
+  - [ ] Handle Section 8 fullscreen breakout from sticky panel
+  - [ ] Handle Section 9 visual-less section
+  - [ ] Test responsive breakpoints and performance
 
 
