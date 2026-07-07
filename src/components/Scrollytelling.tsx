@@ -170,6 +170,51 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   // State for fullscreen simulator
   const [showFullscreenSimulator, setShowFullscreenSimulator] = useState(false);
 
+  // Active section tracking for spotlight dimming effect
+  const [activeSection, setActiveSection] = useState('section-1');
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observerOptions = {
+      root: el,
+      rootMargin: '-30% 0px -40% 0px', // Spotlights the section in the middle portion of the screen
+      threshold: 0.1,
+    };
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, observerOptions);
+
+    const sectionIds = [
+      'section-1', 'section-2', 'section-3', 'section-4', 'section-5',
+      'section-6', 'section-7', 'section-8', 'section-9', 'section-10'
+    ];
+
+    sectionIds.forEach((id) => {
+      const target = document.getElementById(id);
+      if (target) observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const getSectionClass = (id: string) => {
+    const isActive = activeSection === id;
+    return `flex flex-col gap-6 transition-all duration-700 ${
+      isActive 
+        ? 'opacity-100 filter brightness-100 scale-100' 
+        : 'opacity-30 filter brightness-90 blur-[0.2px] pointer-events-none scale-[0.99]'
+    }`;
+  };
+
   // State hooks for detailed math expanders
   const [showVulnerabilityMath, setShowVulnerabilityMath] = useState(false);
   const [showOpportunityMath, setShowOpportunityMath] = useState(false);
@@ -404,7 +449,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
         <div className="w-full max-w-3xl px-6 flex flex-col gap-24">
           
           {/* ================= SECTION 1: Introduction ================= */}
-          <section id="section-1" className="flex flex-col gap-6">
+          <section id="section-1" className={getSectionClass('section-1')}>
             
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
@@ -463,7 +508,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 2: Four Pillars ================= */}
-          <section id="section-2" className="flex flex-col gap-6">
+          <section id="section-2" className={getSectionClass('section-2')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -479,7 +524,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 3: Vulnerability ================= */}
-          <section id="section-3" className="flex flex-col gap-6">
+          <section id="section-3" className={getSectionClass('section-3')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">3. Transit Vulnerability</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -596,7 +641,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 4: Opportunity ================= */}
-          <section id="section-4" className="flex flex-col gap-6">
+          <section id="section-4" className={getSectionClass('section-4')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">4. Destination Opportunity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -803,7 +848,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 5: Off Peak Service ================= */}
-          <section id="section-5" className="flex flex-col gap-6">
+          <section id="section-5" className={getSectionClass('section-5')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">5. Off Peak Service</h2>
               <p className="text-slate-655 text-base leading-relaxed">
@@ -940,7 +985,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 6: Transit Monopoly ================= */}
-          <section id="section-6" className="flex flex-col gap-6">
+          <section id="section-6" className={getSectionClass('section-6')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Transit Monopoly</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1139,7 +1184,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
-          <section id="section-7" className="flex flex-col gap-6">
+          <section id="section-7" className={getSectionClass('section-7')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Policy Weights</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1313,7 +1358,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 8: Route Stability and Volatility ================= */}
-          <section id="section-8" className="flex flex-col gap-6">
+          <section id="section-8" className={getSectionClass('section-8')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1552,7 +1597,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 9: Methodological Limitations ================= */}
-          <section id="section-9" className="flex flex-col gap-6">
+          <section id="section-9" className={getSectionClass('section-9')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">9. What the Scorecard Misses</h2>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1699,7 +1744,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= SECTION 10: Applying the Scorecard to Planning Decisions ================= */}
-          <section id="section-10" className="flex flex-col gap-6">
+          <section id="section-10" className={getSectionClass('section-10')}>
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">10. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
