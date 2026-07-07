@@ -55,6 +55,20 @@ git push origin master
 
 ---
 
+## 🛠️ How to Manually Force-Deploy a Specific Container Image
+
+If you want to manually redeploy or select a specific successfully built image (e.g. if a trigger succeeded but did not release automatically, or if you need to roll back to a specific commit):
+
+1. Go to the **Cloud Run** console and select your service.
+2. Click the **Edit & Deploy New Revision** button at the top of the page.
+3. In the **Edit Container** panel, locate the **Container image URL** field.
+4. Click the blue **Select** button to the right of the URL.
+5. In the drawer that appears, locate and select your image tag (the tags correspond to git commit hashes, such as `:3b7d117` or the latest timestamp).
+6. Click **Done** at the bottom of the container configuration panel.
+7. Scroll to the very bottom of the main page and click **Deploy**.
+
+---
+
 ## 💡 Important CD Mechanics (Must Know)
 
 To avoid confusion during updates, keep the following behaviors in mind:
