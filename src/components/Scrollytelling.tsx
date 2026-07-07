@@ -207,12 +207,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   }, []);
 
   const getSectionClass = (id: string) => {
-    const isActive = activeSection === id;
-    return `flex flex-col gap-6 transition-all duration-700 ${
-      isActive 
-        ? 'opacity-100 filter brightness-100 scale-100' 
-        : 'opacity-30 filter brightness-90 blur-[0.2px] pointer-events-none scale-[0.99]'
-    }`;
+    return 'flex flex-col gap-6';
   };
 
   // State hooks for detailed math expanders
@@ -1230,7 +1225,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               <p className="text-slate-600 text-base leading-relaxed">
                 When policy priorities shift, these scores adjust accordingly. For example, if a policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
               </p>
-              <ul className="text-sm text-slate-600 leading-relaxed mt-2 space-y-3">
+              <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">

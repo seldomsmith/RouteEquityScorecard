@@ -69,7 +69,6 @@ export const MonteCarloPlinko: React.FC = () => {
 
   const handleReset = () => {
     if (simInterval.current) clearInterval(simInterval.current);
-    if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
     setIsSimulating(false);
     setProgress(0);
     setSimResults([]);
