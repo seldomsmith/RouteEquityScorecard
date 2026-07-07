@@ -359,14 +359,14 @@ export const MonteCarloPlinko: React.FC = () => {
         <div className="border border-slate-200 rounded-2xl p-4 flex flex-col bg-white shadow-sm relative">
           <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
             <div>
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-150">
+              <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-150">
                 Route 002: Essential Equity
               </span>
-              <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Highlands — Downtown — Clareview</h4>
+              <h4 className="font-bold text-slate-900 mt-2 font-sans text-lg sm:text-xl md:text-2xl">Highlands — Downtown — Clareview</h4>
             </div>
             <div className="text-right flex flex-col">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
-              <span className="text-sm font-black text-blue-600 font-mono leading-none mt-1">{r2Stats.std.toFixed(1)}</span>
+              <span className="text-[14px] md:text-[16px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-blue-600 font-mono leading-none mt-1">{r2Stats.std.toFixed(1)}</span>
             </div>
           </div>
 
@@ -379,9 +379,9 @@ export const MonteCarloPlinko: React.FC = () => {
               <line x1={300} y1={20} x2={300} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
 
               {/* Grid Labels */}
-              <text x={40} y={193} fontSize={8} fontWeight={700} fill="#94A3B8" textAnchor="middle">0</text>
-              <text x={170} y={193} fontSize={8} fontWeight={700} fill="#64748B" textAnchor="middle">50</text>
-              <text x={300} y={193} fontSize={8} fontWeight={700} fill="#94A3B8" textAnchor="middle">100</text>
+              <text x={40} y={193} fontSize={16} fontWeight={700} fill="#94A3B8" textAnchor="middle">0</text>
+              <text x={170} y={193} fontSize={16} fontWeight={700} fill="#64748B" textAnchor="middle">50</text>
+              <text x={300} y={193} fontSize={16} fontWeight={700} fill="#94A3B8" textAnchor="middle">100</text>
 
               {/* Axis line */}
               <line x1={20} y1={180} x2={310} y2={180} stroke="#94A3B8" strokeWidth={1} />
@@ -423,8 +423,8 @@ export const MonteCarloPlinko: React.FC = () => {
             </svg>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans min-h-[60px]">
-            <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="mt-3 flex items-start gap-3 bg-slate-55 border border-slate-200 p-4 rounded-xl text-xs sm:text-sm md:text-base text-slate-500 leading-relaxed font-sans min-h-[70px]">
+            <Info className="w-5.5 h-5.5 text-blue-600 flex-shrink-0 mt-0.5" />
             <p>
               <strong>Analysis:</strong> Composite scores stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
             </p>
@@ -435,14 +435,14 @@ export const MonteCarloPlinko: React.FC = () => {
         <div className="border border-slate-200 rounded-2xl p-4 flex flex-col bg-white shadow-sm relative">
           <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
             <div>
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-150">
+              <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-150">
                 Route 003: High Swing
               </span>
-              <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Westmount — Stadium</h4>
+              <h4 className="font-bold text-slate-900 mt-2 font-sans text-lg sm:text-xl md:text-2xl">Westmount — Stadium</h4>
             </div>
             <div className="text-right flex flex-col">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
-              <span className="text-sm font-black text-orange-600 font-mono leading-none mt-1">{r3Stats.std.toFixed(1)}</span>
+              <span className="text-[14px] md:text-[16px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-orange-600 font-mono leading-none mt-1">{r3Stats.std.toFixed(1)}</span>
             </div>
           </div>
 
@@ -455,9 +455,9 @@ export const MonteCarloPlinko: React.FC = () => {
               <line x1={300} y1={20} x2={300} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
 
               {/* Grid Labels */}
-              <text x={40} y={193} fontSize={8} fontWeight={700} fill="#94A3B8" textAnchor="middle">0</text>
-              <text x={170} y={193} fontSize={8} fontWeight={700} fill="#64748B" textAnchor="middle">50</text>
-              <text x={300} y={193} fontSize={8} fontWeight={700} fill="#94A3B8" textAnchor="middle">100</text>
+              <text x={40} y={193} fontSize={16} fontWeight={700} fill="#94A3B8" textAnchor="middle">0</text>
+              <text x={170} y={193} fontSize={16} fontWeight={700} fill="#64748B" textAnchor="middle">50</text>
+              <text x={300} y={193} fontSize={16} fontWeight={700} fill="#94A3B8" textAnchor="middle">100</text>
 
               {/* Axis line */}
               <line x1={20} y1={180} x2={310} y2={180} stroke="#94A3B8" strokeWidth={1} />
@@ -499,15 +499,14 @@ export const MonteCarloPlinko: React.FC = () => {
             </svg>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-550 leading-relaxed font-sans min-h-[60px]">
-            <Info className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
+          <div className="mt-3 flex items-start gap-3 bg-slate-55 border border-slate-200 p-4 rounded-xl text-sm sm:text-base md:text-lg text-slate-550 leading-relaxed font-sans min-h-[70px]">
+            <Info className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
             <p>
               <strong>Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to policy focus.
             </p>
           </div>
-        </div>
-
       </div>
+    </div>
 
       {/* Fullscreen stats and history log */}
       {isFullscreen && (
