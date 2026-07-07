@@ -793,7 +793,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       </div>
 
                       <p className="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
-                        <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score elasticity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
+                        <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score sensitivity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
                       </p>
                     </div>
                   </div>
@@ -1312,10 +1312,10 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
             </div>
           </section>
 
-          {/* ================= SECTION 8: Route Stability and Elasticity ================= */}
+          {/* ================= SECTION 8: Route Stability and Volatility ================= */}
           <section id="section-8" className="flex flex-col gap-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Elasticity: What's the Perfect Mix?</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 When policy priorities change, some routes shift dramatically in grade, while others remain stable. To model this behaviour, we ran a sensitivity simulation calculating route scores across 1,000 policy weight combinations.
               </p>
