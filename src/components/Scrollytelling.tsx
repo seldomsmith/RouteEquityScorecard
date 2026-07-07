@@ -30,6 +30,7 @@ import { FourPillars } from './widgets/FourPillars';
 import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
+import { BackgroundParallaxMap } from './widgets/BackgroundParallaxMap';
 import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
@@ -351,7 +352,8 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
+    <div ref={containerRef} className="h-screen w-full flex flex-col font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
+      <BackgroundParallaxMap scrollProgress={scrollProgress} />
       
       {/* 🚌 Fixed Scrollytelling Header with Subway Map Scroll Progress Tracker */}
       <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
@@ -440,7 +442,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
       </header>
 
       {/* Main Scrollytelling Container */}
-      <main className="flex-grow pt-24 pb-20 w-full flex justify-center bg-slate-50">
+      <main className="flex-grow pt-24 pb-20 w-full flex justify-center bg-transparent z-10">
         <div className="w-full max-w-3xl px-6 flex flex-col gap-24">
           
           {/* ================= SECTION 1: Introduction ================= */}
