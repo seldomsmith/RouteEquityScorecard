@@ -505,6 +505,7 @@ export const MonteCarloPlinko: React.FC = () => {
               <strong>Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to policy focus.
             </p>
           </div>
+        </div>
       </div>
 
       {/* Fullscreen stats and history log */}
