@@ -29,6 +29,10 @@ export const BackgroundParallaxMap: React.FC<BackgroundParallaxMapProps> = ({ sc
       attributionControl: false,
     });
 
+    map.on('load', () => {
+      map.resize();
+    });
+
     mapRef.current = map;
 
     return () => {
@@ -76,12 +80,10 @@ export const BackgroundParallaxMap: React.FC<BackgroundParallaxMapProps> = ({ sc
   }, [scrollProgress]);
 
   return (
-    <>
-      <div className="fixed inset-0 z-0 bg-slate-50 pointer-events-none" />
-      <div 
-        ref={mapContainerRef} 
-        className="fixed inset-0 z-0 pointer-events-none select-none opacity-[0.22] saturate-0 brightness-[0.98] contrast-[1.35] filter"
-      />
-    </>
+    <div 
+      ref={mapContainerRef} 
+      className="fixed top-0 left-0 z-0 pointer-events-none select-none opacity-[0.25] saturate-0 brightness-[0.98] contrast-[1.35] filter"
+      style={{ width: '100vw', height: '100vh' }}
+    />
   );
 };
