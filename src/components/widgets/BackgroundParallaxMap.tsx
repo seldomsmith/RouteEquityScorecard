@@ -80,8 +80,7 @@ export const BackgroundParallaxMap: React.FC<BackgroundParallaxMapProps> = ({ sc
       <div className="fixed inset-0 z-0 bg-slate-50 pointer-events-none" />
       <div 
         ref={mapContainerRef} 
-        className="fixed inset-0 z-0 pointer-events-none select-none opacity-[0.05] saturate-0 brightness-[1.02] filter contrast-[0.95]"
-        style={{ mixBlendMode: 'multiply' }}
+        className="fixed inset-0 z-0 pointer-events-none select-none opacity-[0.22] saturate-0 brightness-[0.98] contrast-[1.35] filter"
       />
     </>
   );
