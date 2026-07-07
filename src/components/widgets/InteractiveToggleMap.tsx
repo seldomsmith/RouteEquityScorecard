@@ -441,15 +441,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
               </div>
             )}
 
-            {mode === 'monopoly' && (
-              <div className="flex flex-col gap-1">
-                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Alternative transit options:</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-1 bg-slate-350 rounded-sm inline-block" />
-                  <span>Overlapping Route Tracks</span>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       </div>

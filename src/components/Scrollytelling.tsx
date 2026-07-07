@@ -466,15 +466,12 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           <section id="section-2" className="flex flex-col gap-6">
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
-              <p className="text-slate-600 text-base leading-relaxed">
-                The model evaluates every route across four pillars. Click each card below to inspect its methodology definition:
-              </p>
             </div>
 
             <FourPillars />
 
             <p className="text-slate-600 text-base leading-relaxed">
-              Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score.
+              Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score. Explore each pillar below.
             </p>
           </section>
 
@@ -819,7 +816,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     routeNumber="002" 
                     theme="blue" 
                     title="Route 002: Reduced Night Hours (Score: 31.3)" 
-                    description="Route 002 operates frequently during weekdays, but service drops during off-peak times, reducing options for late-night shift workers."
+                    description="Route 002 operates frequently during weekdays, but service drops during off-peak times, reducing options for late-night riders."
                   />
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col">
@@ -1563,7 +1560,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* Limitation 1 */}
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">1. The Ecological Fallacy</h3>
+                    <h3 className="text-xl font-bold text-slate-900">I. The Ecological Fallacy</h3>
                     <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Evaluating demographic data aggregated at the Dissemination Area (DA) level, which is the smallest geographic unit used by Statistics Canada, assumes that individual residents match their neighbourhood average. In reality, affluent residents live in vulnerable DAs, and transit-dependent families live in wealthy areas. Because the model scores geography rather than individuals, isolated pockets of need are often obscured by broader neighbourhood averages.
                     </p>
@@ -1631,7 +1628,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* Limitation 2 */}
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">2. Static Schedules vs. Real-World Reliability</h3>
+                    <h3 className="text-xl font-bold text-slate-900">II. Static Schedules vs. Real-World Reliability</h3>
                     <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Off-peak scores are calculated using static General Transit Feed Specification (GTFS) schedules, which are the digital timetables published by the city. This approach assumes buses run on time. The model ignores real-world detours, weather delays, and cancellations, which influence whether a resident chooses to use transit. A scheduled 15-minute route that experiences regular delays is often less useful to riders than a highly reliable, uninterrupted 30-minute route.
                     </p>
@@ -1673,7 +1670,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* Limitation 3 */}
                 <div className="flex flex-col gap-4 border-b border-slate-200 pb-8">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">3. Catchment Buffers vs. Physical Barriers</h3>
+                    <h3 className="text-xl font-bold text-slate-900">III. Catchment Buffers vs. Physical Barriers</h3>
                     <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       Walking catchments assume ideal pedestrian access and uniform walking speeds. The model cannot detect micro-level barriers, such as broken sidewalks, snow-blocked paths, missing crosswalks, or major highway crossings, that make walking unsafe or impossible for seniors and residents with mobility aids.
                     </p>
@@ -1685,7 +1682,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 {/* Limitation 4 */}
                 <div className="flex flex-col gap-4">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">4. Destination Quantity vs. Quality</h3>
+                    <h3 className="text-xl font-bold text-slate-900">IV. Destination Quantity vs. Quality</h3>
                     <p className="text-slate-605 text-sm mt-1 leading-relaxed">
                       The Destination Opportunity pillar counts the presence of services but ignores their affordability or capacity. It treats a luxury organic market and a discount grocery store as identical food destinations, despite their vastly different utility to low-income riders.
                     </p>
@@ -1703,10 +1700,10 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">10. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
-                Scoring transit routes across the four pillars and simulating their stability provides analytical data to help planners design and schedule routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing planners to predict how service adjustments might impact neighbourhoods – for better or for worse.
+                Scoring transit routes across the four pillars and simulating their stability provides analytical data to help planners design and schedule routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing decision makers to predict how service adjustments might impact neighbourhoods – for better or for worse.
               </p>
               <p className="text-slate-605 text-base leading-relaxed">
-                Transit equity recognizes that equal service is not always equitable service. True equity requires directing resources where they will do the most to reduce mobility barriers for residents who rely on transit the most. While policy decisions will always involve subjective value judgements, this framework makes those trade-offs transparent, allowing planners to build equity directly into daily transit operations.
+                Transit equity recognizes that equal service is not always equitable service. True equity requires directing resources where they will do the most to reduce mobility barriers for residents who rely on transit the most. While policy decisions will always involve subjective value judgments, this framework makes those trade-offs transparent, allowing decision makers to build equity directly into daily transit operations.
               </p>
             </div>
           </section>

@@ -45,12 +45,26 @@ export const DataExplorerModal: React.FC<DataExplorerModalProps> = ({
       const p3 = typeof route.pillar_3 === 'number' ? route.pillar_3 : (route.pillar_3_monopoly || 0);
       const p4 = typeof route.pillar_4 === 'number' ? route.pillar_4 : (route.pillar_4_opportunity || 0);
 
-      const v = p1 * (weights.vulnerability / 100);
-      const t = p2 * (weights.resilience / 100);
-      const m = p3 * (weights.monopoly / 100);
-      const o = p4 * (weights.opportunity / 100);
+      const vulnerabilityWeight = weights?.vulnerability ?? 25;
+      const resilienceWeight = weights?.resilience ?? (weights as any)?.offPeak ?? 25;
+      const monopolyWeight = weights?.monopoly ?? 25;
+      const opportunityWeight = weights?.opportunity ?? 25;
+
+      let v = p1 * (vulnerabilityWeight / 100);
+      let t = p2 * (resilienceWeight / 100);
+      let m = p3 * (monopolyWeight / 100);
+      let o = p4 * (opportunityWeight / 100);
+
+      if (isNaN(v)) v = p1 * 0.25;
+      if (isNaN(t)) t = p2 * 0.25;
+      if (isNaN(m)) m = p3 * 0.25;
+      if (isNaN(o)) o = p4 * 0.25;
       
-      const liveScore = v + t + m + o;
+      let liveScore = v + t + m + o;
+      if (isNaN(liveScore) || liveScore === 0) {
+        liveScore = route.composite_score || 50;
+      }
+      
       const sens = sensitivityMap.get(String(route.route_id));
       const score_mean = sens ? sens.score_mean : liveScore;
       const score_std = sens ? sens.score_std : 0.0;

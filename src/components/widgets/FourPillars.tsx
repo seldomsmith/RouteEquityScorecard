@@ -11,7 +11,7 @@ export const FourPillars: React.FC = () => {
       icon: Users,
       color: '#EF4444', // Red
       glowColor: '0 90 60',
-      description: 'Tracks demographic data along a route. Priority points go to stops adjacent to households with low-income, senior, youth, lone-parent, or visible minority residents.',
+      description: 'Measures neighborhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
     },
     {
       title: 'Destination Opportunity',
