@@ -1,5 +1,5 @@
-# Debian-based single-stage Dockerfile optimized for Google Cloud Run compatibility
-FROM node:20-slim
+# Google Cloud Mirror single-stage Dockerfile optimized for GCR compatibility
+FROM mirror.gcr.io/library/node:20-slim
 
 WORKDIR /app
 
