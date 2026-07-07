@@ -38,12 +38,7 @@ export const FourPillars: React.FC = () => {
 
   return (
     <div className="w-full mt-4 flex flex-col gap-6 md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
-      <div className="text-center mb-2">
-        <span className="text-sm font-black text-blue-900 uppercase tracking-wider block">The Four Pillars of Transit Equity</span>
-        <span className="text-[10px] text-slate-400 font-semibold mt-1 block">
-          Explore the four core dimensions used to calculate transit equity network-wide.
-        </span>
-      </div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[220px]">
         {pillars.map((p, idx) => {
