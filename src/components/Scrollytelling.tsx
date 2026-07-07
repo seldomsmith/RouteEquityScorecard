@@ -36,6 +36,7 @@ import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
 import { Maximize2, X } from 'lucide-react';
 import { mapStabilityClass } from '@/utils/stability';
+import { ScrollytellingSplit } from './ScrollytellingSplit';
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -143,6 +144,7 @@ const CustomChartTooltip = ({ active, payload }: any) => {
 export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   const containerRef = useRef(null as HTMLDivElement | null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isSplitScreen, setIsSplitScreen] = useState(false);
   const [sensitivityData, setSensitivityData] = useState([] as any[]);
 
   // States to hold route geometry & boundaries for the inline ExplainerMaps
@@ -348,7 +350,33 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
       r3.opportunity * (weights.opportunity / 100)
     )
   };
-
+  if (isSplitScreen) {
+    return (
+      <ScrollytellingSplit
+        onBack={onBack}
+        onJumpIn={onJumpIn}
+        scrollProgress={scrollProgress}
+        setScrollProgress={setScrollProgress}
+        sensitivityData={sensitivityData}
+        route2Data={route2Data}
+        route3Data={route3Data}
+        route727Data={route727Data}
+        allRoutesData={allRoutesData}
+        odtGeoJson={odtGeoJson}
+        daGeoJson={daGeoJson}
+        weights={weights}
+        handleWeightChange={handleWeightChange}
+        activeSimulatorRouteId={activeSimulatorRouteId}
+        setActiveSimulatorRouteId={setActiveSimulatorRouteId}
+        showFullscreenScatterplot={showFullscreenScatterplot}
+        setShowFullscreenScatterplot={setShowFullscreenScatterplot}
+        showFullscreenSimulator={showFullscreenSimulator}
+        setShowFullscreenSimulator={setShowFullscreenSimulator}
+        isSplitScreen={isSplitScreen}
+        setIsSplitScreen={setIsSplitScreen}
+      />
+    );
+  }
 
   return (
     <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
@@ -365,7 +393,18 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </button>
           <div className="flex flex-col">
             <span className="text-xs font-black text-blue-900 uppercase tracking-widest leading-none">ETS Route Equity Scorecard</span>
-            <span className="text-[10px] font-semibold text-teal-650 leading-none mt-1">Scroll down to read</span>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[10px] font-semibold text-teal-650 leading-none">Scroll down to read</span>
+              <button 
+                onClick={() => setIsSplitScreen(!isSplitScreen)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  isSplitScreen 
+                    ? 'bg-blue-600 shadow-sm shadow-blue-500/50 scale-110 hover:bg-blue-700' 
+                    : 'bg-slate-300 hover:bg-slate-400 hover:scale-110'
+                }`}
+                title="Toggle Split-Screen Layout"
+              />
+            </div>
           </div>
         </div>
 
