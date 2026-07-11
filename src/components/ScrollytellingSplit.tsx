@@ -578,7 +578,7 @@ export const ScrollytellingSplit: React.FC<ScrollytellingSplitProps> = ({
             <div className="space-y-4">
               <h2 className="text-2xl font-black text-blue-900 leading-tight">8. Route Stability & Volatility</h2>
               <p className="text-slate-600 text-sm leading-relaxed">
-                By running a 1,000-run Monte Carlo simulation shifting weights, we identify stability profiles:
+                As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 1,000 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
               </p>
               <ul className="list-disc pl-5 text-slate-655 text-xs font-semibold space-y-2 leading-relaxed">
                 <li><strong>Essential Equity:</strong> Remains high-priority regardless of configuration (e.g. Route 002).</li>
@@ -586,8 +586,11 @@ export const ScrollytellingSplit: React.FC<ScrollytellingSplitProps> = ({
                 <li><strong>Moderate Swing:</strong> Steady mid-range scores.</li>
                 <li><strong>Low Equity:</strong> Consistently low scores.</li>
               </ul>
+              <p className="text-slate-600 text-xs leading-relaxed mt-2 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-inner">
+                There is no perfect mix of pillar weights, they all rely on subjective value determinations, but this analysis shows us which routes are performing a high equity service no matter how we weight them.
+              </p>
               <p className="text-slate-600 text-xs leading-relaxed italic border-l-2 border-slate-200 pl-3">
-                Watch the organic simulation distribution and inspect the Policy Risk Map scatter plot on the right.
+                Watch the organic simulation distribution and inspect the Pillar Sensitivity Map scatter plot on the right.
               </p>
             </div>
           </section>
@@ -828,7 +831,7 @@ export const ScrollytellingSplit: React.FC<ScrollytellingSplitProps> = ({
               showFullscreenScatterplot ? 'fixed inset-4 z-[90] min-h-0' : 'min-h-[480px]'
             }`}>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase text-blue-900 tracking-wider">Risk Map: Mean Score vs Volatility</span>
+                <span className="text-[10px] font-black uppercase text-blue-900 tracking-wider">Pillar Sensitivity Map: Mean Score vs Volatility</span>
                 <button
                   onClick={() => setShowFullscreenScatterplot(!showFullscreenScatterplot)}
                   className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"

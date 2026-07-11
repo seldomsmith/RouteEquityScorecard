@@ -1446,7 +1446,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                When policy priorities change, some routes shift dramatically in grade, while others remain stable. To model this behaviour, we ran a sensitivity simulation calculating route scores across 1,000 policy weight combinations.
+                As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 1,000 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
               </p>
               <p className="text-slate-655 text-base leading-relaxed font-semibold">
                 This simulation reveals four route stability classifications:
@@ -1466,10 +1466,10 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
-                    These routes score highly across all weight scenarios, maintaining ranking stability regardless of the active policy configuration.
+                    These routes score highly across all weight scenarios, maintaining ranking stability regardless of the active pillar configuration.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    Route 002 consistently receives a high route equity score regardless of how the model is weighted. This classification is due to Route 002 scoring exceptionally high on three of the four pillars: Vulnerability (80.8), Monopoly (67.6), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize the demographic weights and heavily favor Off-Peak Service (its lowest scoring policy weight at 31.3), Route 002's scores on the other three policy weights ensure it remains a high scoring route for equity.
+                    Route 002 consistently receives a high route equity score regardless of how the model is weighted. This classification is due to Route 002 scoring exceptionally high on three of the four pillars: Vulnerability (80.8), Monopoly (67.6), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize the demographic weights and heavily favor Off-Peak Service (its lowest scoring pillar weight at 31.3), Route 002's scores on the other three pillar weights ensure it remains a high scoring route for equity.
                   </p>
                 </div>
 
@@ -1498,7 +1498,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
-                    These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to policy changes, representing stable baseline operations.
+                    These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to pillar changes, representing stable baseline operations.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
                     For example, Route 913 (West Edmonton Mall – Jamieson Place) does not feature extreme highs or absolute zeros in any single category. Under the simulation, its scores remain remarkably stable, maintaining an average score of 50.03 with a very low standard deviation of just 4.88.
@@ -1514,7 +1514,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
-                    These routes consistently receive lower equity scores across all possible policy weight combinations, typically running through affluent sectors.
+                    These routes consistently receive lower equity scores across all possible pillar weight combinations, typically running through affluent sectors.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
                     Route 524 (Bonnie Doon – Holyrood) falls into this category, averaging a score of just 8.9 out of 100 across all configurations.
@@ -1526,7 +1526,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 Identifying these classifications for each route helps us identify which routes should be protected and how different service changes may impact specific routes.
               </p>
               <p className="text-slate-605 text-base leading-relaxed">
-                <strong>There is no perfect mix of policy weights but this analysis shows us which routes are performing a high equity service no matter how we weight them.</strong>
+                <strong>There is no perfect mix of pillar weights, they all rely on subjective value determinations, but this analysis shows us which routes are performing a high equity service no matter how we weight them.</strong>
               </p>
             </div>
 
@@ -1546,7 +1546,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               </button>
 
               <div className="text-center mb-4 mt-2">
-                <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Policy Risk Map: Mean Score vs. Volatility</span>
+                <span className="text-sm font-black text-blue-900 uppercase tracking-wider">Pillar Sensitivity Map: Mean Score vs. Volatility</span>
                 <p className="text-xs text-slate-500 mt-1">Route 002 and Route 003 highlighted relative to all 170 network routes. Hover over each route for more detail.</p>
               </div>
 
