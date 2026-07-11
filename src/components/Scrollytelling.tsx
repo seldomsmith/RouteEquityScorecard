@@ -34,7 +34,7 @@ import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, HelpCircle } from 'lucide-react';
 import { mapStabilityClass } from '@/utils/stability';
 import { ScrollytellingSplit } from './ScrollytellingSplit';
 
