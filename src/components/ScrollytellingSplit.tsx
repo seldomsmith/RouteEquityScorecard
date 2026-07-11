@@ -487,12 +487,39 @@ export const ScrollytellingSplit: React.FC<ScrollytellingSplitProps> = ({
             </div>
           </section>
 
-          {/* SECTION 7: Policy Weights Simulator */}
+          {/* SECTION 7: Pillar Weights Simulator */}
           <section id="split-section-7" className={getSectionClass('section-7')}>
             <div className="space-y-4">
-              <h2 className="text-2xl font-black text-blue-900 leading-tight">7. Policy Weights Simulator</h2>
+              <h2 className="text-2xl font-black text-blue-900 leading-tight">7. Balancing the Different Pillar Weights</h2>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Planners adjust weights depending on strategic focus. Use the sliders below to see how dynamic weighting recalculates composite scores in real-time.
+                After evaluating the four pillars, we are able to combine them to generate an overall equity score for each route; however, the weighting of the four pillars can impact the final score of the route. Each score is out of 100 and the routes are sorted into quintiles with a grade assigned, A through E with A being the highest scoring routes (most important for equity) and E for the lowest scoring routes (least important for equity).
+              </p>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Under a balanced weighting, with equal weighting of 25% across all four pillars:
+              </p>
+              <ul className="text-xs text-slate-600 leading-relaxed mt-2 space-y-2 list-disc pl-5">
+                <li>
+                  Route 002 receives a score of 68.1 or a B grade as it has high scores from the vulnerability, monopoly, and destination opportunity categories. This makes it a high scoring route and highly important for transit equity.
+                </li>
+                <li>
+                  Route 003 receives a score of 18.6 or an E grade. This low score is attributed to the higher-income neighbourhoods it serves and overlaps with alternative transit options (low monopoly score).
+                </li>
+              </ul>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+              </p>
+              <ul className="text-xs text-slate-600 leading-relaxed mt-2 space-y-2 list-disc pl-5">
+                <li>
+                  Route 002 decreases from 68.1 to 63.8: Although its vulnerability score is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
+                </li>
+                <li>
+                  Route 003 increases from 18.6 to 24.4: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
+                </li>
+              </ul>
+              <p className="text-slate-600 text-xs leading-relaxed mt-4 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-inner">
+                Use the pillar weight simulator below to show how weighting the different pillars can impact the final scoring of Route 002 and Route 003.
+                <br /><br />
+                <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the pillar weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
               </p>
 
               {/* Policy Weight Sliders inside the Left Column */}

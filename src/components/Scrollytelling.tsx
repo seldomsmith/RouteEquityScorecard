@@ -1254,27 +1254,41 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           {/* ================= SECTION 7: Policy Weights Simulator ================= */}
           <section id="section-7" className={getSectionClass('section-7')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Policy Weights</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Pillar Weights</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                After evaluating the four pillars, transit planners combine them to generate a total equity score for each route. Determining the priority given to each pillar represents a fundamental policy choice.
+                After evaluating the four pillars, we are able to combine them to generate an overall equity score for each route; however, the weighting of the four pillars can impact the final score of the route. Each score is out of 100 and the routes are sorted into quintiles with a grade assigned, A through E with A being the highest scoring routes (most important for equity) and E for the lowest scoring routes (least important for equity).
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
-                Under a balanced policy with equal 25% weights across all four pillars, the model translates scores into academic-style letter grades from A (representing the highest equity priority) to F (representing the lowest equity priority). With equal weighting, Route 002 receives a B grade (68.1), as its strong performance in vulnerability, monopoly, and destination opportunity makes it a high priority for service protection. Route 003 receives an E grade (18.6), a low equity priority because it serves higher-income neighbourhoods and overlaps with alternative transit options.
-              </p>
-              <p className="text-slate-600 text-base leading-relaxed">
-                When policy priorities shift, these scores adjust accordingly. For example, if a policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+                Under a balanced weighting, with equal weighting of 25% across all four pillars:
               </p>
               <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-blue-950 font-bold">Route 002 decreases from 68.1 to 63.8</strong>: Although its demographic vulnerability weight is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
+                    Route 002 receives a score of 68.1 or a B grade as it has high scores from the vulnerability, monopoly, and destination opportunity categories. This makes it a high scoring route and highly important for transit equity.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-blue-950 font-bold">Route 003 increases from 18.6 to 24.4</strong>: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
+                    Route 003 receives a score of 18.6 or an E grade. This low score is attributed to the higher-income neighbourhoods it serves and overlaps with alternative transit options (low monopoly score).
+                  </span>
+                </li>
+              </ul>
+              <p className="text-slate-600 text-base leading-relaxed">
+                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+              </p>
+              <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
+                  <span className="flex-1">
+                    Route 002 decreases from 68.1 to 63.8: Although its vulnerability score is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
+                  <span className="flex-1">
+                    Route 003 increases from 18.6 to 24.4: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
                   </span>
                 </li>
               </ul>
@@ -1299,7 +1313,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
               <div className="flex flex-col items-center">
                 <Zap className="w-8 h-8 text-teal-600 mb-1" />
-                <span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Policy Weights Simulator</span>
+                <span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Pillar Weights Simulator</span>
                 <span className="text-xs text-slate-400 mt-0.5 text-center">Adjust weights to see how route scores shift instantly</span>
               </div>
               
@@ -1411,8 +1425,10 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 </div>
               </div>
               
-              <p className="text-slate-605 text-base leading-relaxed mt-4">
-                <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the policy weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
+              <p className="text-slate-600 text-xs md:text-sm leading-relaxed mt-4 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                Use the pillar weight simulator below to show how weighting the different pillars can impact the final scoring of Route 002 and Route 003.
+                <br /><br />
+                <strong>Note on Scoring (A–E):</strong> Routes are graded on a curve by dividing the network into five equal groups (quintiles). Because this is a relative ranking, a route's final letter grade depends not only on its own raw score but on how it compares to the rest of the network. As you adjust the pillar weights, a route might shift into a higher or lower grade simply because the priorities of the overall network have changed.
               </p>
               <div className="mt-4 flex justify-center">
                 <button
