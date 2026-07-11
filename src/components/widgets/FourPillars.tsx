@@ -47,46 +47,30 @@ export const FourPillars: React.FC = () => {
           return (
             <div 
               key={idx}
-              className="group relative w-full"
+              className="w-full pillar-card-lift flex flex-col bg-white rounded-2xl border-2 overflow-hidden"
+              style={{ 
+                '--pillar-color': p.color,
+              } as React.CSSProperties}
             >
-              <BorderGlow
-                animated={true}
-                edgeSensitivity={30}
-                glowRadius={40}
-                glowIntensity={1.2}
-                coneSpread={25}
-                borderRadius={16}
-                backgroundColor="transparent"
-                glowColor={p.glowColor}
-                colors={[p.color]}
-                className="w-full h-full rounded-2xl shadow-sm"
+              {/* Top Segment: Colored Header */}
+              <div 
+                className="p-5 flex flex-col items-center justify-center text-center text-white select-none"
+                style={{ backgroundColor: p.color }}
               >
-                {/* Inner Card Container */}
-                <div 
-                  className="w-full h-full flex flex-col bg-white rounded-2xl border-2 overflow-hidden"
-                  style={{ borderColor: p.color }}
-                >
-                  {/* Top Segment: Colored Header */}
-                  <div 
-                    className="p-5 flex flex-col items-center justify-center text-center text-white"
-                    style={{ backgroundColor: p.color }}
-                  >
-                    <div className="p-2.5 bg-white/15 rounded-lg border border-white/20 mb-2">
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-wider leading-tight">
-                      {p.title}
-                    </span>
-                  </div>
-
-                  {/* Bottom Segment: White Text Body */}
-                  <div className="flex-1 p-5 flex flex-col justify-start bg-white">
-                    <p className="text-[11px] text-slate-655 leading-relaxed font-semibold">
-                      {p.description}
-                    </p>
-                  </div>
+                <div className="p-2.5 bg-white/15 rounded-lg border border-white/20 mb-2">
+                  <Icon className="w-5 h-5 text-white" />
                 </div>
-              </BorderGlow>
+                <span className="text-xs font-black uppercase tracking-wider leading-tight">
+                  {p.title}
+                </span>
+              </div>
+
+              {/* Bottom Segment: White Text Body */}
+              <div className="flex-1 p-5 flex flex-col justify-start bg-white">
+                <p className="text-[11px] text-slate-655 leading-relaxed font-semibold">
+                  {p.description}
+                </p>
+              </div>
             </div>
           );
         })}
