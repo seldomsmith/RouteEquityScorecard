@@ -667,6 +667,113 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       <p className="leading-relaxed">
                         A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then converted to a scale of 0 to 100 relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents score higher.
                       </p>
+
+                      <div className="border-t border-slate-200 pt-6 mt-6 space-y-6">
+                        <div className="border-b border-slate-200 pb-4">
+                          <h3 className="text-2xl font-black text-slate-900 leading-tight">Neighbourhood Data Reliability Analysis</h3>
+                          <p className="text-xs text-slate-500 mt-1">Measuring the stability and volatility of vulnerability rankings across Edmonton.</p>
+                        </div>
+                        
+                        <p className="text-slate-600 text-sm leading-relaxed">
+                          We wanted to know if the vulnerability rankings for different Edmonton neighbourhoods would change significantly if we shifted the importance of our six demographic markers: Low Income, Visible Minorities, Seniors, Recent Immigrants, Lone Parents, and Youth. To test this, we ran a "sensitivity analysis" to see how stable the data really is.
+                        </p>
+
+                        <div className="space-y-2">
+                          <h4 className="text-base font-bold text-slate-800">How We Tested the Data</h4>
+                          <p className="text-slate-600 text-sm leading-relaxed">
+                            We tested over <strong>88,000 different weight combinations</strong> across Edmonton’s 1,762 populated neighbourhoods (Dissemination Areas). This involved about <strong>156 million calculations</strong> to see if changing the "math" behind the scores would drastically flip which areas were considered high-need versus low-need.
+                          </p>
+                          <p className="text-slate-600 text-sm leading-relaxed">
+                            The goal was to measure the "volatility", or how much a score moves, when the weights change. If a neighbourhood’s score stays roughly the same regardless of the weights, the data is considered stable and reliable.
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="text-base font-bold text-slate-805 text-[14px]">Neighbourhood Stability Examples</h4>
+                          <p className="text-slate-600 text-sm leading-relaxed">
+                            This table shows how different types of neighbourhoods reacted to the thousands of weight changes. Most areas remained very consistent.
+                          </p>
+
+                          <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
+                            <table className="min-w-full divide-y divide-slate-200">
+                              <thead className="bg-slate-50 font-bold text-slate-700 text-xs">
+                                <tr>
+                                  <th className="px-4 py-3 text-left">Neighbourhood Name</th>
+                                  <th className="px-4 py-3 text-right">Mean Score (0-100)</th>
+                                  <th className="px-4 py-3 text-right">Standard Deviation (Volatility)</th>
+                                  <th className="px-4 py-3 text-left">Priority Stability Class</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200 font-semibold text-slate-655 text-xs">
+                                <tr>
+                                  <td className="px-4 py-3">ABBOTTSFIELD</td>
+                                  <td className="px-4 py-3 text-right">66.11</td>
+                                  <td className="px-4 py-3 text-right text-rose-600">12.54</td>
+                                  <td className="px-4 py-3 text-rose-700 bg-rose-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Highly Volatile (Borderline C/B Node)</td>
+                                </tr>
+                                <tr>
+                                  <td className="px-4 py-3">QUEEN MARY PARK</td>
+                                  <td className="px-4 py-3 text-right">56.53</td>
+                                  <td className="px-4 py-3 text-right text-amber-600">9.59</td>
+                                  <td className="px-4 py-3 text-amber-700 bg-amber-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Moderately Volatile</td>
+                                </tr>
+                                <tr>
+                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
+                                  <td className="px-4 py-3 text-right">48.48</td>
+                                  <td className="px-4 py-3 text-right text-emerald-600">6.37</td>
+                                  <td className="px-4 py-3 text-emerald-700 bg-emerald-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">High Stability (Consistent Average Need)</td>
+                                </tr>
+                                <tr>
+                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
+                                  <td className="px-4 py-3 text-right">28.05</td>
+                                  <td className="px-4 py-3 text-right text-emerald-600">4.12</td>
+                                  <td className="px-4 py-3 text-emerald-700 bg-emerald-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">High Stability (Consistent Low-Moderate Need)</td>
+                                </tr>
+                                <tr>
+                                  <td className="px-4 py-3">BELLEVUE</td>
+                                  <td className="px-4 py-3 text-right">21.93</td>
+                                  <td className="px-4 py-3 text-right text-blue-600">3.16</td>
+                                  <td className="px-4 py-3 text-blue-700 bg-blue-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Highly Resilient (Consistent Low Need)</td>
+                                </tr>
+                                <tr>
+                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
+                                  <td className="px-4 py-3 text-right">0.00</td>
+                                  <td className="px-4 py-3 text-right text-slate-500">0.00</td>
+                                  <td className="px-4 py-3 text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Absolute Stability (Unpopulated Area)</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <p className="text-slate-400 text-[10px] italic">
+                            (Note: The full dataset for all 1,762 Dissemination Areas is neighbourhood_vulnerability_sensitivity)
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="text-base font-bold text-slate-800">Key Findings: What the Results Mean</h4>
+                          <p className="text-slate-600 text-sm leading-relaxed">
+                            The most important takeaway is that <strong>Edmonton’s neighbourhood rankings are incredibly stable</strong>. Even when we significantly changed the weights, 95% of neighbourhoods saw their scores shift by less than 10 points on a 100-point scale. This means that a high-need neighbourhood stays high-priority, no matter how you tweak the formula.
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="text-base font-bold text-slate-800">Why the Rankings Stay Steady</h4>
+                          <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2 leading-relaxed">
+                            <li><strong>Standardized Scaling:</strong> Every indicator is converted to a common scale first. This prevents one large group from drowning out others just because of their population size.</li>
+                            <li><strong>Limited Weight Ranges:</strong> By keeping the weights within a reasonable range, we ensure no single variable can take over the entire index.</li>
+                            <li><strong>Linear Stability:</strong> Neighbourhoods with very low needs are the most stable—their scores almost never change. As needs increase, volatility rises slightly because there are more active factors to weight, but the overall priority level remains clear.</li>
+                          </ul>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="text-base font-bold text-slate-800">Practical Impacts for the ETS Route Equity Scorecard</h4>
+                          <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2 leading-relaxed">
+                            <li><strong>Fair and Defensible Grades:</strong> Since the neighbourhood scores are so stable, the final "A to E" grades for transit routes are mathematically solid. A route gets a high equity grade because it serves real needs, not because of biased weighting.</li>
+                            <li><strong>Simple Math is Better:</strong> Because complex statistical models gave nearly identical results to a simple average, we can use a transparent "Equal Weight" model. This is much easier to explain to the public and city council.</li>
+                            <li><strong>Focus on Service, Not Debates:</strong> Decision makers do not need to spend time determining which group is "more important." The math proves that the geographic patterns of need are robust.</li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
