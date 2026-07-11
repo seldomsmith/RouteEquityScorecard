@@ -102,3 +102,33 @@
     8px 8px 0px #005580;
 }
 
+.pillar-card-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  transform: translate(0, 0);
+  border-color: var(--pillar-color);
+  box-shadow:
+    1px 1px 0px 0px var(--pillar-color),
+    2px 2px 0px 0px var(--pillar-color),
+    3px 3px 0px 0px var(--pillar-color),
+    4px 4px 0px 0px var(--pillar-color),
+    5px 5px 0px 0px var(--pillar-color),
+    6px 6px 0px 0px var(--pillar-color);
+}
+
+.pillar-card-lift:hover {
+  transform: translate(-6px, -6px);
+  box-shadow:
+    1px 1px 0px 0px var(--pillar-color),
+    2px 2px 0px 0px var(--pillar-color),
+    3px 3px 0px 0px var(--pillar-color),
+    4px 4px 0px 0px var(--pillar-color),
+    5px 5px 0px 0px var(--pillar-color),
+    6px 6px 0px 0px var(--pillar-color),
+    7px 7px 0px 0px var(--pillar-color),
+    8px 8px 0px 0px var(--pillar-color),
+    9px 9px 0px 0px var(--pillar-color),
+    10px 10px 0px 0px var(--pillar-color),
+    11px 11px 0px 0px var(--pillar-color),
+    12px 12px 0px 0px var(--pillar-color);
+}
+
