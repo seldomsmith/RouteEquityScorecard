@@ -37,6 +37,8 @@ import { RouteWaterfall } from './RouteWaterfall';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
 import { Maximize2, X, HelpCircle } from 'lucide-react';
 import { mapStabilityClass } from '@/utils/stability';
+import { ScrollytellingSplit } from './ScrollytellingSplit';
+
 interface ScrollytellingProps {
   onBack: () => void;
   onJumpIn: () => void;
@@ -141,7 +143,7 @@ const CustomChartTooltip = ({ active, payload }: any) => {
 };
 
 
-export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: ScrollytellingProps) => {
+export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: ScrollytellingProps) => {
   const containerRef = useRef(null as HTMLDivElement | null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isSplitScreen, setIsSplitScreen] = useState(false);
@@ -157,10 +159,8 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
 
   // Policy Sliders state for Step 7 (Policy Weights)
   const [weights, setWeights] = useState({
-    vulnerability: 25,
-    offPeak: 25,
-    monopoly: 25,
-    opportunity: 25,
+    vulnerability: 50,
+    opportunity: 50,
   });
   
   // State for toggling route in the simulator waterfall chart
@@ -196,8 +196,8 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
     const observer = new IntersectionObserver(handleIntersection, observerOptions);
 
     const sectionIds = [
-      'section-1', 'section-2', 'section-3', 'section-4', 'section-5',
-      'section-6', 'section-odt', 'section-7', 'section-8', 'section-9', 'section-10'
+      'section-1', 'section-2', 'section-3', 'section-4',
+      'section-odt', 'section-7', 'section-8', 'section-9', 'section-10'
     ];
 
     sectionIds.forEach((id) => {
@@ -215,8 +215,6 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
   // State hooks for detailed math expanders
   const [showVulnerabilityMath, setShowVulnerabilityMath] = useState(false);
   const [showOpportunityMath, setShowOpportunityMath] = useState(false);
-  const [showOffPeakMath, setShowOffPeakMath] = useState(false);
-  const [showMonopolyMath, setShowMonopolyMath] = useState(false);
   const [showDataExplorer, setShowDataExplorer] = useState(false);
 
   // Track container scroll progress for the top indicator
@@ -236,7 +234,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
 
   // Fetch sensitivity data for the scatter plot
   useEffect(() => {
-    fetch('/data/sensitivity_summary.csv')
+    fetch('/data/sensitivity_summary_2_pillar.csv')
       .then((res) => res.text())
       .then((text) => {
         const lines = text.split('\n');
@@ -306,31 +304,12 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
   }, []);
 
   const handleWeightChange = (key: keyof typeof weights, val: number) => {
-    const diff = val - weights[key];
-    const otherKeys = (Object.keys(weights) as (keyof typeof weights)[]).filter(k => k !== key);
-    
-    // Distribute the difference proportionally among the other weights
-    const sumOthers = otherKeys.reduce((sum, k) => sum + weights[k], 0);
-    const newWeights = { ...weights, [key]: val };
-    
-    if (sumOthers > 0) {
-      otherKeys.forEach(k => {
-        const ratio = weights[k] / sumOthers;
-        newWeights[k] = Math.max(0, Math.round(weights[k] - diff * ratio));
-      });
-    } else {
-      otherKeys.forEach(k => {
-        newWeights[k] = Math.max(0, Math.round((100 - val) / 3));
-      });
-    }
-
-    // Adjust any minor rounding discrepancies to ensure total is exactly 100%
-    const total = Object.values(newWeights).reduce((sum, w) => sum + w, 0);
-    if (total !== 100) {
-      newWeights[otherKeys[0]] += (100 - total);
-    }
-
-    setWeights(newWeights);
+    // With only 2 weights, if one changes to `val`, the other must be `100 - val`
+    const otherKey = key === 'vulnerability' ? 'opportunity' : 'vulnerability';
+    setWeights({
+      [key]: val,
+      [otherKey]: 100 - val,
+    } as any);
   };
 
   const r2 = { vulnerability: 80.8, offPeak: 31.3, monopoly: 67.6, opportunity: 92.7 };
@@ -339,14 +318,10 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
   const liveScores = {
     route2: (
       r2.vulnerability * (weights.vulnerability / 100) +
-      r2.offPeak * (weights.offPeak / 100) +
-      r2.monopoly * (weights.monopoly / 100) +
       r2.opportunity * (weights.opportunity / 100)
     ),
     route3: (
       r3.vulnerability * (weights.vulnerability / 100) +
-      r3.offPeak * (weights.offPeak / 100) +
-      r3.monopoly * (weights.monopoly / 100) +
       r3.opportunity * (weights.opportunity / 100)
     )
   };
@@ -379,7 +354,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                     ? 'bg-blue-600 shadow-sm shadow-blue-500/50 scale-110 hover:bg-blue-700' 
                     : 'bg-slate-300 hover:bg-slate-400 hover:scale-110'
                 }`}
-                title="Toggle 2-Pillar View"
+                title="Toggle 4-Pillar View"
               />
             </div>
           </div>
@@ -401,8 +376,6 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
               { id: 'section-2', label: '2. Four Pillars' },
               { id: 'section-3', label: '3. Vulnerability' },
               { id: 'section-4', label: '4. Opportunity' },
-              { id: 'section-5', label: '5. Off Peak Service' },
-              { id: 'section-6', label: '6. Transit Monopoly' },
               { id: 'section-odt', label: 'ODT: On Demand' },
               { id: 'section-7', label: '7. Pillar Weights' },
               { id: 'section-8', label: '8. Stability Index' },
@@ -984,345 +957,6 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                   </div>
                 </div>
               </div>
-            )}
-          </section>
-
-          {/* ================= SECTION 5: Off Peak Service ================= */}
-          <section id="section-5" className={getSectionClass('section-5')}>
-            <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">5. Off Peak Service</h2>
-              <p className="text-slate-655 text-base leading-relaxed">
-                The Off Peak Service pillar tracks route frequency outside standard working hours. This includes service during evenings, late nights, Saturdays, and Sundays.
-              </p>
-              <p className="text-slate-655 text-sm leading-relaxed p-4 bg-slate-100 rounded-xl border border-slate-200 shadow-sm mt-2">
-                <strong>Note:</strong> The scorecard measures the equity value of the <em>existing</em> route, rather than the unmet deficit of a neighbourhood. If a route does not operate at night, it is not currently functioning as an off-peak equity lifeline and receives a lower priority score.
-              </p>
-              
-              <div className="flex flex-col md:flex-row gap-6 py-2 md:-mx-12 lg:-mx-24 justify-between items-stretch">
-                <div className="w-full md:w-1/2 flex flex-col">
-                  <RouteTicket 
-                    routeNumber="002" 
-                    theme="blue" 
-                    title="Route 002: Reduced Night Hours (Score: 31.3)" 
-                    description="Route 002 operates frequently during weekdays, but service drops during off-peak times, reducing options for late-night riders."
-                  />
-                </div>
-                <div className="w-full md:w-1/2 flex flex-col">
-                  <RouteTicket 
-                    routeNumber="003" 
-                    theme="yellow" 
-                    title="Route 003: Consistent Off Peak (Score: 38.0)" 
-                    description="Route 003 maintains consistent frequency during late-night hours and weekends."
-                  />
-                </div>
-              </div>
-            </div>
-
-            <OffPeakFrequencyChart />
-            <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-              The line chart plots service headways throughout the day, illustrating that <strong className="text-amber-600">Route 003</strong> maintains consistent headways during evening and weekend hours compared to <strong className="text-blue-600">Route 002</strong>'s drop in service frequency.
-            </p>
-
-            {/* Tell me more about the math */}
-            <div className="pt-2 flex justify-center">
-              <button
-                onClick={() => setShowOffPeakMath(!showOffPeakMath)}
-                className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
-              >
-                <span>{showOffPeakMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-              </button>
-            </div>
-
-            {showOffPeakMath && (
-              <div 
-                onClick={() => setShowOffPeakMath(false)}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
-              >
-                <div 
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
-                >
-                  
-                  {/* Header / Top Control Row */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
-                    <button
-                      onClick={() => setShowOffPeakMath(false)}
-                      className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
-                      title="Close methodology panel"
-                    >
-                      <span className="font-extrabold text-sm">✕</span>
-                    </button>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                      Methodology Details
-                    </span>
-                    <div className="w-8 h-8 opacity-0" aria-hidden="true" />
-                  </div>
-
-                  {/* Scrollable Modal Content */}
-                  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
-                    <div className="border-b border-slate-200 pb-4">
-                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Off-Peak Methodology: Headway-Based Scores</h3>
-                      <p className="text-xs text-slate-500 mt-1">How transit frequency during off-peak windows converts into scores.</p>
-                    </div>
-                    
-                    <div className="text-sm text-slate-600 space-y-4">
-                      <p className="leading-relaxed">
-                        Service quality is evaluated across four distinct off-peak time bands: <strong>Evenings</strong> (18:00 - 22:00 weekdays), <strong>Nights</strong> (22:00 - 05:00 weekdays), <strong>Saturdays</strong> (All day), and <strong>Sundays</strong> (All day).
-                      </p>
-                      
-                      <p className="text-xs text-slate-500 font-bold">Headway-to-Points Conversion Scale:</p>
-                      
-                      {/* Visual Headway Matrix */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
-                        {[
-                          { range: '\u003c 15 mins', points: '100 pts', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-                          { range: '15 – 30 mins', points: '70 pts', color: 'bg-blue-50 text-blue-750 border-blue-100' },
-                          { range: '30 – 60 mins', points: '40 pts', color: 'bg-amber-50 text-amber-750 border-amber-100' },
-                          { range: '> 60 mins / None', points: '10 pts', color: 'bg-rose-50 text-rose-700 border-rose-105' }
-                        ].map((item, index) => (
-                          <div key={index} className={`flex flex-col items-center justify-center p-3 rounded-2xl border bg-white shadow-sm ${item.color} text-center`}>
-                            <span className="text-xs font-bold leading-tight">{item.range}</span>
-                            <span className="text-xs font-black mt-2 bg-slate-50 px-2.5 py-0.5 rounded-full border border-black/5">{item.points}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="leading-relaxed">
-                        The overall Off-Peak Score is calculated by averaging the points earned across all four time windows (Evenings, Nights, Saturdays, and Sundays). For example, if a route runs frequently on Saturdays (earning 70 points) but has no service late at night (earning only 10 points), the final score will be dragged down to reflect that lack of late-night service.
-                      </p>
-
-                      {/* Methodological Assumptions Section */}
-                      <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
-                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                          Methodological Assumptions and Justifications
-                        </h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          To maintain transparency for decision-makers, it is important to outline the mathematical assumptions and limitations of this calculation:
-                        </p>
-                        <div className="flex flex-col gap-4 text-xs text-slate-655">
-                          <div className="space-y-1">
-                            <span className="font-bold text-slate-900 block">Focus on Service Retention Over Absolute Frequency:</span>
-                            <p className="leading-relaxed">
-                              This metric measures relative service stability rather than the absolute number of buses running. For example, a route that runs once every 60 minutes in the morning and maintains that same once-an-hour frequency at night will receive a perfect score of 100%. A major corridor route that runs every 5 minutes in the morning but drops to every 15 minutes at night will receive a score of 33%, despite still offering more total buses. This design choice is intentional: it acts as a "Service Retention Index" to protect outer neighborhoods from losing their basic transit lifelines during off-peak hours.
-                            </p>
-                          </div>
-                          <div className="space-y-1 border-t border-slate-100 pt-3">
-                            <span className="font-bold text-slate-900 block">Representative Time Windows:</span>
-                            <p className="leading-relaxed">
-                              The formula uses specific one-hour windows (7:30 AM–8:30 AM for peak morning, and 9:30 PM–10:30 PM for late night) as proxies for service span. While this does not capture midday or weekend service, it provides a highly transparent, easily calculated, and reproducible metric. More complex alternatives, such as tracking total operating hours or absolute trip counts, tend to over-prioritize busy downtown lines at the expense of necessary community coverage routes.
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-[11px] font-semibold text-slate-550 border-t border-slate-100 pt-3 leading-relaxed">
-                          By using this retention-based approach, the scorecard remains a clear and defensible tool for protecting vulnerable transit riders from losing essential late-night service.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* ================= SECTION 6: Transit Monopoly ================= */}
-          <section id="section-6" className={getSectionClass('section-6')}>
-            <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Transit Monopoly</h2>
-              <p className="text-slate-600 text-base leading-relaxed">
-                The Transit Monopoly pillar calculates neighbourhood dependence on a single bus route. If a neighbourhood lacks alternative bus routes or LRT stations within walking distance, the active route operates as a transit monopoly. Planners must consider this reliance when adjusting service.
-              </p>
-              
-              <div className="flex flex-col md:flex-row gap-6 py-2 md:-mx-12 lg:-mx-24 justify-between items-stretch">
-                <div className="w-full md:w-1/2 flex flex-col">
-                  <RouteTicket 
-                    routeNumber="002" 
-                    theme="blue" 
-                    title="Route 002: Vital Monopoly Link (Score: 67.6)" 
-                    description="Route 002 serves several dissemination areas in East Edmonton where it is the sole operating transit line. Removing Route 002 would leave these neighbourhoods without transit service."
-                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
-                  />
-                </div>
-                <div className="w-full md:w-1/2 flex flex-col">
-                  <RouteTicket 
-                    routeNumber="003" 
-                    theme="yellow" 
-                    title="Route 003: Overlapping Network (Score: 0.0)" 
-                    description="Route 003 overlaps with multiple bus routes and LRT lines, providing riders with alternative options."
-                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {route2Data && route3Data && daGeoJson && (
-              <>
-                <InteractiveToggleMap 
-                  route2Data={route2Data} 
-                  route3Data={route3Data} 
-                  daGeoJson={daGeoJson} 
-                  allRoutesData={allRoutesData} 
-                  mode="monopoly" 
-                />
-                <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps shows the routes around <strong className="text-blue-600">Route 002</strong> and <strong className="text-amber-600">Route 003</strong> and the score in this category is related what other alternative transit routes are available to the riders of those routes should service be changed.
-                </p>
-              </>
-            )}
-
-              {/* Tell me more about the math */}
-              <div className="pt-2 flex justify-center">
-                <button
-                  onClick={() => setShowMonopolyMath(!showMonopolyMath)}
-                  className="px-5 py-2.5 rounded-xl border border-blue-900/20 text-blue-900 bg-white hover:bg-blue-50/50 font-extrabold text-xs md:text-sm transition-all duration-200 flex items-center gap-2 shadow-sm hover:border-blue-900/40 active:scale-98"
-                >
-                  <span>{showMonopolyMath ? "Hide Detailed Math" : "Tell me more about the math"}</span>
-                </button>
-              </div>
-
-              {showMonopolyMath && (
-                <div 
-                  onClick={() => setShowMonopolyMath(false)}
-                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn cursor-pointer"
-                >
-                  <div 
-                    onClick={(e) => e.stopPropagation()}
-                    className="relative w-full max-w-4xl h-[85vh] bg-slate-100 border border-slate-300 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-default"
-                  >
-                    
-                    {/* Header / Top Control Row */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
-                      <button
-                        onClick={() => setShowMonopolyMath(false)}
-                        className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all duration-150"
-                        title="Close methodology panel"
-                      >
-                        <span className="font-extrabold text-sm">✕</span>
-                      </button>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        Methodology Details
-                      </span>
-                      <div className="w-8 h-8 opacity-0" aria-hidden="true" />
-                    </div>
-
-                    {/* Scrollable Modal Content */}
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
-                      <div className="border-b border-slate-200 pb-4">
-                        <h3 className="text-2xl font-black text-slate-900 leading-tight">Monopoly Methodology: Functional Redundancy</h3>
-                        <p className="text-xs text-slate-500 mt-1">How alternative transit service capacity reduces dependency and scores.</p>
-                      </div>
-                      
-                      <div className="text-sm text-slate-600 space-y-4">
-                        <p className="leading-relaxed">
-                          The model calculates a <strong>Functional Monopoly Index (FMI)</strong> for each Dissemination Area. If a neighbourhood has alternative transit services within a 400m walk, the monopoly score is discounted.
-                        </p>
-
-                        <p className="leading-relaxed">
-                          <strong>Real World Example:</strong> Route 002 serves 81 neighbourhoods. While Route 900X runs parallel to it in 45 of those neighbourhoods, Route 002 still maintains a high monopoly score because Route 900X has lower capacity and does not connect to the same set of destinations.
-                        </p>
-                        
-                        {/* Visual flow of discounts */}
-                        <div className="flex flex-col gap-2.5 py-2">
-                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                            <span className="font-bold text-slate-800">Base Monopoly Value</span>
-                            <span className="text-xs font-black text-indigo-650 bg-indigo-50 px-2.5 py-0.5 rounded-full">1.0 (Sole Route)</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">Alternative Service Discount</span>
-                              <span className="text-[10px] text-slate-400">Based on capacity and frequency of other stops</span>
-                            </div>
-                            <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Up to -0.8</span>
-                          </div>
-
-                          <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">On-Demand Transit (ODT) Discount</span>
-                              <span className="text-[10px] text-slate-400">Mitigation applied if served by dynamic shuttles</span>
-                            </div>
-                            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI multiplied by 0.5)</span>
-                          </div>
-                        </div>
-
-                        <p className="leading-relaxed">
-                          The final route score is calculated by taking the average of these monopoly values across all neighbourhoods served, weighted by population. We then scale the result from 0 to 100. A route that runs through areas with many other bus routes and LRT lines will get a score close to 0, indicating that riders have plenty of other travel options.
-                        </p>
-
-                        {/* Mathematical Formulation */}
-                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
-                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                            How the Monopoly Score is Calculated
-                          </h4>
-                          <p className="text-xs text-slate-500 leading-relaxed">
-                            For any given neighbourhood census block and route:
-                          </p>
-                          <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
-                            <li className="space-y-0.5">
-                              <strong className="text-slate-900 block">Active Route Set:</strong>
-                              <p className="leading-relaxed">The set of all transit routes that stop within walking distance (400 meters) of the neighbourhood. For example, in a shared neighbourhood corridor, the active set includes both Route 002 and Route 900X.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Destination Catchment:</strong>
-                              <p className="leading-relaxed">All schools, jobs, grocery stores, and medical services reachable near any stop along that route. For instance, Route 002 stops connect to 4,081 destinations, whereas Route 900X stops only connect to 2,999 destinations.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Alternative Routes:</strong>
-                              <p className="leading-relaxed">Other routes in the neighbourhood. When analyzing Route 002, Route 900X serves as one of the alternative routes.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Shared Destinations:</strong>
-                              <p className="leading-relaxed">The destinations reachable by alternative routes that overlap with the destinations reachable by the analyzed route. Route 002 and Route 900X share 2,521 destinations. This means Route 900X only covers 61.77 percent of the destinations served by Route 002.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Functional Redundancy:</strong>
-                              <p className="leading-relaxed">The percentage of the route's destinations that can be reached using alternative options. In shared areas, Route 900X provides a redundancy ratio of 61.77 percent. If a route serves zero destinations, its redundancy defaults to 100 percent to prevent false-monopoly flags in rural or industrial buffer zones.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">If alternative routes cover less than 20 percent of the destinations, the main route is classified as a Functional Monopoly for that neighbourhood. While Route 900X provides moderate redundancy in shared areas, Route 002 serves 14 neighbourhoods with absolutely no alternative routes, maintaining its overall high monopoly score.</p>
-                            </li>
-                          </ul>
-                        </div>
-
-                        {/* Policy and Scoring Impact */}
-                        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
-                          <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                            Policy and Scoring Impact
-                          </h4>
-                          <p className="text-xs text-slate-500 leading-relaxed">
-                            Shifting from physical stops to destination overlap reshapes how routes are prioritized on the scorecard:
-                          </p>
-                          <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
-                            <li className="space-y-0.5">
-                              <strong className="text-slate-900 block">Suburban Feeder and Radial Routes:</strong>
-                              <p className="leading-relaxed">Cross-town feeders and suburban radial lines see their Monopoly Scores rise significantly. Although they may run parallel to or cross other routes near regional transit centers (which disqualified them under spatial scoring), they diverge to serve unique industrial parks, schools, or hospitals. Their functional uniqueness is now recognized.</p>
-                            </li>
-                            <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Urban Core Overlaps:</strong>
-                              <p className="leading-relaxed">High-frequency routes running parallel to downtown (e.g., along main arterials) remain correctly classified as low-monopoly. Because they share extensive destination overlaps (with multiple routes heading to the downtown core), cancelling one route leaves riders with viable alternatives to reach the same hubs.</p>
-                            </li>
-                          </ul>
-                        </div>
-
-                        {/* Advanced Methodology Box */}
-                        <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm space-y-3">
-                          <h4 className="text-sm font-black text-indigo-900 uppercase tracking-widest flex items-center gap-1.5">
-                            <HelpCircle className="w-4 h-4" /> Future Refinement: Capacity-Weighted FMI
-                          </h4>
-                          <p className="text-xs text-slate-500 leading-relaxed">
-                            The current model checks if an alternative is physically present. A future update will weight alternative routes by their frequency and seat capacity to prevent minor, low-frequency routes from falsely lowering a monopoly score.
-                          </p>
-                          <div className="p-3 bg-white border border-slate-200 rounded-xl font-mono text-[11px] text-indigo-950 overflow-x-auto">
-                            FMI = 1 - Sum [ Capacity of Alternative / (Capacity of Route + Capacity of Alternative) ]
-                          </div>
-                          <p className="text-xs text-slate-655 leading-relaxed">
-                            This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, Route 002 runs 1,720 times a day, while Route 900X runs 862 times a day. For a shared destination, the dependency on Route 002 is calculated as 1,720 divided by (1,720 + 862), which equals 0.666. Even with Route 900X present, riders still rely on Route 002 for 66.6 percent of their service needs due to its higher frequency.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               )}
           </section>
 
@@ -1342,16 +976,12 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
               )}
 
               <p className="text-slate-600 text-base leading-relaxed">
-                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider <strong className="text-blue-600">Route 002</strong>, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since <strong className="text-blue-600">Route 002</strong> serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
+                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider <strong className="text-blue-600">Route 002</strong>, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since <strong className="text-blue-600">Route 002</strong> serves several outer neighbourhoods, the model applies a mathematical discount to those specific areas to account for these dynamic transit alternatives:
               </p>
               <ul className="list-disc pl-6 space-y-3 text-slate-600 text-base">
                 <li>
                   <strong className="text-blue-950 font-bold">Vulnerability Score Reduction (-10%)</strong>: 
                   DAs served by the Stadium/Clareview ODT receive a 10% reduction on their vulnerability index (V_i * 0.90) because local feeder shuttles help ease geographic isolation.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">Transit Monopoly Reduction (-50%)</strong>: 
-                  DAs within the Stadium/Clareview ODT zone are no longer considered entirely dependent on a single, fixed bus route. The model applies a 50% discount to their Functional Monopoly Index (FMI(i,r) * 0.50) to reflect that residents have a flexible, bookable connection to the wider transit network.
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
@@ -1365,39 +995,39 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Pillar Weights</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                After evaluating the four pillars, we are able to combine them to generate an overall equity score for each route; however, the weighting of the four pillars can impact the final score of the route. Each score is out of 100 and the routes are sorted into quintiles with a grade assigned, A through E with A being the highest scoring routes (most important for equity) and E for the lowest scoring routes (least important for equity).
+                After evaluating the two pillars, we are able to combine them to generate an overall equity score for each route; however, the weighting of the two pillars can impact the final score of the route. Each score is out of 100 and the routes are sorted into quintiles with a grade assigned, A through E with A being the highest scoring routes (most important for equity) and E for the lowest scoring routes (least important for equity).
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
-                Under a balanced weighting, with equal weighting of 25% across all four pillars:
+                Under a balanced weighting, with equal weighting of 50% across both pillars:
               </p>
               <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-blue-600">Route 002</strong> receives a score of 68.1 or a B grade as it has high scores from the vulnerability, monopoly, and destination opportunity categories. This makes it a high scoring route and highly important for transit equity.
+                    <strong className="text-blue-600">Route 002</strong> receives a strong score because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7, and it serves highly vulnerable populations (Vulnerability 80.8).
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-amber-600">Route 003</strong> receives a score of 18.6 or an E grade. This low score is attributed to the higher-income neighbourhoods it serves and overlaps with alternative transit options (low monopoly score).
+                    <strong className="text-amber-600">Route 003</strong> receives a much lower score. This low score is attributed to the higher-income neighbourhoods it serves (Vulnerability 17.5) and its relatively lower Destination Opportunity score (24.2).
                   </span>
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
-                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new pillar weighting model prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new pillar weighting model prioritizes Destination Opportunity by allocating 80% to it and only 20% to Vulnerability, the scores shift:
               </p>
               <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-blue-600">Route 002</strong> decreases from 68.1 to 63.8: Although its vulnerability score is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
+                    <strong className="text-blue-600">Route 002</strong> increases its lead as a top priority route, driven entirely by its massive 92.7 Destination Opportunity score, showing its value as a core structural link.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    <strong className="text-amber-600">Route 003</strong> increases from 18.6 to 24.4: Because the Off-Peak Service weight increases to 40%, <strong className="text-amber-600">Route 003</strong> benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
+                    <strong className="text-amber-600">Route 003</strong> remains low, but gets slightly more credit for its Destination Opportunity compared to its Vulnerability.
                   </span>
                 </li>
               </ul>
@@ -1441,33 +1071,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                   />
                 </div>
 
-                {/* Slider: Off Peak */}
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between text-xs font-bold text-slate-700">
-                    <span>Off Peak Service</span>
-                    <span className="font-mono text-teal-600">{weights.offPeak}%</span>
-                  </div>
-                  <input 
-                    type="range" min="0" max="100" 
-                    value={weights.offPeak}
-                    onChange={(e) => handleWeightChange('offPeak', parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                  />
-                </div>
 
-                {/* Slider: Monopoly */}
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between text-xs font-bold text-slate-700">
-                    <span>Transit Monopoly</span>
-                    <span className="font-mono text-teal-600">{weights.monopoly}%</span>
-                  </div>
-                  <input 
-                    type="range" min="0" max="100" 
-                    value={weights.monopoly}
-                    onChange={(e) => handleWeightChange('monopoly', parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                  />
-                </div>
 
                 {/* Slider: Opportunity */}
                 <div className="flex flex-col gap-1">
@@ -1555,7 +1159,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 1,000 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
+                As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 100 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
               </p>
               <p className="text-slate-655 text-base leading-relaxed font-semibold">
                 This simulation reveals four route stability classifications:
@@ -1578,7 +1182,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                     These routes score highly across all weight scenarios, maintaining ranking stability regardless of the active pillar configuration.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    <strong className="text-blue-600">Route 002</strong> consistently receives a high route equity score regardless of how the model is weighted. This classification is due to <strong className="text-blue-600">Route 002</strong> scoring exceptionally high on three of the four pillars: Vulnerability (80.8), Monopoly (67.6), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize the demographic weights and heavily favor Off-Peak Service (its lowest scoring pillar weight at 31.3), <strong className="text-blue-600">Route 002</strong>'s scores on the other three pillar weights ensure it remains a high scoring route for equity.
+                    <strong className="text-blue-600">Route 002</strong> consistently receives a high route equity score regardless of how the model is weighted. This classification is due to <strong className="text-blue-600">Route 002</strong> scoring exceptionally high on both of the pillars: Vulnerability (80.8), and Opportunity (92.7). It serves a large population with high concentrations of low-income and immigrant households who may not have other travel options, while simultaneously connecting them to key employment hubs. Even if we minimize one of the weights, <strong className="text-blue-600">Route 002</strong>'s score on the other pillar weight ensures it remains a high scoring route for equity.
                   </p>
                 </div>
 
@@ -1594,7 +1198,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                     Scores for routes in this category fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When pillar weights shift to favor demographic need or route dependency, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its relative funding priority highly sensitive to the chosen weighting model.
+                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Opportunity focus but drops when we prioritize Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent Destination Opportunity score (24.2) which pulls its grade up when destinations are prioritized. However, because it runs through central neighborhoods with higher average incomes, its Vulnerability score is a low 17.5. When pillar weights shift to favor demographic need, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its relative funding priority highly sensitive to the chosen weighting model.
                   </p>
                 </div>
 
