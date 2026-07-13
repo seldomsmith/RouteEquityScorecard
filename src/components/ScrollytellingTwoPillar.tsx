@@ -1150,7 +1150,8 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                       Route 003
                     </button>
                   </div>
-                   <div className="flex-1 w-full relative pt-2">
+                </div>
+                <div className="flex-1 w-full relative pt-2">
                   <ShapWaterfall 
                     route={{
                       route_id: activeSimulatorRouteId,
