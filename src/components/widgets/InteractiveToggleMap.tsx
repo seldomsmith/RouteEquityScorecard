@@ -36,6 +36,35 @@ const GRADE_HEATMAP_COLORS = {
   E: ['#FEF2F2', '#FEE2E2', '#FCA5A5', '#F87171', '#DC2626', '#7F1D1D'],
 };
 
+const OPPORTUNITY_TABLE_DATA = {
+  '002': {
+    score: 92.7,
+    items: [
+      { category: 'Emergency and Hospital Care', count: 3, weight: 5.0, weightedSum: 15, contribution: 15.1 },
+      { category: 'Employment Centres', count: 14, weight: 3.0, weightedSum: 42, contribution: 42.3 },
+      { category: 'Post-Secondary Campuses', count: 2, weight: 3.0, weightedSum: 6, contribution: 6.0 },
+      { category: 'Primary Care', count: 5, weight: 3.0, weightedSum: 15, contribution: 15.1 },
+      { category: 'Grocery Stores & Supermarkets', count: 4, weight: 2.0, weightedSum: 8, contribution: 8.1 },
+      { category: 'K-12 Schools', count: 4, weight: 1.0, weightedSum: 4, contribution: 4.0 },
+      { category: 'Municipal Rec Centres', count: 1, weight: 1.0, weightedSum: 1, contribution: 1.0 },
+      { category: 'Edmonton Public Libraries', count: 1, weight: 1.0, weightedSum: 1, contribution: 1.1 }
+    ]
+  },
+  '003': {
+    score: 18.9,
+    items: [
+      { category: 'Emergency and Hospital Care', count: 0, weight: 5.0, weightedSum: 0, contribution: 0.0 },
+      { category: 'Employment Centres', count: 2, weight: 3.0, weightedSum: 6, contribution: 6.3 },
+      { category: 'Post-Secondary Campuses', count: 0, weight: 3.0, weightedSum: 0, contribution: 0.0 },
+      { category: 'Primary Care', count: 2, weight: 3.0, weightedSum: 6, contribution: 6.3 },
+      { category: 'Grocery Stores & Supermarkets', count: 1, weight: 2.0, weightedSum: 2, contribution: 2.1 },
+      { category: 'K-12 Schools', count: 3, weight: 1.0, weightedSum: 3, contribution: 3.2 },
+      { category: 'Municipal Rec Centres', count: 1, weight: 1.0, weightedSum: 1, contribution: 1.0 },
+      { category: 'Edmonton Public Libraries', count: 0, weight: 1.0, weightedSum: 0, contribution: 0.0 }
+    ]
+  }
+};
+
 export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   route2Data,
   route3Data,
@@ -454,6 +483,54 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
 
           </div>
         </div>
+
+        {mode === 'opportunity' && (
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">
+              Destination Breakdown & Weighting — Route {activeRouteId}
+            </h4>
+            <div className="overflow-x-auto border border-slate-200/80 rounded-xl bg-slate-50/50 shadow-sm">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-100/80 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-2.5">POI Category</th>
+                    <th className="px-4 py-2.5 text-right">Destination Count</th>
+                    <th className="px-4 py-2.5 text-right">Weight</th>
+                    <th className="px-4 py-2.5 text-right">Weighted Sum</th>
+                    <th className="px-4 py-2.5 text-right">Pillar Score Contribution</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/60 bg-white">
+                  {OPPORTUNITY_TABLE_DATA[activeRouteId].items.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-4 py-2.5 font-bold text-slate-800">{item.category}</td>
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-650">{item.count}</td>
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-500">{item.weight.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-650">{item.weightedSum}</td>
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-teal-650">+{item.contribution.toFixed(1)}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-slate-50/80 border-t border-slate-300 font-bold text-slate-950">
+                    <td className="px-4 py-3 uppercase tracking-wider">Total Route Catchment score</td>
+                    <td className="px-4 py-3 text-right font-mono">
+                      {OPPORTUNITY_TABLE_DATA[activeRouteId].items.reduce((sum, item) => sum + item.count, 0)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono">—</td>
+                    <td className="px-4 py-3 text-right font-mono">
+                      {OPPORTUNITY_TABLE_DATA[activeRouteId].items.reduce((sum, item) => sum + item.weightedSum, 0)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono text-[13px] text-teal-700 font-black">
+                      {OPPORTUNITY_TABLE_DATA[activeRouteId].score.toFixed(1)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium mt-2 leading-relaxed">
+              * The Pillar Score Contribution represents the normalized score share (weighted count scaled relative to all routes in Edmonton, capping at the 95th percentile with a target mean of 50).
+            </p>
+          </div>
+        )}
       </div>
     </>
   );

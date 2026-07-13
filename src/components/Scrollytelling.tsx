@@ -1237,7 +1237,11 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       
                       <div className="text-sm text-slate-600 space-y-4">
                         <p className="leading-relaxed">
-                          The model calculates a <strong>Functional Monopoly Index (FMI)</strong> for each Dissemination Area. If a DA has alternative transit services within a 400m walk, the monopoly score is discounted.
+                          The model calculates a <strong>Functional Monopoly Index (FMI)</strong> for each Dissemination Area. If a neighbourhood has alternative transit services within a 400m walk, the monopoly score is discounted.
+                        </p>
+
+                        <p className="leading-relaxed">
+                          <strong>Real World Example:</strong> Route 002 serves 81 neighbourhoods. While Route 900X runs parallel to it in 45 of those neighbourhoods, Route 002 still maintains a high monopoly score because Route 900X has lower capacity and does not connect to the same set of destinations.
                         </p>
                         
                         {/* Visual flow of discounts */}
@@ -1250,7 +1254,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                           <div className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
                             <div className="flex flex-col">
                               <span className="font-bold text-slate-800">Alternative Service Discount</span>
-                              <span className="text-[10px] text-slate-400">Based on capacity/frequency of other stops</span>
+                              <span className="text-[10px] text-slate-400">Based on capacity and frequency of other stops</span>
                             </div>
                             <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Up to -0.8</span>
                           </div>
@@ -1260,7 +1264,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                               <span className="font-bold text-slate-800">On-Demand Transit (ODT) Discount</span>
                               <span className="text-[10px] text-slate-400">Mitigation applied if served by dynamic shuttles</span>
                             </div>
-                            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI × 0.5)</span>
+                            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">-50% (FMI multiplied by 0.5)</span>
                           </div>
                         </div>
 
@@ -1271,35 +1275,35 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                         {/* Mathematical Formulation */}
                         <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
                           <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                            Mathematical Formulation
+                            How the Monopoly Score is Calculated
                           </h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            For any given Dissemination Area (DA) i and route r:
+                            For any given neighbourhood census block and route:
                           </p>
                           <ul className="flex flex-col gap-3 text-xs text-slate-650 pl-1">
                             <li className="space-y-0.5">
-                              <strong className="text-slate-900 block">Active Route Set - R(i):</strong>
-                              <p className="leading-relaxed">Let R(i) be the set of all transit routes that stop within 400m of the boundary of DA i.</p>
+                              <strong className="text-slate-900 block">Active Route Set:</strong>
+                              <p className="leading-relaxed">The set of all transit routes that stop within walking distance (400 meters) of the neighbourhood. For example, in a shared neighbourhood corridor, the active set includes both Route 002 and Route 900X.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Destination Catchment, D(r):</strong>
-                              <p className="leading-relaxed">For each route r, we index all Points of Interest (POIs), including employment hubs, schools, grocery stores, and medical services, that are reachable within 400m of any stop along that route.</p>
+                              <strong className="text-slate-900 block">Destination Catchment:</strong>
+                              <p className="leading-relaxed">All schools, jobs, grocery stores, and medical services reachable near any stop along that route. For instance, Route 002 stops connect to 4,081 destinations, whereas Route 900X stops only connect to 2,999 destinations.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Alternative Routes - A(i,r):</strong>
-                              <p className="leading-relaxed">For a specific route r serving DA i, its alternative routes are defined as the routes in R(i) other than route r.</p>
+                              <strong className="text-slate-900 block">Alternative Routes:</strong>
+                              <p className="leading-relaxed">Other routes in the neighbourhood. When analyzing Route 002, Route 900X serves as one of the alternative routes.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Shared Destination Volume - S(i,r):</strong>
-                              <p className="leading-relaxed">We calculate the unique set of destinations reachable by alternative routes that overlap with the destinations reachable by route r.</p>
+                              <strong className="text-slate-900 block">Shared Destinations:</strong>
+                              <p className="leading-relaxed">The destinations reachable by alternative routes that overlap with the destinations reachable by the analyzed route. Route 002 and Route 900X share 2,521 destinations. This means Route 900X only covers 61.77 percent of the destinations served by Route 002.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
-                              <strong className="text-slate-900 block">Functional Redundancy - FR(i,r):</strong>
-                              <p className="leading-relaxed">{"The redundancy ratio is the proportion of a route's destinations that can be reached using the alternative routes: \\(FR_{i,r} = \\frac{|S_{i,r}|}{|D_r|}\\). (If a route serves zero POIs, its redundancy defaults to 1.0 to prevent false-monopoly flags in non-destination areas)."}</p>
+                              <strong className="text-slate-900 block">Functional Redundancy:</strong>
+                              <p className="leading-relaxed">The percentage of the route's destinations that can be reached using alternative options. In shared areas, Route 900X provides a redundancy ratio of 61.77 percent. If a route serves zero destinations, its redundancy defaults to 100 percent to prevent false-monopoly flags in rural or industrial buffer zones.</p>
                             </li>
                             <li className="space-y-0.5 border-t border-slate-100 pt-2">
                               <strong className="text-slate-900 block">Functional Monopoly Criteria:</strong>
-                              <p className="leading-relaxed font-semibold text-slate-800">If the Functional Redundancy ratio is less than 20% (FR(i,r) &lt; 0.20), it indicates that alternative routes do not connect residents to the destinations they need. Route r is then classified as a Functional Monopoly for DA i.</p>
+                              <p className="leading-relaxed font-semibold text-slate-800">If alternative routes cover less than 20 percent of the destinations, the main route is classified as a Functional Monopoly for that neighbourhood. While Route 900X provides moderate redundancy in shared areas, Route 002 serves 14 neighbourhoods with absolutely no alternative routes, maintaining its overall high monopoly score.</p>
                             </li>
                           </ul>
                         </div>
@@ -1330,16 +1334,13 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                             <HelpCircle className="w-4 h-4" /> Future Refinement: Capacity-Weighted FMI
                           </h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            The current binary "all-or-nothing" definition (either a route is the only option or it is not) has limitations. For example, if a DA is served by a high-frequency route and a minor route that runs once a day, neither is classified as a monopoly, even though the minor route's contribution is practically negligible.
-                          </p>
-                          <p className="text-xs text-slate-655 leading-relaxed">
-                            The proposed Capacity-Weighted FMI replaces the binary cutoff with an Index of Capacity Share:
+                            The current model checks if an alternative is physically present. A future update will weight alternative routes by their frequency and seat capacity to prevent minor, low-frequency routes from falsely lowering a monopoly score.
                           </p>
                           <div className="p-3 bg-white border border-slate-200 rounded-xl font-mono text-[11px] text-indigo-950 overflow-x-auto">
-                            FMI(i,r) = 1 - Sum [ Capacity(alt) / (Capacity(r) + Capacity(alt)) ]
+                            FMI = 1 - Sum [ Capacity of Alternative / (Capacity of Route + Capacity of Alternative) ]
                           </div>
                           <p className="text-xs text-slate-655 leading-relaxed">
-                            This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, if alternative routes only provide 5% of the seats in a neighborhood, the Redundancy Index is 0.05, signaling a near-total monopoly. If alternative routes provide equivalent or greater capacity, the index reaches 1.0 or higher, showing high redundancy.
+                            This proposed index measures the strength of alternative routes as a percentage of the main route's capacity. For example, Route 002 runs 1,720 times a day, while Route 900X runs 862 times a day. For a shared destination, the dependency on Route 002 is calculated as 1,720 divided by (1,720 + 862), which equals 0.666. Even with Route 900X present, riders still rely on Route 002 for 66.6 percent of their service needs due to its higher frequency.
                           </p>
                         </div>
                       </div>
