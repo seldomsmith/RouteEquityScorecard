@@ -201,7 +201,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
                        sensitivityRow.stability_class === 'Low Equity-Priority Routes' ? 'Low Equity-Priority Route' :
                        sensitivityRow.stability_class === 'High Swing Routes' ? 'High Swing Route' :
                        'Moderate Swing Route';
-      return `${route.short_name} is classified as a ${clsLabel} under Monte Carlo policy weight sweeps. Mean Score: ${sensitivityRow.score_mean.toFixed(1)}, Volatility (Rr): ${sensitivityRow.score_std.toFixed(2)}.`;
+      return `${route.short_name} is classified as a ${clsLabel} under Monte Carlo pillar weight sweeps. Mean Score: ${sensitivityRow.score_mean.toFixed(1)}, Volatility (Rr): ${sensitivityRow.score_std.toFixed(2)}.`;
     }
 
     const sorted = [...shap].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
@@ -481,7 +481,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
       <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
         {isStabilityMode ? (
           <>
-            <strong>How to read this:</strong> This waterfall chart shows how your current policy weights change the route's score compared to its long-term average. Each bar represents the impact of a specific policy choice. Green bars indicate that your current weights boost the route's score, while red bars indicate they lower it.
+            <strong>How to read this:</strong> This waterfall chart shows how your current pillar weights change the route's score compared to its long-term average. Each bar represents the impact of a specific weighting choice. Green bars indicate that your current weights boost the route's score, while red bars indicate they lower it.
           </>
         ) : (
           <>

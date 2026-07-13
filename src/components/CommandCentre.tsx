@@ -271,7 +271,7 @@ export const CommandCentre = () => {
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">
-                {mapFilterMode === 'stability' ? 'Volatility vs. Mean Score (Policy Risk Map)' : 'Population-Equity Quadrant'}
+                {mapFilterMode === 'stability' ? 'Volatility vs. Mean Score (Pillar Stability Map)' : 'Population-Equity Quadrant'}
               </span>
               <div className="flex-1 min-h-0">
                 {mapFilterMode === 'stability' ? (
