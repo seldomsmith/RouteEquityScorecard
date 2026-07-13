@@ -17,6 +17,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
         <RouteWaterfall opacity={0.35} />
       </div>
 
+      {/* DRAFT Ink Stamp */}
+      <div
+        aria-hidden="true"
+        className="absolute top-8 right-8 z-20 pointer-events-none select-none"
+        style={{ transform: 'rotate(-12deg)' }}
+      >
+        <span
+          style={{
+            fontFamily: '"Courier New", Courier, monospace',
+            fontSize: '2.6rem',
+            fontWeight: 900,
+            letterSpacing: '0.22em',
+            color: 'rgba(185, 28, 28, 0.55)',
+            border: '4px solid rgba(185, 28, 28, 0.45)',
+            borderRadius: '6px',
+            padding: '4px 18px',
+            display: 'inline-block',
+            textTransform: 'uppercase',
+            mixBlendMode: 'multiply',
+            textShadow: '1px 1px 0 rgba(185,28,28,0.15)',
+            background: 'transparent',
+            lineHeight: 1.1,
+          }}
+        >
+          DRAFT
+        </span>
+      </div>
+
       {/* SVG Subway Line Background (Original Fallback - Commented for Revertability)
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <svg className="w-full h-full opacity-30" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 800">
