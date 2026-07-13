@@ -485,9 +485,65 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           {/* ================= SECTION 1: Introduction ================= */}
           <section id="section-1" className={getSectionClass('section-1')}>
             
+            {/* 🚌 Premium Editorial Hero Header */}
+            <div className="relative overflow-hidden bg-gradient-to-b from-blue-50/60 via-slate-50/20 to-white pt-16 pb-12 px-8 rounded-3xl border border-slate-200/40 shadow-sm md:-mx-12 lg:-mx-24 mb-10 flex flex-col items-center text-center">
+              {/* Abstract Transit Line Background Traces */}
+              <svg 
+                className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none" 
+                viewBox="0 0 800 220" 
+                preserveAspectRatio="xMidYMid slice"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Route A - Municipal Blue */}
+                <path 
+                  d="M -50 60 C 200 60, 150 190, 450 130 C 600 90, 650 190, 850 170" 
+                  fill="none" 
+                  stroke="#1d4ed8" 
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+                <circle cx="250" cy="115" r="5" fill="#ffffff" stroke="#1d4ed8" strokeWidth="2.5" />
+                <circle cx="550" cy="130" r="5" fill="#ffffff" stroke="#1d4ed8" strokeWidth="2.5" />
+
+                {/* Route B - Monopoly Amber/Orange */}
+                <path 
+                  d="M -20 140 C 180 140, 220 30, 400 70 C 550 100, 600 30, 820 50" 
+                  fill="none" 
+                  stroke="#eab308" 
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <circle cx="310" cy="73" r="4.5" fill="#ffffff" stroke="#eab308" strokeWidth="2" />
+                <circle cx="680" cy="40" r="4.5" fill="#ffffff" stroke="#eab308" strokeWidth="2" />
+
+                {/* Route C - Vulnerability Teal */}
+                <path 
+                  d="M 150 -20 C 170 110, 320 90, 340 240" 
+                  fill="none" 
+                  stroke="#0d9488" 
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeDasharray="6 4"
+                />
+                <circle cx="240" cy="98" r="4" fill="#ffffff" stroke="#0d9488" strokeWidth="2" />
+              </svg>
+
+              <div className="relative z-10 flex flex-col items-center max-w-2xl">
+                <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3 shadow-sm border border-blue-100/50">
+                  Edmonton Transit Service
+                </span>
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                  ETS Route Equity Scorecard
+                </h1>
+                <p className="text-slate-550 text-xs md:text-sm font-medium mt-3 max-w-md">
+                  A data-driven framework analyzing access, vulnerability, and frequency across Edmonton's transit network.
+                </p>
+              </div>
+            </div>
+
             {/* Narrative text (sitting directly on the background) */}
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">1. The ETS Route Equity Score - Explained</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">1. Introduction</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Transit services are not experienced equally. The Route Equity Scorecard measures how effectively each route serves riders, specifically those in equity-seeking communities. When developing a transit network that meets the needs of Edmonton residents, policymakers must identify which routes provide essential service to equity-seeking communities. This scorecard provides the data to inform those decisions.
               </p>
