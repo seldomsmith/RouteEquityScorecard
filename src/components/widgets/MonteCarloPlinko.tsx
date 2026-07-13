@@ -180,7 +180,7 @@ export const MonteCarloPlinko: React.FC = () => {
         <div className="text-center mb-6">
           <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Mean Score vs. Volatility Simulation</h3>
           <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
-            This simulation shows how Route 002 and Route 003 score when we try every possible policy weight combination.
+            This simulation shows how <strong className="text-blue-600">Route 002</strong> and <strong className="text-amber-650">Route 003</strong> score when we try every possible policy weight combination.
           </p>
         </div>
 
