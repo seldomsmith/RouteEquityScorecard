@@ -51,11 +51,19 @@ def main():
     poi_x, poi_y = transformer.transform(poi_lons, poi_lats)
     poi_coords = np.column_stack((poi_x, poi_y))
 
+    # Identify hospital POIs dynamically using a robust column sniff
+    is_hospital = pd.Series(False, index=df_pois.index)
+    for col in ['category', 'theme', 'amenity', 'poi_type', 'type']:
+        if col in df_pois.columns:
+            is_hospital |= df_pois[col].astype(str).str.lower().str.contains('hospital|emergency_room', na=False)
+    hospital_indices = set(df_pois[is_hospital].index)
+    print(f"   Sniffed {len(hospital_indices)} Hospital/Emergency POIs in dataset.")
+
     # Build KDTree for fast spatial queries
     poi_tree = KDTree(poi_coords)
 
-    # 3. For each route, map POIs within 400m of any of its stops
-    print("Mapping POIs to routes...")
+    # 3. For each route, map POIs (400m standard catchment, 800m for hospitals)
+    print("Mapping POIs to routes (400m standard, 800m hospital catchment)...")
     catchments = {}
     
     for route_id, stops in route_stops.items():
@@ -69,11 +77,17 @@ def main():
         stop_x, stop_y = transformer.transform(stop_lons, stop_lats)
         stop_coords = np.column_stack((stop_x, stop_y))
         
-        # Query KDTree for POIs within 400m
+        # Query KDTree for POIs
         matched_poi_indices = set()
         for coord in stop_coords:
-            indices = poi_tree.query_ball_point(coord, r=400.0)
-            matched_poi_indices.update(indices)
+            # 1. Standard POIs within 400m
+            indices_400 = poi_tree.query_ball_point(coord, r=400.0)
+            matched_poi_indices.update(indices_400)
+            
+            # 2. Hospital POIs within 800m
+            indices_800 = poi_tree.query_ball_point(coord, r=800.0)
+            hospitals_800 = [idx for idx in indices_800 if idx in hospital_indices]
+            matched_poi_indices.update(hospitals_800)
             
         # Convert indices to POI identifiers
         # We can use the integer index as a unique POI ID
