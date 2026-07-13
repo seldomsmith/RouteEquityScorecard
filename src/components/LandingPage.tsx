@@ -20,25 +20,41 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
       {/* DRAFT Ink Stamp */}
       <div
         aria-hidden="true"
-        className="absolute top-8 right-8 z-20 pointer-events-none select-none"
-        style={{ transform: 'rotate(-12deg)' }}
+        className="absolute z-20 pointer-events-none select-none"
+        style={{
+          top: '10%',
+          right: '7%',
+          transform: 'rotate(45deg)',
+        }}
       >
         <span
           style={{
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '2.6rem',
+            fontSize: '3.4rem',
             fontWeight: 900,
-            letterSpacing: '0.22em',
-            color: 'rgba(185, 28, 28, 0.55)',
-            border: '4px solid rgba(185, 28, 28, 0.45)',
-            borderRadius: '6px',
-            padding: '4px 18px',
+            letterSpacing: '0.26em',
+            color: 'rgba(153, 27, 27, 0.62)',
+            border: '5px solid rgba(153, 27, 27, 0.52)',
+            borderRadius: '7px',
+            padding: '6px 22px',
             display: 'inline-block',
             textTransform: 'uppercase',
             mixBlendMode: 'multiply',
-            textShadow: '1px 1px 0 rgba(185,28,28,0.15)',
             background: 'transparent',
             lineHeight: 1.1,
+            // Multi-layer shadow to simulate ink bleed and uneven pressure
+            textShadow: `
+              0 0 1px rgba(153,27,27,0.6),
+              1px 0 2px rgba(153,27,27,0.25),
+              -1px 0 2px rgba(153,27,27,0.18),
+              0 1px 3px rgba(153,27,27,0.2)
+            `,
+            boxShadow: `
+              inset 0 0 6px rgba(153,27,27,0.12),
+              0 0 0 1px rgba(153,27,27,0.18),
+              2px 2px 0 rgba(153,27,27,0.08)
+            `,
+            filter: 'contrast(1.1)',
           }}
         >
           DRAFT
