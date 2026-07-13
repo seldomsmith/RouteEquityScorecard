@@ -110,20 +110,11 @@
 }
 
 .scrolly-title-lift-effect:hover {
-  transform: scale(1.02) translate(-8px, -8px);
+  transform: scale(1.01) translate(-2px, -2px);
   text-shadow: 
     1px 1px 0px #2563eb,
     2px 2px 0px #2563eb,
-    3px 3px 0px #2563eb,
-    4px 4px 0px #2563eb,
-    5px 5px 0px #2563eb,
-    6px 6px 0px #2563eb,
-    7px 7px 0px #2563eb,
-    8px 8px 0px #2563eb,
-    9px 9px 0px #2563eb,
-    10px 10px 0px #2563eb,
-    11px 11px 0px #2563eb,
-    12px 12px 0px #2563eb;
+    3px 3px 0px #2563eb;
 }
 
 .pillar-card-lift {
