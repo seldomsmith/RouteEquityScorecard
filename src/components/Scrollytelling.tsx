@@ -374,13 +374,10 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                   setIsSplitScreen(!isSplitScreen);
                   if (onToggleVersion) onToggleVersion();
                 }}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                  isSplitScreen 
-                    ? 'bg-blue-600 shadow-sm shadow-blue-500/50 scale-110 hover:bg-blue-700' 
-                    : 'bg-slate-300 hover:bg-slate-400 hover:scale-110'
-                }`}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400 hover:scale-110`}
                 title="Toggle 2-Pillar View"
               />
+              <span className="text-[10px] font-semibold text-slate-400 leading-none transition-colors duration-300">Two Pillars</span>
             </div>
           </div>
         </div>
