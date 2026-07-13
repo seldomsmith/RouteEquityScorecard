@@ -1398,13 +1398,13 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    Route 002 receives a score of 68.1 or a B grade as it has high scores from the vulnerability, monopoly, and destination opportunity categories. This makes it a high scoring route and highly important for transit equity.
+                    <strong className="text-blue-600">Route 002</strong> receives a score of 68.1 or a B grade as it has high scores from the vulnerability, monopoly, and destination opportunity categories. This makes it a high scoring route and highly important for transit equity.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
+                  <span className="text-amber-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    Route 003 receives a score of 18.6 or an E grade. This low score is attributed to the higher-income neighbourhoods it serves and overlaps with alternative transit options (low monopoly score).
+                    <strong className="text-amber-600">Route 003</strong> receives a score of 18.6 or an E grade. This low score is attributed to the higher-income neighbourhoods it serves and overlaps with alternative transit options (low monopoly score).
                   </span>
                 </li>
               </ul>
@@ -1415,13 +1415,13 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    Route 002 decreases from 68.1 to 63.8: Although its vulnerability score is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
+                    <strong className="text-blue-600">Route 002</strong> decreases from 68.1 to 63.8: Although its vulnerability score is nearly halved, the route maintains a strong B grade because it connects a high volume of riders to essential jobs and services, keeping its Destination Opportunity score at 92.7.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-blue-500 flex-shrink-0 pt-[2px]">•</span>
+                  <span className="text-amber-500 flex-shrink-0 pt-[2px]">•</span>
                   <span className="flex-1">
-                    Route 003 increases from 18.6 to 24.4: Because the Off-Peak Service weight increases to 40%, Route 003 benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
+                    <strong className="text-amber-600">Route 003</strong> increases from 18.6 to 24.4: Because the Off-Peak Service weight increases to 40%, <strong className="text-amber-600">Route 003</strong> benefits from its reliable evening and weekend schedule, which scores 38.0. This scheduling strength helps offset its low scores in transit monopoly and demographic vulnerability.
                   </span>
                 </li>
               </ul>
