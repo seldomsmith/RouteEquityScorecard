@@ -183,8 +183,8 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
       source: 'active-route-source',
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': activeRouteId === '003' ? '#eab308' : GRADE_COLORS[grade],
-        'line-width': 4.5,
+        'line-color': activeRouteId === '002' ? '#2563eb' : '#eab308',
+        'line-width': 5.0,
       },
     });
 
@@ -311,8 +311,8 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         source: 'monopoly-alternatives-source',
         paint: {
           'line-color': '#FFFFFF',
-          'line-width': 3,
-          'line-opacity': 0.8,
+          'line-width': 5.0,
+          'line-opacity': 0.85,
         },
       }, 'active-route-casing');
 
@@ -321,13 +321,13 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         type: 'line',
         source: 'monopoly-alternatives-source',
         paint: {
-          'line-color': '#94A3B8', // Silver/Grey
-          'line-width': 1.5,
-          'line-opacity': 0.4,
+          'line-color': '#10B981', // Emerald Green matching Section 2 Off-Peak
+          'line-width': 2.5,
+          'line-opacity': 0.65,
         },
       }, 'active-route-casing');
 
-      // Add labels for the routes
+      // Add bold green labels for the routes
       map.addLayer({
         id: 'monopoly-alternative-labels',
         type: 'symbol',
@@ -336,15 +336,15 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
           'symbol-placement': 'line',
           'text-field': ['get', 'name'],
           'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 10,
+          'text-size': 11,
           'text-offset': [0, 1],
           'text-max-angle': 30,
           'symbol-spacing': 250,
         },
         paint: {
-          'text-color': '#64748b',
+          'text-color': '#047857', // Bold dark emerald green for readability
           'text-halo-color': '#ffffff',
-          'text-halo-width': 1.5,
+          'text-halo-width': 2.0,
         }
       }, 'active-route-casing');
       
@@ -414,7 +414,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
           {/* Legend panel inside map overlay */}
           <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200/80 text-[9px] font-semibold text-slate-655 flex flex-col gap-1.5 shadow-sm max-w-[200px] z-10">
             <div className="flex items-center gap-1.5">
-              <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#3B82F6' : '#F59E0B' }} />
+              <span className="w-4 h-1.5 rounded-sm inline-block" style={{ backgroundColor: activeRouteId === '002' ? '#2563eb' : '#eab308' }} />
               <span className="font-bold text-slate-800">Active Route {activeRouteId}</span>
             </div>
 
@@ -437,6 +437,16 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
                   <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> <span>Clinics</span></div>
                   <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" /> <span>Markets</span></div>
                   <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]" /> <span>Schools</span></div>
+                </div>
+              </div>
+            )}
+
+            {mode === 'monopoly' && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Alternative Transit Networks:</span>
+                <div className="flex items-center gap-1.5 text-[8px]">
+                  <span className="w-4 h-1.5 rounded-sm inline-block bg-[#10B981]" />
+                  <span className="font-bold text-slate-800">Alternative Routes</span>
                 </div>
               </div>
             )}
