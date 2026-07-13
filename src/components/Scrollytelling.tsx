@@ -494,7 +494,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
           {/* Content */}
           <div className="relative z-10 max-w-3xl w-full flex flex-col items-center justify-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-900 tracking-tight leading-tight scrolly-title-lift-effect cursor-default">
+            <h1 className="text-[38px] md:text-[50px] lg:text-[62px] font-black text-blue-900 tracking-tight leading-tight uppercase scrolly-title-lift-effect cursor-default">
               ETS Route Equity Scorecard
             </h1>
           </div>
