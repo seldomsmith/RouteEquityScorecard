@@ -405,7 +405,9 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
     }
 
     // Force redraw layout
-    setTimeout(() => map.resize(), 100);
+    setTimeout(() => {
+      if (mapRef.current) map.resize();
+    }, 100);
   };
 
   return (

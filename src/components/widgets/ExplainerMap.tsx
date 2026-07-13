@@ -157,7 +157,9 @@ export const ExplainerMap: React.FC<ExplainerMapProps> = ({
       });
       
       // Ensure resize handles any layout adjustments
-      setTimeout(() => map.resize(), 150);
+      setTimeout(() => {
+        if (mapRef.current) map.resize();
+      }, 150);
     });
 
     return () => {
