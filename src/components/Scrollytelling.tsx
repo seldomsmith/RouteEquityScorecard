@@ -335,7 +335,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
   };
 
   const r2 = { vulnerability: 80.8, offPeak: 31.3, monopoly: 67.6, opportunity: 92.7 };
-  const r3 = { vulnerability: 17.5, offPeak: 38.0, monopoly: 0.0, opportunity: 18.9 };
+  const r3 = { vulnerability: 17.5, offPeak: 38.0, monopoly: 0.0, opportunity: 24.2 };
 
   const liveScores = {
     route2: (

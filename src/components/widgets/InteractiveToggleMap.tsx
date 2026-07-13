@@ -51,9 +51,9 @@ const OPPORTUNITY_TABLE_DATA = {
     ]
   },
   '003': {
-    score: 18.9,
+    score: 24.2,
     items: [
-      { category: 'Emergency and Hospital Care', count: 0, weight: 5.0, weightedSum: 0, contribution: 0.0 },
+      { category: 'Emergency and Hospital Care', count: 1, weight: 5.0, weightedSum: 5, contribution: 5.3 },
       { category: 'Employment Centres', count: 2, weight: 3.0, weightedSum: 6, contribution: 6.3 },
       { category: 'Post-Secondary Campuses', count: 0, weight: 3.0, weightedSum: 0, contribution: 0.0 },
       { category: 'Primary Care', count: 2, weight: 3.0, weightedSum: 6, contribution: 6.3 },
@@ -271,8 +271,25 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
     else if (mode === 'opportunity') {
       // Create opportunity dots clustered near route stops (mocking POIs for visualization)
       const stopFeatures: any[] = [];
-      const poiCategories = ['job', 'clinic', 'market', 'school'];
-      const poiColors = { job: '#6366F1', clinic: '#10B981', market: '#F59E0B', school: '#94A3B8' };
+      const poiCategories = ['job', 'hospital', 'clinic', 'market', 'school', 'amenity'];
+      const poiColors = { 
+        job: '#6366F1', 
+        hospital: '#E11D48', 
+        clinic: '#0D9488', 
+        market: '#F59E0B', 
+        school: '#64748B', 
+        amenity: '#8B5CF6' 
+      };
+
+      // If Active Route is 003, programmatically inject the Royal Alexandra Hospital coordinate
+      // near its Kingsway NW stops to represent the 800m catchment exception on the map
+      if (activeRouteId === '003') {
+        stopFeatures.push({
+          type: 'Feature',
+          properties: { color: '#E11D48', category: 'hospital' },
+          geometry: { type: 'Point', coordinates: [-113.501, 53.5575] },
+        });
+      }
 
       coordinates.forEach((coord: number[], cIdx: number) => {
         if (cIdx % 5 === 0) { // Every 5th coordinate acts as a stop node
@@ -304,7 +321,12 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         type: 'circle',
         source: 'opportunity-dots-source',
         paint: {
-          'circle-radius': 5.5,
+          'circle-radius': [
+            'match',
+            ['get', 'category'],
+            'job', 3.5, // Make jobs/employment centres smaller
+            5.5 // Default size for other critical services
+          ],
           'circle-color': ['get', 'color'],
           'circle-stroke-width': 1.5,
           'circle-stroke-color': '#FFFFFF',
@@ -461,11 +483,13 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
             {mode === 'opportunity' && (
               <div className="flex flex-col gap-1">
                 <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Opportunities walking catchments:</span>
-                <div className="grid grid-cols-2 gap-1.5 text-[8px]">
-                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" /> <span>Jobs</span></div>
-                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> <span>Clinics</span></div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[8px] max-w-[180px]">
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" /> <span>Jobs (Small)</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#E11D48]" /> <span>Hospitals</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#0D9488]" /> <span>Clinics</span></div>
                   <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" /> <span>Markets</span></div>
-                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]" /> <span>Schools</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#64748B]" /> <span>Schools</span></div>
+                  <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" /> <span>Amenities</span></div>
                 </div>
               </div>
             )}
