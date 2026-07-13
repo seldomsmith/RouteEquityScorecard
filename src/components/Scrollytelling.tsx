@@ -1511,7 +1511,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               {/* Live simulated results visual bar chart */}
               <div className={`p-5 bg-white border border-slate-200 rounded-2xl flex flex-col gap-3 shadow-inner ${showFullscreenSimulator ? 'flex-1 min-h-[400px]' : 'min-h-[400px]'}`}>
                 <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Policy Weight Equity Scoring</span>
+                  <div />
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setActiveSimulatorRouteId('002')}
