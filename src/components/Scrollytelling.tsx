@@ -572,6 +572,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     theme="blue" 
                     title="Route 002: High Vulnerability (Score: 80.8)" 
                     description="Route 002 serves a large population of 49,902 people across 81 neighbourhoods. Many of these areas contain high concentrations of low-income residents and recent immigrants."
+                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
                   />
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col">
@@ -580,6 +581,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     theme="yellow" 
                     title="Route 003: Low Vulnerability (Score: 17.5)" 
                     description="Route 003 serves 13,664 people across 25 neighbourhoods. Because these areas generally have higher average household incomes, they present lower vulnerability index rankings."
+                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
                   />
                 </div>
               </div>
@@ -1140,6 +1142,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     theme="blue" 
                     title="Route 002: Vital Monopoly Link (Score: 67.6)" 
                     description="Route 002 serves several dissemination areas in East Edmonton where it is the sole operating transit line. Removing Route 002 would leave these neighbourhoods without transit service."
+                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
                   />
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col">
@@ -1148,6 +1151,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     theme="yellow" 
                     title="Route 003: Overlapping Network (Score: 0.0)" 
                     description="Route 003 overlaps with multiple bus routes and LRT lines, providing riders with alternative options."
+                    heightClass="h-[260px] sm:h-[230px] md:h-[210px]"
                   />
                 </div>
               </div>
