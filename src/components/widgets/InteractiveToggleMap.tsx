@@ -487,7 +487,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
         {mode === 'opportunity' && (
           <div className="mt-4 border-t border-slate-100 pt-4">
             <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">
-              Destination Breakdown & Weighting — Route {activeRouteId}
+              Destination Breakdown and Weighting — Route {activeRouteId}
             </h4>
             <div className="overflow-x-auto border border-slate-200/80 rounded-xl bg-slate-50/50 shadow-sm">
               <table className="w-full text-left text-xs border-collapse">

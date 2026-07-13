@@ -618,7 +618,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   mode="vulnerability" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps illustrate Dissemination Areas (DAs) colored by vulnerability index, highlighting Route 002's traversal through several high-vulnerability pockets in East Edmonton, compared to Route 003's path through lower-priority central residential areas.
+                  The maps illustrate Dissemination Areas (DAs) colored by vulnerability index, highlighting <strong className="text-blue-600">Route 002</strong>'s traversal through several high-vulnerability pockets in East Edmonton, compared to <strong className="text-amber-600">Route 003</strong>'s path through lower-priority central residential areas.
                 </p>
               </>
             )}
@@ -842,7 +842,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   mode="opportunity" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps plot Points of Interest (POIs) clustered near bus stops, illustrating Route 002's connectivity to medical, commercial, and employment centres, while Route 003 serves primarily residential nodes.
+                  The maps plot Points of Interest (POIs) clustered near bus stops, illustrating <strong className="text-blue-600">Route 002</strong>'s connectivity to medical, commercial, and employment centres, while <strong className="text-amber-600">Route 003</strong> serves primarily residential nodes.
                 </p>
               </>
             )}
@@ -1044,7 +1044,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
 
             <OffPeakFrequencyChart />
             <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-              The line chart plots service headways throughout the day, illustrating that Route 003 maintains consistent headways during evening and weekend hours compared to Route 002's drop in service frequency.
+              The line chart plots service headways throughout the day, illustrating that <strong className="text-amber-600">Route 003</strong> maintains consistent headways during evening and weekend hours compared to <strong className="text-blue-600">Route 002</strong>'s drop in service frequency.
             </p>
 
             {/* Tell me more about the math */}
@@ -1188,7 +1188,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                   mode="monopoly" 
                 />
                 <p className="text-slate-500 text-xs md:text-sm italic text-center mt-1">
-                  The maps shows the routes around Route 002 and Route 003 and the score in this category is related what other alternative transit routes are available to the riders of those routes should service be changed.
+                  The maps shows the routes around <strong className="text-blue-600">Route 002</strong> and <strong className="text-amber-600">Route 003</strong> and the score in this category is related what other alternative transit routes are available to the riders of those routes should service be changed.
                 </p>
               </>
             )}
@@ -1366,7 +1366,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               )}
 
               <p className="text-slate-600 text-base leading-relaxed">
-                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider Route 002, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since Route 002 serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
+                By providing dynamic feeder service, ODT fundamentally changes how transit equity is calculated for Dissemination Areas (DAs), which are the small, local geographic units used to measure neighbourhood census data. To see this in practice, consider <strong className="text-blue-600">Route 002</strong>, which connects at major hubs like the Stadium and Clareview Transit Centres – primary hubs for local ODT feeder shuttles. Since <strong className="text-blue-600">Route 002</strong> serves several outer neighbourhoods, the model applies two mathematical discounts to those specific areas to account for these dynamic transit alternatives:
               </p>
               <ul className="list-disc pl-6 space-y-3 text-slate-600 text-base">
                 <li>
