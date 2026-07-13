@@ -180,7 +180,7 @@ export const MonteCarloPlinko: React.FC = () => {
         <div className="text-center mb-6">
           <h3 className="text-xl font-black text-slate-900 mt-2 font-sans">Mean Score vs. Volatility Simulation</h3>
           <p className="text-xs text-slate-550 max-w-lg mx-auto mt-1 leading-relaxed">
-            This simulation shows how <strong className="text-blue-600">Route 002</strong> and <strong className="text-amber-600">Route 003</strong> score when we try every possible policy weight combination.
+            This simulation shows how <strong className="text-blue-600">Route 002</strong> and <strong className="text-amber-600">Route 003</strong> score when we try every possible pillar weight combination.
           </p>
         </div>
 
@@ -370,7 +370,7 @@ export const MonteCarloPlinko: React.FC = () => {
           <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-550 leading-relaxed font-sans min-h-[60px]">
             <Info className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
             <p>
-              <strong>Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to policy focus.
+              <strong>Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to pillar focus.
             </p>
           </div>
         </div>

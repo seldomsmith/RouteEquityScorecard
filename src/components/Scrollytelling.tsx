@@ -1978,7 +1978,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
             <div className="max-w-2xl space-y-4">
               <h3 className="text-3xl font-black text-blue-900 leading-tight">Explore the Route Equity Scorecard Tool</h3>
               <p className="text-slate-600 text-base leading-relaxed">
-                You can use the spotlight search to find specific routes, adjust weights with zero-sum policy sliders, filter the map by grade badges or stability classifications, and analyse diagnostics using waterfall charts, pedestrian walk isochrones, and the interactive Dissemination Area vulnerability matrix.
+                You can use the spotlight search to find specific routes, adjust weights with zero-sum pillar sliders, filter the map by grade badges or stability classifications, and analyse diagnostics using waterfall charts, pedestrian walk isochrones, and the interactive Dissemination Area vulnerability matrix.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
