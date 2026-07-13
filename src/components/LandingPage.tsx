@@ -22,8 +22,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
         aria-hidden="true"
         className="absolute z-20 pointer-events-none select-none"
         style={{
-          top: '30%',
-          right: '28%',
+          top: '18%',
+          right: '20%',
           transform: 'rotate(45deg)',
         }}
       >
