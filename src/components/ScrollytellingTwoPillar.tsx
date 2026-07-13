@@ -26,7 +26,6 @@ import { RouteTicket } from './ui/RouteTicket';
 import { ExplainerMap } from './widgets/ExplainerMap';
 import { MonteCarloPlinko } from './widgets/MonteCarloPlinko';
 import { OdtExplainerMap } from './widgets/OdtExplainerMap';
-import { FourPillars } from './widgets/FourPillars';
 import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
@@ -35,9 +34,61 @@ import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { RouteWaterfall } from './RouteWaterfall';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
-import { Maximize2, X, HelpCircle } from 'lucide-react';
+import { Maximize2, X, HelpCircle, Users, Target } from 'lucide-react';
 import { mapStabilityClass } from '@/utils/stability';
-import { ScrollytellingSplit } from './ScrollytellingSplit';
+
+const TwoPillars: React.FC = () => {
+  const pillars = [
+    {
+      title: 'Transit Vulnerability',
+      icon: Users,
+      color: '#EF4444', // Red
+      description: 'Measures neighborhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
+    },
+    {
+      title: 'Destination Opportunity',
+      icon: Target,
+      color: '#4F46E5', // Indigo
+      description: 'Evaluates connections to specific destinations. Points are awarded based on hospitals, employment centres, post-secondary schools, grocery stores, and primary/secondary schools within walking distance.',
+    },
+  ];
+
+  return (
+    <div className="w-full mt-4 flex flex-col gap-6 md:-mx-12 lg:-mx-24 md:w-[calc(100%+6rem)] lg:w-[calc(100%+12rem)]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 min-h-[220px]">
+        {pillars.map((p, idx) => {
+          const Icon = p.icon;
+          return (
+            <div 
+              key={idx}
+              className="w-full pillar-card-lift flex flex-col bg-white rounded-2xl border-2 overflow-hidden"
+              style={{ 
+                '--pillar-color': p.color,
+              } as React.CSSProperties}
+            >
+              <div 
+                className="p-5 flex flex-col items-center justify-center text-center text-white select-none"
+                style={{ backgroundColor: p.color }}
+              >
+                <div className="p-2.5 bg-white/15 rounded-lg border border-white/20 mb-2">
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs font-black uppercase tracking-wider leading-tight">
+                  {p.title}
+                </span>
+              </div>
+              <div className="flex-1 p-5 flex flex-col justify-start bg-white">
+                <p className="text-[11px] text-slate-655 leading-relaxed font-semibold">
+                  {p.description}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 interface ScrollytellingProps {
   onBack: () => void;
@@ -366,18 +417,18 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2 rounded-full transition-all duration-75"
             style={{ width: `${scrollProgress * 100}%` }}
           />
-          {/* Subway dots representing the 11 sections (sections 1-10 + section-odt) */}
+          {/* Subway dots representing the 9 sections */}
           <div className="relative flex justify-between items-center w-full">
             {[
               { id: 'section-1', label: '1. Introduction' },
-              { id: 'section-2', label: '2. Four Pillars' },
+              { id: 'section-2', label: '2. Two Pillars' },
               { id: 'section-3', label: '3. Vulnerability' },
               { id: 'section-4', label: '4. Opportunity' },
-              { id: 'section-odt', label: 'ODT: On Demand' },
-              { id: 'section-7', label: '7. Pillar Weights' },
-              { id: 'section-8', label: '8. Stability Index' },
-              { id: 'section-9', label: '9. Limitations' },
-              { id: 'section-10', label: '10. Decisions' },
+              { id: 'section-odt', label: '5. On Demand' },
+              { id: 'section-7', label: '6. Balancing' },
+              { id: 'section-8', label: '7. Route Sensitivity' },
+              { id: 'section-9', label: '8. Limitations' },
+              { id: 'section-10', label: '9. Decisions' },
             ].map((section, idx, arr) => {
               const fraction = idx / (arr.length - 1);
               const isPassed = scrollProgress >= fraction - 0.02;
@@ -508,19 +559,19 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             </div>
           </section>
 
-          {/* ================= SECTION 2: Four Pillars ================= */}
+          {/* ================= SECTION 2: Two Pillars ================= */}
           <section id="section-2" className={getSectionClass('section-2')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Four Pillars of Transit Equity</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">2. The Two Pillars of Transit Equity</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                There are four pillars that determine the route equity score of any particular route.
+                There are two pillars that determine the route equity score of any particular route in this model.
               </p>
             </div>
 
-            <FourPillars />
+            <TwoPillars />
 
             <p className="text-slate-600 text-base leading-relaxed">
-              Each route receives a score from 0 to 100 on each pillar. Combining these four scores helps determine a route's overall transit equity score. Explore each pillar below.
+              Each route receives a score from 0 to 100 on each pillar. Combining these two scores helps determine a route's overall transit equity score. Explore each pillar below.
             </p>
           </section>
 
@@ -946,10 +997,6 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                           </li>
                         </ul>
                       </div>
-
-                      <p className="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
-                        <strong>Pillar Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score sensitivity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -957,10 +1004,10 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
               )}
           </section>
 
-          {/* ================= SECTION 6.5: On Demand Transit (ODT) ================= */}
+          {/* ================= SECTION ODT: On-Demand Transit (ODT) ================= */}
           <section id="section-odt" className={getSectionClass('section-odt')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">On Demand Transit (ODT)</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">5. On Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
               </p>
@@ -987,10 +1034,10 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             </div>
           </section>
 
-          {/* ================= SECTION 7: Policy Weights Simulator ================= */}
+          {/* ================= SECTION 6: Pillar Weights Simulator ================= */}
           <section id="section-7" className={getSectionClass('section-7')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Balancing the Different Pillar Weights</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">6. Balancing the Different Pillar Weights</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 After evaluating the two pillars, we are able to combine them to generate an overall equity score for each route; however, the weighting of the two pillars can impact the final score of the route. Each score is out of 100 and the routes are sorted into quintiles with a grade assigned, A through E with A being the highest scoring routes (most important for equity) and E for the lowest scoring routes (least important for equity).
               </p>
@@ -1103,9 +1150,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                       Route 003
                     </button>
                   </div>
-                </div>
-                
-                <div className="flex-1 w-full relative pt-2">
+                   <div className="flex-1 w-full relative pt-2">
                   <ShapWaterfall 
                     route={{
                       route_id: activeSimulatorRouteId,
@@ -1115,21 +1160,19 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                       composite_score: activeSimulatorRouteId === '002' ? liveScores.route2 : liveScores.route3,
                       total_pop_served: 0, category: 'bus', trip_count: 0, route_length_km: 0, coords: [], da_data: [],
                       pillar_1: activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability,
-                      pillar_2: activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak,
-                      pillar_3: activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly,
+                      pillar_2: 0,
+                      pillar_3: 0,
                       pillar_4: activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity,
                       shap: [
-                        { pillar: 'vuln', label: 'Vulnerability', value: (activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100)), color: ((activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.vulnerability/100 },
-                        { pillar: 'temp', label: 'Off Peak', value: (activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak) * (weights.offPeak / 100) - (50 * (weights.offPeak/100)), color: ((activeSimulatorRouteId === '002' ? r2.offPeak : r3.offPeak) * (weights.offPeak / 100) - (50 * (weights.offPeak/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.offPeak/100 },
-                        { pillar: 'mono', label: 'Monopoly', value: (activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly) * (weights.monopoly / 100) - (50 * (weights.monopoly/100)), color: ((activeSimulatorRouteId === '002' ? r2.monopoly : r3.monopoly) * (weights.monopoly / 100) - (50 * (weights.monopoly/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.monopoly/100 },
-                        { pillar: 'opp', label: 'Opportunity', value: (activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100)), color: ((activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: 0, networkMean: 50, weight: weights.opportunity/100 }
+                        { pillar: 'vuln', label: 'Vulnerability', value: (activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100)), color: ((activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability) * (weights.vulnerability / 100) - (50 * (weights.vulnerability/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: activeSimulatorRouteId === '002' ? r2.vulnerability : r3.vulnerability, networkMean: 50, weight: weights.vulnerability/100 },
+                        { pillar: 'opp', label: 'Opportunity', value: (activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100)), color: ((activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity) * (weights.opportunity / 100) - (50 * (weights.opportunity/100))) >= 0 ? '#10B981' : '#F43F5E', rawScore: activeSimulatorRouteId === '002' ? r2.opportunity : r3.opportunity, networkMean: 50, weight: weights.opportunity/100 }
                       ]
                     } as any}
                     networkStats={{
                       sigmoidMidpoint: 50,
                       sigmoidSteepness: 0.1,
                       quintileCuts: [20, 40, 60, 80],
-                      pillarMeans: { pillar_1_vulnerability: 50, pillar_2_temporal: 50, pillar_3_monopoly: 50, pillar_4_opportunity: 50 }
+                      pillarMeans: { pillar_1_vulnerability: 50, pillar_2_temporal: 0, pillar_3_monopoly: 0, pillar_4_opportunity: 50 }
                     }}
                   />
                 </div>
@@ -1154,7 +1197,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
           {/* ================= SECTION 8: Route Stability and Volatility ================= */}
           <section id="section-8" className={getSectionClass('section-8')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 100 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
               </p>
@@ -1393,7 +1436,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
           {/* ================= SECTION 9: Methodological Limitations ================= */}
           <section id="section-9" className={getSectionClass('section-9')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">9. What the Scorecard Misses</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">8. What the Scorecard Misses</h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 No mathematical model perfectly captures the lived experience of transit riders. The ETS Route Equity Scorecard has several methodological limitations:
               </p>
@@ -1540,7 +1583,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
           {/* ================= SECTION 10: Applying the Scorecard to Planning Decisions ================= */}
           <section id="section-10" className={getSectionClass('section-10')}>
             <div className="space-y-4">
-              <h2 className="text-3xl font-black text-blue-900 leading-tight">10. Applying the Scorecard to Planning Decisions</h2>
+              <h2 className="text-3xl font-black text-blue-900 leading-tight">9. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
                 Scoring transit routes across the four pillars and simulating their stability provides analytical data to help planners design and schedule routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing decision makers to predict how service adjustments might impact neighbourhoods – for better or for worse.
               </p>
