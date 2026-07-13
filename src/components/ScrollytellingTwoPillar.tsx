@@ -1207,7 +1207,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
               </p>
             </div>
 
-            <MonteCarloPlinko />
+            <MonteCarloPlinko twoPillar />
 
             <div className="space-y-4">
               <div className="flex flex-col gap-6 pl-2 py-2">
