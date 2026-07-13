@@ -30,7 +30,7 @@ export const WeightingControls = () => {
 
   return (
     <div className="p-6 bg-white border-b border-slate-200">
-      <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6 text-center">Policy Weighting</h3>
+      <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6 text-center">Pillar Weighting</h3>
       
       <Slider 
         label="Social Vulnerability" 

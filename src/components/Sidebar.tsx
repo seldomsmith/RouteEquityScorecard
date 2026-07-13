@@ -114,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
       <div className="p-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Policy Weights
+            Pillar Weights
           </h2>
           <button
             onClick={() => {

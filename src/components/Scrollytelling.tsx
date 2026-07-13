@@ -428,7 +428,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               { id: 'section-5', label: '5. Off Peak Service' },
               { id: 'section-6', label: '6. Transit Monopoly' },
               { id: 'section-odt', label: 'ODT: On Demand' },
-              { id: 'section-7', label: '7. Policy Weights' },
+              { id: 'section-7', label: '7. Pillar Weights' },
               { id: 'section-8', label: '8. Stability Index' },
               { id: 'section-9', label: '9. Limitations' },
               { id: 'section-10', label: '10. Decisions' },
@@ -557,7 +557,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
               </div>
 
               <p className="text-slate-600 text-base leading-relaxed">
-                When developing a transit network that meets the needs of Edmonton residents, policymakers must identify which routes provide essential service to equity-seeking communities. This scorecard provides the data to inform those decisions.
+                By analyzing these lines through a systematic framework, we can quantify transit equity and compare route performance objectively.
               </p>
             </div>
           </section>
@@ -1002,7 +1002,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                       </div>
 
                       <p className="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
-                        <strong>Policy Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score sensitivity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
+                        <strong>Pillar Sensitivity:</strong> In our Monte Carlo weight sensitivity meta-analysis, the Destination Opportunity weight emerged as a primary driver of score sensitivity. Shifting weight towards Opportunity favors high-frequency, radial commuter routes connecting to major job hubs (like Route 002) at the expense of localized transit monopolies, representing a core strategic trade-off for decision making.
                       </p>
                     </div>
                   </div>
@@ -1409,7 +1409,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
-                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new policy prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
+                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new pillar weighting model prioritizes scheduling by allocating 40% of the weight to Off-Peak Service, 35% to Destination Opportunity, 15% to Transit Vulnerability, and 10% to Transit Monopoly, the final scores change:
               </p>
               <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
@@ -1618,7 +1618,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
                     Scores for routes in this category fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When policy shifts to favor demographic need or route dependency, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its funding priority highly dependent on the active political administration.
+                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Off-Peak Service focus but drops when we prioritize Transit Monopoly or Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent evening and weekend schedule (scoring 38.0 in Off-Peak), which pulls its grade up when temporal service is prioritized. However, because it runs through central neighborhoods with abundant overlapping transit routes and higher average incomes, its Monopoly score is an absolute 0.0 and its Vulnerability score is a low 17.5. When pillar weights shift to favor demographic need or route dependency, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its relative funding priority highly sensitive to the chosen weighting model.
                   </p>
                 </div>
 
