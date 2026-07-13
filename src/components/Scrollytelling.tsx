@@ -1974,7 +1974,7 @@ export const Scrollytelling = ({ onBack, onJumpIn }: ScrollytellingProps) => {
           </section>
 
           {/* ================= BOTTOM CALL TO ACTION (Section 11) ================= */}
-          <section className="mt-12 pt-12 border-t border-slate-200 flex flex-col items-center gap-6 text-center">
+          <section className="mt-12 pt-12 border-t-2 border-blue-600 flex flex-col items-center gap-6 text-center">
             <div className="max-w-2xl space-y-4">
               <h3 className="text-3xl font-black text-blue-900 leading-tight">Explore the Route Equity Scorecard Tool</h3>
               <p className="text-slate-600 text-base leading-relaxed">
