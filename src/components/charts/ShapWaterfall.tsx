@@ -475,13 +475,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
         </svg>
       </div>
 
-      {/* Sigmoid callout */}
-      {!isStabilityMode && (
-        <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
-          <span>σ midpoint: {networkStats.sigmoidMidpoint.toFixed(1)} · steepness: {networkStats.sigmoidSteepness.toFixed(3)}</span>
-          <span className="font-mono">Quintile: {networkStats.quintileCuts.map((c) => c.toFixed(0)).join(' | ')}</span>
-        </div>
-      )}
+
 
       {/* Explanatory Footnote */}
       <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
