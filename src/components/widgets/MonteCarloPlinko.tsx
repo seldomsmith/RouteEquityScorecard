@@ -14,16 +14,15 @@ interface SimulationResult {
   r3Score: number;
 }
 
-export const MonteCarloPlinko: React.FC = () => {
+export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar = false }) => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentWeights, setCurrentWeights] = useState({
-    vulnerability: 25,
-    offPeak: 25,
-    monopoly: 25,
-    opportunity: 25
-  });
+  const [currentWeights, setCurrentWeights] = useState(
+    twoPillar
+      ? { vulnerability: 50, offPeak: 0, monopoly: 0, opportunity: 50 }
+      : { vulnerability: 25, offPeak: 25, monopoly: 25, opportunity: 25 }
+  );
 
   const [simResults, setSimResults] = useState<SimulationResult[]>([]);
 
@@ -58,12 +57,11 @@ export const MonteCarloPlinko: React.FC = () => {
     setIsSimulating(false);
     setProgress(0);
     setSimResults([]);
-    setCurrentWeights({
-      vulnerability: 25,
-      offPeak: 25,
-      monopoly: 25,
-      opportunity: 25
-    });
+    setCurrentWeights(
+      twoPillar
+        ? { vulnerability: 50, offPeak: 0, monopoly: 0, opportunity: 50 }
+        : { vulnerability: 25, offPeak: 25, monopoly: 25, opportunity: 25 }
+    );
   };
 
   const startSimulation = () => {
@@ -80,15 +78,24 @@ export const MonteCarloPlinko: React.FC = () => {
       }
 
       // Generate random weights summing to 100%
-      let w1 = Math.random();
-      let w2 = Math.random();
-      let w3 = Math.random();
-      let w4 = Math.random();
-      const sum = w1 + w2 + w3 + w4;
-      const vulnerability = Math.round((w1 / sum) * 100);
-      const offPeak = Math.round((w2 / sum) * 100);
-      const monopoly = Math.round((w3 / sum) * 100);
-      const opportunity = 100 - (vulnerability + offPeak + monopoly);
+      let vulnerability: number, offPeak: number, monopoly: number, opportunity: number;
+      if (twoPillar) {
+        // Only 2 pillars: vulnerability + opportunity = 100
+        vulnerability = Math.round(Math.random() * 100);
+        opportunity = 100 - vulnerability;
+        offPeak = 0;
+        monopoly = 0;
+      } else {
+        let w1 = Math.random();
+        let w2 = Math.random();
+        let w3 = Math.random();
+        let w4 = Math.random();
+        const sum = w1 + w2 + w3 + w4;
+        vulnerability = Math.round((w1 / sum) * 100);
+        offPeak = Math.round((w2 / sum) * 100);
+        monopoly = Math.round((w3 / sum) * 100);
+        opportunity = 100 - (vulnerability + offPeak + monopoly);
+      }
 
       setCurrentWeights({ vulnerability, offPeak, monopoly, opportunity });
 
@@ -224,13 +231,19 @@ export const MonteCarloPlinko: React.FC = () => {
         </div>
 
         {/* Dynamic Weight Dashboard */}
-        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm">
-          {[
-            { label: 'Vulnerability', val: currentWeights.vulnerability, color: 'bg-fuchsia-500' },
-            { label: 'Off-Peak', val: currentWeights.offPeak, color: 'bg-sky-500' },
-            { label: 'Monopoly', val: currentWeights.monopoly, color: 'bg-amber-500' },
-            { label: 'Opportunity', val: currentWeights.opportunity, color: 'bg-indigo-500' }
-          ].map(w => (
+        <div className={`md:col-span-2 grid gap-4 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm ${twoPillar ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
+          {(twoPillar
+            ? [
+                { label: 'Vulnerability', val: currentWeights.vulnerability, color: 'bg-fuchsia-500' },
+                { label: 'Opportunity', val: currentWeights.opportunity, color: 'bg-indigo-500' }
+              ]
+            : [
+                { label: 'Vulnerability', val: currentWeights.vulnerability, color: 'bg-fuchsia-500' },
+                { label: 'Off-Peak', val: currentWeights.offPeak, color: 'bg-sky-500' },
+                { label: 'Monopoly', val: currentWeights.monopoly, color: 'bg-amber-500' },
+                { label: 'Opportunity', val: currentWeights.opportunity, color: 'bg-indigo-500' }
+              ]
+          ).map(w => (
             <div key={w.label} className="flex flex-col">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{w.label}</span>
               <span className="text-lg font-black text-slate-800 font-mono mt-0.5">{w.val}%</span>
