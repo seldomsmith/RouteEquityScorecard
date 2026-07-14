@@ -248,6 +248,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
   const disabledWeights = useRouteStore((s) => s.disabledWeights);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+  const [is3DEnabled, setIs3DEnabled] = useState(false);
+
 
 
   const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
@@ -631,6 +633,49 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     }
   }, [routes, setSelectedRoute]);
 
+  // Reactive Effect to Toggle 3D View (Pitch, Bearing, and Buildings Extrusion)
+  useEffect(() => {
+    if (!map.current) return;
+    try {
+      if (is3DEnabled) {
+        map.current.easeTo({
+          pitch: 45,
+          bearing: -15,
+          duration: 1000
+        });
+
+        if (!map.current.getLayer('3d-buildings')) {
+          map.current.addLayer({
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            type: 'fill-extrusion',
+            minzoom: 14,
+            paint: {
+              'fill-extrusion-color': '#e2e8f0',
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': ['get', 'min_height'],
+              'fill-extrusion-opacity': 0.55,
+            },
+          });
+        }
+      } else {
+        map.current.easeTo({
+          pitch: 0,
+          bearing: 0,
+          duration: 1000
+        });
+
+        if (map.current.getLayer('3d-buildings')) {
+          map.current.removeLayer('3d-buildings');
+        }
+      }
+    } catch (err) {
+      console.warn('Error applying 3D map transformations:', err);
+    }
+  }, [is3DEnabled]);
+
+
   // Toggle ODT Zones layer visibility
   useEffect(() => {
     if (!map.current) return;
@@ -999,22 +1044,37 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
       {/* Top Right: Stats & Fullscreen Toggle */}
       <div className="absolute top-6 right-6 z-10 flex flex-col items-end gap-2">
-        <button
-          onClick={() => setIsFullscreen(!isFullscreen)}
-          className="bg-white/90 backdrop-blur-md border border-slate-200 text-slate-600 hover:text-slate-900 p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold"
-        >
-          {isFullscreen ? (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-              Exit Fullscreen
-            </>
-          ) : (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-              Fullscreen Map
-            </>
-          )}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIs3DEnabled(!is3DEnabled)}
+            className={`backdrop-blur-md border p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold ${
+              is3DEnabled
+                ? 'bg-slate-800 border-slate-800 text-white hover:bg-slate-900'
+                : 'bg-white/90 border-slate-200 text-slate-600 hover:text-slate-900'
+            }`}
+            title="Toggle 3D View"
+          >
+            <span className={is3DEnabled ? 'text-white' : 'text-slate-600'}>3D</span>
+          </button>
+
+          <button
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="bg-white/90 backdrop-blur-md border border-slate-200 text-slate-600 hover:text-slate-900 p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold"
+          >
+            {isFullscreen ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                Exit Fullscreen
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                Fullscreen Map
+              </>
+            )}
+          </button>
+        </div>
+
 
         <div className="bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg mt-1 text-right min-w-[180px]">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Population Served</p>
