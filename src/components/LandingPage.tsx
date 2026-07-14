@@ -17,49 +17,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
         <RouteWaterfall opacity={0.35} />
       </div>
 
-      {/* DRAFT Ink Stamp */}
-      <div
-        aria-hidden="true"
-        className="absolute z-20 pointer-events-none select-none"
-        style={{
-          top: '18%',
-          right: '20%',
-          transform: 'rotate(45deg)',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: '"Courier New", Courier, monospace',
-            fontSize: '3.4rem',
-            fontWeight: 900,
-            letterSpacing: '0.26em',
-            color: 'rgba(153, 27, 27, 0.62)',
-            border: '5px solid rgba(153, 27, 27, 0.52)',
-            borderRadius: '7px',
-            padding: '6px 22px',
-            display: 'inline-block',
-            textTransform: 'uppercase',
-            mixBlendMode: 'multiply',
-            background: 'transparent',
-            lineHeight: 1.1,
-            // Multi-layer shadow to simulate ink bleed and uneven pressure
-            textShadow: `
-              0 0 1px rgba(153,27,27,0.6),
-              1px 0 2px rgba(153,27,27,0.25),
-              -1px 0 2px rgba(153,27,27,0.18),
-              0 1px 3px rgba(153,27,27,0.2)
-            `,
-            boxShadow: `
-              inset 0 0 6px rgba(153,27,27,0.12),
-              0 0 0 1px rgba(153,27,27,0.18),
-              2px 2px 0 rgba(153,27,27,0.08)
-            `,
-            filter: 'contrast(1.1)',
-          }}
-        >
-          DRAFT
-        </span>
-      </div>
+
 
       {/* SVG Subway Line Background (Original Fallback - Commented for Revertability)
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -109,6 +67,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn 
         className="relative z-10 w-full max-w-5xl mx-auto rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl transition-all duration-300"
       >
         <div className="w-full p-10 md:p-20 flex flex-col items-center justify-center text-center relative">
+          {/* SVG filter for the ink stamp texture */}
+          <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
+            <filter id="ink-stamp-distress">
+              <feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="4" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            </filter>
+          </svg>
+
+          {/* DRAFT Ink Stamp */}
+          <div
+            aria-hidden="true"
+            className="absolute pointer-events-none select-none z-30"
+            style={{
+              top: '-10px',
+              right: '20px',
+              transform: 'rotate(-20deg)',
+              filter: 'url(#ink-stamp-distress)',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: '"Courier New", Courier, monospace',
+                fontSize: '2rem',
+                fontWeight: 900,
+                letterSpacing: '0.18em',
+                color: '#e04313', // Red-orange stamp color matching the image
+                border: '4px solid #e04313',
+                borderRadius: '6px',
+                padding: '4px 14px',
+                display: 'inline-block',
+                textTransform: 'uppercase',
+                mixBlendMode: 'multiply',
+                background: 'transparent',
+                lineHeight: 1.1,
+              }}
+            >
+              DRAFT
+            </span>
+          </div>
+
           {/* Glow Spheres */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-900 opacity-20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
