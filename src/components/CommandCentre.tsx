@@ -139,7 +139,7 @@ export const CommandCentre = () => {
         try {
           console.log("🚀 Ingesting Golden Record into DuckDB...");
           
-          const response = await fetch('/data/golden_route_record.parquet');
+          const response = await fetch('/data/golden_route_record.parquet?v=' + Date.now());
           const buffer = await response.arrayBuffer();
           
           await db.registerFileBuffer('data.parquet', new Uint8Array(buffer));
@@ -302,7 +302,7 @@ export const CommandCentre = () => {
             <div className="mb-2">
               <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Network Wide Metrics</h2>
             </div>
-            <NetworkDistribution data={filteredMuniRoutes} />
+            <NetworkDistribution data={muniRoutes} />
           </div>
         </div>
       </div>
