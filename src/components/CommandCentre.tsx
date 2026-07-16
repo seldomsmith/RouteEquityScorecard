@@ -231,6 +231,7 @@ export const CommandCentre = () => {
               trip_count: Number(row.trip_count || 0),
               category: String(row.category || 'bus_regular'),
               route_length_km: Number(row.route_length_km || 0),
+              is_regional: !!row.is_regional,
             };
           });
           
