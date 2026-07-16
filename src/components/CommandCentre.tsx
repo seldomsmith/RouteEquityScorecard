@@ -119,6 +119,15 @@ export const CommandCentre = () => {
   const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights);
 
   const selectedGrade = useRouteStore((state) => state.selectedGrade);
+  const muniRoutes = React.useMemo(() => {
+    return scoredRoutes.filter((r) => !r.is_regional);
+  }, [scoredRoutes]);
+
+  const filteredMuniRoutes = React.useMemo(() => {
+    if (!selectedGrade) return muniRoutes;
+    return muniRoutes.filter((r) => r.grade === selectedGrade);
+  }, [muniRoutes, selectedGrade]);
+
   const filteredRoutes = React.useMemo(() => {
     if (!selectedGrade) return scoredRoutes;
     return scoredRoutes.filter((r) => r.grade === selectedGrade);
@@ -244,7 +253,7 @@ export const CommandCentre = () => {
     <div className="w-full h-full flex">
       {/* Sidebar */}
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
-        <Sidebar routes={scoredRoutes} onViewDirectory={() => setShowDataExplorer(true)} />
+        <Sidebar routes={muniRoutes} onViewDirectory={() => setShowDataExplorer(true)} />
       </div>
 
       {/* Main Content — scrollable */}
@@ -277,7 +286,7 @@ export const CommandCentre = () => {
                 {mapFilterMode === 'stability' ? (
                   <RouteStabilityScatter sensitivityData={sensitivityData} />
                 ) : (
-                  <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
+                  <EquityQuadrant data={filteredMuniRoutes} allRoutes={muniRoutes} />
                 )}
               </div>
           </div>
@@ -286,23 +295,23 @@ export const CommandCentre = () => {
  
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
-          <EquityMatrix routes={filteredRoutes} daAreaMap={daAreaMap} />
+          <EquityMatrix routes={filteredMuniRoutes} daAreaMap={daAreaMap} />
           
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
             <div className="mb-2">
               <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Network Wide Metrics</h2>
             </div>
-            <NetworkDistribution data={filteredRoutes} />
+            <NetworkDistribution data={filteredMuniRoutes} />
           </div>
         </div>
       </div>
-      <SpotlightSearch routes={scoredRoutes} />
+      <SpotlightSearch routes={muniRoutes} />
       
       <DataExplorerModal 
         isOpen={showDataExplorer} 
         onClose={() => setShowDataExplorer(false)} 
-        allRoutesData={scoredRoutes}
+        allRoutesData={muniRoutes}
         weights={weights} 
         sensitivityData={Object.values(sensitivityData)}
       />

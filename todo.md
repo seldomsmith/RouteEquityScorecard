@@ -4,12 +4,18 @@
 Refining analytical modeling, service impact simulations, and advanced research reporting.
 
 ## Sprint Backlog
+### Phase 25: Regional Route Exclusion & Opportunity Adjustments
+1. **Regional Route Exclusion** [HIGH]
+   - Exclude 42 regional routes (St. Albert 'A*', Strathcona '4*', Leduc 'L*', Beaumont '540', Spruce Grove '560', Airport '747') from municipal scoring, grading, and charts (Population Equity, S-Curve, Volatility vs Mean Scatter plot), while keeping them on the map styled in dark gray with full DA overlays.
+2. **Opportunity Score (Pillar 4) Airport Dilution Log** [MEDIUM]
+   - Record and address the under-representation of the Edmonton International Airport (EIA) opportunity value due to simple point-count buffers on regional corridors.
+
 ### Phase 4.5: Simulation & Data Pipeline
-1. **Service Impact Simulation (Draft Mode)** [HIGH]
+3. **Service Impact Simulation (Draft Mode)** [HIGH]
    - *Deferred*: Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory. See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md).
-2. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
+4. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
-3. **Policy Sensitivity Explorer UI Tab** [FUTURE]
+5. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
 ---

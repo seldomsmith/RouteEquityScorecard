@@ -103,16 +103,18 @@ export function useReactiveScoring(
       };
     }
 
-    const n = baseRoutes.length;
+    const municipalRoutes = baseRoutes.filter((r) => !r.is_regional);
+    const regionalRoutes = baseRoutes.filter((r) => r.is_regional);
+    const n_muni = municipalRoutes.length;
 
-    // ── 1. Compute per-pillar network means ───────────────────────
+    // ── 1. Compute per-pillar network means (municipal only) ──────
     const pillarMeans: Record<string, number> = {};
     for (const p of PILLAR_MAP) {
-      const values = baseRoutes.map((r) => (r as any)[p.key] as number || 0);
+      const values = municipalRoutes.map((r) => (r as any)[p.key] as number || 0);
       pillarMeans[p.key] = mean(values);
     }
 
-    // ── 2. Compute raw weighted composite for each route ──────────
+    // ── 2. Compute raw weighted composite for each municipal route ──
     const w = {
       pillar_1: weights.vulnerability / 100,
       pillar_2: weights.resilience / 100,
@@ -120,7 +122,7 @@ export function useReactiveScoring(
       pillar_4: weights.opportunity / 100,
     };
 
-    const rawComposites = baseRoutes.map((r) =>
+    const rawComposites = municipalRoutes.map((r) =>
       (r.pillar_1 * w.pillar_1) +
       (r.pillar_2 * w.pillar_2) +
       (r.pillar_3 * w.pillar_3) +
@@ -140,7 +142,7 @@ export function useReactiveScoring(
 
     // ── 5. Quintile grading ───────────────────────────────────────
     const sorted = [...finalScores].sort((a, b) => a - b);
-    const cuts = [0.2, 0.4, 0.6, 0.8].map((p) => sorted[Math.floor(n * p)]);
+    const cuts = [0.2, 0.4, 0.6, 0.8].map((p) => sorted[Math.floor(n_muni * p)]);
 
     function assignGrade(score: number): string {
       if (score >= cuts[3]) return 'A';
@@ -153,7 +155,7 @@ export function useReactiveScoring(
     // ── 6. Build scored routes with SHAP contributions ────────────
     const gradeDistribution: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
 
-    const scoredRoutes: ScoredRoute[] = baseRoutes.map((route, i) => {
+    const scoredMunicipalRoutes: ScoredRoute[] = municipalRoutes.map((route, i) => {
       const grade = assignGrade(finalScores[i]);
       gradeDistribution[grade] = (gradeDistribution[grade] || 0) + 1;
 
@@ -184,6 +186,29 @@ export function useReactiveScoring(
         shap,
       };
     });
+
+    const scoredRegionalRoutes: ScoredRoute[] = regionalRoutes.map((route) => {
+      const shap: ShapContribution[] = PILLAR_MAP.map((p) => ({
+        pillar: p.key,
+        label: p.label,
+        value: 0.0,
+        color: p.color_pos,
+        rawScore: 0.0,
+        networkMean: 0.0,
+        weight: 0.0,
+      }));
+
+      return {
+        ...route,
+        baseline_grade: 'Regional',
+        composite_score: 0.0,
+        composite_score_raw: 0.0,
+        grade: 'Regional',
+        shap,
+      };
+    });
+
+    const scoredRoutes = [...scoredMunicipalRoutes, ...scoredRegionalRoutes];
 
     return {
       scoredRoutes,

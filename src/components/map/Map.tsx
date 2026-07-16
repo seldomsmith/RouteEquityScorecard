@@ -337,6 +337,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             composite_score: r.composite_score,
             stability_class: mapStabilityClass((r as any).stability_class || 'Moderate Stability'),
             stability_class_2_pillar: mapStabilityClass((r as any).stability_class_2_pillar || 'Moderate Stability'),
+            is_regional: !!r.is_regional,
           },
           geometry: {
             type: 'LineString' as const,
@@ -463,13 +464,18 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         source: 'routes',
         paint: {
           'line-color': [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
+            'case',
+            ['coalesce', ['get', 'is_regional'], false],
+            '#475569',
+            [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
           ],
           'line-width': 2.5,
           'line-opacity': 0.7,
@@ -483,13 +489,18 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         source: 'routes',
         paint: {
           'line-color': [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
+            'case',
+            ['coalesce', ['get', 'is_regional'], false],
+            '#475569',
+            [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
           ],
           'line-width': 5,
           'line-opacity': 0.9,
@@ -819,24 +830,29 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     if (!map.current || !routesAdded.current) return;
     try {
       const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
-      const lineExpr = mapFilterMode === 'stability'
-        ? [
-            'match', ['get', stabilityKey],
-            'Essential Equity Routes', STABILITY_COLORS['Essential Equity Routes'],
-            'Low Equity-Priority Routes', STABILITY_COLORS['Low Equity-Priority Routes'],
-            'High Swing Routes', STABILITY_COLORS['High Swing Routes'],
-            'Moderate Swing Routes', STABILITY_COLORS['Moderate Swing Routes'],
-            '#94A3B8'
-          ]
-        : [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
-          ];
+      const lineExpr = [
+        'case',
+        ['coalesce', ['get', 'is_regional'], false],
+        '#475569',
+        mapFilterMode === 'stability'
+          ? [
+              'match', ['get', stabilityKey],
+              'Essential Equity Routes', STABILITY_COLORS['Essential Equity Routes'],
+              'Low Equity-Priority Routes', STABILITY_COLORS['Low Equity-Priority Routes'],
+              'High Swing Routes', STABILITY_COLORS['High Swing Routes'],
+              'Moderate Swing Routes', STABILITY_COLORS['Moderate Swing Routes'],
+              '#94A3B8'
+            ]
+          : [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
+      ];
       
       map.current.setPaintProperty('routes-line', 'line-color', lineExpr);
       map.current.setPaintProperty('routes-highlight', 'line-color', lineExpr);
