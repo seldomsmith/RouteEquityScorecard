@@ -20,9 +20,13 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }) => {
+  const cleanData = useMemo(() => {
+    return data.filter(r => !(r as any).is_regional && r.grade !== 'Regional');
+  }, [data]);
+
   // 1. Bin data for the "Bell Curve" (Area Chart)
   const distributionData = useMemo(() => {
-    if (!data.length) return [];
+    if (!cleanData.length) return [];
     
     // Create bins from 0 to 100 with step 5
     const bins = Array.from({ length: 21 }, (_, i) => ({
@@ -33,7 +37,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
       routes: [] as string[]
     }));
 
-    data.forEach(route => {
+    cleanData.forEach(route => {
       const rawScore = Number(route.composite_score) || 0;
       const score = Math.max(0, Math.min(100, rawScore));
       let binIndex = Math.floor(score / 5);
@@ -47,11 +51,11 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
     });
 
     return bins;
-  }, [data]);
+  }, [cleanData]);
 
   // 2. Grade Summary Table
   const gradeSummary = useMemo(() => {
-    if (!data.length) return [];
+    if (!cleanData.length) return [];
     
     const grades = ['A', 'B', 'C', 'D', 'E'];
     const summary = grades.map(g => ({
@@ -61,7 +65,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
       maxScore: 0,
     }));
 
-    data.forEach(route => {
+    cleanData.forEach(route => {
       const s = summary.find(x => x.grade === route.grade);
       const score = Number(route.composite_score) || 0;
       if (s) {
@@ -73,16 +77,25 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
 
     return summary.map(s => ({
       ...s,
-      percentage: ((s.count / data.length) * 100).toFixed(1),
+      percentage: ((s.count / cleanData.length) * 100).toFixed(1),
       range: s.count > 0 && !Number.isNaN(s.minScore) && !Number.isNaN(s.maxScore) 
         ? `${s.minScore.toFixed(1)} - ${s.maxScore.toFixed(1)}` 
         : 'N/A'
     }));
-  }, [data]);
+  }, [cleanData]);
+
+  // 3. Dynamic Quintile Cuts
+  const dynamicCuts = useMemo(() => {
+    if (!cleanData.length) return ["20", "40", "60", "80"];
+    const sortedScores = cleanData.map(r => r.composite_score).sort((a, b) => a - b);
+    const n = sortedScores.length;
+    const rawCuts = [0.2, 0.4, 0.6, 0.8].map(p => sortedScores[Math.floor(n * p)]);
+    return rawCuts.map(val => String(Math.round(val / 5) * 5));
+  }, [cleanData]);
 
 
 
-  if (!data.length) return null;
+  if (!cleanData.length) return null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
@@ -92,7 +105,7 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
         <div>
           <h3 className="text-xs font-bold text-slate-800 mb-1 uppercase tracking-wider">Network Grade Distribution</h3>
           <p className="text-[10px] text-slate-500 mb-3 leading-relaxed">
-            The 170 routes are distributed across quintiles based on relative equity performance.
+            The {cleanData.length} routes are distributed across quintiles based on relative equity performance.
           </p>
         </div>
         
@@ -160,11 +173,11 @@ export const NetworkDistribution: React.FC<NetworkDistributionProps> = ({ data }
                 formatter={(value: number) => [`${value} routes`, 'Count']}
                 labelFormatter={(label) => `Score: ${label} - ${Number(label)+5}`}
               />
-              {/* Quintile Reference Lines (approximate based on current data cutoffs) */}
-              <ReferenceLine x="15" stroke={GRADE_COLORS.E} strokeDasharray="3 3" label={{ position: 'top', value: 'E', fill: GRADE_COLORS.E, fontSize: 10 }} />
-              <ReferenceLine x="30" stroke={GRADE_COLORS.D} strokeDasharray="3 3" label={{ position: 'top', value: 'D', fill: GRADE_COLORS.D, fontSize: 10 }} />
-              <ReferenceLine x="55" stroke={GRADE_COLORS.C} strokeDasharray="3 3" label={{ position: 'top', value: 'C', fill: GRADE_COLORS.C, fontSize: 10 }} />
-              <ReferenceLine x="85" stroke={GRADE_COLORS.B} strokeDasharray="3 3" label={{ position: 'top', value: 'B', fill: GRADE_COLORS.B, fontSize: 10 }} />
+              {/* Quintile Reference Lines (dynamically aligned to nearest chart bins) */}
+              <ReferenceLine x={dynamicCuts[0]} stroke={GRADE_COLORS.E} strokeDasharray="3 3" label={{ position: 'top', value: 'E', fill: GRADE_COLORS.E, fontSize: 10 }} />
+              <ReferenceLine x={dynamicCuts[1]} stroke={GRADE_COLORS.D} strokeDasharray="3 3" label={{ position: 'top', value: 'D', fill: GRADE_COLORS.D, fontSize: 10 }} />
+              <ReferenceLine x={dynamicCuts[2]} stroke={GRADE_COLORS.C} strokeDasharray="3 3" label={{ position: 'top', value: 'C', fill: GRADE_COLORS.C, fontSize: 10 }} />
+              <ReferenceLine x={dynamicCuts[3]} stroke={GRADE_COLORS.B} strokeDasharray="3 3" label={{ position: 'top', value: 'B', fill: GRADE_COLORS.B, fontSize: 10 }} />
               
               <Area 
                 type="monotone" 

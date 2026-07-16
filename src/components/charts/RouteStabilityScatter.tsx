@@ -97,6 +97,10 @@ export const RouteStabilityScatter: React.FC<RouteStabilityScatterProps> = ({ se
 
   const chartData = useMemo(() => {
     const raw = Object.values(sensitivityData).filter((row) => {
+      const rid = String(row.route_id || '');
+      const isRegional = rid.startsWith('A') || rid.startsWith('L') || rid.startsWith('4') || ['540', '560', '747'].includes(rid);
+      if (isRegional) return false;
+
       if (!selectedStabilityClasses.length) return true;
       return selectedStabilityClasses.includes(row.stability_class);
     });

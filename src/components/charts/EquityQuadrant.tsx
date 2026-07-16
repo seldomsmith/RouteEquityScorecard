@@ -138,7 +138,8 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes 
   // Pre-calculate and map the cost variables onto the datasets for graphing
   // (hooks must always run, even when data is empty)
   const mappedData = React.useMemo(() => {
-    return data.map(r => {
+    const cleanData = data.filter(r => !(r as any).is_regional && r.grade !== 'Regional');
+    return cleanData.map(r => {
       const { costPerHour, weeklyCost, costPerEquityPoint } = computeRouteCosts(r);
       return {
         ...r,
@@ -151,7 +152,8 @@ export const EquityQuadrant: React.FC<EquityQuadrantProps> = ({ data, allRoutes 
 
   const mappedAllRoutes = React.useMemo(() => {
     const ref = allRoutes && allRoutes.length > 0 ? allRoutes : data;
-    return ref.map(r => {
+    const cleanRef = ref.filter(r => !(r as any).is_regional && r.grade !== 'Regional');
+    return cleanRef.map(r => {
       const { costPerHour, weeklyCost, costPerEquityPoint } = computeRouteCosts(r);
       return {
         ...r,
