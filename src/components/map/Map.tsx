@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { useRouteStore, MetricKey } from '@/store/routeStore';
 import { METRICS } from '@/components/charts/EquityMatrix';
+import { mapStabilityClass } from '@/utils/stability';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -18,10 +19,10 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 const STABILITY_COLORS: Record<string, string> = {
-  'Bedrock Essential': '#4F46E5', // Indigo
-  'Bedrock Resilient': '#10B981', // Emerald
-  'Policy Swing Corridor': '#F59E0B', // Amber
-  'Moderate Stability': '#94A3B8', // Slate
+  'Essential Equity Routes': '#3B82F6', // Blue
+  'Low Equity-Priority Routes': '#10B981', // Emerald
+  'High Swing Routes': '#EF4444', // Red
+  'Moderate Swing Routes': '#F59E0B', // Yellow
 };
 
 const METRIC_GRADIENTS: Record<MetricKey, string> = {
@@ -247,6 +248,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
   const disabledWeights = useRouteStore((s) => s.disabledWeights);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
+  const [is3DEnabled, setIs3DEnabled] = useState(false);
+
 
 
   const selectedRouteData = routes.find((r) => r.route_id === selectedRoute);
@@ -263,6 +266,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
   }, [mapFilterMode]);
 
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
+  const [odtGeoJson, setOdtGeoJson] = useState<any>(null);
+  const [showOdtZones, setShowOdtZones] = useState(true);
 
   // Fetch DA boundaries GeoJSON once
   useEffect(() => {
@@ -272,6 +277,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         setDaGeoJson(data);
       })
       .catch((err) => console.error("❌ Failed to load DA boundaries", err));
+  }, []);
+
+  // Fetch ODT boundaries GeoJSON once
+  useEffect(() => {
+    fetch('/data/odt_zones.geojson')
+      .then((res) => res.json())
+      .then((data) => {
+        setOdtGeoJson(data);
+      })
+      .catch((err) => console.error("❌ Failed to load ODT boundaries", err));
   }, []);
 
   // Initialize the map
@@ -285,7 +300,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       style: 'mapbox://styles/mapbox/light-v11',
       center: [-113.4938, 53.5461],
       zoom: 11,
-      projection: { name: 'mercator' }
+      projection: { name: 'mercator' },
+      cooperativeGestures: false
     });
 
     map.current.on('load', () => {
@@ -319,8 +335,9 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
-            stability_class: (r as any).stability_class || 'Moderate Stability',
-            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
+            stability_class: mapStabilityClass((r as any).stability_class || 'Moderate Stability'),
+            stability_class_2_pillar: mapStabilityClass((r as any).stability_class_2_pillar || 'Moderate Stability'),
+            is_regional: !!r.is_regional,
           },
           geometry: {
             type: 'LineString' as const,
@@ -335,6 +352,39 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current!.addSource('da-heatmap', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+      });
+
+      // Add ODT Zones source and layers
+      map.current!.addSource('odt-zones', {
+        type: 'geojson',
+        data: odtGeoJson || { type: 'FeatureCollection', features: [] },
+      });
+
+      map.current!.addLayer({
+        id: 'odt-zones-fill',
+        type: 'fill',
+        source: 'odt-zones',
+        paint: {
+          'fill-color': '#0D9488',
+          'fill-opacity': 0.12,
+        },
+        layout: {
+          visibility: showOdtZones ? 'visible' : 'none',
+        },
+      });
+
+      map.current!.addLayer({
+        id: 'odt-zones-line',
+        type: 'line',
+        source: 'odt-zones',
+        paint: {
+          'line-color': '#0F766E',
+          'line-width': 1.5,
+          'line-dasharray': [3, 3],
+        },
+        layout: {
+          visibility: showOdtZones ? 'visible' : 'none',
+        },
       });
 
       map.current!.addLayer({
@@ -414,13 +464,18 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         source: 'routes',
         paint: {
           'line-color': [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
+            'case',
+            ['coalesce', ['get', 'is_regional'], false],
+            '#475569',
+            [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
           ],
           'line-width': 2.5,
           'line-opacity': 0.7,
@@ -434,13 +489,18 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         source: 'routes',
         paint: {
           'line-color': [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
+            'case',
+            ['coalesce', ['get', 'is_regional'], false],
+            '#475569',
+            [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
           ],
           'line-width': 5,
           'line-opacity': 0.9,
@@ -469,9 +529,16 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current!.on('mouseenter', 'routes-line', (e) => {
         if (e.features?.[0]) {
           const props = e.features[0].properties!;
+          const state = useRouteStore.getState();
+          const isStability = state.mapFilterMode === 'stability';
+          const is2P = state.disabledWeights.includes('resilience') && state.disabledWeights.includes('monopoly');
+          const stabilityClass = is2P ? props.stability_class_2_pillar : props.stability_class;
+          const detailText = isStability
+            ? `${stabilityClass} · Score ${Number(props.composite_score).toFixed(1)}`
+            : `Grade ${props.grade} · Score ${Number(props.composite_score).toFixed(1)}`;
           popup
             .setLngLat(e.lngLat)
-            .setHTML(`<div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.short_name} — ${props.name}</div><div style="font:500 10px Inter,sans-serif;color:#64748B">Grade ${props.grade} · Score ${Number(props.composite_score).toFixed(1)}</div>`)
+            .setHTML(`<div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.short_name} — ${props.name}</div><div style="font:500 10px Inter,sans-serif;color:#64748B">${detailText}</div>`)
             .addTo(map.current!);
         }
       });
@@ -550,6 +617,23 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         daPopup.remove();
       });
 
+      // Hover tooltip for ODT Zones
+      const odtPopup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+      map.current!.on('mouseenter', 'odt-zones-fill', (e) => {
+        if (e.features?.[0]) {
+          map.current!.getCanvas().style.cursor = 'pointer';
+          const props = e.features[0].properties!;
+          odtPopup
+            .setLngLat(e.lngLat)
+            .setHTML(`<div style="font:700 11px Inter,sans-serif;color:#0F766E;text-transform:uppercase;letter-spacing:0.05em">On Demand Transit Zone</div><div style="font:600 12px Inter,sans-serif;color:#1E293B">${props.neighbourhood || 'Edmonton Area'}</div>`)
+            .addTo(map.current!);
+        }
+      });
+      map.current!.on('mouseleave', 'odt-zones-fill', () => {
+        map.current!.getCanvas().style.cursor = '';
+        odtPopup.remove();
+      });
+
       routesAdded.current = true;
     };
 
@@ -559,6 +643,78 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       map.current.on('load', addRoutes);
     }
   }, [routes, setSelectedRoute]);
+
+  // Reactive Effect to Toggle 3D View (Pitch, Bearing, and Buildings Extrusion)
+  useEffect(() => {
+    if (!map.current) return;
+    try {
+      if (is3DEnabled) {
+        map.current.easeTo({
+          pitch: 45,
+          bearing: -15,
+          duration: 1000
+        });
+
+        if (!map.current.getLayer('3d-buildings')) {
+          map.current.addLayer({
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            type: 'fill-extrusion',
+            minzoom: 14,
+            paint: {
+              'fill-extrusion-color': '#e2e8f0',
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': ['get', 'min_height'],
+              'fill-extrusion-opacity': 0.55,
+            },
+          });
+        }
+      } else {
+        map.current.easeTo({
+          pitch: 0,
+          bearing: 0,
+          duration: 1000
+        });
+
+        if (map.current.getLayer('3d-buildings')) {
+          map.current.removeLayer('3d-buildings');
+        }
+      }
+    } catch (err) {
+      console.warn('Error applying 3D map transformations:', err);
+    }
+  }, [is3DEnabled]);
+
+
+  // Toggle ODT Zones layer visibility
+  useEffect(() => {
+    if (!map.current) return;
+    const visibility = showOdtZones ? 'visible' : 'none';
+    try {
+      if (map.current.getLayer('odt-zones-fill')) {
+        map.current.setLayoutProperty('odt-zones-fill', 'visibility', visibility);
+      }
+      if (map.current.getLayer('odt-zones-line')) {
+        map.current.setLayoutProperty('odt-zones-line', 'visibility', visibility);
+      }
+    } catch (e) {
+      console.warn('Could not toggle ODT layer visibility:', e);
+    }
+  }, [showOdtZones]);
+
+  // Update ODT Zones source when geojson is loaded
+  useEffect(() => {
+    if (!map.current || !odtGeoJson) return;
+    try {
+      const source = map.current.getSource('odt-zones') as mapboxgl.GeoJSONSource;
+      if (source) {
+        source.setData(odtGeoJson);
+      }
+    } catch (e) {
+      // Source might not exist yet during style load
+    }
+  }, [odtGeoJson]);
 
   // ⚡ Reactive DA Heatmap paint update — transitions color scales on activeMetric toggle, route selection, or grade change
   useEffect(() => {
@@ -598,8 +754,8 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             short_name: r.short_name,
             grade: r.grade,
             composite_score: r.composite_score,
-            stability_class: (r as any).stability_class || 'Moderate Stability',
-            stability_class_2_pillar: (r as any).stability_class_2_pillar || 'Moderate Stability',
+            stability_class: mapStabilityClass((r as any).stability_class || 'Moderate Stability'),
+            stability_class_2_pillar: mapStabilityClass((r as any).stability_class_2_pillar || 'Moderate Stability'),
           },
           geometry: {
             type: 'LineString' as const,
@@ -674,24 +830,29 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
     if (!map.current || !routesAdded.current) return;
     try {
       const stabilityKey = is2PillarActive ? 'stability_class_2_pillar' : 'stability_class';
-      const lineExpr = mapFilterMode === 'stability'
-        ? [
-            'match', ['get', stabilityKey],
-            'Bedrock Essential', STABILITY_COLORS['Bedrock Essential'],
-            'Bedrock Resilient', STABILITY_COLORS['Bedrock Resilient'],
-            'Policy Swing Corridor', STABILITY_COLORS['Policy Swing Corridor'],
-            'Moderate Stability', STABILITY_COLORS['Moderate Stability'],
-            '#94A3B8'
-          ]
-        : [
-            'match', ['get', 'grade'],
-            'A', GRADE_COLORS.A,
-            'B', GRADE_COLORS.B,
-            'C', GRADE_COLORS.C,
-            'D', GRADE_COLORS.D,
-            'E', GRADE_COLORS.E,
-            '#94A3B8'
-          ];
+      const lineExpr = [
+        'case',
+        ['coalesce', ['get', 'is_regional'], false],
+        '#475569',
+        mapFilterMode === 'stability'
+          ? [
+              'match', ['get', stabilityKey],
+              'Essential Equity Routes', STABILITY_COLORS['Essential Equity Routes'],
+              'Low Equity-Priority Routes', STABILITY_COLORS['Low Equity-Priority Routes'],
+              'High Swing Routes', STABILITY_COLORS['High Swing Routes'],
+              'Moderate Swing Routes', STABILITY_COLORS['Moderate Swing Routes'],
+              '#94A3B8'
+            ]
+          : [
+              'match', ['get', 'grade'],
+              'A', GRADE_COLORS.A,
+              'B', GRADE_COLORS.B,
+              'C', GRADE_COLORS.C,
+              'D', GRADE_COLORS.D,
+              'E', GRADE_COLORS.E,
+              '#94A3B8'
+            ]
+      ];
       
       map.current.setPaintProperty('routes-line', 'line-color', lineExpr);
       map.current.setPaintProperty('routes-highlight', 'line-color', lineExpr);
@@ -810,19 +971,29 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         .filter((f: any) => daMap.has(String(f.properties?.DAUID)))
         .map((f: any) => {
           const daInfo = daMap.get(String(f.properties.DAUID))!;
+          
+          // Compute dynamic fallback for vulnerability_index if undefined
+          const lowIncome = Number(daInfo.low_income_pct || 0);
+          const minority = Number(daInfo.minority_pct || 0);
+          const senior = Number(daInfo.senior_pct || 0);
+          
+          const vIndex = (daInfo.vulnerability_index !== undefined && daInfo.vulnerability_index !== null)
+            ? Number(daInfo.vulnerability_index)
+            : (lowIncome + minority + senior) / 3;
+
           return {
             ...f,
             properties: {
               ...f.properties,
-              vulnerability_index: daInfo.vulnerability_index,
-              pop: daInfo.pop,
-              low_income_pct: daInfo.low_income_pct,
-              minority_pct: daInfo.minority_pct,
-              senior_pct: daInfo.senior_pct,
-              lone_parent_pct: daInfo.lone_parent_pct,
-              recent_immigrant_pct: daInfo.recent_immigrant_pct,
-              youth_pct: daInfo.youth_pct,
-              neighbourhood: (daInfo as any).neighbourhood || '',
+              vulnerability_index: vIndex,
+              pop: Number(daInfo.pop || 0),
+              low_income_pct: lowIncome,
+              minority_pct: minority,
+              senior_pct: senior,
+              lone_parent_pct: Number(daInfo.lone_parent_pct || 0),
+              recent_immigrant_pct: Number(daInfo.recent_immigrant_pct || 0),
+              youth_pct: Number(daInfo.youth_pct || 0),
+              neighbourhood: String((daInfo as any).neighbourhood || ''),
             },
           };
         });
@@ -889,22 +1060,37 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
 
       {/* Top Right: Stats & Fullscreen Toggle */}
       <div className="absolute top-6 right-6 z-10 flex flex-col items-end gap-2">
-        <button
-          onClick={() => setIsFullscreen(!isFullscreen)}
-          className="bg-white/90 backdrop-blur-md border border-slate-200 text-slate-600 hover:text-slate-900 p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold"
-        >
-          {isFullscreen ? (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-              Exit Fullscreen
-            </>
-          ) : (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-              Fullscreen Map
-            </>
-          )}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIs3DEnabled(!is3DEnabled)}
+            className={`backdrop-blur-md border p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold ${
+              is3DEnabled
+                ? 'bg-slate-800 border-slate-800 text-white hover:bg-slate-900'
+                : 'bg-white/90 border-slate-200 text-slate-600 hover:text-slate-900'
+            }`}
+            title="Toggle 3D View"
+          >
+            <span className={is3DEnabled ? 'text-white' : 'text-slate-600'}>3D</span>
+          </button>
+
+          <button
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="bg-white/90 backdrop-blur-md border border-slate-200 text-slate-600 hover:text-slate-900 p-2 rounded-lg shadow-sm transition-all flex items-center gap-2 text-xs font-bold"
+          >
+            {isFullscreen ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                Exit Fullscreen
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                Fullscreen Map
+              </>
+            )}
+          </button>
+        </div>
+
 
         <div className="bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg mt-1 text-right min-w-[180px]">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Population Served</p>
@@ -971,10 +1157,10 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             </div>
             <div className="flex flex-col gap-1">
               {([
-                { name: 'Bedrock Essential', key: 'Bedrock Essential' },
-                { name: 'Bedrock Resilient', key: 'Bedrock Resilient' },
-                { name: 'Policy Swing', key: 'Policy Swing Corridor' },
-                { name: 'Moderate', key: 'Moderate Stability' }
+                { name: 'Essential Equity Routes', key: 'Essential Equity Routes' },
+                { name: 'Low Equity-Priority Routes', key: 'Low Equity-Priority Routes' },
+                { name: 'High Swing Routes', key: 'High Swing Routes' },
+                { name: 'Moderate Swing Routes', key: 'Moderate Swing Routes' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.key);
                 return (
@@ -998,6 +1184,19 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             </div>
           </>
         )}
+
+        {/* On Demand Transit Toggle */}
+        <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
+          <label className="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-slate-600">
+            <input 
+              type="checkbox"
+              checked={showOdtZones}
+              onChange={(e) => setShowOdtZones(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-slate-300 text-brand-teal-600 focus:ring-brand-teal-500 cursor-pointer"
+            />
+            ODT Zones Overlay
+          </label>
+        </div>
 
         {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
         {selectedRoute && (

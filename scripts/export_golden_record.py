@@ -7,9 +7,11 @@ import geopandas as gpd
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data', 'EDM')
 
-# Handle cases where data might be in ted-data-main
+# Handle cases where data might be in ted-data-main or sibling dashboard
 if not os.path.exists(DATA_DIR):
     DATA_DIR = os.path.join(BASE_DIR, 'ted-data-main', 'data', 'EDM')
+if not os.path.exists(DATA_DIR):
+    DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'YEG Transit Equity Dashboard', 'YEGTransitEquityModel3.0-2.26.26-main', 'YEGTransitEquityModel3.0-2.26.26-main', 'data', 'EDM'))
 
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
 OUTPUT_PATH = os.path.join(PROCESSED_DIR, 'golden_route_record.json')

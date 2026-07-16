@@ -23,6 +23,7 @@ export interface RouteWithDAs extends RoutePoint {
 
 interface MatrixProps {
   routes: RouteWithDAs[];
+  daAreaMap?: Record<string, number>;
 }
 
 export const METRICS: { key: MetricKey; label: string; color: string }[] = [
@@ -41,45 +42,101 @@ const GRADE_COLORS: Record<string, string> = {
 
 function getMetricValue(da: DaInfo, metric: MetricKey): number {
   if (metric === 'composite') {
-    return da.vulnerability_index !== undefined ? da.vulnerability_index : (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
+    return (da.vulnerability_index !== undefined && da.vulnerability_index !== null) ? da.vulnerability_index : (da.low_income_pct + da.minority_pct + da.senior_pct) / 3;
   }
   return da[metric] || 0;
 }
 
-// Map a value 0-100 to opacity 0.15-1.0
-function intensityToOpacity(value: number, maxVal: number): number {
-  if (maxVal === 0) return 0.15;
-  return 0.15 + (value / maxVal) * 0.85;
+const METRIC_HSL: Record<MetricKey, { h: number; s: number; minL: number; maxL: number }> = {
+  composite:            { h: 174, s: 76, minL: 20, maxL: 92 },
+  low_income_pct:        { h: 0,   s: 84, minL: 35, maxL: 95 },
+  minority_pct:          { h: 38,  s: 93, minL: 30, maxL: 95 },
+  senior_pct:            { h: 262, s: 89, minL: 35, maxL: 95 },
+  lone_parent_pct:       { h: 330, s: 81, minL: 30, maxL: 95 },
+  recent_immigrant_pct:  { h: 161, s: 84, minL: 20, maxL: 92 },
+  youth_pct:             { h: 239, s: 84, minL: 30, maxL: 95 },
+};
+
+// Map a value to a normalized intensity t [0, 1]
+function calculateIntensity(
+  value: number,
+  metric: MetricKey,
+  minVal: number,
+  maxVal: number,
+  meanVal: number,
+  stdVal: number
+): number {
+  if (maxVal === minVal) return 0.0;
+  
+  if (metric === 'composite') {
+    const z = (value - meanVal) / stdVal;
+    // Standard logistic sigmoid maps to (0, 1)
+    return 1 / (1 + Math.exp(-z));
+  } else {
+    // For other metrics, use local Min-Max normalization
+    return (value - minVal) / (maxVal - minVal);
+  }
 }
 
-// Map population to circle radius (3-10px)
-function popToRadius(pop: number, maxPop: number): number {
-  if (maxPop === 0) return 3;
-  return 3 + (Math.sqrt(pop / maxPop)) * 7;
+// Map density to circle radius (2.5-12px)
+function densityToRadius(density: number, maxDensity: number): number {
+  if (maxDensity === 0) return 2.5;
+  // Linear scale with wider range makes differences significantly more prominent
+  return 2.5 + (density / maxDensity) * 9.5;
 }
 
-export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
+export const EquityMatrix: React.FC<MatrixProps> = ({ routes, daAreaMap }) => {
   const activeMetric = useRouteStore((s) => s.activeMetric);
   const setActiveMetric = useRouteStore((s) => s.setActiveMetric);
   const selectedRoute = useRouteStore((s) => s.selectedRoute);
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const [hoveredDa, setHoveredDa] = useState<{ da: DaInfo; routeName: string; x: number; y: number } | null>(null);
 
-  // Pre-compute max values for scaling
-  const { maxPop, maxMetric, maxDAs, sortedRoutes } = useMemo(() => {
-    let mp = 0, mm = 0, md = 0;
+  // Pre-compute values for scaling
+  const { maxPop, maxDensity, minMetric, maxMetric, meanMetric, stdMetric, maxDAs, sortedRoutes } = useMemo(() => {
+    let mp = 0, mdens = 0, md = 0;
+    let minM = Infinity, maxM = -Infinity;
+    
+    // Gather all metric values to compute mean and std dev
+    const allMetricVals: number[] = [];
+    
     routes.forEach((r) => {
       if (r.da_data.length > md) md = r.da_data.length;
       r.da_data.forEach((da) => {
         if (da.pop > mp) mp = da.pop;
+        
+        const area = daAreaMap?.[da.id] || 1.0;
+        const density = da.pop / area;
+        if (density > mdens) mdens = density;
+
         const v = getMetricValue(da, activeMetric);
-        if (v > mm) mm = v;
+        allMetricVals.push(v);
+        if (v < minM) minM = v;
+        if (v > maxM) maxM = v;
       });
     });
+
+    if (minM === Infinity) minM = 0;
+    if (maxM === -Infinity) maxM = 100;
+
+    const count = allMetricVals.length;
+    const mean = count > 0 ? allMetricVals.reduce((sum, v) => sum + v, 0) / count : 50;
+    const variance = count > 0 ? allMetricVals.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / count : 0;
+    const std = Math.sqrt(variance) || 1.0;
+
     // Sort by composite score (worst first)
     const sorted = [...routes].sort((a, b) => a.composite_score - b.composite_score);
-    return { maxPop: mp, maxMetric: mm, maxDAs: md, sortedRoutes: sorted };
-  }, [routes, activeMetric]);
+    return { 
+      maxPop: mp, 
+      maxDensity: mdens, 
+      minMetric: minM, 
+      maxMetric: maxM, 
+      meanMetric: mean, 
+      stdMetric: std, 
+      maxDAs: md, 
+      sortedRoutes: sorted 
+    };
+  }, [routes, activeMetric, daAreaMap]);
 
   if (!routes.length) {
     return (
@@ -89,11 +146,14 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
     );
   }
 
-  const activeColor = METRICS.find((m) => m.key === activeMetric)?.color || '#0F766E';
   const ROW_HEIGHT = 24;
   const LABEL_WIDTH = 60;
   const CHART_WIDTH = Math.max(maxDAs * 22, 400);
   const SVG_HEIGHT = sortedRoutes.length * ROW_HEIGHT + 10;
+
+  // Extract info for the hovered DA
+  const hoveredDaArea = hoveredDa ? daAreaMap?.[hoveredDa.da.id] : undefined;
+  const hoveredDaDensity = (hoveredDa && hoveredDaArea) ? hoveredDa.da.pop / hoveredDaArea : undefined;
 
   return (
     <div className="command-card bg-brand-slate-50/50 p-4">
@@ -123,15 +183,29 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
       {/* Legend */}
       <div className="flex items-center gap-4 mb-2 text-[9px] text-slate-400">
         <div className="flex items-center gap-1.5">
-          <span>Dot size = Population</span>
-          <svg width="40" height="12"><circle cx="6" cy="6" r="3" fill="#94A3B8" opacity="0.5"/><circle cx="20" cy="6" r="5" fill="#94A3B8" opacity="0.5"/><circle cx="36" cy="6" r="7" fill="#94A3B8" opacity="0.5"/></svg>
+          <span>Dot size = Population Density (people/km²)</span>
+          <svg width="60" height="26" className="inline-block align-middle">
+            <circle cx="6" cy="13" r="2.5" fill="#94A3B8" opacity="0.5"/>
+            <circle cx="24" cy="13" r="7" fill="#94A3B8" opacity="0.5"/>
+            <circle cx="48" cy="13" r="12" fill="#94A3B8" opacity="0.5"/>
+          </svg>
         </div>
         <div className="flex items-center gap-1.5">
           <span>Color intensity = {METRICS.find(m => m.key === activeMetric)?.label}</span>
-          <svg width="60" height="12">
-            {[0.2, 0.4, 0.6, 0.8, 1.0].map((op, i) => (
-              <circle key={i} cx={6 + i * 13} cy={6} r={5} fill={activeColor} opacity={op}/>
-            ))}
+          <svg width="75" height="12" className="inline-block align-middle">
+            {[0.1, 0.325, 0.55, 0.775, 1.0].map((t, i) => {
+              const hsl = METRIC_HSL[activeMetric] || { h: 174, s: 76, minL: 20, maxL: 92 };
+              const l = hsl.maxL - t * (hsl.maxL - hsl.minL);
+              return (
+                <circle
+                  key={i}
+                  cx={6 + i * 14}
+                  cy={6}
+                  r={5}
+                  fill={`hsl(${hsl.h}, ${hsl.s}%, ${l}%)`}
+                />
+              );
+            })}
           </svg>
         </div>
       </div>
@@ -187,9 +261,15 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
                 {/* DA dots */}
                 {route.da_data.map((da, daIdx) => {
                   const cx = LABEL_WIDTH + 20 + daIdx * 20;
-                  const r = popToRadius(da.pop, maxPop);
+                  const area = daAreaMap?.[da.id] || 1.0;
+                  const density = da.pop / area;
+                  const r = densityToRadius(density, maxDensity);
                   const val = getMetricValue(da, activeMetric);
-                  const opacity = intensityToOpacity(val, maxMetric);
+                  
+                  const intensity = calculateIntensity(val, activeMetric, minMetric, maxMetric, meanMetric, stdMetric);
+                  const hsl = METRIC_HSL[activeMetric] || { h: 174, s: 76, minL: 20, maxL: 92 };
+                  const l = hsl.maxL - intensity * (hsl.maxL - hsl.minL);
+                  const fill = `hsl(${hsl.h}, ${hsl.s}%, ${l}%)`;
 
                   return (
                     <circle
@@ -197,11 +277,12 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
                       cx={cx}
                       cy={y}
                       r={r}
-                      fill={activeColor}
-                      opacity={opacity}
+                      fill={fill}
+                      opacity={0.95}
+                      stroke="#FFFFFF"
+                      strokeWidth={0.5}
                       cursor="pointer"
                       onMouseEnter={(e) => {
-                        const rect = (e.target as SVGElement).closest('svg')?.getBoundingClientRect();
                         setHoveredDa({
                           da,
                           routeName: `${route.short_name} — ${route.name}`,
@@ -237,6 +318,17 @@ export const EquityMatrix: React.FC<MatrixProps> = ({ routes }) => {
               <span className="font-mono text-right">{hoveredDa.da.id}</span>
               <span>Population</span>
               <span className="font-mono text-right">{hoveredDa.da.pop.toLocaleString()}</span>
+              
+              {hoveredDaArea !== undefined && (
+                <>
+                  <span>Land Area</span>
+                  <span className="font-mono text-right">{hoveredDaArea.toFixed(3)} km²</span>
+                  <span>Density</span>
+                  <span className="font-mono text-right">
+                    {Math.round(hoveredDaDensity || 0).toLocaleString()} people/km²
+                  </span>
+                </>
+              )}
               
               <div className="col-span-2 border-t border-slate-100 my-1"></div>
               

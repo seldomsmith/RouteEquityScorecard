@@ -3,16 +3,18 @@
 import React from 'react';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
+import { mapStabilityClass } from '@/utils/stability';
 
 interface SidebarProps {
   routes: RoutePoint[];
+  onViewDirectory?: () => void;
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#64748B' },
+  vulnerability: { label: 'Vulnerability',  desc: 'Demographics of Dissemination Area', color: '#64748B' },
   resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
   monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
-  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#64748B' },
+  opportunity:   { label: 'Opportunity',     desc: 'The value of destinations',       color: '#64748B' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -24,13 +26,13 @@ const GRADE_DOT: Record<string, string> = {
 };
 
 const STABILITY_DOT: Record<string, string> = {
-  'Bedrock Essential': 'bg-indigo-600',
-  'Bedrock Resilient': 'bg-emerald-600',
-  'Policy Swing Corridor': 'bg-amber-500',
-  'Moderate Stability': 'bg-slate-400',
+  'Essential Equity Routes': 'bg-blue-600',
+  'Low Equity-Priority Routes': 'bg-emerald-600',
+  'High Swing Routes': 'bg-red-500',
+  'Moderate Swing Routes': 'bg-amber-500',
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => {
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
@@ -51,8 +53,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
 
   const getStabilityClass = React.useCallback((r: any) => {
     return is2PillarActive
-      ? (r.stability_class_2_pillar || 'Moderate Stability')
-      : (r.stability_class || 'Moderate Stability');
+      ? mapStabilityClass(r.stability_class_2_pillar || 'Moderate Stability')
+      : mapStabilityClass(r.stability_class || 'Moderate Stability');
   }, [is2PillarActive]);
 
 
@@ -68,10 +70,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
 
   const stabilityCounts = React.useMemo(() => {
     const counts: Record<string, number> = {
-      'Bedrock Essential': 0,
-      'Bedrock Resilient': 0,
-      'Policy Swing Corridor': 0,
-      'Moderate Stability': 0,
+      'Essential Equity Routes': 0,
+      'Low Equity-Priority Routes': 0,
+      'High Swing Routes': 0,
+      'Moderate Swing Routes': 0,
     };
     routes.forEach((r) => {
       const cls = getStabilityClass(r);
@@ -94,18 +96,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="p-5 border-b border-slate-100">
-        <h1 className="text-lg font-black tracking-tight text-slate-900">REI OS</h1>
-        <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-          Route Equity Intelligence
-        </p>
+      <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div>
+          <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity Scorecard</h1>
+        </div>
+        {onViewDirectory && (
+          <button
+            onClick={onViewDirectory}
+            className="px-2.5 py-1 text-[10px] font-bold text-blue-650 hover:text-blue-750 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-100 transition-colors uppercase tracking-wider shadow-sm"
+          >
+            Directory
+          </button>
+        )}
       </div>
 
       {/* Weight Sliders — Zero-Sum System */}
       <div className="p-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Policy Weights
+            Pillar Weights
           </h2>
           <button
             onClick={() => {
@@ -224,7 +233,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
           <>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Grade Isolator
+                Grade
               </h2>
               {selectedGrade && (
                 <button
@@ -278,10 +287,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {([
-                { name: 'Bedrock Essential', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
-                { name: 'Bedrock Resilient', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
-                { name: 'Policy Swing Corridor', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
-                { name: 'Moderate Stability', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
+                { name: 'Essential Equity Routes', color: 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm', labelColor: 'bg-blue-50/50 text-blue-700 hover:bg-blue-100 border-blue-100/50' },
+                { name: 'Low Equity-Priority Routes', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
+                { name: 'High Swing Routes', color: 'bg-red-500 text-white border-red-500 font-bold shadow-sm', labelColor: 'bg-red-50/50 text-red-700 hover:bg-red-100 border-red-100/50' },
+                { name: 'Moderate Swing Routes', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.name);
                 const count = stabilityCounts[cls.name] || 0;
@@ -294,7 +303,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                       isActive ? cls.color : cls.labelColor
                     }`}
                   >
-                    <span className="text-[10px] font-black">{cls.name.replace(' Corridor', '')}</span>
+                    <span className="text-[10px] font-black">{cls.name}</span>
                     <span className="text-[8px] font-mono font-semibold opacity-85 mt-0.5 leading-none">{count}</span>
                   </button>
                 );

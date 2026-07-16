@@ -67,3 +67,83 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-brand-slate-200 rounded-full hover:bg-brand-slate-300 transition-colors;
 }
+
+/* 3D Flipping Card Utilities */
+.perspective {
+  perspective: 1000px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.title-lift-effect {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), text-shadow 0.3s ease;
+  transform: scale(1) translate(0, 0);
+  text-shadow: 0 0 0 rgba(0, 85, 128, 0);
+}
+
+.title-lift-effect:hover {
+  transform: scale(1.02) translate(-6px, -6px);
+  text-shadow: 
+    1px 1px 0px #005580,
+    2px 2px 0px #005580,
+    3px 3px 0px #005580,
+    4px 4px 0px #005580,
+    5px 5px 0px #005580,
+    6px 6px 0px #005580,
+    7px 7px 0px #005580,
+    8px 8px 0px #005580;
+}
+
+.scrolly-title-lift-effect {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), text-shadow 0.3s ease;
+  transform: scale(1) translate(0, 0);
+  text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.scrolly-title-lift-effect:hover {
+  transform: scale(1.01) translate(2px, 2px);
+  text-shadow: 
+    -1px -1px 0px #ffffff,
+    -2px -2px 0px #ffffff,
+    -3px -3px 0px #ffffff;
+}
+
+.pillar-card-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  transform: translate(0, 0);
+  border-color: var(--pillar-color);
+  box-shadow:
+    1px 1px 0px 0px var(--pillar-color),
+    2px 2px 0px 0px var(--pillar-color),
+    3px 3px 0px 0px var(--pillar-color),
+    4px 4px 0px 0px var(--pillar-color),
+    5px 5px 0px 0px var(--pillar-color),
+    6px 6px 0px 0px var(--pillar-color);
+}
+
+.pillar-card-lift:hover {
+  transform: translate(-6px, -6px);
+  box-shadow:
+    1px 1px 0px 0px var(--pillar-color),
+    2px 2px 0px 0px var(--pillar-color),
+    3px 3px 0px 0px var(--pillar-color),
+    4px 4px 0px 0px var(--pillar-color),
+    5px 5px 0px 0px var(--pillar-color),
+    6px 6px 0px 0px var(--pillar-color),
+    7px 7px 0px 0px var(--pillar-color),
+    8px 8px 0px 0px var(--pillar-color),
+    9px 9px 0px 0px var(--pillar-color),
+    10px 10px 0px 0px var(--pillar-color),
+    11px 11px 0px 0px var(--pillar-color),
+    12px 12px 0px 0px var(--pillar-color);
+}
+

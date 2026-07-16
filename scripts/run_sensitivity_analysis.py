@@ -17,9 +17,9 @@ def main():
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    routes = data['routes']
+    routes = [r for r in data['routes'] if not r.get('is_regional', False)]
     num_routes = len(routes)
-    print(f"Loaded {num_routes} routes from golden record.")
+    print(f"Loaded {num_routes} non-regional routes from golden record for sensitivity sweep.")
     
     # 1. Generate Combinations (Stars & Bars: w1 + w2 + w3 + w4 = 1.0 in steps of 0.05)
     print("\n[1/5] Generating weight configurations...")
@@ -111,9 +111,10 @@ def main():
         pct_de = np.mean((g_nums == 2) | (g_nums == 1))
         
         # Stability Classification
-        if pct_ab >= 0.90:
+        mean_score = np.mean(y)
+        if pct_ab >= 0.90 and mean_score >= 10.0:
             stability_class = "Bedrock Essential"
-        elif pct_de >= 0.90:
+        elif pct_de >= 0.90 and mean_score < 10.0:
             stability_class = "Bedrock Resilient"
         elif (max_g - min_g) >= 3:
             stability_class = "Policy Swing Corridor"

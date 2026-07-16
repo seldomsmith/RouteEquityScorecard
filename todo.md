@@ -4,26 +4,45 @@
 Refining analytical modeling, service impact simulations, and advanced research reporting.
 
 ## Sprint Backlog
-### Phase 3.5: Elite UI/UX Polish & Explainer Upgrades
-1. **SHAP Waterfall Micro-Animations** [LOW]
-   - Integrate Framer Motion spring physics to animate the SHAP waterfall bar adjustments fluidly when weights are dragged.
-2. **Stability Focus Component Shift** [HIGH]
-   - When switching the segmented control to Stability Focus, swap the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
-3. **2-Pillar Sensitivity Integration** [CRITICAL]
-   - If Off-Peak and Monopoly pillars are disabled/deselected in the policy weight menu, dynamically switch the meta-resiliency stability classifications from the standard 4-pillar simulation dataset to the 2-pillar simulation dataset.
+### Phase 25: Regional Route Exclusion & Opportunity Adjustments
+1. **Regional Route Exclusion** [HIGH]
+   - Exclude 42 regional routes (St. Albert 'A*', Strathcona '4*', Leduc 'L*', Beaumont '540', Spruce Grove '560', Airport '747') from municipal scoring, grading, and charts (Population Equity, S-Curve, Volatility vs Mean Scatter plot), while keeping them on the map styled in dark gray with full DA overlays.
+2. **Opportunity Score (Pillar 4) Airport Dilution Log** [MEDIUM]
+   - Record and address the under-representation of the Edmonton International Airport (EIA) opportunity value due to simple point-count buffers on regional corridors.
 
 ### Phase 4.5: Simulation & Data Pipeline
-2. **Service Impact Simulation (Draft Mode)** [HIGH]
-   - Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory.
-3. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
+3. **Service Impact Simulation (Draft Mode)** [HIGH]
+   - *Deferred*: Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory. See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md).
+4. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
-4. **Policy Sensitivity Explorer UI Tab** [FUTURE]
+5. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
 ---
 
 ## Review & Completed Work
 ### Completed:
+- **On Demand Transit (ODT) Zones Integration (Phase 4.5)**:
+  - Formulated a 21-zone neighborhood list matching official ETS ODT boundaries to capture 135 census DAs.
+  - Updated `scripts/update_vulnerability_index.py` and `scripts/calculate_functional_monopoly.py` to discount vulnerability ($V_i$) by 10% and FMI monopoly score contribution by 50% for DAs in ODT zones.
+  - Re-executed scoring, cap-normalization, and Monte Carlo engines to refresh JSON/Parquet databases.
+  - Loaded `odt_zones.geojson` and styled translucent fill and dashed borders in `src/components/map/Map.tsx`, complete with hover tooltips and legend controls.
+- **2-Pillar Sensitivity Integration (Phase 3.5)**:
+  - Configured `scripts/run_two_pillar_sensitivity_analysis.py` to write 2-pillar simulation results directly to `public/data/sensitivity_summary_2_pillar.csv`.
+  - Updated `src/components/CommandCentre.tsx` to read both 4-pillar and 2-pillar datasets, dynamically swapping them as active `sensitivityData` when Off-Peak (`resilience`) and Monopoly (`monopoly`) weight variables are disabled.
+  - Rewired the map hover tooltip popup inside `src/components/map/Map.tsx` to dynamically query and show the correct active stability classification in Stability Focus mode.
+- **Monte Carlo Stability Alignment & School Specials Exclusion (Phase 3.5 / Phase 10)**:
+  - Refined Monte Carlo engine classification logic in `run_sensitivity_analysis.py` and `run_two_pillar_sensitivity_analysis.py` to bound Bedrock Essentials (Always High Equity) to `mean_score >= 10.0` and Bedrock Resilients to `mean_score < 10.0`.
+  - Excluded all 65 school special routes (6xx-range) from the analytical data pipeline, updating the baseline to 170 active transit corridors.
+  - Regenerated golden route records, sensitivity matrices, statistical summaries, and remote git repositories.
+- **Stability Focus Component Shift (Phase 3.5)**:
+  - When switching the segmented control to Stability Focus, swapped the Population-Equity Quadrant chart for a dedicated "Route Stability Class Distribution" component (visualizing Bedrock Essential/Resilient, Policy Swing, and Moderate count distributions).
+- **Policy Risk Map Scatter Plot & Sensitivity Waterfall (Phase 3.5)**:
+  - Swapped the Route Stability bar chart in Stability Focus for a Recharts-based Volatility vs. Mean Score scatter plot.
+  - Implemented the Option 3 Policy Sensitivity Drivers waterfall in `ShapWaterfall.tsx` under Stability Focus, using OLS beta drivers to show how current weights deviate from uniform mix.
+- **SHAP Waterfall Micro-Animations (Phase 3.5)**:
+  - Integrated Framer Motion spring physics (`useMotionValue`, `useSpring`) to animate the SHAP waterfall bar widths and numeric text values fluidly when weights are dragged.
+  - Implemented entry load animations so bars transition and expand dynamically from the baseline when a route is loaded.
 - **Demographic Vulnerability Sensitivity Analysis (Phase 19)**:
   - Vectorized DA-level sensitivity analysis (88,913 weight configurations) in Python (`run_da_sensitivity_analysis.py`) and exported to `docs/da_vulnerability_sensitivity.csv`.
   - Mapped all 1,764 DAs to Edmonton neighbourhoods and merged population metrics (`map_da_to_neighbourhoods.py`), outputting `docs/da_vulnerability_sensitivity_mapped.csv`.
@@ -115,4 +134,34 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Successfully staged, committed, and pushed the pipeline-modified `golden_route_record` database assets (.parquet and .json) and our frontend fixes to the remote master branch on GitHub.
 
 
+
+
+- **Monte Carlo Plinko Physics Simulation Widget (Phase 20)**:
+  - Created `src/components/widgets/MonteCarloPlinko.tsx` representing a high-performance side-by-side Plinko simulation.
+  - Implemented separate HTML5 `<canvas>` elements for two transit routes:
+    - **Route 002 (Bedrock Essential)**: Custom physics applies a subtle steering force to particles, guiding them to cluster in a tight score range of 65-75 (low volatility profile).
+    - **Route 003 (Policy Swing Corridor)**: Custom physics allows a wide dispersion of particles scattered across 10-60 (high volatility profile).
+  - Added a global "Simulate 100 Scenarios" trigger that cascades 100 particles on both boards simultaneously with a staggered drop rate.
+  - Integrated interactive live histograms and digital stats at the bottom of each board calculating the real-time Mean score and Standard Deviation (Spread) as particles land in their bins.
+  - Custom-styled the board with deep navy backgrounds, glowing particle trails, pulsing peg indicators, and a clean white border layout matching the Route Equity Scorecard premium visual standards.
+- **Detailed Math Explainers & Horizontal Route Layout (Phase 21)**:
+  - Redesigned the layout for Route 002 and Route 003 comparisons across Sections 1, 3, 4, 5, and 6 to display horizontally on desktop (`md:flex-row`).
+  - Added desktop breakout classes (`md:-mx-12 lg:-mx-24`) to visual blocks so the comparison elements span wider than standard paragraph blocks.
+  - Built interactive "Tell me more about the math" toggle pages under the four core policy weight sections (Vulnerability, Destination Opportunity, Off-Peak Service, and Transit Monopoly).
+  - Designed tailored visual representations for each methodology section, including demographic flag tables, weighted opportunity progress bars, headway point brackets, and FMI discount calculations.
+- **Narrative Content Rewrite & Limitations Visuals (Phase 22)**:
+  - Rewrote the narrative structure across all sections to align with the final approved text copy.
+  - Relocated the Monte Carlo Plinko physics simulation widget to its logical home in Section 8 (Stability Focus).
+  - Designed and developed a brand-new Section 9 containing a detailed breakdown of the four core scorecard limitations (Ecological Fallacy, Static Schedules, Physical Barriers, and Destination Quality vs. Quantity).
+  - Implemented custom CSS-styled diagrams for each of the four limitations (Macro vs. Micro demographic split grids, Scheduled vs. Real-World timelines, Circular buffer vs. jagged walking boundary diagrams, and Raw vs. Equity-Adjusted utility cards).
+- **Scorecard Layout, Content, and Directory Score Fixes (Phase 24)**:
+  - Swapped the monopoly description text under the monopoly map in `Scrollytelling.tsx` to the revised explanation focusing on alternative transit routes.
+  - Standardized the height of `RouteTicket` cards using `h-[220px] sm:h-[200px] md:h-[180px]` to keep all cards uniform across the scrollyteller.
+  - Enlarged the stability classification bubbles (Bedrock Essentials, Policy Swing, Moderate Stability, Bedrock Resilient) in `Scrollytelling.tsx` to `text-xs md:text-sm` with wider padding and `w-2.5 h-2.5` bullet dots.
+  - Removed the `ENGINE SECURE` status indicator overlay in `CommandCentre.tsx` to eliminate overlap with the Map's red deselect button.
+  - Renamed "System-Wide Health Diagnostics" to "Network Wide Metrics" and removed its subheading in `CommandCentre.tsx`.
+  - Corrected the route count in the distribution table description inside `NetworkDistribution.tsx` from 235 to 170.
+  - Rephrased the sigmoid S-Curve score distribution description inside `NetworkDistribution.tsx` to be accessible and non-technical.
+  - Fixed the missing live scores in the Data Directory by mapping both `pillar_N` and `pillar_N_XXXX` properties in `DataExplorerModal.tsx`.
+  - Fixed the baseline grade comparison and CSV export in the directory table by storing the baseline grade in a new `baseline_grade` field on each scored route object inside `useReactiveScoring.ts`.
 

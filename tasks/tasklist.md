@@ -43,7 +43,7 @@
 - [x] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
 - [x] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [x] Refactor Policy Sliders to use a unified medium gray color and a larger black thumb dot to prevent map color confusion <!-- id: 39, priority: high -->
-- [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
+- [x] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
 - [ ] Design and Implement "Policy Sensitivity Explorer" UI Tab (interactive OLS driver scatterplots and dynamic simplex terrain) <!-- id: 38, priority: future -->
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
@@ -65,7 +65,7 @@
 ## Phase 4.5: Data Pipeline & Integration (Future)
 - [ ] Integrate additional vulnerability groups (e.g., "New Immigrants") into the data pipeline and scoring model <!-- id: 31, priority: high -->
 - [ ] Decide on R5 Data Pipeline migration vs. pre-processing <!-- id: 15 -->
-- [ ] Implement service impact simulation logic (Draft Mode) <!-- id: 8 -->
+- [ ] Implement service impact simulation logic (Draft Mode) (See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md) - Deferred) <!-- id: 8 -->
 - [ ] Finalize PostGIS/Python backend if needed <!-- id: 10 -->
 
 ## Phase 4.6: Heatmap Defect Fix & Git Synchronization [COMPLETE]
@@ -189,7 +189,7 @@
 - [x] Implement Command K Spotlight Search for instant route/DA snapping <!-- id: 23, priority: medium -->
 - [x] Add Custom "Tick-Snapping" Zero-Sum Sliders with micro-haptics <!-- id: 24, priority: medium -->
 - [x] Refactor Policy Sliders to use a unified medium gray color and a larger black thumb dot to prevent map color confusion <!-- id: 39, priority: high -->
-- [ ] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
+- [x] Add Micro-Animations to SHAP Waterfall (e.g. spring physics via Framer Motion) <!-- id: 25, priority: low -->
 - [ ] Design and Implement "Policy Sensitivity Explorer" UI Tab (interactive OLS driver scatterplots and dynamic simplex terrain) <!-- id: 38, priority: future -->
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
@@ -297,6 +297,8 @@
 - [x] Verify reactive filtering and coordinate synchronization across scatterplots and grids <!-- id: 93, priority: critical -->
 
 ## Phase 17: Stability Focus Visual and Sensitivity Integration
+- [x] Swap the Route Stability bar chart in Stability Focus for Volatility vs. Mean Score scatter plot <!-- id: 93a, priority: high -->
+- [x] Implement Option 3 Sensitivity Drivers Waterfall in `ShapWaterfall.tsx` under Stability Focus <!-- id: 93b, priority: high -->
 
 ## Phase 18: Capacity-Weighted Functional Monopoly Index
 - [x] Update `scripts/calculate_functional_monopoly.py` to use capacity-weighted formulation <!-- id: 94, priority: critical -->
@@ -315,3 +317,72 @@
   $$\text{Access Density} = \frac{\sum(\text{POI}_i \times \text{Weight}_i)}{\text{Length}_{\text{route}}} \times \ln(\text{Ridership} + 1)$$
 - [ ] **Temporal Schedule Matching**: Align the operating hours of schools, grocery stores, and hospitals with GTFS timetables (e.g., verifying if transit runs when shifts change).
 - [ ] **Real-Time Pedestrian Infrastructure**: Replace standard circular walking buffers or static isochrones with true sidewalk networks that account for crosswalk wait times and physical barriers.
+
+## Phase 20: Premium Monte Carlo Plinko Physics Simulation Widget
+- [x] Design and implement the premium side-by-side Plinko physics simulation in `src/components/widgets/MonteCarloPlinko.tsx` <!-- id: 102, priority: critical -->
+- [x] Add HTML5 Canvas simulation for Route 002 (Bedrock Essential) funneling to 65-75 score range <!-- id: 103, priority: high -->
+- [x] Add HTML5 Canvas simulation for Route 003 (Policy Swing Corridor) scattering widely across 10-60 score range <!-- id: 104, priority: high -->
+- [x] Implement interactive "Simulate 100 Policy Scenarios" trigger, live histograms, and premium visuals <!-- id: 105, priority: high -->
+- [x] Verify TS compilation and run builds to ensure correctness <!-- id: 106, priority: critical -->
+
+## Phase 21: Scrollytelling Math Explainers and Horizontal Routes
+- [x] Add state variables to `Scrollytelling.tsx` for toggling math pages <!-- id: 107, priority: medium -->
+- [x] Refactor route comparison cards to stack horizontally on desktop with breakout width <!-- id: 108, priority: high -->
+- [x] Implement Vulnerability detailed math explainer with visual grid <!-- id: 109, priority: high -->
+- [x] Implement Opportunity detailed math explainer with sub-weights visualization <!-- id: 110, priority: high -->
+- [x] Implement Off Peak detailed math explainer with headway points scale visual <!-- id: 111, priority: high -->
+- [x] Implement Monopoly detailed math explainer with redundancy discount illustration <!-- id: 112, priority: high -->
+- [x] Verify compilation and test build <!-- id: 113, priority: critical -->
+
+## Phase 22: Scrollytelling Narrative Content Rewrite & Limitations Visuals
+- [x] Update narrative content in `Scrollytelling.tsx` to match final copy <!-- id: 114, priority: high -->
+- [x] Relocate Plinko simulation widget to Section 8 <!-- id: 115, priority: high -->
+- [x] Develop Limitations section (Section 9) with 4 custom styled CSS visuals <!-- id: 116, priority: critical -->
+- [x] Verify compilation and complete dashboard audit <!-- id: 117, priority: critical -->
+
+## Phase 23: Map Visualization & Sidebar Menu Layout Polish
+- [x] Fix Mapbox linear interpolation syntax mismatch in `InteractiveToggleMap.tsx` (replace 'linear' with ['linear']) <!-- id: 118, priority: critical -->
+- [x] Apply a consistent, high-contrast blue/indigo vulnerability sequential color scale matching the map legend across routes <!-- id: 119, priority: high -->
+- [x] Update `CatchmentBarrierMap.tsx` detour line and marker coordinates using high-fidelity street-snapped walking path coordinates <!-- id: 120, priority: high -->
+- [x] Adjust staggered navigation menu panel and prelayers positioning to `position: fixed` and `height: 100vh` in `StaggeredMenu.css` to fix the constrained height bug <!-- id: 121, priority: critical -->
+- [x] Standardize terminology: replace 'transit users' with 'transit riders' in Scrollytelling.tsx <!-- id: 123, priority: medium -->
+- [x] Phrasing adjustment: change Section 1 ending sentence to end with 'inform those decisions' <!-- id: 124, priority: medium -->
+- [x] Eliminate Section 2 duplication: remove static bulleted list and introduce interactive cards directly <!-- id: 125, priority: high -->
+- [x] Verify compilation and push working codes to git <!-- id: 122, priority: critical -->
+
+## Phase 24: Scorecard Layout, Content, and Directory Score Fixes
+- [x] Swap monopoly description text in `Scrollytelling.tsx` <!-- id: 126, priority: medium -->
+- [x] Standardize RouteTicket heights in `RouteTicket.tsx` <!-- id: 127, priority: high -->
+- [x] Make stability classification bubbles 2x bigger in `Scrollytelling.tsx` <!-- id: 128, priority: medium -->
+- [x] Remove Engine Status overlay in `CommandCentre.tsx` <!-- id: 129, priority: high -->
+- [x] Rename "System-Wide Health Diagnostics" in `CommandCentre.tsx` and remove subheading <!-- id: 130, priority: medium -->
+- [x] Correct route count (235 -> 170) in `NetworkDistribution.tsx` <!-- id: 131, priority: medium -->
+- [x] Rephrase sigmoid score distribution explanation in `NetworkDistribution.tsx` <!-- id: 132, priority: medium -->
+- [x] Fix missing live scores and baseline grade comparisons in `DataExplorerModal.tsx` and `useReactiveScoring.ts` <!-- id: 133, priority: critical -->
+- [x] Verify compilation (manually audited source files) <!-- id: 134, priority: critical -->
+
+## Phase 25: Regional Route Exclusion
+- [x] Implement `is_regional` flag in demographics and scoring data pipelines <!-- id: 136, priority: high -->
+- [x] Exclude regional routes from capping, Z-score, sigmoid, and quintile calculations in `refine_scoring.py` <!-- id: 137, priority: critical -->
+- [x] Update sensitivity simulations to skip regional routes <!-- id: 138, priority: high -->
+- [x] Re-run modeling scripts and update golden route record JSON & Parquet data assets <!-- id: 139, priority: critical -->
+- [x] Exclude regional routes from dynamic reactive scoring in `useReactiveScoring.ts` <!-- id: 140, priority: high -->
+- [x] Render regional routes on Map in dark gray `#475569` and retain isochrone walk sheds <!-- id: 141, priority: high -->
+- [x] Filter out regional routes from frontend dashboards, quadrant charts, S-curves, and stability tables <!-- id: 142, priority: critical -->
+- [x] Verify build and functionality <!-- id: 143, priority: critical -->
+
+## Backlog: Future Layout Redesign
+
+
+- [ ] **Split-Screen Sticky Panels** — Redesign scrollytelling from single-column stacked to a two-panel split-screen (40% text / 60% sticky visual). Full plan: [split_screen_sticky_panels_plan.md](./split_screen_sticky_panels_plan.md) <!-- id: 135, priority: backlog -->
+  - [ ] Create `SplitScreenLayout.tsx` wrapper with IntersectionObserver logic
+  - [ ] Extract section narratives and visuals into separate fragments
+  - [ ] Wire crossfade transitions between sticky visuals
+  - [ ] Implement mobile fallback (stacked below `md` breakpoint)
+  - [ ] Migrate scroll progress tracking to left-panel scrollTop
+  - [ ] Handle Section 7 slider/visual co-location
+  - [ ] Handle Section 8 fullscreen breakout from sticky panel
+  - [ ] Handle Section 9 visual-less section
+  - [ ] Test responsive breakpoints and performance
+
+

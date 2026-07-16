@@ -11,9 +11,9 @@ import { EquityMatrix, RouteWithDAs, DaInfo } from '@/components/charts/EquityMa
 import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
-import { RouteStabilityDistribution } from '@/components/charts/RouteStabilityDistribution';
-
-
+import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
+import { DataExplorerModal } from '@/components/widgets/DataExplorerModal';
+import { mapStabilityClass } from '@/utils/stability';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
@@ -23,15 +23,111 @@ export const CommandCentre = () => {
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
   const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
 
+  const disabledWeights = useRouteStore((state) => state.disabledWeights);
+  const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
 
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
+  const [sensitivityData4Pillar, setSensitivityData4Pillar] = React.useState<Record<string, any>>({});
+  const [sensitivityData2Pillar, setSensitivityData2Pillar] = React.useState<Record<string, any>>({});
+  const [daAreaMap, setDaAreaMap] = React.useState<Record<string, number>>({});
+  const [showDataExplorer, setShowDataExplorer] = React.useState(false);
+
+  const sensitivityData = is2PillarActive ? sensitivityData2Pillar : sensitivityData4Pillar;
+
+  // Fetch DA boundaries to build land area lookup
+  React.useEffect(() => {
+    fetch('/data/da_boundaries_simple.geojson')
+      .then((res) => res.json())
+      .then((data) => {
+        const lookup: Record<string, number> = {};
+        if (data && data.features) {
+          data.features.forEach((f: any) => {
+            const dauid = String(f.properties?.DAUID || '');
+            const area = Number(f.properties?.LANDAREA || 0.0);
+            if (dauid && area > 0) {
+              lookup[dauid] = area;
+            }
+          });
+        }
+        setDaAreaMap(lookup);
+      })
+      .catch((err) => console.error('Failed to load DA boundaries geojson:', err));
+  }, []);
+
+  // Fetch sensitivity data
+  React.useEffect(() => {
+    // 4-Pillar
+    fetch('/data/sensitivity_summary.csv')
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map((h) => h.trim());
+        const lookup: Record<string, any> = {};
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const values = line.split(',').map((v) => v.trim());
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = values[idx];
+            if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
+              obj[h] = h === 'stability_class' ? mapStabilityClass(val || '') : (val || '');
+            } else {
+              obj[h] = Number(val || 0);
+            }
+          });
+          if (obj.route_id) {
+            lookup[obj.route_id] = obj;
+          }
+        }
+        setSensitivityData4Pillar(lookup);
+      })
+      .catch((err) => console.error('Failed to load 4-pillar sensitivity summary:', err));
+
+    // 2-Pillar
+    fetch('/data/sensitivity_summary_2_pillar.csv')
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map((h) => h.trim());
+        const lookup: Record<string, any> = {};
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const values = line.split(',').map((v) => v.trim());
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = values[idx];
+            if (h === 'route_id' || h === 'name' || h === 'short_name' || h === 'stability_class') {
+              obj[h] = h === 'stability_class' ? mapStabilityClass(val || '') : (val || '');
+            } else {
+              obj[h] = Number(val || 0);
+            }
+          });
+          if (obj.route_id) {
+            lookup[obj.route_id] = obj;
+          }
+        }
+        setSensitivityData2Pillar(lookup);
+      })
+      .catch((err) => console.error('Failed to load 2-pillar sensitivity summary:', err));
+  }, []);
 
   // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP
   // every time weights change. Pure math on 235 routes = microseconds.
   const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights);
 
   const selectedGrade = useRouteStore((state) => state.selectedGrade);
+  const muniRoutes = React.useMemo(() => {
+    return scoredRoutes.filter((r) => !r.is_regional);
+  }, [scoredRoutes]);
+
+  const filteredMuniRoutes = React.useMemo(() => {
+    if (!selectedGrade) return muniRoutes;
+    return muniRoutes.filter((r) => r.grade === selectedGrade);
+  }, [muniRoutes, selectedGrade]);
+
   const filteredRoutes = React.useMemo(() => {
     if (!selectedGrade) return scoredRoutes;
     return scoredRoutes.filter((r) => r.grade === selectedGrade);
@@ -43,7 +139,7 @@ export const CommandCentre = () => {
         try {
           console.log("🚀 Ingesting Golden Record into DuckDB...");
           
-          const response = await fetch('/data/golden_route_record.parquet');
+          const response = await fetch('/data/golden_route_record.parquet?v=' + Date.now());
           const buffer = await response.arrayBuffer();
           
           await db.registerFileBuffer('data.parquet', new Uint8Array(buffer));
@@ -64,25 +160,15 @@ export const CommandCentre = () => {
           `);
           setSystemPopServed(Number(popResult.toArray()[0].total_pop));
 
-          // ⚡ QUERY 2: Full route data with coords, pillars, and da_metadata
+          // ⚡ QUERY 2: Route data with coords, pillars, and da_metadata
+          // Use route.* to expand all struct fields into columns. This is
+          // schema-agnostic: it never names specific fields in SQL, so it
+          // can never crash on missing struct members (stability_class,
+          // trip_count, etc.). All type conversion and optional field
+          // extraction happens in JavaScript below with safe defaults.
           const routeResult = await conn.query(`
-            SELECT 
-              route.route_id,
-              route.name,
-              route.short_name,
-              route.grade,
-              CAST(route.composite_score AS DOUBLE) as composite_score,
-              CAST(route.total_pop_served AS INTEGER) as total_pop_served,
-              CAST(route.pillar_1_vulnerability AS DOUBLE) as pillar_1,
-              CAST(route.pillar_2_temporal AS DOUBLE) as pillar_2,
-              CAST(route.pillar_3_monopoly AS DOUBLE) as pillar_3,
-              CAST(route.pillar_4_opportunity AS DOUBLE) as pillar_4,
-              route.coords,
-              route.da_metadata,
-              COALESCE(route.stability_class, 'Moderate Stability') as stability_class,
-              COALESCE(route.stability_class_2_pillar, 'Moderate Stability') as stability_class_2_pillar
+            SELECT route.*
             FROM (
-
               SELECT UNNEST(routes) as route FROM network_data
             ) t1
           `);
@@ -119,7 +205,7 @@ export const CommandCentre = () => {
                   lone_parent_pct: Number(d.lone_parent_pct || 0),
                   recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
                   youth_pct: Number(d.youth_pct || 0),
-                  vulnerability_index: Number(d.vulnerability_index !== undefined ? d.vulnerability_index : (d.vulnerability !== undefined ? d.vulnerability : 0)),
+                  vulnerability_index: d.vulnerability_index !== undefined ? Number(d.vulnerability_index) : (d.vulnerability !== undefined ? Number(d.vulnerability) : undefined),
                   neighbourhood: String(d.neighbourhood || ''),
                 }));
               }
@@ -128,20 +214,24 @@ export const CommandCentre = () => {
             }
 
             return {
-              route_id: String(row.route_id),
-              name: String(row.name),
-              short_name: String(row.short_name),
-              grade: String(row.grade),
-              composite_score: Number(row.composite_score),
-              total_pop_served: Number(row.total_pop_served),
-              pillar_1: Number(row.pillar_1),
-              pillar_2: Number(row.pillar_2),
-              pillar_3: Number(row.pillar_3),
-              pillar_4: Number(row.pillar_4),
+              route_id: String(row.route_id || ''),
+              name: String(row.name || ''),
+              short_name: String(row.short_name || ''),
+              grade: String(row.grade || 'C'),
+              composite_score: Number(row.composite_score || 0),
+              total_pop_served: Number(row.total_pop_served || 0),
+              pillar_1: Number(row.pillar_1_vulnerability || 0),
+              pillar_2: Number(row.pillar_2_temporal || 0),
+              pillar_3: Number(row.pillar_3_monopoly || 0),
+              pillar_4: Number(row.pillar_4_opportunity || 0),
               coords,
               da_data,
-              stability_class: String(row.stability_class || 'Moderate Stability'),
-              stability_class_2_pillar: String(row.stability_class_2_pillar || 'Moderate Stability'),
+              stability_class: mapStabilityClass(String(row.stability_class || 'Moderate Stability')),
+              stability_class_2_pillar: mapStabilityClass(String(row.stability_class_2_pillar || 'Moderate Stability')),
+              trip_count: Number(row.trip_count || 0),
+              category: String(row.category || 'bus_regular'),
+              route_length_km: Number(row.route_length_km || 0),
+              is_regional: !!row.is_regional,
             };
           });
           
@@ -164,20 +254,14 @@ export const CommandCentre = () => {
     <div className="w-full h-full flex">
       {/* Sidebar */}
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
-        <Sidebar routes={scoredRoutes} />
+        <Sidebar routes={muniRoutes} onViewDirectory={() => setShowDataExplorer(true)} />
       </div>
 
       {/* Main Content — scrollable */}
       <div className="flex-1 h-full overflow-y-auto custom-scrollbar">
         {/* Fixed-height top section */}
         <div className="relative" style={{ height: '65vh', minHeight: '500px' }}>
-          {/* Engine Status */}
-          <div className="absolute top-4 left-4 z-10 command-card p-3 flex items-center gap-3">
-            <div className={`status-indicator ${isInitializing ? 'bg-amber-500 animate-pulse' : db ? 'bg-brand-teal-500' : 'bg-brand-rose-500'}`} />
-            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-brand-slate-800">
-              {isInitializing ? 'INITIALIZING ENGINE...' : db ? 'ENGINE SECURE' : 'ENGINE FAILURE'}
-            </span>
-          </div>
+
 
           {/* Map */}
           <div className="w-full h-full">
@@ -188,20 +272,22 @@ export const CommandCentre = () => {
         {/* Analytical Panels Row */}
         <div className="glass-panel grid grid-cols-2 gap-4 p-4 z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] relative" style={{ minHeight: '400px' }}>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
-              <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">Score Breakdown</span>
-              <div className="flex-1 min-h-0">
-                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} />
+              <div className="flex justify-between items-center mb-1 border-b border-slate-100 pb-1.5">
+                <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest">Score Breakdown</span>
+              </div>
+              <div className="flex-1 min-h-0 mt-1">
+                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest mb-1 text-center">
-                {mapFilterMode === 'stability' ? 'Route Stability Distribution' : 'Population-Equity Quadrant'}
+                {mapFilterMode === 'stability' ? 'Volatility vs. Mean Score (Pillar Stability Map)' : 'Population-Equity Quadrant'}
               </span>
               <div className="flex-1 min-h-0">
                 {mapFilterMode === 'stability' ? (
-                  <RouteStabilityDistribution data={filteredRoutes} />
+                  <RouteStabilityScatter sensitivityData={sensitivityData} />
                 ) : (
-                  <EquityQuadrant data={filteredRoutes} allRoutes={scoredRoutes} />
+                  <EquityQuadrant data={filteredMuniRoutes} allRoutes={muniRoutes} />
                 )}
               </div>
           </div>
@@ -210,19 +296,26 @@ export const CommandCentre = () => {
  
         {/* Equity Dissemination Matrix — Full Width */}
         <div className="p-4">
-          <EquityMatrix routes={filteredRoutes} />
+          <EquityMatrix routes={filteredMuniRoutes} daAreaMap={daAreaMap} />
           
           {/* Aggregate Distribution Panel */}
           <div className="mt-8 border-t border-slate-200 pt-6">
             <div className="mb-2">
-              <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">System-Wide Health Diagnostics</h2>
-              <p className="text-xs text-slate-500">Aggregate performance distribution across the network.</p>
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Network Wide Metrics</h2>
             </div>
-            <NetworkDistribution data={filteredRoutes} />
+            <NetworkDistribution data={muniRoutes} />
           </div>
         </div>
       </div>
-      <SpotlightSearch routes={scoredRoutes} />
+      <SpotlightSearch routes={muniRoutes} />
+      
+      <DataExplorerModal 
+        isOpen={showDataExplorer} 
+        onClose={() => setShowDataExplorer(false)} 
+        allRoutesData={muniRoutes}
+        weights={weights} 
+        sensitivityData={Object.values(sensitivityData)}
+      />
     </div>
   );
 };
