@@ -14,7 +14,8 @@ def regrade():
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    routes = data['routes']
+    routes = [r for r in data['routes'] if not r.get('is_regional', False)]
+    regional_routes = [r for r in data['routes'] if r.get('is_regional', False)]
     scores = sorted([r['composite_score'] for r in routes])
     n = len(scores)
     
@@ -43,6 +44,8 @@ def regrade():
     data['metadata']['stats']['grade_distribution'] = counts
     
     print(f"New distribution: {counts}")
+    
+    data['routes'] = routes + regional_routes
     
     # Save
     with open(path, 'w', encoding='utf-8') as f:

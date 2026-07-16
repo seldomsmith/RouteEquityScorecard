@@ -17,9 +17,9 @@ def main():
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    routes = data['routes']
+    routes = [r for r in data['routes'] if not r.get('is_regional', False)]
     num_routes = len(routes)
-    print(f"Loaded {num_routes} routes from golden record.")
+    print(f"Loaded {num_routes} non-regional routes from golden record for sensitivity sweep.")
     
     # 1. Generate Combinations (Stars & Bars: w1 + w2 + w3 + w4 = 1.0 in steps of 0.05)
     print("\n[1/5] Generating weight configurations...")

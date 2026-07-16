@@ -67,8 +67,25 @@ def main():
         data = json.load(f)
     
     # Filter out school routes (starts with '6')
-    routes = [r for r in data['routes'] if not str(r.get('short_name', '')).startswith('6')]
-    data['routes'] = routes
+    all_routes = [r for r in data['routes'] if not str(r.get('short_name', '')).startswith('6')]
+    
+    # Identify regional routes
+    for r in all_routes:
+        rid = str(r['route_id'])
+        sname = str(r.get('short_name', ''))
+        r['is_regional'] = rid.startswith('A') or rid.startswith('L') or rid.startswith('4') or rid in ['540', '560', '747'] or sname.startswith('A') or sname.startswith('L') or sname.startswith('4') or sname in ['540', '560', '747']
+        
+    routes = [r for r in all_routes if not r.get('is_regional', False)]
+    regional_routes = [r for r in all_routes if r.get('is_regional', False)]
+    
+    # Initialize regional routes scores and grades
+    for r in regional_routes:
+        for key in PILLAR_KEYS:
+            r[key] = 0.0
+        r['composite_score'] = 0.0
+        r['grade'] = 'Regional'
+        
+    data['routes'] = routes + regional_routes
     n = len(routes)
     
     # === STEP 1: 95th Percentile Capping ===

@@ -361,7 +361,18 @@
 - [x] Fix missing live scores and baseline grade comparisons in `DataExplorerModal.tsx` and `useReactiveScoring.ts` <!-- id: 133, priority: critical -->
 - [x] Verify compilation (manually audited source files) <!-- id: 134, priority: critical -->
 
+## Phase 25: Regional Route Exclusion
+- [x] Implement `is_regional` flag in demographics and scoring data pipelines <!-- id: 136, priority: high -->
+- [x] Exclude regional routes from capping, Z-score, sigmoid, and quintile calculations in `refine_scoring.py` <!-- id: 137, priority: critical -->
+- [x] Update sensitivity simulations to skip regional routes <!-- id: 138, priority: high -->
+- [x] Re-run modeling scripts and update golden route record JSON & Parquet data assets <!-- id: 139, priority: critical -->
+- [x] Exclude regional routes from dynamic reactive scoring in `useReactiveScoring.ts` <!-- id: 140, priority: high -->
+- [x] Render regional routes on Map in dark gray `#475569` and retain isochrone walk sheds <!-- id: 141, priority: high -->
+- [x] Filter out regional routes from frontend dashboards, quadrant charts, S-curves, and stability tables <!-- id: 142, priority: critical -->
+- [x] Verify build and functionality <!-- id: 143, priority: critical -->
+
 ## Backlog: Future Layout Redesign
+
 
 - [ ] **Split-Screen Sticky Panels** — Redesign scrollytelling from single-column stacked to a two-panel split-screen (40% text / 60% sticky visual). Full plan: [split_screen_sticky_panels_plan.md](./split_screen_sticky_panels_plan.md) <!-- id: 135, priority: backlog -->
   - [ ] Create `SplitScreenLayout.tsx` wrapper with IntersectionObserver logic
