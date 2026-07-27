@@ -39,6 +39,10 @@ interface RouteState {
   selectedStabilityClasses: string[];
   setMapFilterMode: (mode: 'grade' | 'stability') => void;
   toggleStabilityClass: (stabilityClass: string) => void;
+
+  // CIMD Vulnerability Mode
+  cimdMode: boolean;
+  setCimdMode: (val: boolean) => void;
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
@@ -264,5 +268,9 @@ export const useRouteStore = create<RouteState>((set) => ({
         ? state.selectedStabilityClasses.filter(c => c !== stabilityClass)
         : [...state.selectedStabilityClasses, stabilityClass]
     };
-  })
+  }),
+
+  // CIMD Vulnerability Mode
+  cimdMode: false,
+  setCimdMode: (val) => set({ cimdMode: val }),
 }));

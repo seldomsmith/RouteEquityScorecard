@@ -23,6 +23,7 @@ export const CommandCentre = () => {
   const weights = useRouteStore((state) => state.weights);
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
   const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
+  const cimdMode = useRouteStore((state) => state.cimdMode);
 
   const disabledWeights = useRouteStore((state) => state.disabledWeights);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
@@ -118,7 +119,7 @@ export const CommandCentre = () => {
 
   // ⚡ Reactive Scoring Engine — recalculates composite, sigmoid, grades, and SHAP
   // every time weights change. Pure math on 235 routes = microseconds.
-  const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights);
+  const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights, cimdMode);
 
   const selectedGrade = useRouteStore((state) => state.selectedGrade);
   const muniRoutes = React.useMemo(() => {
@@ -223,6 +224,7 @@ export const CommandCentre = () => {
               composite_score: Number(row.composite_score || 0),
               total_pop_served: Number(row.total_pop_served || 0),
               pillar_1: Number(row.pillar_1_vulnerability || 0),
+              pillar_1_cimd: Number(row.cimd_vuln_score || row.pillar_1_vulnerability || 0),
               pillar_2: Number(row.pillar_2_temporal || 0),
               pillar_3: Number(row.pillar_3_monopoly || 0),
               pillar_4: Number(row.pillar_4_opportunity || 0),

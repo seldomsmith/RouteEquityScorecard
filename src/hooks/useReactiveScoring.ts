@@ -88,6 +88,7 @@ function stddev(values: number[], avg?: number): number {
 export function useReactiveScoring(
   baseRoutes: RouteWithDAs[],
   weights: PolicyWeights,
+  cimdMode = false,
 ): { scoredRoutes: ScoredRoute[]; networkStats: NetworkStats } {
   return useMemo(() => {
     if (!baseRoutes.length) {
@@ -122,12 +123,17 @@ export function useReactiveScoring(
       pillar_4: weights.opportunity / 100,
     };
 
-    const rawComposites = municipalRoutes.map((r) =>
-      (r.pillar_1 * w.pillar_1) +
-      (r.pillar_2 * w.pillar_2) +
-      (r.pillar_3 * w.pillar_3) +
-      (r.pillar_4 * w.pillar_4)
-    );
+    const rawComposites = municipalRoutes.map((r) => {
+      const vuln = cimdMode
+        ? ((r as any).pillar_1_cimd ?? r.pillar_1)
+        : r.pillar_1;
+      return (
+        (vuln * w.pillar_1) +
+        (r.pillar_2 * w.pillar_2) +
+        (r.pillar_3 * w.pillar_3) +
+        (r.pillar_4 * w.pillar_4)
+      );
+    });
 
     // ── 3. Calibrate sigmoid from composite distribution ──────────
     const compMean = mean(rawComposites);
@@ -220,5 +226,5 @@ export function useReactiveScoring(
         gradeDistribution,
       },
     };
-  }, [baseRoutes, weights]);
+  }, [baseRoutes, weights, cimdMode]);
 }
