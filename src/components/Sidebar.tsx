@@ -116,13 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
         )}
       </div>
 
-      {/* Split Flap Isolated Route Header */}
-      {selectedRouteData && (
-        <SplitFlapHeader 
-          route={selectedRouteData} 
-          onClear={() => setSelectedRoute(null)} 
-        />
-      )}
+
 
       {/* Weight Sliders — Zero-Sum System */}
       <div className="p-4 border-b border-slate-100">
@@ -201,20 +195,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
         <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
           Route Isolator
         </h2>
-        <select
-          value={selectedRoute || ''}
-          onChange={(e) => setSelectedRoute(e.target.value || null)}
-          className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-teal-500/30 focus:border-brand-teal-500"
-        >
-          <option value="">All Routes</option>
-          {routes
-            .sort((a, b) => a.short_name.localeCompare(b.short_name, undefined, { numeric: true }))
-            .map((r) => (
-              <option key={r.route_id} value={r.route_id}>
-                {r.short_name} — {r.name} ({r.grade})
-              </option>
-            ))}
-        </select>
+        {selectedRouteData ? (
+          <SplitFlapHeader 
+            route={selectedRouteData} 
+            onClear={() => setSelectedRoute(null)} 
+          />
+        ) : (
+          <select
+            value={selectedRoute || ''}
+            onChange={(e) => setSelectedRoute(e.target.value || null)}
+            className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-teal-500/30 focus:border-brand-teal-500"
+          >
+            <option value="">All Routes</option>
+            {routes
+              .sort((a, b) => a.short_name.localeCompare(b.short_name, undefined, { numeric: true }))
+              .map((r) => (
+                <option key={r.route_id} value={r.route_id}>
+                  {r.short_name} — {r.name} ({r.grade})
+                </option>
+              ))}
+          </select>
+        )}
       </div>
 
       {/* Filter Mode segmented toggle */}

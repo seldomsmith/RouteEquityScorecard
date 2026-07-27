@@ -23,7 +23,7 @@ const SplitFlapTile: React.FC<{ char: string }> = ({ char }) => {
     
     const interval = setInterval(() => {
       ticks++;
-      if (ticks >= 5) {
+      if (ticks >= 12) {
         setDisplayChar(char);
         setIsFlipping(false);
         clearInterval(interval);
@@ -31,7 +31,7 @@ const SplitFlapTile: React.FC<{ char: string }> = ({ char }) => {
         const rand = alphabet[Math.floor(Math.random() * alphabet.length)];
         setDisplayChar(rand);
       }
-    }, 70);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [char, displayChar]);
@@ -44,7 +44,7 @@ const SplitFlapTile: React.FC<{ char: string }> = ({ char }) => {
     >
       {displayChar}
       {/* Horizontal Split Line */}
-      <span className="absolute inset-x-0 top-[50%] h-[1px] bg-black/60 shadow-[0_0.5px_0_rgba(255,255,255,0.1)]" />
+      <span className="absolute inset-x-0 top-[50%] h-[1px] bg-black/60 shadow-[0_0.5px_0_rgba(255,255,255,0.15)]" />
     </span>
   );
 };
@@ -63,7 +63,7 @@ const GradeFlapTile: React.FC<{ grade: string }> = ({ grade }) => {
 
     const interval = setInterval(() => {
       ticks++;
-      if (ticks >= 6) {
+      if (ticks >= 12) {
         setDisplayGrade(grade);
         setIsFlipping(false);
         clearInterval(interval);
@@ -71,17 +71,17 @@ const GradeFlapTile: React.FC<{ grade: string }> = ({ grade }) => {
         const rand = grades[Math.floor(Math.random() * grades.length)];
         setDisplayGrade(rand);
       }
-    }, 85);
+    }, 45);
 
     return () => clearInterval(interval);
   }, [grade, displayGrade]);
 
   const GRADE_COLORS: Record<string, string> = {
-    A: 'bg-emerald-750 border-emerald-950',
-    B: 'bg-blue-750 border-blue-950',
-    C: 'bg-amber-700 border-amber-900',
-    D: 'bg-orange-700 border-orange-900',
-    E: 'bg-red-700 border-red-950',
+    A: 'bg-emerald-700 border-emerald-900',
+    B: 'bg-blue-700 border-blue-900',
+    C: 'bg-amber-600 border-amber-800',
+    D: 'bg-orange-600 border-orange-800',
+    E: 'bg-red-700 border-red-900',
   };
 
   const activeColor = GRADE_COLORS[displayGrade] || 'bg-slate-900 border-slate-950';
@@ -105,7 +105,7 @@ export const SplitFlapHeader: React.FC<SplitFlapHeaderProps> = ({ route, onClear
   const routeChars = routeCode.split('');
 
   return (
-    <div className="p-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3 animate-fade-in">
+    <div className="flex items-center justify-between gap-3 animate-fade-in w-full mt-1">
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {/* Route ID Split Flaps */}
         <div className="flex gap-0.5">
@@ -116,18 +116,17 @@ export const SplitFlapHeader: React.FC<SplitFlapHeaderProps> = ({ route, onClear
 
         {/* Route Full Name */}
         <div className="flex-1 min-w-0 pl-1">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Isolated Route</p>
-          <p className="text-[11px] font-bold text-slate-700 truncate leading-none">{route.name}</p>
+          <p className="text-[11px] font-bold text-slate-750 truncate leading-none">{route.name}</p>
         </div>
       </div>
 
       {/* Grade and Clear Controls */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <GradeFlapTile grade={route.grade} />
         
         <button
           onClick={onClear}
-          className="p-1 hover:bg-slate-200/60 rounded text-slate-450 hover:text-slate-650 transition-colors"
+          className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors"
           title="Clear Route Selection"
         >
           <X className="w-3.5 h-3.5" />
