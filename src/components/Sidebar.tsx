@@ -48,6 +48,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
   const setMapFilterMode = useRouteStore((s) => s.setMapFilterMode);
   const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
+  const cimdMode = useRouteStore((s) => s.cimdMode);
+  const setCimdMode = useRouteStore((s) => s.setCimdMode);
 
   const selectedRouteData = React.useMemo(() => 
     routes.find((r) => r.route_id === selectedRoute) || null,
@@ -156,6 +158,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
                     <span className={`text-[11px] font-semibold transition-colors duration-150 ${isDisabled ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-600'}`}>
                       {label}
                     </span>
+                    {key === 'vulnerability' && (
+                      <button
+                        onClick={() => setCimdMode(!cimdMode)}
+                        title={cimdMode ? 'CIMD mode active — click to revert to custom index' : 'Switch vulnerability to CIMD (StatCan)'}
+                        className="flex items-center gap-1 ml-1 group"
+                      >
+                        <span className={`inline-flex w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 flex-shrink-0
+                          ${ cimdMode
+                            ? 'bg-teal-500 border-teal-500 shadow-[0_0_0_2px_rgba(20,184,166,0.25)]'
+                            : 'bg-transparent border-slate-300 group-hover:border-teal-400'
+                          }`}
+                        />
+                        <span className={`text-[9px] font-bold tracking-widest uppercase transition-colors duration-200
+                          ${ cimdMode ? 'text-teal-600' : 'text-slate-400 group-hover:text-teal-500' }`}
+                        >
+                          CIMD
+                        </span>
+                      </button>
+                    )}
                   </div>
                   <span className={`text-[11px] font-mono font-bold transition-colors duration-150 ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
                     {val}%
