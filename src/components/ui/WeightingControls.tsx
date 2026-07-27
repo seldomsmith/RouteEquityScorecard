@@ -39,7 +39,7 @@ export const WeightingControls = () => {
         description="Prioritizes routes serving high-needs demographics (low income, zero-vehicle households)."
       />
       <Slider 
-        label="Off Peak Service" 
+        label="Off-Peak Service" 
         value={store.temporal} 
         onChange={(v: any) => store.setWeight('temporal', v)} 
         description="Measures how consistent service is during off-peak and weekend hours."
@@ -48,7 +48,7 @@ export const WeightingControls = () => {
         label="Network Monopoly" 
         value={store.monopoly} 
         onChange={(v: any) => store.setWeight('monopoly', v)} 
-        description="Highlights routes that are the ONLY option for specific neighborhoods."
+        description="Highlights routes that are the ONLY option for specific neighbourhoods."
       />
       <Slider 
         label="Opportunity Access" 

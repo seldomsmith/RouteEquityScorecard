@@ -12,7 +12,7 @@ interface SidebarProps {
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
   vulnerability: { label: 'Vulnerability',  desc: 'Demographics of Dissemination Area', color: '#64748B' },
-  resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
+  resilience:    { label: 'Off-Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
   monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
   opportunity:   { label: 'Opportunity',     desc: 'The value of destinations',       color: '#64748B' },
 };

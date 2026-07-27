@@ -318,7 +318,7 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
           <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans min-h-[60px]">
             <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
             <p>
-              <strong>Analysis:</strong> Composite scores stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
+              <strong>Analysis:</strong> Composite score stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
             </p>
           </div>
         </div>

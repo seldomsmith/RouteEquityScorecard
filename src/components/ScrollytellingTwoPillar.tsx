@@ -43,7 +43,7 @@ const TwoPillars: React.FC = () => {
       title: 'Transit Vulnerability',
       icon: Users,
       color: '#EF4444', // Red
-      description: 'Measures neighborhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
+      description: 'Measures neighbourhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
     },
     {
       title: 'Destination Opportunity',
@@ -507,7 +507,9 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">1. Introduction</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                Transit services are not experienced equally. The Route Equity Scorecard measures how effectively each route serves riders, specifically those in equity-seeking communities. When developing a transit network that meets the needs of Edmonton residents, policymakers must identify which routes provide essential service to equity-seeking communities. This scorecard provides the data to inform those decisions.
+                Each route in a public transit network does not provide service equally to its riders. The Route Equity Scorecard featured here measures how effectively each route serves riders, specifically those in equity-seeking communities. When designing a transit network that meets the needs of Edmonton residents, decision makers must identify which routes provide essential service to equity-seeking communities. This scorecard provides the data to inform those decisions.
+                <br /><br />
+                By analyzing these routes through a analytical framework, we can measure transit equity and compare routes in a more objective manner.
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
                 For this explanation, we will use two routes to show our methodology:
@@ -1009,7 +1011,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">5. On Demand Transit (ODT)</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                Edmonton Transit Service integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus lines. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
+                ETS integrates On Demand Transit (ODT) zones to serve areas that lack regular, fixed-route bus routes. These zones use flexible, bookable buses that transport riders from an established bus stop to a designated transit centre or LRT station.
               </p>
 
               {/* Dynamic Map Visualization - Relocated right under the specified ODT description line */}
@@ -1059,7 +1061,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                 </li>
               </ul>
               <p className="text-slate-600 text-base leading-relaxed">
-                When a user adjusts the weighting of the categories, these scores adjust accordingly. For example, if a new pillar weighting model prioritizes Destination Opportunity by allocating 80% to it and only 20% to Vulnerability, the scores shift:
+                When a user adjusts the weighting of the pillars, these scores adjust accordingly. For example, if a new pillar weighting model prioritizes Destination Opportunity by allocating 80% to it and only 20% to Vulnerability, the scores shift:
               </p>
               <ul className="text-base text-slate-600 leading-relaxed mt-2 space-y-3">
                 <li className="flex items-start gap-2">
@@ -1200,7 +1202,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">7. Route Stability and Volatility: Equity Sensitivity Analysis</h2>
               <p className="text-slate-600 text-base leading-relaxed">
-                As shown above, when the pillar weighting changes, some routes may shift dramatically in grade; however, others may remain stable. To better understand and model this behaviour, we ran a sensitivity simulation calculating route scores across over 100 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use.
+                As shown above, when the pillar weighting changes, the grade assigned to some routes shift dramatically while others remain stable. To better understand and model this dynamic, we ran a sensitivity simulation calculating route scores across over 1,000 pillar weight combinations. This allows us to understand which routes are important for the purposes of equity, no matter what weighting we use. Use the simulation (Run Simulation) to show how the stability of Route 002 and Route 003 differ.
               </p>
               <p className="text-slate-655 text-base leading-relaxed font-semibold">
                 This simulation reveals four route stability classifications:
@@ -1236,10 +1238,10 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                     </span>
                   </div>
                   <p className="text-slate-655 text-base leading-relaxed pl-3.5">
-                    Scores for routes in this category fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
+                    Scores for routes in this pillar fluctuate wildly depending on weight selections, making their funding priority highly sensitive to changing planning objectives.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Opportunity focus but drops when we prioritize Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent Destination Opportunity score (24.2) which pulls its grade up when destinations are prioritized. However, because it runs through central neighborhoods with higher average incomes, its Vulnerability score is a low 17.5. When pillar weights shift to favor demographic need, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its relative funding priority highly sensitive to the chosen weighting model.
+                    <strong className="text-amber-600">Route 003</strong> is a High Swing Route because its score rises under an Opportunity focus but drops when we prioritize Transit Vulnerability. Specifically, <strong className="text-amber-600">Route 003</strong> maintains a decent Destination Opportunity score (24.2) which pulls its grade up when destinations are prioritized. However, because it runs through central neighbourhoods with higher average incomes, its Vulnerability score is a low 17.5. When pillar weights shift to favor demographic need, <strong className="text-amber-600">Route 003</strong>'s score collapses, making its relative funding priority highly sensitive to the chosen weighting model.
                   </p>
                 </div>
 
@@ -1255,7 +1257,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                     These routes maintain steady, mid-range scores across all scenarios and are not highly sensitive to pillar changes, representing stable baseline operations.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    For example, Route 913 (West Edmonton Mall – Jamieson Place) does not feature extreme highs or absolute zeros in any single category. Under the simulation, its scores remain remarkably stable, maintaining an average score of 50.03 with a very low standard deviation of just 4.88.
+                    For example, Route 913 (West Edmonton Mall – Jamieson Place) does not feature extreme highs or absolute zeros in any single pillar. Under the simulation, its scores remain remarkably stable, maintaining an average score of 50.03 with a very low standard deviation of just 4.88.
                   </p>
                 </div>
 
@@ -1271,7 +1273,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                     These routes consistently receive lower equity scores across all possible pillar weight combinations, typically running through affluent sectors.
                   </p>
                   <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-200 pl-4 ml-3.5 italic">
-                    Route 524 (Bonnie Doon – Holyrood) falls into this category, averaging a score of just 8.9 out of 100 across all configurations.
+                    Route 524 (Bonnie Doon – Holyrood) falls into this pillar, averaging a score of just 8.9 out of 100 across all configurations.
                   </p>
                 </div>
               </div>
@@ -1558,7 +1560,7 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">III. Catchment Buffers vs. Physical Barriers</h3>
                     <p className="text-slate-605 text-sm mt-1 leading-relaxed">
-                      Walking catchments assume ideal pedestrian access and uniform walking speeds. The model cannot detect micro-level barriers, such as broken sidewalks, snow-blocked paths, missing crosswalks, or major highway crossings, that make walking unsafe or impossible for seniors and residents with mobility aids.
+                      Walking catchments assume ideal pedestrian access and uniform walking speeds. The model cannot detect micro-level barriers, such as broken sidewalks, snow-blocked paths, missing crosswalks, or major highway crossings, that make walking unsafe or impossible for seniors and residents with mobility aids or other equity seeking members of our community.
                     </p>
                   </div>
                   
@@ -1586,10 +1588,10 @@ export const ScrollytellingTwoPillar = ({ onBack, onJumpIn, onToggleVersion }: S
             <div className="space-y-4">
               <h2 className="text-3xl font-black text-blue-900 leading-tight">9. Applying the Scorecard to Planning Decisions</h2>
               <p className="text-slate-605 text-base leading-relaxed">
-                Scoring transit routes across the four pillars and simulating their stability provides analytical data to help planners design and schedule routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing decision makers to predict how service adjustments might impact neighbourhoods – for better or for worse.
+                Scoring transit routes across the four pillars outlined above and simulating their stability provides an additional layer of information for decision makers to design and schedule transit routes. The scorecard helps the city understand how different transit lines serve the diverse needs of the population, allowing decision makers to predict how service adjustments might impact neighbourhoods – for better or for worse.
               </p>
               <p className="text-slate-605 text-base leading-relaxed">
-                Transit equity recognizes that equal service is not always equitable service. True equity requires directing resources where they will do the most to reduce mobility barriers for residents who rely on transit the most. While policy decisions will always involve subjective value judgments, this framework makes those trade-offs transparent, allowing decision makers to build equity directly into daily transit operations.
+                Transit equity recognizes that equal service is not always equitable service. True transit equity requires directing resources where they will do the most to reduce mobility barriers for residents who rely on transit the most. While policy decisions will always involve subjective value judgments, the framework adopted in this scorecard makes those trade-offs transparent, allowing decision makers to further build equity considerations directly into daily transit operations.
               </p>
             </div>
           </section>

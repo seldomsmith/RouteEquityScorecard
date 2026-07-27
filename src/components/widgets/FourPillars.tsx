@@ -11,7 +11,7 @@ export const FourPillars: React.FC = () => {
       icon: Users,
       color: '#EF4444', // Red
       glowColor: '0 90 60',
-      description: 'Measures neighborhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
+      description: 'Measures neighbourhood socio-demographic need along each route. The score reflects the concentration of low-income households, seniors, youth, lone-parent households, and visible minority residents living near the route stops.',
     },
     {
       title: 'Destination Opportunity',

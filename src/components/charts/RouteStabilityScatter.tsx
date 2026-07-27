@@ -56,7 +56,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   // Determine primary driver
   const drivers = [
     { name: 'Vulnerability', val: d.driver_vulnerability },
-    { name: 'Off Peak Service', val: d.driver_temporal },
+    { name: 'Off-Peak Service', val: d.driver_temporal },
     { name: 'Monopoly', val: d.driver_monopoly },
     { name: 'Opportunity', val: d.driver_opportunity },
   ];
