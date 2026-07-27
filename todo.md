@@ -166,5 +166,4 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Created a custom interactive Weight Box component mapping bilinear coordinates inside an SVG square to the active four-pillar weights (Vulnerability, Off-Peak, Monopoly, Opportunity).
   - Implemented high-performance in-memory HTML5 canvas rendering for the route score sensitivity heatmap using a clean, monochromatic dark-slate to brand-blue color scheme.
   - Integrated the TernaryWeightTerrain component into the Score Breakdown card of `CommandCentre.tsx` with toggle tabs next to the SHAP Waterfall, triggering map and score calculations in real-time.
-  - Created a modular `SplitFlapHeader` component in `src/components/ui/SplitFlapHeader.tsx` implementing a mechanical character flip animation with standard Tailwind colors and a longer, rapid 12-tick "flapping" roll effect (0.5s–0.6s).
-  - Integrated the split-flap header directly inside the **Route Isolator** card section of `Sidebar.tsx`, replacing the select dropdown when a route is isolated.
+  - Integrated the clean plain-text Route Header inside the **Route Isolator** card section of `Sidebar.tsx`, replacing the select dropdown when a route is isolated with a color-coded grade badge and route description card.

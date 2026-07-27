@@ -5,7 +5,7 @@ import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
 
-import { SplitFlapHeader } from '@/components/ui/SplitFlapHeader';
+import { X } from 'lucide-react';
 
 interface SidebarProps {
   routes: any[];
@@ -196,10 +196,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
           Route Isolator
         </h2>
         {selectedRouteData ? (
-          <SplitFlapHeader 
-            route={selectedRouteData} 
-            onClear={() => setSelectedRoute(null)} 
-          />
+          <div className="flex items-center justify-between gap-3 bg-slate-50 border border-slate-100 rounded-lg p-2 mt-1 animate-fade-in">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <span className="font-mono font-black text-slate-700 bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px] select-none">
+                {selectedRouteData.short_name}
+              </span>
+              <span className="text-xs font-bold text-slate-600 truncate flex-1">
+                {selectedRouteData.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md text-white shadow-sm border select-none ${
+                selectedRouteData.grade === 'A' ? 'bg-emerald-600 border-emerald-700'
+                : selectedRouteData.grade === 'B' ? 'bg-blue-600 border-blue-700'
+                : selectedRouteData.grade === 'C' ? 'bg-amber-600 border-amber-700'
+                : selectedRouteData.grade === 'D' ? 'bg-orange-600 border-orange-700'
+                : 'bg-red-650 border-red-750'
+              }`}>
+                Grade {selectedRouteData.grade}
+              </span>
+              <button
+                onClick={() => setSelectedRoute(null)}
+                className="p-1 hover:bg-slate-200/80 rounded text-slate-455 hover:text-slate-650 transition-colors"
+                title="Clear Route Selection"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
         ) : (
           <select
             value={selectedRoute || ''}
