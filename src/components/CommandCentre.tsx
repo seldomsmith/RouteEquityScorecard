@@ -286,7 +286,7 @@ export const CommandCentre = () => {
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      SHAP Impact
+                      Pillar Impact
                     </button>
                     <button
                       onClick={() => setActiveBreakdownTab('sensitivity')}
@@ -296,7 +296,7 @@ export const CommandCentre = () => {
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      Policy Sensitivity
+                      Pillar Sensitivity
                     </button>
                   </div>
                 )}
