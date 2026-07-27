@@ -13,6 +13,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
 import { DataExplorerModal } from '@/components/widgets/DataExplorerModal';
+import { TernaryWeightTerrain } from '@/components/widgets/TernaryWeightTerrain';
 import { mapStabilityClass } from '@/utils/stability';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
@@ -26,6 +27,7 @@ export const CommandCentre = () => {
   const disabledWeights = useRouteStore((state) => state.disabledWeights);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
 
+  const [activeBreakdownTab, setActiveBreakdownTab] = React.useState<'shap' | 'sensitivity'>('shap');
   const [systemPopServed, setSystemPopServed] = React.useState<number | null>(null);
   const [baseRoutes, setBaseRoutes] = React.useState<RouteWithDAs[]>([]);
   const [sensitivityData4Pillar, setSensitivityData4Pillar] = React.useState<Record<string, any>>({});
@@ -274,9 +276,37 @@ export const CommandCentre = () => {
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">
               <div className="flex justify-between items-center mb-1 border-b border-slate-100 pb-1.5">
                 <span className="text-[10px] font-bold text-brand-slate-500 uppercase tracking-widest">Score Breakdown</span>
+                {selectedRouteData && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setActiveBreakdownTab('shap')}
+                      className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded transition-colors ${
+                        activeBreakdownTab === 'shap'
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      SHAP Impact
+                    </button>
+                    <button
+                      onClick={() => setActiveBreakdownTab('sensitivity')}
+                      className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded transition-colors ${
+                        activeBreakdownTab === 'sensitivity'
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      Policy Sensitivity
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="flex-1 min-h-0 mt-1">
-                <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
+                {activeBreakdownTab === 'shap' || !selectedRouteData ? (
+                  <ShapWaterfall route={selectedRouteData} networkStats={networkStats} sensitivityData={sensitivityData} />
+                ) : (
+                  <TernaryWeightTerrain route={selectedRouteData} />
+                )}
               </div>
           </div>
           <div className="command-card bg-brand-slate-50/50 flex flex-col p-3 overflow-hidden">

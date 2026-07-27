@@ -162,6 +162,7 @@ Refining analytical modeling, service impact simulations, and advanced research 
   - Renamed "System-Wide Health Diagnostics" to "Network Wide Metrics" and removed its subheading in `CommandCentre.tsx`.
   - Corrected the route count in the distribution table description inside `NetworkDistribution.tsx` from 235 to 170.
   - Rephrased the sigmoid S-Curve score distribution description inside `NetworkDistribution.tsx` to be accessible and non-technical.
-  - Fixed the missing live scores in the Data Directory by mapping both `pillar_N` and `pillar_N_XXXX` properties in `DataExplorerModal.tsx`.
-  - Fixed the baseline grade comparison and CSV export in the directory table by storing the baseline grade in a new `baseline_grade` field on each scored route object inside `useReactiveScoring.ts`.
-
+- **Policy Sensitivity Ternary Terrain (Phase 25)**:
+  - Created a custom interactive Ternary Plot component mapping barycentric coordinates inside an SVG equilateral triangle to the active four-pillar weights.
+  - Implemented high-performance in-memory HTML5 canvas rendering for the route score sensitivity heatmap background.
+  - Integrated the TernaryWeightTerrain component into the Score Breakdown card of `CommandCentre.tsx` with toggle tabs next to the SHAP Waterfall, triggering map and score calculations in real-time.
