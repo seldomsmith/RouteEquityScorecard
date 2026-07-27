@@ -5,8 +5,10 @@ import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
 
+import { SplitFlapHeader } from '@/components/ui/SplitFlapHeader';
+
 interface SidebarProps {
-  routes: RoutePoint[];
+  routes: any[];
   onViewDirectory?: () => void;
 }
 
@@ -42,11 +44,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const selectedGrade = useRouteStore((s) => s.selectedGrade);
   const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
-  
   const mapFilterMode = useRouteStore((s) => s.mapFilterMode);
   const setMapFilterMode = useRouteStore((s) => s.setMapFilterMode);
   const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
+
+  const selectedRouteData = React.useMemo(() => 
+    routes.find((r) => r.route_id === selectedRoute) || null,
+    [routes, selectedRoute]
+  );
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
@@ -109,6 +115,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
           </button>
         )}
       </div>
+
+      {/* Split Flap Isolated Route Header */}
+      {selectedRouteData && (
+        <SplitFlapHeader 
+          route={selectedRouteData} 
+          onClear={() => setSelectedRoute(null)} 
+        />
+      )}
 
       {/* Weight Sliders — Zero-Sum System */}
       <div className="p-4 border-b border-slate-100">
