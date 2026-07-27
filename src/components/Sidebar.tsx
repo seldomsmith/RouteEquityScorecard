@@ -211,7 +211,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
                 : selectedRouteData.grade === 'B' ? 'bg-blue-600 border-blue-700'
                 : selectedRouteData.grade === 'C' ? 'bg-amber-600 border-amber-700'
                 : selectedRouteData.grade === 'D' ? 'bg-orange-600 border-orange-700'
-                : 'bg-red-650 border-red-750'
+                : 'bg-red-600 border-red-700'
               }`}>
                 Grade {selectedRouteData.grade}
               </span>
