@@ -161,14 +161,23 @@ Both scripts are idempotent and update the JSON and Apache Parquet data files. S
 
 ---
 
-## 6. Known Limitations & Future Refinements
+---
 
-The current scoring uses pre-computed pillar values from the original analytical engine. The following refinements are planned for future iterations:
+## 7. Bus Stop Vulnerability Analysis Methodology
 
-| Refinement | Current | Proposed |
-|-----------|---------|----------|
-| P2 Off Peak Service | Simple ratio (night/peak) | Service Retention Delta with `tanh()` saturation function |
-| P3 Monopoly | Capacity-Weighted FMI | Fully implemented in Phase 18 |
-| P4 Opportunity | Raw POI counts | Access Density: `Σ(POI × Weight) / Route_Length × Log(Ridership + 1)` |
+In addition to route-level evaluations, the Scorecard evaluates individual bus stop locations across the entire transit network (**6,750+ stops**).
 
-These require access to raw GTFS trip frequencies, network overlap analysis, route lengths, and ridership data.
+### 400m Geodesic Catchment Overlap
+- **Spatial Precision**: For each bus stop, a **400-meter geodesic catchment buffer** (approx. 5-minute walk) is generated using meter-accurate projection (`EPSG:3400` Alberta 10-TM).
+- **Proportional DA Area Intersections**: Bus stop catchments often cross multiple Dissemination Area (DA) boundaries. The stop's raw vulnerability score is computed via **area-weighted proportional overlap**:
+  $$\text{Stop Score} = \sum_{i=1}^{K} \left( \frac{\text{Area}(\text{Buffer} \cap \text{DA}_i)}{\text{Area}(\text{Buffer})} \times \text{DA Score}_i \right)$$
+
+### Continuous Percentile Ranking (1–100th %ile)
+- **Coarse Quintile Resolution Fix**: Raw StatCan CIMD scores are reported in discrete 1–5 quintile steps (scores of 20, 40, 60, 80, 100), creating heavy clustering at 20.0 and 100.0.
+- **Continuous Percentiles**: To provide rich visual and analytical differentiation across the network, continuous percentile ranks ($0.0 \text{ to } 100.0$) are calculated across stops.
+- **Smooth Visual Spectrum**: Map stop markers and color gradients interpolate across continuous percentile ranks ($0\% \rightarrow \text{Green}, 50\% \rightarrow \text{Yellow}, 100\% \rightarrow \text{Red}$) rather than coarse score steps.
+
+### Regional Stop Treatment (City of Edmonton Isolation)
+- **Scope Isolation**: Regional bus stops located outside City of Edmonton municipal/DA boundaries (e.g. regional commuter connectors) are explicitly flagged (`is_regional: true`).
+- **Percentile Exclusion**: Regional stops are **excluded** from the citywide percentile rank calculation so that non-city locations do not distort Edmonton's urban vulnerability distribution.
+- **Visual Graying-Out**: Regional stops are rendered on the map in a muted slate-gray (`#94A3B8`, opacity 0.4) and labeled as `Regional / N/A` in directory listings.
