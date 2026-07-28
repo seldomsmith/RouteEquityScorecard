@@ -195,24 +195,20 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           ],
           'circle-color': [
             'case',
-            ['==', ['get', 'is_regional'], 1], '#94A3B8', // Gray out regional stops outside Edmonton
+            ['==', ['get', 'is_regional'], 1], '#10b981', // Regional stops colored Emerald Green
             [
               'interpolate',
               ['linear'],
-              ['get', 'score'],
-              20, '#10b981',  // Emerald Green (Low score 20)
-              35, '#84cc16',  // Lime Green (35 score)
-              55, '#eab308',  // Yellow (55 score)
-              75, '#f97316',  // Orange (75 score)
-              90, '#ef4444',  // Red (90 score)
-              100, '#dc2626' // Deep Red (100 score)
+              ['get', 'percentile'],
+              0, '#10b981',   // Emerald Green (0th %ile / lowest score)
+              20, '#84cc16',  // Lime Green (20th %ile)
+              40, '#eab308',  // Yellow (40th %ile)
+              65, '#f97316',  // Orange (65th %ile)
+              85, '#ef4444',  // Red (85th %ile)
+              100, '#dc2626'  // Deep Red (100th %ile)
             ]
           ],
-          'circle-opacity': [
-            'case',
-            ['==', ['get', 'is_regional'], 1], 0.4,
-            0.85
-          ],
+          'circle-opacity': 0.85,
           'circle-stroke-width': 0,
         },
       });
