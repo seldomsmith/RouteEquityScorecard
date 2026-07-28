@@ -5,11 +5,13 @@ import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
 
-import { X } from 'lucide-react';
+import { X, ChevronDown, Menu as MenuIcon } from 'lucide-react';
+import LineSidebar from '@/components/widgets/LineSidebar';
 
 interface SidebarProps {
   routes: any[];
   onViewDirectory?: () => void;
+  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
@@ -34,7 +36,8 @@ const STABILITY_DOT: Record<string, string> = {
   'Moderate Swing Routes': 'bg-amber-500',
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNavigate }) => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
@@ -51,6 +54,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
   const cimdMode = useRouteStore((s) => s.cimdMode);
   const setCimdMode = useRouteStore((s) => s.setCimdMode);
 
+  const menuItems = [
+    'Directory',
+    'Explain this to me!',
+    'Dashboard',
+    'Landing Page',
+    'Bus Stop Analysis'
+  ];
+
+  const handleMenuItemClick = (index: number, label: string) => {
+    setIsMenuOpen(false);
+    if (label === 'Directory') {
+      onViewDirectory?.();
+    } else if (label === 'Explain this to me!') {
+      onNavigate?.('scrollytelling');
+    } else if (label === 'Dashboard') {
+      onNavigate?.('dashboard');
+    } else if (label === 'Landing Page') {
+      onNavigate?.('landing');
+    } else if (label === 'Bus Stop Analysis') {
+      onNavigate?.('bus-stop-analysis');
+    }
+  };
+
   const selectedRouteData = React.useMemo(() => 
     routes.find((r) => r.route_id === selectedRoute) || null,
     [routes, selectedRoute]
@@ -65,33 +91,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
       : mapStabilityClass(r.stability_class || 'Moderate Stability');
   }, [is2PillarActive]);
 
-
-  const gradeCounts = React.useMemo(() => {
-    const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-    routes.forEach((r) => {
-      if (r.grade && counts[r.grade] !== undefined) {
-        counts[r.grade]++;
-      }
-    });
-    return counts;
-  }, [routes]);
-
-  const stabilityCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {
-      'Essential Equity Routes': 0,
-      'Low Equity-Priority Routes': 0,
-      'High Swing Routes': 0,
-      'Moderate Swing Routes': 0,
-    };
-    routes.forEach((r) => {
-      const cls = getStabilityClass(r);
-      if (counts[cls] !== undefined) {
-        counts[cls]++;
-      }
-    });
-    return counts;
-  }, [routes, getStabilityClass]);
-
   const displayedRoutes = React.useMemo(() => {
     if (mapFilterMode === 'stability') {
       if (selectedStabilityClasses.length === 0) return routes;
@@ -102,20 +101,68 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory }) => 
   }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white relative">
+      {/* Frosted Backdrop Overlay for Menu */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md transition-all duration-300 flex items-start justify-start p-6 md:p-10"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          {/* Menu Dropdown Container */}
+          <div 
+            className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+              <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
+                Navigation Menu
+              </span>
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                title="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <LineSidebar
+              items={menuItems}
+              accentColor="#1e3a8a"
+              textColor="#1e3a8a"
+              markerColor="#94a3b8"
+              showIndex={true}
+              showMarker={true}
+              proximityRadius={110}
+              maxShift={46}
+              falloff="smooth"
+              markerLength={55}
+              markerGap={28}
+              tickScale={0.08}
+              scaleTick={true}
+              itemGap={13}
+              fontSize={1.1}
+              smoothing={800}
+              defaultActive={0}
+              onItemClick={handleMenuItemClick}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
         <div>
           <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity Scorecard</h1>
         </div>
-        {onViewDirectory && (
-          <button
-            onClick={onViewDirectory}
-            className="px-2.5 py-1 text-[10px] font-bold text-blue-650 hover:text-blue-750 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-100 transition-colors uppercase tracking-wider shadow-sm"
-          >
-            Directory
-          </button>
-        )}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="px-3 py-1.5 text-[10px] font-bold text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200 transition-all uppercase tracking-wider shadow-sm flex items-center gap-1.5"
+        >
+          <MenuIcon className="w-3.5 h-3.5" />
+          <span>Menu</span>
+          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} />
+        </button>
       </div>
 
 
