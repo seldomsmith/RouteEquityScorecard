@@ -76,7 +76,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
       <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
         <div>
           <h2 className="font-bold text-base flex items-center gap-2 text-slate-900">
-            <MapPin className="w-4 h-4 text-sky-600" /> Stop Directory
+            <MapPin className="w-4 h-4 text-[#1e3a8a]" /> Stop Directory
           </h2>
           <p className="text-xs text-slate-500 mt-0.5 font-medium">
             {filteredStops.length.toLocaleString()} bus stops evaluated
@@ -93,19 +93,19 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
             placeholder="Search by Stop ID or Name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:bg-white transition-all"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1e3a8a] focus:bg-white transition-all"
           />
         </div>
 
         <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
           <span className="flex items-center gap-1">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-sky-600" /> Sort:
+            <SlidersHorizontal className="w-3.5 h-3.5 text-[#1e3a8a]" /> Sort:
           </span>
           <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
             <button
               onClick={() => setSortOrder('desc')}
               className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
-                sortOrder === 'desc' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                sortOrder === 'desc' ? 'bg-[#1e3a8a] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Highest
@@ -113,7 +113,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
             <button
               onClick={() => setSortOrder('asc')}
               className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
-                sortOrder === 'asc' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                sortOrder === 'asc' ? 'bg-[#1e3a8a] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Lowest
@@ -121,7 +121,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
             <button
               onClick={() => setSortOrder('name')}
               className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
-                sortOrder === 'name' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                sortOrder === 'name' ? 'bg-[#1e3a8a] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Name
@@ -149,16 +149,16 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                 onClick={() => onSelectStop(stop.stop_id)}
                 className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between group ${
                   isSelected
-                    ? 'bg-sky-50 border border-sky-300 shadow-md'
+                    ? 'bg-blue-50/80 border border-blue-200 shadow-md'
                     : 'hover:bg-slate-50 border border-transparent'
                 }`}
               >
                 <div className="space-y-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-sky-700 bg-sky-100/80 px-1.5 py-0.5 rounded border border-sky-200">
+                    <span className="font-mono text-xs font-bold text-[#1e3a8a] bg-blue-100/80 px-1.5 py-0.5 rounded border border-blue-200">
                       #{stop.stop_id}
                     </span>
-                    <span className="text-xs font-bold text-slate-800 truncate group-hover:text-sky-700 transition-colors">
+                    <span className="text-xs font-bold text-slate-800 truncate group-hover:text-[#1e3a8a] transition-colors">
                       {stop.stop_name}
                     </span>
                   </div>
@@ -178,7 +178,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                     <div>{score.toFixed(1)}</div>
                     <div className="text-[9px] uppercase tracking-wider font-semibold opacity-90">{badge.label}</div>
                   </div>
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-sky-600 translate-x-0.5' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-[#1e3a8a] translate-x-0.5' : 'text-slate-400 group-hover:text-slate-600'}`} />
                 </div>
               </button>
             );
