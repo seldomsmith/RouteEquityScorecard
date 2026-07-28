@@ -258,6 +258,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             const stopId = String(props.stop_id);
             const targetStop = stops.find((s) => s.stop_id === stopId);
             if (targetStop && popupRef.current) {
+              const score = mode === 'equal' ? targetStop.equal_score : targetStop.economic_score;
               const percentile = mode === 'equal' 
                 ? (targetStop.equal_percentile ?? null)
                 : (targetStop.economic_percentile ?? null);
