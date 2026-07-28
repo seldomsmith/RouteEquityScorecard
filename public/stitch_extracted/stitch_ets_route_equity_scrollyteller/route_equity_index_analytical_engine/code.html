@@ -1,0 +1,307 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>EquityEngine | Route Equity Index Deep-Dive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#adc7ff",
+                        "on-primary-fixed": "#00006e",
+                        "primary-fixed-dim": "#bfc2ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#eae7f0",
+                        "inverse-on-surface": "#f2eff9",
+                        "tertiary-fixed": "#ffddb5",
+                        "surface-variant": "#e4e1eb",
+                        "surface-tint": "#4b53bc",
+                        "primary": "#00003c",
+                        "secondary-container": "#1471e6",
+                        "on-tertiary-fixed-variant": "#643f00",
+                        "on-background": "#1b1b22",
+                        "on-secondary-fixed": "#001a41",
+                        "surface-bright": "#fbf8ff",
+                        "outline": "#767684",
+                        "on-secondary-container": "#fefcff",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb957",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#bd7b00",
+                        "background": "#fbf8ff",
+                        "on-surface-variant": "#464653",
+                        "primary-container": "#000080",
+                        "surface-container-low": "#f5f2fc",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c6c5d5",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#3239a3",
+                        "tertiary": "#130900",
+                        "surface-dim": "#dbd9e2",
+                        "surface-container-highest": "#e4e1eb",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#321d00",
+                        "on-surface": "#1b1b22",
+                        "inverse-primary": "#bfc2ff",
+                        "secondary-fixed": "#d8e2ff",
+                        "inverse-surface": "#303037",
+                        "on-secondary-fixed-variant": "#004493",
+                        "surface-container": "#efecf6",
+                        "secondary": "#0058bb",
+                        "on-tertiary-fixed": "#2a1800",
+                        "surface": "#fbf8ff",
+                        "primary-fixed": "#e0e0ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#777eea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #ffffff;
+            color: #1b1b22;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shimmer-effect {
+            background: linear-gradient(90deg, transparent, rgba(20, 113, 230, 0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="font-body-md overflow-x-hidden">
+<!-- Sidebar Navigation Shell -->
+
+<!-- Main Content Canvas -->
+<main class="min-h-screen bg-white flex flex-col items-center">
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24 w-full">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+<div class="md:col-span-7">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm mb-6">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                        LIVE ENGINE MODULE
+                    </div>
+<h2 class="font-display-lg text-display-lg text-primary mb-6 leading-tight">
+                        The Analytical Engine: <br>
+<span class="text-secondary">Route Equity Index</span>
+</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-2xl">
+                        The Route Equity Index (REI) is a comprehensive 0-100 score that quantifies the social utility of transit corridors. Driven by our proprietary <strong>Fair Share Algorithm</strong> and audited via <strong>SHAP glass-box inspectors</strong>, it transforms raw GTFS data into actionable civil rights insights.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-2 text-primary font-title-md">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+<span class="">Transparent Bias Auditing</span>
+</div>
+<div class="flex items-center gap-2 text-primary font-title-md">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+<span class="">Real-time Spatio-temporal Scoring</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 relative">
+<div class="absolute inset-0 bg-secondary/5 rounded-full blur-3xl -z-10"></div>
+<img alt="REI Analytical Engine Visualization" class="w-full h-auto drop-shadow-sm rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1zcsOkrFS9kCk14c7_GJ3HqsgAr5ww757SKbA0jGz-Y5S2H3bHwYlAwZfZU7jijkeAdl1J3ITQ7IBC3E6Qxd1goEYF8g5N9sEGfyTMvH8UA1Ic0XApqAoAlKP3EoRQlLzZ-Zj0qvDROMMFGX4rYtk0HNiQRamh87hAckk45SV8nyQRJwRKgBOhvMQ7AoFMz82bTzMPDKdWNI8eSQMgkmIcrV5UCXBaurqm7YM6rWZ4e8ZDjJKDPk34ayviEJNEi04ptVaShIGs4VS">
+</div>
+</div>
+</section>
+<!-- Four Pillars Section -->
+<section class="bg-surface-container-lowest border-y border-on-surface/5 py-20 w-full">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="mb-16">
+<h3 class="font-headline-lg text-headline-lg text-primary mb-4">The Four Pillars of REI</h3>
+<div class="w-20 h-1.5 bg-secondary rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Pillar 1 -->
+<div class="p-8 rounded-xl border border-on-surface/10 bg-white hover:border-secondary transition-all group border-t-4 border-t-[#0058bb]">
+<div class="w-12 h-12 rounded-lg bg-[#0058bb] flex items-center justify-center text-white mb-6"><span class="material-symbols-outlined text-[32px]">groups</span></div>
+<h4 class="font-title-md text-title-md font-bold text-primary mb-3">Vulnerability Density</h4>
+<p class="font-body-md text-on-surface-variant mb-4">Applying gravity models and distance-decay functions to evaluate population segments within a 400m stop radius.</p>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Cliff Effect Mitigation
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Socio-spatial Weighting
+                            </li>
+</ul>
+</div>
+<!-- Pillar 2 -->
+<div class="p-8 rounded-xl border border-on-surface/10 bg-white hover:border-secondary transition-all group border-t-4 border-t-[#f59e0b]">
+<div class="w-12 h-12 rounded-lg bg-[#f59e0b] flex items-center justify-center text-white mb-6"><span class="material-symbols-outlined text-[32px]">schedule</span></div>
+<h4 class="font-title-md text-title-md font-bold text-primary mb-3">Off Peak Service</h4>
+<p class="font-body-md text-on-surface-variant mb-4">Measuring the Service Retention Factor (SRF) across blackout windows exceeding 60 minutes.</p>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Ghost Route Analysis
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Temporal Equity Audit
+                            </li>
+</ul>
+</div>
+<!-- Pillar 3 -->
+<div class="p-8 rounded-xl border border-on-surface/10 bg-white hover:border-secondary transition-all group border-t-4 border-t-[#8b5cf6]">
+<div class="w-12 h-12 rounded-lg bg-[#8b5cf6] flex items-center justify-center text-white mb-6"><span class="material-symbols-outlined text-[32px]">alt_route</span></div>
+<h4 class="font-title-md text-title-md font-bold text-primary mb-3">Network Monopoly</h4>
+<p class="font-body-md text-on-surface-variant mb-4">Identifying Sole-Provider status and high-fragility lifelines through spatial redundancy audits.</p>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Fragility Indexing
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Route Dependency Analysis
+                            </li>
+</ul>
+</div>
+<!-- Pillar 4 -->
+<div class="p-8 rounded-xl border border-on-surface/10 bg-white hover:border-secondary transition-all group border-t-4 border-t-[#10b981]">
+<div class="w-12 h-12 rounded-lg bg-[#10b981] flex items-center justify-center text-white mb-6"><span class="material-symbols-outlined text-[32px]">domain</span></div>
+<h4 class="font-title-md text-title-md font-bold text-primary mb-3">Critical Opportunity Access</h4>
+<p class="font-body-md text-on-surface-variant mb-4">Quantifying access to essential infrastructure including ERs, dialysis centers, and schools.</p>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Economic Power Scoring
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                Infrastructure Proximity
+                            </li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Weighting CTA -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-20 w-full">
+<div class="bg-primary rounded-2xl overflow-hidden relative p-12 flex flex-col items-center text-center">
+<div class="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-tertiary-container/10 rounded-full blur-3xl -ml-32 -mb-32"></div>
+<h3 class="font-headline-lg text-headline-lg text-white mb-6 relative z-10">Edmonton Transit System: Equity Analytics</h3>
+<p class="font-body-lg text-on-primary-fixed-variant text-white/80 max-w-xl mb-10 relative z-10">The ETS Route Equity Scorecard is calibrated specifically for the City of Edmonton. This interactive dashboard allows for localized weighting of REI factors to prioritize specific neighborhood needs or strategic opportunity targets within the city's unique transit landscape.</p>
+<div class="relative z-10 bg-white/5 backdrop-blur-md p-6 rounded-xl border border-white/10 w-full max-w-2xl">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-sm text-white/70">
+<span class="">REI WEIGHTING PRESET</span>
+<span class="">75% SOCIO-ECONOMIC FOCUS</span>
+</div>
+<div class="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4 rounded-full relative">
+<div class="absolute top-0 right-0 w-4 h-4 bg-white rounded-full -mt-0.5 border-2 border-secondary shadow-lg cursor-pointer"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="text-left">
+<span class="block font-label-sm text-white/50 mb-1">VULNERABILITY</span>
+<span class="font-title-md text-white">40%</span>
+</div>
+<div class="text-left">
+<span class="block font-label-sm text-white/50 mb-1">SERVICE</span>
+<span class="font-title-md text-white">20%</span>
+</div>
+<div class="text-left">
+<span class="block font-label-sm text-white/50 mb-1">MONOPOLY</span>
+<span class="font-title-md text-white">15%</span>
+</div>
+<div class="text-left">
+<span class="block font-label-sm text-white/50 mb-1">OPPORTUNITY</span>
+<span class="font-title-md text-white">25%</span>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-10 bg-white text-primary px-8 py-4 rounded-lg font-title-md font-bold hover:bg-secondary-fixed transition-colors flex items-center gap-2">
+                    Open Custom Weighting Tool
+                    <span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</section>
+<!-- Technical Specification Footer-area -->
+
+</main>
+<script>
+        // Simple interactivity for the weighting slider simulation
+        const sliderThumb = document.querySelector('.cursor-pointer');
+        const sliderFill = document.querySelector('.h-full.bg-secondary');
+        
+        if (sliderThumb) {
+            sliderThumb.addEventListener('mouseenter', () => {
+                sliderThumb.style.transform = 'scale(1.2)';
+            });
+            sliderThumb.addEventListener('mouseleave', () => {
+                sliderThumb.style.transform = 'scale(1)';
+            });
+        }
+
+        // Smooth scroll implementation or other micro-interactions could go here
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,62 @@
+# Next.js & Build Artifacts
+.next
+out
+build
+dist
+*.log
+
+# Dependencies
+node_modules
+npm-debug.log
+npm-error.log
+yarn-error.log
+
+# Version control
+.git
+.gitignore
+.github
+
+# IDE & OS
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage
+.jest
+
+# Data files (Allowed package.json, but blocking large data)
+*.csv
+*.geojson
+data/
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.venv
+venv
+env
+
+# Documentation & Scripts
+docs/
+README*.md
+DEPLOYMENT_GUIDE.md
+projectproposal.md
+README_MIGRATION.md
+lessons.md
+todo.md
+tasks/
+scripts/
+analysis/
+analyses/

@@ -2,12 +2,67 @@
 
 import React from 'react';
 import { ScoredRoute, NetworkStats, ShapContribution } from '@/hooks/useReactiveScoring';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useRouteStore } from '@/store/routeStore';
 
+interface AnimatedTextProps {
+  value: number;
+  x: number;
+  y: number;
+  isPositive?: boolean;
+  fontWeight?: number | string;
+  fontSize?: number;
+  fill?: string;
+  prefix?: string;
+  precision?: number;
+}
+
+const AnimatedTextValue: React.FC<AnimatedTextProps> = ({
+  value,
+  x,
+  y,
+  fontWeight = 700,
+  fontSize = 10,
+  fill,
+  prefix = '',
+  precision = 1,
+}) => {
+  const motionValue = useMotionValue(value);
+  const springValue = useSpring(motionValue, { stiffness: 120, damping: 20 });
+  const [displayVal, setDisplayVal] = React.useState(value);
+
+  React.useEffect(() => {
+    motionValue.set(value);
+  }, [value, motionValue]);
+
+  React.useEffect(() => {
+    const unsubscribe = springValue.on("change", (latest) => {
+      setDisplayVal(latest);
+    });
+    return () => unsubscribe();
+  }, [springValue]);
+
+  const sign = prefix === '+' && displayVal >= 0 ? '+' : '';
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fontSize={fontSize}
+      fontFamily="ui-monospace, monospace"
+      fontWeight={fontWeight}
+      fill={fill}
+      textAnchor="start"
+    >
+      {sign}{displayVal.toFixed(precision)}
+    </text>
+  );
+};
 
 interface WaterfallProps {
   route: ScoredRoute | null;
   networkStats: NetworkStats;
+  sensitivityData?: any;
 }
 
 const GRADE_BG: Record<string, string> = {
@@ -27,9 +82,15 @@ const GRADE_BG: Record<string, string> = {
  *
  * Positive contributions render in emerald; negative in rose.
  */
-export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats }) => {
+export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, sensitivityData }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [width, setWidth] = React.useState(310);
+
+  const mapFilterMode = useRouteStore((state) => state.mapFilterMode);
+  const weights = useRouteStore((state) => state.weights);
+
+  const sensitivityRow = sensitivityData?.[route?.route_id || ''];
+  const isStabilityMode = mapFilterMode === 'stability' && sensitivityRow;
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -44,6 +105,54 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
     return () => resizeObserver.disconnect();
   }, []);
 
+  const shap = React.useMemo(() => {
+    if (!route) return [];
+    if (isStabilityMode) {
+      // Option 3: Sensitivity Drivers Waterfall
+      // Baseline is score_mean (mean rank under uniform 25% weights)
+      // Deviation is w_j - 0.25
+      return [
+        {
+          pillar: 'pillar_1',
+          label: 'Vuln Sensitivity',
+          value: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100),
+          color: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_vulnerability,
+          networkMean: 25,
+          weight: weights.vulnerability / 100,
+        },
+        {
+          pillar: 'pillar_2',
+          label: 'Off-Peak Sens',
+          value: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100),
+          color: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_temporal,
+          networkMean: 25,
+          weight: weights.resilience / 100,
+        },
+        {
+          pillar: 'pillar_3',
+          label: 'Monopoly Sens',
+          value: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100),
+          color: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_monopoly,
+          networkMean: 25,
+          weight: weights.monopoly / 100,
+        },
+        {
+          pillar: 'pillar_4',
+          label: 'Opp Sensitivity',
+          value: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100),
+          color: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: sensitivityRow.driver_opportunity,
+          networkMean: 25,
+          weight: weights.opportunity / 100,
+        },
+      ];
+    }
+    return route.shap || [];
+  }, [isStabilityMode, sensitivityRow, route, weights]);
+
   if (!route) {
     return (
       <div ref={containerRef} className="flex flex-col items-center justify-center h-full text-xs text-brand-slate-400 w-full">
@@ -53,8 +162,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
     );
   }
 
-  const shap = route.shap || [];
-  const baseline = 50.0;
+  const baseline = isStabilityMode ? sensitivityRow.score_mean : 50.0;
 
   // Compute the waterfall geometry
   // Each bar starts where the previous one ended
@@ -81,13 +189,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
   const LABEL_W = 80;
   const VALUE_W = 45;
   const rightPadding = 12;
-  // Dynamic CHART_W guarantees no horizontal scrollbars on shrink
-  const CHART_W = Math.max(100, width - LABEL_W - VALUE_W - rightPadding - 8);
+  // Dynamic CHART_W guarantees no horizontal scrollbars on shrink, leaving room for VALUE_W + padding
+  const CHART_W = Math.max(100, width - LABEL_W - VALUE_W - rightPadding - 24);
 
   const toPixel = (val: number) => ((val - minVal) / range) * CHART_W;
 
   // 🤖 Narrative Briefing Generator
   const generateNarrative = () => {
+    if (isStabilityMode) {
+      const clsLabel = sensitivityRow.stability_class === 'Essential Equity Routes' ? 'Essential Equity Route (Always High Equity)' :
+                       sensitivityRow.stability_class === 'Low Equity-Priority Routes' ? 'Low Equity-Priority Route' :
+                       sensitivityRow.stability_class === 'High Swing Routes' ? 'High Swing Route' :
+                       'Moderate Swing Route';
+      return `${route.short_name} is classified as a ${clsLabel} under Monte Carlo pillar weight sweeps. Mean Score: ${sensitivityRow.score_mean.toFixed(1)}, Volatility (Rr): ${sensitivityRow.score_std.toFixed(2)}.`;
+    }
+
     const sorted = [...shap].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
     const strongest = sorted[0];
     const weakest = sorted.find((s) => s.value < 0);
@@ -129,7 +245,7 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
       </div>
 
       {/* Waterfall Chart */}
-      <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center min-h-0 w-full overflow-visible pt-4 mt-2">
         <svg
           width="100%"
           height={(shap.length + 3.6) * ROW_HEIGHT}
@@ -158,21 +274,21 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
               0
             </text>
 
-            {/* Grid Line 50 (Baseline) */}
+            {/* Grid Line 50 (Baseline - Fixed to center at 50) */}
             <text x={LABEL_W - 4} y={4} textAnchor="end" fontSize={9} fontWeight={600} fill="#64748B">
               Baseline
             </text>
             <line
-              x1={LABEL_W + toPixel(baseline)}
+              x1={LABEL_W + toPixel(50)}
               y1={-4}
-              x2={LABEL_W + toPixel(baseline)}
+              x2={LABEL_W + toPixel(50)}
               y2={(shap.length + 2.3) * ROW_HEIGHT + BAR_HEIGHT - ROW_HEIGHT * 0.5}
               stroke="#CBD5E1"
               strokeDasharray="3 3"
               strokeWidth={1}
             />
             <text
-              x={LABEL_W + toPixel(baseline)}
+              x={LABEL_W + toPixel(50)}
               y={-8}
               textAnchor="middle"
               fontSize={8}
@@ -234,8 +350,12 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   />
                 )}
 
-                {/* Bar */}
+                 {/* Bar */}
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(bar.startX),
+                    width: 0,
+                  }}
                   animate={{
                     x: x1,
                     width: barW,
@@ -248,18 +368,16 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   opacity={0.85}
                 />
 
-                {/* Value label */}
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                {/* Value label to the right of the bar */}
+                <AnimatedTextValue
+                  value={bar.value}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={700}
                   fill={isPositive ? '#059669' : '#E11D48'}
-                >
-                  {isPositive ? '+' : ''}{bar.value.toFixed(1)}
-                </motion.text>
+                  prefix={isPositive ? '+' : ''}
+                />
               </g>
             );
           })}
@@ -274,6 +392,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   RAW
                 </text>
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(baseline),
+                    width: 0,
+                  }}
                   animate={{
                     x: LABEL_W + toPixel(Math.min(baseline, rawComposite)),
                     width: Math.max(Math.abs(toPixel(rawComposite) - toPixel(baseline)), 2),
@@ -285,17 +407,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="url(#tealGradient)"
                   opacity={0.5}
                 />
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                <AnimatedTextValue
+                  value={rawComposite}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={10}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={800}
                   fill="#334155"
-                >
-                  {rawComposite.toFixed(1)}
-                </motion.text>
+                />
               </g>
             );
           })()}
@@ -319,6 +438,10 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   FINAL
                 </text>
                 <motion.rect
+                  initial={{
+                    x: LABEL_W + toPixel(minVal),
+                    width: 0,
+                  }}
                   animate={{
                     x: LABEL_W + toPixel(Math.min(minVal, route.composite_score)),
                     width: Math.max(toPixel(route.composite_score) - toPixel(minVal), 2),
@@ -330,17 +453,14 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
                   fill="url(#tealGradient)"
                   opacity={0.9}
                 />
-                <motion.text
-                  animate={{ x: LABEL_W + CHART_W + 6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                <AnimatedTextValue
+                  value={route.composite_score}
+                  x={LABEL_W + CHART_W + 8}
                   y={BAR_HEIGHT / 2 + 3}
                   fontSize={11}
-                  fontFamily="ui-monospace, monospace"
                   fontWeight={900}
                   fill="#0F766E"
-                >
-                  {route.composite_score.toFixed(1)}
-                </motion.text>
+                />
               </g>
             );
           })()}
@@ -355,15 +475,19 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats })
         </svg>
       </div>
 
-      {/* Sigmoid callout */}
-      <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
-        <span>σ midpoint: {networkStats.sigmoidMidpoint.toFixed(1)} · steepness: {networkStats.sigmoidSteepness.toFixed(3)}</span>
-        <span className="font-mono">Quintile: {networkStats.quintileCuts.map((c) => c.toFixed(0)).join(' | ')}</span>
-      </div>
+
 
       {/* Explanatory Footnote */}
       <p className="mt-2 text-[9px] leading-relaxed text-slate-400 border-t border-slate-100 pt-1.5 text-justify">
-        <strong>How to read this:</strong> This waterfall chart decomposes the route's raw score starting from the Edmonton network baseline (50.0). Each bar shows the dynamic SHAP contribution of a pillar ($\phi_j = w_j \times (score_j - \mu_j)$). Positive contributions (emerald) push the raw score up, while negative contributions (rose) pull it down. The <strong>FINAL</strong> score is computed by passing the raw sum through the calibration sigmoid curve, yielding the final grade quintile (A–E).
+        {isStabilityMode ? (
+          <>
+            <strong>How to read this:</strong> This waterfall chart shows how your current pillar weights change the route's score compared to its long-term average. Each bar represents the impact of a specific weighting choice. Green bars indicate that your current weights boost the route's score, while red bars indicate they lower it.
+          </>
+        ) : (
+          <>
+            <strong>How to read this:</strong> This chart breaks down the route's score, starting from the city-wide average of 50.0. Each bar shows how much a specific category adds to or subtracts from the route's score based on your selected weights. Green bars increase the score, while red bars decrease it. The <strong>FINAL</strong> score is then translated into a letter grade from A to E.
+          </>
+        )}
       </p>
     </div>
   );

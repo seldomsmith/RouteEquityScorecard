@@ -12,21 +12,21 @@ The Route Equity Index (REI) assigns each transit route in the Edmonton network 
 
 Measures the "social gravity" of the service corridor using distance-decay weighting.
 
-- **Formula**: `Σ [ DA_Population × DA_Vulnerability × (1 - distance / 400m) ]`
+- **Formula**: We count how many low-income or vulnerable residents live near the route, giving full points to homes right next to a bus stop and fewer points to those a walk away (up to 400 meters).
 - **Logic**: Routes that penetrate directly into high-need dissemination areas receive higher scores than those merely bordering them.
 
 ### Pillar 2: Off Peak Service (Default Weight: 25%)
 
-Measures the reliability of service during off-peak windows critical for shift workers.
+Measures the reliability of service during off-peak windows critical for late night transit riders.
 
-- **Formula**: `( Trips_Night [9:30–10:30 PM] / Trips_Peak [7:30–8:30 AM] ) × 100`
+- **Formula**: We compare how many buses run late at night (9:30–10:30 PM) versus during the morning rush hour (7:30–8:30 AM). If a route keeps running frequently late at night, it acts as a lifeline for late night transit riders.
 - **Logic**: Routes that maintain a high percentage of their peak frequency late at night provide 24/7 resilience for workers in hospitals, retail, and security.
 
 ### Pillar 3: Network Monopoly (Default Weight: 25%)
 
 Identifies corridors where a route is the primary or sole provider of transit access to its destinations.
 
-- **Formula**: `Sum(FMI_ir) × Log1p(Daily_Trips)` where $FMI_{i,r}$ is the Capacity-Weighted Functional Monopoly Index for route $r$ in DA $i$.
+- **Formula**: We identify 'transit monopolies'—neighborhoods where a single bus route is the only way in or out. If this route is cut, residents face an immediate transit desert.
 - **Logic**: Measures destination-level dependency. Instead of a binary cutoff, it calculates the route's capacity share for each destination it serves compared to alternative routes serving the same DA. Defaulting to 0 if a route serves zero POIs. Weighted by frequency log1p to distinguish vital high-frequency lifelines from infrequent connectors.
 
 ### Pillar 4: Critical Opportunity Linkage (Default Weight: 15%)
@@ -87,7 +87,7 @@ This ensures that a score of 70 in any pillar means "one standard deviation abov
 
 ### Stage 3: Sigmoid (S-Curve) Transform
 
-The weighted composite score is passed through a **sigmoid function** to create a non-linear distribution that:
+We use a statistical filter to separate the "average" routes from the extreme standouts. This highlights the absolute essential lifelines on one end, and the most under-resourced routes on the other.
 
 - **Compresses** the middle band (the "Standard Coverage" routes that are neither exceptional nor failing)
 - **Stretches** the extremes (making "Essential Lifelines" and "Underperforming" routes statistically distinct)
@@ -123,7 +123,13 @@ Routes are graded using a **quintile distribution**—each letter grade represen
 | **B** | 60–80% | 54.6 – 86.6 | 47 | Above-average equity contribution |
 | **C** | 40–60% | 29.5 – 54.5 | 47 | Standard coverage |
 | **D** | 20–40% | 13.4 – 29.4 | 47 | Below-average equity contribution |
-| **E** | Bottom 20% | < 13.4 | 47 | Lowest equity impact |
+| **E** | Bottom 20% | < 13.4 | 47 | Infrequent or Occasional Rider Service — lowest equity impact |
+
+### Rationale
+
+1. **Scores are inherently relative.** The composite score indicates how a route compares to others in the same network, not an absolute standard.
+2. **Equal distribution ensures analytical utility.** Every grade contains a meaningful number of routes for policy comparison.
+3. **Policy neutrality.** Quintiles avoid the implicit value judgment of where to set "passing" vs. "failing" cutoffs.
 
 ### Rationale
 

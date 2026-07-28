@@ -1,0 +1,228 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbd9e2",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf8ff",
+                        "primary-container": "#000080",
+                        "outline": "#767684",
+                        "tertiary-fixed": "#ffddb5",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "on-surface": "#1b1b22",
+                        "secondary-container": "#1471e6",
+                        "primary": "#00003c",
+                        "background": "#fbf8ff",
+                        "on-primary-fixed-variant": "#3239a3",
+                        "surface-container-high": "#eae7f0",
+                        "secondary-fixed": "#d8e2ff",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#004493",
+                        "primary-fixed-dim": "#bfc2ff",
+                        "tertiary-container": "#321d00",
+                        "inverse-primary": "#bfc2ff",
+                        "on-tertiary-fixed": "#2a1800",
+                        "surface": "#fbf8ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb957",
+                        "surface-container-low": "#f5f2fc",
+                        "inverse-surface": "#303037",
+                        "inverse-on-surface": "#f2eff9",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#efecf6",
+                        "on-tertiary-container": "#bd7b00",
+                        "on-primary-container": "#777eea",
+                        "primary-fixed": "#e0e0ff",
+                        "on-primary-fixed": "#00006e",
+                        "surface-tint": "#4b53bc",
+                        "on-surface-variant": "#464653",
+                        "secondary": "#0058bb",
+                        "outline-variant": "#c6c5d5",
+                        "on-tertiary-fixed-variant": "#643f00",
+                        "surface-container-highest": "#e4e1eb",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b22",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#001a41",
+                        "surface-variant": "#e4e1eb",
+                        "tertiary": "#130900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; background-color: #ffffff; color: #1b1b22; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ticket-shape { position: relative; border-radius: 1rem; overflow: hidden; }
+        .ticket-cutout::before, .ticket-cutout::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        .ticket-cutout::before { left: -12px; }
+        .ticket-cutout::after { right: -12px; }
+        .divider-dashed { border-top: 2px dashed rgba(27, 27, 34, 0.1); }
+    </style>
+</head>
+<body class="bg-surface-container-lowest selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24 space-y-24">
+<!-- TOP SECTION: Narrative Header -->
+<header class="max-w-3xl space-y-6">
+<h1 class="font-display-lg text-display-lg text-primary leading-tight">
+                Policy Weights&nbsp;</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                After evaluating the individual pillars, city planners must combine them to generate a final grade. To do this, planners assign weights to each pillar, representing the city's current priorities.
+            </p>
+</header>
+<!-- ILLUSTRATION SECTION: Core Visual -->
+<section class="flex justify-center items-center py-8">
+<div class="relative w-full max-w-4xl aspect-[4/3] flex items-center justify-center">
+
+</div>
+</section>
+<!-- MID SECTION: Priority Bullets (Bento-style Minimalist Cards) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="p-8 border border-outline/10 rounded-xl bg-surface-container-low transition-all hover:bg-surface-container-high group">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary">group</span>
+</div>
+<p class="font-title-md text-title-md text-on-surface">
+                    Prioritising social support increases the weight of <span class="text-secondary font-bold">Transit Vulnerability</span>.
+                </p>
+</div>
+<div class="p-8 border border-outline/10 rounded-xl bg-surface-container-low transition-all hover:bg-surface-container-high group">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary">grid_view</span>
+</div>
+<p class="font-title-md text-title-md text-on-surface">
+                    Prioritising transit coverage increases the weight of <span class="text-primary font-bold">Transit Monopoly</span> to protect isolated neighbourhoods.
+                </p>
+</div>
+<div class="p-8 border border-outline/10 rounded-xl bg-surface-container-low transition-all hover:bg-surface-container-high group">
+<div class="w-12 h-12 rounded-lg bg-tertiary-fixed-dim/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-on-tertiary-container">trending_up</span>
+</div>
+<p class="font-title-md text-title-md text-on-surface">
+                    Prioritising economic mobility increases the weight of <span class="text-on-tertiary-container font-bold">Destination Opportunity</span>.
+                </p>
+</div>
+</section>
+<!-- BOTTOM SECTION: Route Comparison Tickets -->
+<section class="space-y-12">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+<!-- LEFT TICKET (Route 002) -->
+<div class="relative flex bg-white border border-on-surface/10 overflow-hidden shadow-sm rounded-xl h-full">
+<div class="w-16 bg-[#0058bb] flex items-center justify-center shrink-0">
+<span class="font-bold text-white -rotate-90 whitespace-nowrap text-title-md uppercase">ROUTE 002</span>
+</div>
+<div class="relative flex-grow p-6 flex flex-col justify-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 border-l-2 border-dashed border-on-surface/10 -ml-[1px]"></div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-md text-2xl text-[#0058bb] font-bold">Route 002: B Grade</h3>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">SCORE</span>
+<span class="font-display-lg text-display-lg text-primary leading-none">66.9</span>
+</div>
+</div>
+<div class="mb-4 h-1 w-full border-b-2 border-dashed border-[#0058bb]/30"></div>
+<p class="font-body-md text-on-surface-variant">Under a balanced policy with equal 25% weights, Route 002 receives a B grade due to its high scores in vulnerability, monopoly, and opportunity.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+<span class="text-label-sm font-label-sm text-error uppercase tracking-wider">Critical Infrastructure Dependency</span>
+</div>
+</div>
+<div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border border-on-surface/10"></div>
+</div>
+<!-- RIGHT TICKET (Route 003) -->
+<div class="relative flex bg-white border border-on-surface/10 overflow-hidden shadow-sm rounded-xl h-full">
+<div class="w-16 bg-[#f59e0b] flex items-center justify-center shrink-0">
+<span class="font-bold text-white -rotate-90 whitespace-nowrap text-title-md uppercase">ROUTE 003</span>
+</div>
+<div class="relative flex-grow p-6 flex flex-col justify-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 border-l-2 border-dashed border-on-surface/10 -ml-[1px]"></div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-md text-2xl text-on-surface font-bold">Route 003: E Grade</h3>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">SCORE</span>
+<span class="font-display-lg text-display-lg text-primary leading-none">18.5</span>
+</div>
+</div>
+<div class="mb-4 h-1 w-full border-b-2 border-dashed border-[#f59e0b]/30"></div>
+<p class="font-body-md text-on-surface-variant">Route 003 receives an E grade because it serves neighbourhoods with higher average incomes and many alternative transit options.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">High Redundancy Zone</span>
+</div>
+</div>
+<div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border border-on-surface/10"></div>
+</div>
+</div>
+<!-- Contextual Footer Decoration -->
+
+</section>
+</main>
+<script>
+        // Micro-interaction for ticket hover
+        document.querySelectorAll('.ticket-shape').forEach(ticket => {
+            ticket.addEventListener('mouseenter', () => {
+                ticket.classList.add('scale-[1.01]', 'shadow-2xl');
+                ticket.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+            ticket.addEventListener('mouseleave', () => {
+                ticket.classList.remove('scale-[1.01]', 'shadow-2xl');
+            });
+        });
+    </script>
+
+
+</body></html>

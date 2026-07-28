@@ -3,16 +3,22 @@
 import React from 'react';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
+import { mapStabilityClass } from '@/utils/stability';
+
+import { X, ChevronDown, Menu as MenuIcon } from 'lucide-react';
+import LineSidebar from '@/components/widgets/LineSidebar';
 
 interface SidebarProps {
-  routes: RoutePoint[];
+  routes: any[];
+  onViewDirectory?: () => void;
+  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  vulnerability: { label: 'Vulnerability',  desc: 'Social gravity of the corridor', color: '#64748B' },
-  resilience:    { label: 'Off Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
+  vulnerability: { label: 'Vulnerability',  desc: 'Demographics of Dissemination Area', color: '#64748B' },
+  resilience:    { label: 'Off-Peak Service', desc: 'Off-peak service reliability',   color: '#64748B' },
   monopoly:      { label: 'Monopoly',        desc: 'Sole-provider transit corridors', color: '#64748B' },
-  opportunity:   { label: 'Opportunity',     desc: 'Critical destination linkage',    color: '#64748B' },
+  opportunity:   { label: 'Opportunity',     desc: 'The value of destinations',       color: '#64748B' },
 };
 
 const GRADE_DOT: Record<string, string> = {
@@ -24,13 +30,14 @@ const GRADE_DOT: Record<string, string> = {
 };
 
 const STABILITY_DOT: Record<string, string> = {
-  'Bedrock Essential': 'bg-indigo-600',
-  'Bedrock Resilient': 'bg-emerald-600',
-  'Policy Swing Corridor': 'bg-amber-500',
-  'Moderate Stability': 'bg-slate-400',
+  'Essential Equity Routes': 'bg-blue-600',
+  'Low Equity-Priority Routes': 'bg-emerald-600',
+  'High Swing Routes': 'bg-red-500',
+  'Moderate Swing Routes': 'bg-amber-500',
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNavigate }) => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
@@ -40,21 +47,58 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
   const setSelectedRoute = useRouteStore((s) => s.setSelectedRoute);
   const selectedGrade = useRouteStore((s) => s.selectedGrade);
   const setSelectedGrade = useRouteStore((s) => s.setSelectedGrade);
-  
   const mapFilterMode = useRouteStore((s) => s.mapFilterMode);
   const setMapFilterMode = useRouteStore((s) => s.setMapFilterMode);
   const selectedStabilityClasses = useRouteStore((s) => s.selectedStabilityClasses);
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
+  const cimdMode = useRouteStore((s) => s.cimdMode);
+  const setCimdMode = useRouteStore((s) => s.setCimdMode);
+
+  const menuItems = [
+    'Directory',
+    'Explain this to me!',
+    'Dashboard',
+    'Landing Page',
+    'Bus Stop Analysis'
+  ];
+
+  const handleMenuItemClick = (index: number, label: string) => {
+    setIsMenuOpen(false);
+    if (label === 'Directory') {
+      onViewDirectory?.();
+    } else if (label === 'Explain this to me!') {
+      onNavigate?.('scrollytelling');
+    } else if (label === 'Dashboard') {
+      onNavigate?.('dashboard');
+    } else if (label === 'Landing Page') {
+      onNavigate?.('landing');
+    } else if (label === 'Bus Stop Analysis') {
+      onNavigate?.('bus-stop-analysis');
+    }
+  };
+
+  const selectedRouteData = React.useMemo(() => 
+    routes.find((r) => r.route_id === selectedRoute) || null,
+    [routes, selectedRoute]
+  );
 
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
   const is2PillarActive = disabledWeights.includes('resilience') && disabledWeights.includes('monopoly');
 
   const getStabilityClass = React.useCallback((r: any) => {
     return is2PillarActive
-      ? (r.stability_class_2_pillar || 'Moderate Stability')
-      : (r.stability_class || 'Moderate Stability');
+      ? mapStabilityClass(r.stability_class_2_pillar || 'Moderate Stability')
+      : mapStabilityClass(r.stability_class || 'Moderate Stability');
   }, [is2PillarActive]);
 
+  const displayedRoutes = React.useMemo(() => {
+    if (mapFilterMode === 'stability') {
+      if (selectedStabilityClasses.length === 0) return routes;
+      return routes.filter((r) => selectedStabilityClasses.includes(getStabilityClass(r)));
+    }
+    if (!selectedGrade) return routes;
+    return routes.filter((r) => r.grade === selectedGrade);
+  }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
 
   const gradeCounts = React.useMemo(() => {
     const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
@@ -66,46 +110,78 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
     return counts;
   }, [routes]);
 
-  const stabilityCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {
-      'Bedrock Essential': 0,
-      'Bedrock Resilient': 0,
-      'Policy Swing Corridor': 0,
-      'Moderate Stability': 0,
-    };
-    routes.forEach((r) => {
-      const cls = getStabilityClass(r);
-      if (counts[cls] !== undefined) {
-        counts[cls]++;
-      }
-    });
-    return counts;
-  }, [routes, getStabilityClass]);
-
-  const displayedRoutes = React.useMemo(() => {
-    if (mapFilterMode === 'stability') {
-      if (selectedStabilityClasses.length === 0) return routes;
-      return routes.filter((r) => selectedStabilityClasses.includes(getStabilityClass(r)));
-    }
-    if (!selectedGrade) return routes;
-    return routes.filter((r) => r.grade === selectedGrade);
-  }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
-
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white relative">
+      {/* Frosted Backdrop Overlay for Menu */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md transition-all duration-300 flex items-start justify-start p-6 md:p-10"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          {/* Menu Dropdown Container */}
+          <div 
+            className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+              <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
+                Navigation Menu
+              </span>
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                title="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <LineSidebar
+              items={menuItems}
+              accentColor="#1e3a8a"
+              textColor="#1e3a8a"
+              markerColor="#94a3b8"
+              showIndex={true}
+              showMarker={true}
+              proximityRadius={110}
+              maxShift={46}
+              falloff="smooth"
+              markerLength={55}
+              markerGap={28}
+              tickScale={0.08}
+              scaleTick={true}
+              itemGap={13}
+              fontSize={1.1}
+              smoothing={800}
+              defaultActive={0}
+              onItemClick={handleMenuItemClick}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <div className="p-5 border-b border-slate-100">
-        <h1 className="text-lg font-black tracking-tight text-slate-900">REI OS</h1>
-        <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-          Route Equity Intelligence
-        </p>
+      <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div>
+          <h1 className="text-sm font-black tracking-tight text-slate-900 uppercase">ETS Route Equity Scorecard</h1>
+        </div>
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="px-3 py-1.5 text-[10px] font-bold text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200 transition-all uppercase tracking-wider shadow-sm flex items-center gap-1.5"
+        >
+          <MenuIcon className="w-3.5 h-3.5" />
+          <span>Menu</span>
+          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} />
+        </button>
       </div>
+
+
 
       {/* Weight Sliders — Zero-Sum System */}
       <div className="p-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Policy Weights
+            Pillar Weights
           </h2>
           <button
             onClick={() => {
@@ -139,6 +215,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                     <span className={`text-[11px] font-semibold transition-colors duration-150 ${isDisabled ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-600'}`}>
                       {label}
                     </span>
+                    {key === 'vulnerability' && (
+                      <button
+                        onClick={() => setCimdMode(!cimdMode)}
+                        title={cimdMode ? 'CIMD mode active — click to revert to custom index' : 'Switch vulnerability to CIMD (StatCan)'}
+                        className="flex items-center gap-1 ml-1 group"
+                      >
+                        <span className={`inline-flex w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 flex-shrink-0
+                          ${ cimdMode
+                            ? 'bg-teal-500 border-teal-500 shadow-[0_0_0_2px_rgba(20,184,166,0.25)]'
+                            : 'bg-transparent border-slate-300 group-hover:border-teal-400'
+                          }`}
+                        />
+                        <span className={`text-[9px] font-bold tracking-widest uppercase transition-colors duration-200
+                          ${ cimdMode ? 'text-teal-600' : 'text-slate-400 group-hover:text-teal-500' }`}
+                        >
+                          CIMD
+                        </span>
+                      </button>
+                    )}
                   </div>
                   <span className={`text-[11px] font-mono font-bold transition-colors duration-150 ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
                     {val}%
@@ -178,20 +273,51 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
         <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
           Route Isolator
         </h2>
-        <select
-          value={selectedRoute || ''}
-          onChange={(e) => setSelectedRoute(e.target.value || null)}
-          className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-teal-500/30 focus:border-brand-teal-500"
-        >
-          <option value="">All Routes</option>
-          {routes
-            .sort((a, b) => a.short_name.localeCompare(b.short_name, undefined, { numeric: true }))
-            .map((r) => (
-              <option key={r.route_id} value={r.route_id}>
-                {r.short_name} — {r.name} ({r.grade})
-              </option>
-            ))}
-        </select>
+        {selectedRouteData ? (
+          <div className="flex items-center justify-between gap-3 bg-slate-50 border border-slate-100 rounded-lg p-2 mt-1 animate-fade-in">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <span className="font-mono font-black text-slate-700 bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px] select-none">
+                {selectedRouteData.short_name}
+              </span>
+              <span className="text-xs font-bold text-slate-600 truncate flex-1">
+                {selectedRouteData.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md text-white shadow-sm border select-none ${
+                selectedRouteData.grade === 'A' ? 'bg-emerald-600 border-emerald-700'
+                : selectedRouteData.grade === 'B' ? 'bg-blue-600 border-blue-700'
+                : selectedRouteData.grade === 'C' ? 'bg-amber-600 border-amber-700'
+                : selectedRouteData.grade === 'D' ? 'bg-orange-600 border-orange-700'
+                : 'bg-red-600 border-red-700'
+              }`}>
+                Grade {selectedRouteData.grade}
+              </span>
+              <button
+                onClick={() => setSelectedRoute(null)}
+                className="p-1 hover:bg-slate-200/80 rounded text-slate-455 hover:text-slate-650 transition-colors"
+                title="Clear Route Selection"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <select
+            value={selectedRoute || ''}
+            onChange={(e) => setSelectedRoute(e.target.value || null)}
+            className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-teal-500/30 focus:border-brand-teal-500"
+          >
+            <option value="">All Routes</option>
+            {routes
+              .sort((a, b) => a.short_name.localeCompare(b.short_name, undefined, { numeric: true }))
+              .map((r) => (
+                <option key={r.route_id} value={r.route_id}>
+                  {r.short_name} — {r.name} ({r.grade})
+                </option>
+              ))}
+          </select>
+        )}
       </div>
 
       {/* Filter Mode segmented toggle */}
@@ -224,7 +350,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
           <>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Grade Isolator
+                Grade
               </h2>
               {selectedGrade && (
                 <button
@@ -278,10 +404,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {([
-                { name: 'Bedrock Essential', color: 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm', labelColor: 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 border-indigo-100/50' },
-                { name: 'Bedrock Resilient', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
-                { name: 'Policy Swing Corridor', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' },
-                { name: 'Moderate Stability', color: 'bg-slate-500 text-white border-slate-500 font-bold shadow-sm', labelColor: 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200/50' }
+                { name: 'Essential Equity Routes', color: 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm', labelColor: 'bg-blue-50/50 text-blue-700 hover:bg-blue-100 border-blue-100/50' },
+                { name: 'Low Equity-Priority Routes', color: 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm', labelColor: 'bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 border-emerald-100/50' },
+                { name: 'High Swing Routes', color: 'bg-red-500 text-white border-red-500 font-bold shadow-sm', labelColor: 'bg-red-50/50 text-red-700 hover:bg-red-100 border-red-100/50' },
+                { name: 'Moderate Swing Routes', color: 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm', labelColor: 'bg-amber-50/50 text-amber-700 hover:bg-amber-100 border-amber-100/50' }
               ] as const).map((cls) => {
                 const isActive = selectedStabilityClasses.includes(cls.name);
                 const count = stabilityCounts[cls.name] || 0;
@@ -294,7 +420,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes }) => {
                       isActive ? cls.color : cls.labelColor
                     }`}
                   >
-                    <span className="text-[10px] font-black">{cls.name.replace(' Corridor', '')}</span>
+                    <span className="text-[10px] font-black">{cls.name}</span>
                     <span className="text-[8px] font-mono font-semibold opacity-85 mt-0.5 leading-none">{count}</span>
                   </button>
                 );

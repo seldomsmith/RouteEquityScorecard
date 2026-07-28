@@ -44,6 +44,27 @@ const config: Config = {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
         mono: ["var(--font-roboto-mono)", "ui-monospace", "SFMono-Regular"],
       },
+      keyframes: {
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          }
+        },
+        flow: {
+          '0%': { strokeDashoffset: '100' },
+          '100%': { strokeDashoffset: '0' },
+        }
+      },
+      animation: {
+        'gradient-x': 'gradient-x 12s ease infinite',
+        'flow': 'flow 2s linear infinite',
+        'flow-slow': 'flow 10s linear infinite',
+      }
     },
   },
   plugins: [],
