@@ -42,9 +42,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
     const features: GeoJSON.Feature[] = currentStops.map((s) => {
       const score = currentMode === 'equal' ? s.equal_score : s.economic_score;
-      const percentile = currentMode === 'equal' 
-        ? (s.equal_percentile ?? null)
-        : (s.economic_percentile ?? null);
+      const rawPercentile = currentMode === 'equal' ? s.equal_percentile : s.economic_percentile;
+      const percentile = (rawPercentile !== undefined && rawPercentile !== null) ? rawPercentile : score;
 
       return {
         type: 'Feature',
@@ -52,7 +51,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           stop_id: s.stop_id,
           stop_name: s.stop_name,
           score,
-          percentile: percentile !== null ? percentile : -1,
+          percentile,
           is_regional: s.is_regional ? 1 : 0,
         },
         geometry: {
