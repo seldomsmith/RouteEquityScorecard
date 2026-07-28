@@ -100,6 +100,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
     return routes.filter((r) => r.grade === selectedGrade);
   }, [routes, selectedGrade, mapFilterMode, selectedStabilityClasses, getStabilityClass]);
 
+  const gradeCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+    routes.forEach((r) => {
+      if (r.grade && counts[r.grade] !== undefined) {
+        counts[r.grade]++;
+      }
+    });
+    return counts;
+  }, [routes]);
+
   return (
     <div className="h-full flex flex-col bg-white relative">
       {/* Frosted Backdrop Overlay for Menu */}
