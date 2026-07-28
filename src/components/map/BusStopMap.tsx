@@ -40,18 +40,27 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
     if (!source || currentStops.length === 0) return;
 
-    const features: GeoJSON.Feature[] = currentStops.map((s) => ({
-      type: 'Feature',
-      properties: {
-        stop_id: s.stop_id,
-        stop_name: s.stop_name,
-        score: currentMode === 'equal' ? s.equal_score : s.economic_score,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [s.lon, s.lat],
-      },
-    }));
+    const features: GeoJSON.Feature[] = currentStops.map((s) => {
+      const score = currentMode === 'equal' ? s.equal_score : s.economic_score;
+      const percentile = currentMode === 'equal' 
+        ? (s.equal_percentile ?? null)
+        : (s.economic_percentile ?? null);
+
+      return {
+        type: 'Feature',
+        properties: {
+          stop_id: s.stop_id,
+          stop_name: s.stop_name,
+          score,
+          percentile: percentile !== null ? percentile : -1,
+          is_regional: s.is_regional ? 1 : 0,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [s.lon, s.lat],
+        },
+      };
+    });
 
     source.setData({
       type: 'FeatureCollection',
@@ -185,17 +194,25 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             15, 8.5,
           ],
           'circle-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'score'],
-            0, '#10b981',   // Emerald Green (Lowest score)
-            25, '#84cc16',  // Lime Green
-            45, '#eab308',  // Yellow
-            65, '#f97316',  // Orange
-            85, '#ef4444',  // Red (Highest score)
-            100, '#dc2626'  // Deep Red
+            'case',
+            ['==', ['get', 'is_regional'], 1], '#94A3B8', // Gray out regional stops outside Edmonton
+            [
+              'interpolate',
+              ['linear'],
+              ['get', 'percentile'],
+              0, '#10b981',   // Emerald Green (0th %ile)
+              20, '#84cc16',  // Lime Green (20th %ile)
+              40, '#eab308',  // Yellow (40th %ile)
+              65, '#f97316',  // Orange (65th %ile)
+              85, '#ef4444',  // Red (85th %ile)
+              100, '#dc2626'  // Deep Red (100th %ile)
+            ]
           ],
-          'circle-opacity': 0.85,
+          'circle-opacity': [
+            'case',
+            ['==', ['get', 'is_regional'], 1], 0.4, // Muted opacity for regional stops
+            0.85
+          ],
           'circle-stroke-width': 0,
         },
       });
@@ -241,7 +258,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             const stopId = String(props.stop_id);
             const targetStop = stops.find((s) => s.stop_id === stopId);
             if (targetStop && popupRef.current) {
-              const score = mode === 'equal' ? targetStop.equal_score : targetStop.economic_score;
+              const percentile = mode === 'equal' 
+                ? (targetStop.equal_percentile ?? null)
+                : (targetStop.economic_percentile ?? null);
               const daList = targetStop.das;
               const pieSvg = generatePieChartSvg(daList);
 
@@ -253,8 +272,13 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                       <div class="font-bold text-slate-800 text-xs mt-1 truncate max-w-[180px]">${targetStop.stop_name}</div>
                     </div>
                     <div class="text-right">
-                      <div class="font-mono font-bold text-sm text-[#1e3a8a]">${score.toFixed(1)}</div>
-                      <div class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Score</div>
+                      ${targetStop.is_regional ? `
+                        <div class="font-mono font-bold text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Regional</div>
+                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold mt-0.5">Outside City</div>
+                      ` : `
+                        <div class="font-mono font-bold text-sm text-[#1e3a8a]">${percentile !== null ? `${percentile.toFixed(0)}th %ile` : score.toFixed(1)}</div>
+                        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Score: ${score.toFixed(1)}</div>
+                      `}
                     </div>
                   </div>
 
