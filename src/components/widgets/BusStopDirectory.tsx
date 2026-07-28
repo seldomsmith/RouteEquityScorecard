@@ -53,11 +53,15 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
     }
 
     return [...res].sort((a, b) => {
-      const scoreA = mode === 'equal' ? a.equal_score : a.economic_score;
-      const scoreB = mode === 'equal' ? b.equal_score : b.economic_score;
+      const percentileA = mode === 'equal' 
+        ? (a.equal_percentile ?? a.equal_score) 
+        : (a.economic_percentile ?? a.economic_score);
+      const percentileB = mode === 'equal' 
+        ? (b.equal_percentile ?? b.equal_score) 
+        : (b.economic_percentile ?? b.economic_score);
 
-      if (sortOrder === 'desc') return scoreB - scoreA;
-      if (sortOrder === 'asc') return scoreA - scoreB;
+      if (sortOrder === 'desc') return percentileB - percentileA;
+      if (sortOrder === 'asc') return percentileA - percentileB;
       return a.stop_name.localeCompare(b.stop_name);
     });
   }, [stops, searchTerm, sortOrder, mode]);

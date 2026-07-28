@@ -15,6 +15,7 @@ interface BusStopMapProps {
   selectedStopId: string | null;
   mode: 'equal' | 'economic';
   is3dEnabled: boolean;
+  isDirectoryOpen?: boolean;
   onSelectStop: (stopId: string | null) => void;
 }
 
@@ -26,6 +27,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   selectedStopId,
   mode,
   is3dEnabled,
+  isDirectoryOpen,
   onSelectStop
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -298,6 +300,19 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
       map.remove();
     };
   }, []);
+
+  // Handle Mapbox canvas resize when directory sidebar toggles
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.resize();
+    const timer = setTimeout(() => {
+      map.resize();
+    }, 310);
+
+    return () => clearTimeout(timer);
+  }, [isDirectoryOpen]);
 
   // Update camera 3D settings
   useEffect(() => {

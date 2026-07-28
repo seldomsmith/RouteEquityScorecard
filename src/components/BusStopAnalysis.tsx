@@ -214,6 +214,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
               selectedStopId={selectedStopId}
               mode={mode}
               is3dEnabled={is3dEnabled}
+              isDirectoryOpen={isDirectoryOpen}
               onSelectStop={(id) => setSelectedStopId(id)}
             />
           )}
