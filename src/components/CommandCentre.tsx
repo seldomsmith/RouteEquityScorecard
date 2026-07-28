@@ -18,7 +18,11 @@ import { mapStabilityClass } from '@/utils/stability';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
-export const CommandCentre = () => {
+interface CommandCentreProps {
+  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
+}
+
+export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
   const { db, isInitializing, error } = useDuckDB();
   const weights = useRouteStore((state) => state.weights);
   const selectedRoute = useRouteStore((state) => state.selectedRoute);
@@ -258,7 +262,11 @@ export const CommandCentre = () => {
     <div className="w-full h-full flex">
       {/* Sidebar */}
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
-        <Sidebar routes={muniRoutes} onViewDirectory={() => setShowDataExplorer(true)} />
+        <Sidebar 
+          routes={muniRoutes} 
+          onViewDirectory={() => setShowDataExplorer(true)} 
+          onNavigate={onNavigate}
+        />
       </div>
 
       {/* Main Content — scrollable */}
