@@ -10,6 +10,9 @@ export interface BusStopRecord {
   lat: number;
   equal_score: number;
   economic_score: number;
+  equal_percentile?: number | null;
+  economic_percentile?: number | null;
+  is_regional?: boolean;
   das: Array<{
     da_id: string;
     pct: number;
