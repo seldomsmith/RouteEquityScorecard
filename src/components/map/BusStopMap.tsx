@@ -199,13 +199,13 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             [
               'interpolate',
               ['linear'],
-              ['get', 'percentile'],
-              0, '#10b981',   // Emerald Green (0th %ile)
-              20, '#84cc16',  // Lime Green (20th %ile)
-              40, '#eab308',  // Yellow (40th %ile)
-              65, '#f97316',  // Orange (65th %ile)
-              85, '#ef4444',  // Red (85th %ile)
-              100, '#dc2626'  // Deep Red (100th %ile)
+              ['coalesce', ['get', 'percentile'], ['get', 'score']],
+              0, '#10b981',   // Emerald Green (Lowest)
+              25, '#84cc16',  // Lime Green
+              45, '#eab308',  // Yellow
+              65, '#f97316',  // Orange
+              85, '#ef4444',  // Red (Highest)
+              100, '#dc2626'  // Deep Red
             ]
           ],
           'circle-opacity': [
