@@ -239,10 +239,19 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
 
               <div className="flex items-center justify-between border-t border-slate-100 pt-2">
                 <div>
-                  <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Vulnerability Score</div>
-                  <div className="text-lg font-mono font-bold text-[#1e3a8a]">
-                    {(mode === 'equal' ? selectedStop.equal_score : selectedStop.economic_score).toFixed(1)} / 100
-                  </div>
+                  <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Vulnerability Rank</div>
+                  {selectedStop.is_regional ? (
+                    <div className="text-sm font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 inline-block mt-0.5">
+                      Regional Stop (Outside City)
+                    </div>
+                  ) : (
+                    <div className="text-lg font-mono font-bold text-[#1e3a8a]">
+                      {((mode === 'equal' ? selectedStop.equal_percentile : selectedStop.economic_percentile) ?? 0).toFixed(0)}th %ile
+                      <span className="text-xs font-normal text-slate-500 ml-1.5 font-sans">
+                        (Score: {(mode === 'equal' ? selectedStop.equal_score : selectedStop.economic_score).toFixed(1)})
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">400m Buffer DAs</div>
