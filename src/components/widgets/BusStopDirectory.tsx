@@ -27,7 +27,6 @@ interface BusStopDirectoryProps {
   selectedStopId: string | null;
   mode: 'equal' | 'economic';
   onSelectStop: (stopId: string) => void;
-  onClose?: () => void;
 }
 
 export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
@@ -65,28 +64,28 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
 
   // Vulnerability score badge helper
   const getScoreBadge = (score: number) => {
-    if (score >= 70) return { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/40', label: 'High' };
-    if (score >= 50) return { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40', label: 'Mod-High' };
-    if (score >= 35) return { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/40', label: 'Moderate' };
-    return { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/40', label: 'Low' };
+    if (score >= 70) return { bg: 'bg-red-50 text-red-700 border-red-200', label: 'High' };
+    if (score >= 50) return { bg: 'bg-orange-50 text-orange-700 border-orange-200', label: 'Mod-High' };
+    if (score >= 35) return { bg: 'bg-amber-50 text-amber-700 border-amber-200', label: 'Moderate' };
+    return { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Low' };
   };
 
   return (
-    <div className="w-80 md:w-96 bg-slate-950/90 backdrop-blur-xl border-l border-slate-800 text-slate-100 flex flex-col h-full shadow-2xl z-30 transition-all duration-300">
+    <div className="w-80 md:w-96 bg-white/95 backdrop-blur-xl border-l border-slate-200 text-slate-800 flex flex-col h-full shadow-2xl z-30 transition-all duration-300">
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
         <div>
-          <h2 className="font-bold text-base flex items-center gap-2 text-white">
-            <MapPin className="w-4 h-4 text-cyan-400" /> Stop Directory
+          <h2 className="font-bold text-base flex items-center gap-2 text-slate-900">
+            <MapPin className="w-4 h-4 text-sky-600" /> Stop Directory
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5 font-medium">
             {filteredStops.length.toLocaleString()} bus stops evaluated
           </p>
         </div>
       </div>
 
       {/* Controls: Search & Sort */}
-      <div className="p-4 space-y-3 border-b border-slate-800/80 bg-slate-900/40">
+      <div className="p-3.5 space-y-2.5 border-b border-slate-200 bg-white">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
           <input
@@ -94,35 +93,35 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
             placeholder="Search by Stop ID or Name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:bg-white transition-all"
           />
         </div>
 
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
           <span className="flex items-center gap-1">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" /> Sort:
+            <SlidersHorizontal className="w-3.5 h-3.5 text-sky-600" /> Sort:
           </span>
-          <div className="flex gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+          <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
             <button
               onClick={() => setSortOrder('desc')}
-              className={`px-2 py-1 rounded text-[11px] transition-colors ${
-                sortOrder === 'desc' ? 'bg-cyan-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+              className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                sortOrder === 'desc' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Highest
             </button>
             <button
               onClick={() => setSortOrder('asc')}
-              className={`px-2 py-1 rounded text-[11px] transition-colors ${
-                sortOrder === 'asc' ? 'bg-cyan-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+              className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                sortOrder === 'asc' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Lowest
             </button>
             <button
               onClick={() => setSortOrder('name')}
-              className={`px-2 py-1 rounded text-[11px] transition-colors ${
-                sortOrder === 'name' ? 'bg-cyan-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+              className={`px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                sortOrder === 'name' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Name
@@ -132,9 +131,9 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
       </div>
 
       {/* Stop List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-slate-800/50 p-2 space-y-1">
+      <div className="flex-1 overflow-y-auto divide-y divide-slate-100 p-2 space-y-1">
         {filteredStops.length === 0 ? (
-          <div className="text-center py-10 text-slate-500 text-xs">
+          <div className="text-center py-10 text-slate-400 text-xs font-medium">
             No bus stops found matching search.
           </div>
         ) : (
@@ -150,24 +149,24 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                 onClick={() => onSelectStop(stop.stop_id)}
                 className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between group ${
                   isSelected
-                    ? 'bg-cyan-950/50 border border-cyan-500/50 shadow-lg shadow-cyan-950/40'
-                    : 'hover:bg-slate-900/60 border border-transparent'
+                    ? 'bg-sky-50 border border-sky-300 shadow-md'
+                    : 'hover:bg-slate-50 border border-transparent'
                 }`}
               >
                 <div className="space-y-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-cyan-400 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800/40">
+                    <span className="font-mono text-xs font-bold text-sky-700 bg-sky-100/80 px-1.5 py-0.5 rounded border border-sky-200">
                       #{stop.stop_id}
                     </span>
-                    <span className="text-xs font-medium text-slate-200 truncate group-hover:text-white transition-colors">
+                    <span className="text-xs font-bold text-slate-800 truncate group-hover:text-sky-700 transition-colors">
                       {stop.stop_name}
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-slate-400 flex items-center gap-2">
+                  <div className="text-[11px] text-slate-500 flex items-center gap-2 font-medium">
                     <span>DA {primaryDa ? primaryDa.da_id : 'N/A'} ({primaryDa ? `${primaryDa.pct}%` : '0%'})</span>
                     {stop.das.length > 1 && (
-                      <span className="text-[10px] text-slate-500 bg-slate-900 px-1 rounded">
+                      <span className="text-[10px] text-slate-400 bg-slate-100 px-1 rounded border border-slate-200">
                         +{stop.das.length - 1} DAs
                       </span>
                     )}
@@ -175,11 +174,11 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className={`px-2 py-1 rounded-lg border ${badge.bg} ${badge.text} ${badge.border} text-right`}>
-                    <div className="font-mono font-bold text-xs">{score.toFixed(1)}</div>
-                    <div className="text-[9px] uppercase tracking-wider opacity-80">{badge.label}</div>
+                  <div className={`px-2.5 py-1 rounded-lg border ${badge.bg} text-right font-mono font-bold text-xs shadow-sm`}>
+                    <div>{score.toFixed(1)}</div>
+                    <div className="text-[9px] uppercase tracking-wider font-semibold opacity-90">{badge.label}</div>
                   </div>
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-cyan-400 transform translate-x-0.5' : 'text-slate-600 group-hover:text-slate-400'}`} />
+                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-sky-600 translate-x-0.5' : 'text-slate-400 group-hover:text-slate-600'}`} />
                 </div>
               </button>
             );

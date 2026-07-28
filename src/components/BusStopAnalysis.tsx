@@ -11,12 +11,7 @@ import {
   Box, 
   Menu, 
   X, 
-  Sliders, 
-  RotateCcw, 
-  Sparkles, 
-  MapPin, 
-  TrendingUp,
-  ShieldAlert
+  MapPin
 } from 'lucide-react';
 
 const BusStopMap = dynamic(
@@ -58,44 +53,44 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
   const selectedStop = stops.find((s) => s.stop_id === selectedStopId);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
-      {/* Header Navigation Bar */}
-      <header className="relative z-40 h-14 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 px-4 flex items-center justify-between shadow-2xl">
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-100 text-slate-800 flex flex-col font-sans select-none">
+      {/* Header Navigation Bar (Light Theme matching main dashboard header) */}
+      <header className="relative z-40 h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           {/* Main Navigation Menu Dropdown */}
           <div className="relative">
             <button
               onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors shadow-sm"
               title="Navigation Menu"
             >
-              {isNavMenuOpen ? <X className="w-4 h-4 text-cyan-400" /> : <Menu className="w-4 h-4 text-cyan-400" />}
+              {isNavMenuOpen ? <X className="w-4 h-4 text-sky-600" /> : <Menu className="w-4 h-4 text-sky-600" />}
             </button>
 
             {isNavMenuOpen && (
-              <div className="absolute top-12 left-0 w-64 bg-slate-950/95 backdrop-blur-2xl border border-slate-800 rounded-xl p-2 shadow-2xl space-y-1 text-xs">
-                <div className="px-3 py-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Navigation</div>
+              <div className="absolute top-12 left-0 w-64 bg-white/95 backdrop-blur-2xl border border-slate-200 rounded-xl p-2 shadow-2xl space-y-1 text-xs z-50">
+                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Navigation</div>
                 <button
                   onClick={() => { setIsNavMenuOpen(false); onNavigate?.('landing'); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-900 hover:text-white transition-colors flex items-center justify-between"
+                  className="w-full text-left px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium transition-colors flex items-center justify-between"
                 >
                   Landing Overview <span>→</span>
                 </button>
                 <button
                   onClick={() => { setIsNavMenuOpen(false); onNavigate?.('dashboard'); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-900 hover:text-white transition-colors flex items-center justify-between"
+                  className="w-full text-left px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium transition-colors flex items-center justify-between"
                 >
                   Route Scorecard Dashboard <span>→</span>
                 </button>
                 <button
                   onClick={() => { setIsNavMenuOpen(false); onNavigate?.('scrollytelling'); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-900 hover:text-white transition-colors flex items-center justify-between"
+                  className="w-full text-left px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium transition-colors flex items-center justify-between"
                 >
-                  Interactive Story walkthrough <span>→</span>
+                  Interactive Story Walkthrough <span>→</span>
                 </button>
                 <button
                   onClick={() => { setIsNavMenuOpen(false); onNavigate?.('bus-stop-analysis'); }}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-cyan-950/80 text-cyan-400 font-semibold border border-cyan-800/40 flex items-center justify-between"
+                  className="w-full text-left px-3 py-2 rounded-lg bg-sky-50 text-sky-700 font-bold border border-sky-200 flex items-center justify-between"
                 >
                   Bus Stop Analysis <span>✓</span>
                 </button>
@@ -104,17 +99,17 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-950">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-600 to-blue-600 flex items-center justify-center shadow-md shadow-sky-600/20">
               <MapPin className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-sm text-white tracking-tight flex items-center gap-2">
+              <h1 className="font-bold text-sm text-slate-900 tracking-tight flex items-center gap-2">
                 ETS Route Scorecard
-                <span className="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800/50 px-2 py-0.5 rounded-full font-mono">
+                <span className="text-[10px] bg-sky-100 text-sky-700 border border-sky-300 px-2 py-0.5 rounded-full font-mono font-bold">
                   Bus Stop Analysis
                 </span>
               </h1>
-              <p className="text-[11px] text-slate-400">400m Spatial Catchment Proportional Vulnerability</p>
+              <p className="text-[11px] text-slate-500 font-medium">400m Spatial Catchment Proportional Vulnerability</p>
             </div>
           </div>
         </div>
@@ -122,23 +117,23 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
         {/* Floating Top Controls */}
         <div className="flex items-center gap-2">
           {/* CIMD Mode Toggle */}
-          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-lg p-0.5">
+          <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5 shadow-sm">
             <button
               onClick={() => setMode('equal')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
                 mode === 'equal'
-                  ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-sky-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               CIMD Equal (25%)
             </button>
             <button
               onClick={() => setMode('economic')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
                 mode === 'economic'
-                  ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-sky-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               100% Economic
@@ -148,10 +143,10 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
           {/* 3D Feature Toggle */}
           <button
             onClick={() => setIs3dEnabled(!is3dEnabled)}
-            className={`p-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-all ${
+            className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
               is3dEnabled
-                ? 'bg-cyan-950/80 border-cyan-500/50 text-cyan-300 shadow-md shadow-cyan-950'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                ? 'bg-sky-50 border-sky-300 text-sky-700'
+                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
             }`}
             title="Toggle 3D Buildings & Terrain"
           >
@@ -161,10 +156,10 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
           {/* Directory Toggle Button */}
           <button
             onClick={() => setIsDirectoryOpen(!isDirectoryOpen)}
-            className={`p-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-all ${
+            className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
               isDirectoryOpen
-                ? 'bg-cyan-950/80 border-cyan-500/50 text-cyan-300 shadow-md shadow-cyan-950'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                ? 'bg-sky-50 border-sky-300 text-sky-700'
+                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
             }`}
           >
             <Layers className="w-4 h-4" /> Directory
@@ -177,9 +172,9 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
         {/* Fullscreen Map Canvas */}
         <div className="flex-1 relative h-full">
           {loading ? (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-slate-400 space-y-3">
-              <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-xs font-mono">Loading 6,700+ GTFS Bus Stops & Catchment Calculations...</p>
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-600 space-y-3">
+              <div className="w-8 h-8 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-xs font-mono font-medium">Loading 6,700+ GTFS Bus Stops & Catchment Calculations...</p>
             </div>
           ) : (
             <BusStopMap
@@ -194,41 +189,41 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
 
           {/* Banner for Selected Stop */}
           {selectedStop && (
-            <div className="absolute top-4 left-4 z-30 max-w-sm bg-slate-950/90 backdrop-blur-xl border border-cyan-500/50 rounded-2xl p-4 shadow-2xl text-xs space-y-2">
+            <div className="absolute top-4 left-4 z-30 max-w-sm bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl p-4 shadow-2xl text-xs space-y-2 text-slate-800">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="font-mono text-[10px] text-cyan-400 bg-cyan-950/90 px-1.5 py-0.5 rounded border border-cyan-800/50 font-bold">
+                  <span className="font-mono text-[10px] text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 font-bold">
                     Stop #{selectedStop.stop_id}
                   </span>
-                  <h3 className="font-bold text-white text-sm mt-1">{selectedStop.stop_name}</h3>
+                  <h3 className="font-bold text-slate-900 text-sm mt-1">{selectedStop.stop_name}</h3>
                 </div>
                 <button
                   onClick={() => setSelectedStopId(null)}
-                  className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-900 transition-colors"
+                  className="p-1 text-slate-400 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-800/80 pt-2">
+              <div className="flex items-center justify-between border-t border-slate-100 pt-2">
                 <div>
-                  <div className="text-[10px] text-slate-400 uppercase tracking-wider">Vulnerability Score</div>
-                  <div className="text-lg font-mono font-bold text-cyan-400">
+                  <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Vulnerability Score</div>
+                  <div className="text-lg font-mono font-bold text-sky-700">
                     {(mode === 'equal' ? selectedStop.equal_score : selectedStop.economic_score).toFixed(1)} / 100
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] text-slate-400 uppercase tracking-wider">400m Buffer DAs</div>
-                  <div className="text-xs font-semibold text-slate-200">{selectedStop.das.length} Dissemination Areas</div>
+                  <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">400m Buffer DAs</div>
+                  <div className="text-xs font-bold text-slate-800">{selectedStop.das.length} Dissemination Areas</div>
                 </div>
               </div>
 
-              <div className="space-y-1 border-t border-slate-800/80 pt-2 text-[11px]">
-                <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Proportional DA Overlap</div>
+              <div className="space-y-1 border-t border-slate-100 pt-2 text-[11px]">
+                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Proportional DA Overlap</div>
                 {selectedStop.das.map((d) => (
-                  <div key={d.da_id} className="flex items-center justify-between text-slate-300">
-                    <span>DA {d.da_id}</span>
-                    <span className="font-mono font-bold text-cyan-300">{d.pct}% ({d.equal_score.toFixed(0)} score)</span>
+                  <div key={d.da_id} className="flex items-center justify-between text-slate-700">
+                    <span className="font-medium">DA {d.da_id}</span>
+                    <span className="font-mono font-bold text-sky-700">{d.pct}% ({d.equal_score.toFixed(0)} score)</span>
                   </div>
                 ))}
               </div>

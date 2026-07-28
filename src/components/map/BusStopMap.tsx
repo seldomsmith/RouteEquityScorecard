@@ -18,6 +18,8 @@ interface BusStopMapProps {
   onSelectStop: (stopId: string | null) => void;
 }
 
+const PIE_COLORS = ['#0284C7', '#2563EB', '#7C3AED', '#DB2777', '#D97706', '#059669'];
+
 export const BusStopMap: React.FC<BusStopMapProps> = ({
   stops,
   daScores,
@@ -29,15 +31,60 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const popupRef = useRef<mapboxgl.Popup | null>(null);
-  const [hoveredStop, setHoveredStop] = useState<BusStopRecord | null>(null);
+  const isLoadedRef = useRef<boolean>(false);
 
-  // Initialize Mapbox map
+  // Helper to push stops data into Mapbox source
+  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic') => {
+    const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
+    if (!source || currentStops.length === 0) return;
+
+    const features: GeoJSON.Feature[] = currentStops.map((s) => ({
+      type: 'Feature',
+      properties: {
+        stop_id: s.stop_id,
+        stop_name: s.stop_name,
+        score: currentMode === 'equal' ? s.equal_score : s.economic_score,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [s.lon, s.lat],
+      },
+    }));
+
+    source.setData({
+      type: 'FeatureCollection',
+      features,
+    });
+  };
+
+  // Helper to update DA heatmap fill colors
+  const updateDaHeatmap = (map: mapboxgl.Map, currentDaScores: Record<string, any>, currentMode: 'equal' | 'economic') => {
+    if (!map.getLayer('da-fill') || !currentDaScores || Object.keys(currentDaScores).length === 0) return;
+
+    const matchExpr: any[] = ['match', ['get', 'DAUID']];
+    Object.entries(currentDaScores).forEach(([daId, scores]: [string, any]) => {
+      const val = currentMode === 'equal' ? scores.equal : scores.economic;
+      let color = '#F8FAFC'; // Light baseline
+      if (val >= 75) color = '#FCA5A5'; // Soft Red
+      else if (val >= 60) color = '#FDBA74'; // Soft Orange
+      else if (val >= 45) color = '#FEF08A'; // Soft Yellow
+      else if (val >= 30) color = '#A7F3D0'; // Soft Green
+      else color = '#E2E8F0'; // Default light slate
+
+      matchExpr.push(daId, color);
+    });
+    matchExpr.push('#F8FAFC');
+
+    map.setPaintProperty('da-fill', 'fill-color', matchExpr);
+  };
+
+  // Initialize Mapbox map (Light Theme)
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/light-v11', // Matching main dashboard light map
       center: [-113.4938, 53.5444],
       zoom: 11.5,
       pitch: is3dEnabled ? 45 : 0,
@@ -46,7 +93,6 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
     mapRef.current = map;
 
-    // Create Popup instance
     popupRef.current = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false,
@@ -55,7 +101,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     });
 
     map.on('load', () => {
-      // 1. Add DA Boundaries Source & Layer
+      isLoadedRef.current = true;
+
+      // 1. Add DA Boundaries Source & Fill Layer
       map.addSource('da-boundaries', {
         type: 'geojson',
         data: '/data/da_boundaries_simple.geojson',
@@ -66,8 +114,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'fill',
         source: 'da-boundaries',
         paint: {
-          'fill-color': '#0F172A',
-          'fill-opacity': 0.4,
+          'fill-color': '#F8FAFC',
+          'fill-opacity': 0.45,
         },
       });
 
@@ -76,13 +124,13 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'line',
         source: 'da-boundaries',
         paint: {
-          'line-color': '#334155',
-          'line-width': 0.5,
+          'line-color': '#94A3B8',
+          'line-width': 0.6,
           'line-opacity': 0.5,
         },
       });
 
-      // 2. Add 400m Buffer Source & Layers for Selected Stop
+      // 2. Add Selected Stop 400m Buffer Source & Layers
       map.addSource('selected-buffer', {
         type: 'geojson',
         data: {
@@ -96,8 +144,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'fill',
         source: 'selected-buffer',
         paint: {
-          'fill-color': '#06B6D4',
-          'fill-opacity': 0.22,
+          'fill-color': '#0284C7',
+          'fill-opacity': 0.15,
         },
       });
 
@@ -106,13 +154,13 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'line',
         source: 'selected-buffer',
         paint: {
-          'line-color': '#22D3EE',
+          'line-color': '#0284C7',
           'line-width': 2.5,
           'line-dasharray': [2, 2],
         },
       });
 
-      // 3. Add Bus Stops Source & Layer
+      // 3. Add Bus Stops Source & Circle Point Layer
       map.addSource('bus-stops', {
         type: 'geojson',
         data: {
@@ -130,21 +178,22 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             'interpolate',
             ['linear'],
             ['zoom'],
-            9, 2.5,
-            12, 4.5,
-            15, 8.5,
+            9, 3.5,
+            12, 5.5,
+            15, 9.5,
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'score'],
-            20, '#10B981', // Emerald (Low)
-            40, '#F59E0B', // Amber (Mod)
-            65, '#F97316', // Orange (High)
-            85, '#EF4444', // Red (Very High)
+            20, '#059669', // Emerald (Low Vulnerability)
+            40, '#D97706', // Amber (Moderate)
+            65, '#EA580C', // Orange (Mod-High)
+            85, '#DC2626', // Red (High Vulnerability)
           ],
           'circle-opacity': 0.9,
-          'circle-stroke-width': 0,
+          'circle-stroke-width': 1.2,
+          'circle-stroke-color': '#FFFFFF',
         },
       });
 
@@ -157,14 +206,20 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'fill-extrusion',
         minzoom: 13,
         paint: {
-          'fill-extrusion-color': '#1E293B',
+          'fill-extrusion-color': '#CBD5E1',
           'fill-extrusion-height': ['get', 'height'],
           'fill-extrusion-base': ['get', 'min_height'],
           'fill-extrusion-opacity': is3dEnabled ? 0.6 : 0.0,
         },
       });
 
-      // Map Click Handler for selecting stops
+      // Initial data push on map load
+      if (stops.length > 0) {
+        updateStopsSource(map, stops, mode);
+        updateDaHeatmap(map, daScores, mode);
+      }
+
+      // Click handler
       map.on('click', 'bus-stop-points', (e) => {
         if (e.features && e.features.length > 0) {
           const props = e.features[0].properties;
@@ -185,38 +240,36 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             if (targetStop && popupRef.current) {
               const score = mode === 'equal' ? targetStop.equal_score : targetStop.economic_score;
               const daList = targetStop.das;
-
-              // Generate SVG Pie Chart HTML
               const pieSvg = generatePieChartSvg(daList);
 
               const contentHtml = `
-                <div class="p-3 bg-slate-950/95 backdrop-blur-md border border-cyan-500/40 rounded-xl text-slate-100 shadow-2xl space-y-2 text-xs">
-                  <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <div class="p-3 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl text-slate-900 shadow-xl space-y-2 text-xs">
+                  <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
                     <div>
-                      <span class="font-mono text-[11px] text-cyan-400 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800/40">#${targetStop.stop_id}</span>
-                      <div class="font-bold text-slate-100 text-xs mt-1 truncate max-w-[180px]">${targetStop.stop_name}</div>
+                      <span class="font-mono text-[11px] text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 font-bold">#${targetStop.stop_id}</span>
+                      <div class="font-bold text-slate-800 text-xs mt-1 truncate max-w-[180px]">${targetStop.stop_name}</div>
                     </div>
                     <div class="text-right">
-                      <div class="font-mono font-bold text-sm text-cyan-300">${score.toFixed(1)}</div>
-                      <div class="text-[9px] uppercase tracking-wider text-slate-400">Score</div>
+                      <div class="font-mono font-bold text-sm text-sky-700">${score.toFixed(1)}</div>
+                      <div class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Score</div>
                     </div>
                   </div>
 
                   <div class="space-y-1">
-                    <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">400m DA Catchment Breakdown</div>
+                    <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">400m DA Catchment Overlap</div>
                     <div class="flex items-center gap-3">
                       <div class="flex-shrink-0">${pieSvg}</div>
                       <div class="flex-1 space-y-1 text-[11px]">
                         ${daList.slice(0, 3).map((d, i) => `
-                          <div class="flex items-center justify-between text-slate-300">
-                            <span class="flex items-center gap-1">
-                              <span class="w-2 h-2 rounded-full inline-block" style="background-color: ${PIE_COLORS[i % PIE_COLORS.length]}"></span>
+                          <div class="flex items-center justify-between text-slate-700">
+                            <span class="flex items-center gap-1 font-medium">
+                              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${PIE_COLORS[i % PIE_COLORS.length]}"></span>
                               DA ${d.da_id}
                             </span>
-                            <span class="font-mono font-semibold text-slate-200">${d.pct}%</span>
+                            <span class="font-mono font-bold text-slate-900">${d.pct}%</span>
                           </div>
                         `).join('')}
-                        ${daList.length > 3 ? `<div class="text-[10px] text-slate-500">+${daList.length - 3} more DAs</div>` : ''}
+                        ${daList.length > 3 ? `<div class="text-[10px] text-slate-400">+${daList.length - 3} more DAs</div>` : ''}
                       </div>
                     </div>
                   </div>
@@ -243,9 +296,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     return () => {
       map.remove();
     };
-  }, [stops]);
+  }, []);
 
-  // Update 3D Camera & Extrusions
+  // Update camera 3D settings
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
@@ -261,104 +314,79 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     }
   }, [is3dEnabled]);
 
-  // Update Bus Stop GeoJSON source & DA Heatmap when stops or mode changes
+  // Update stops source and DA heatmap when props change
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded() || stops.length === 0) return;
+    if (!map) return;
 
-    // Build GeoJSON FeatureCollection for Stops
-    const features: GeoJSON.Feature[] = stops.map((s) => ({
-      type: 'Feature',
-      properties: {
-        stop_id: s.stop_id,
-        stop_name: s.stop_name,
-        score: mode === 'equal' ? s.equal_score : s.economic_score,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [s.lon, s.lat],
-      },
-    }));
-
-    const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
-    if (source) {
-      source.setData({
-        type: 'FeatureCollection',
-        features,
+    if (map.isStyleLoaded()) {
+      updateStopsSource(map, stops, mode);
+      updateDaHeatmap(map, daScores, mode);
+    } else {
+      map.once('load', () => {
+        updateStopsSource(map, stops, mode);
+        updateDaHeatmap(map, daScores, mode);
       });
-    }
-
-    // Update DA Choropleth colors based on mode
-    if (map.getLayer('da-fill') && daScores) {
-      const matchExpr: any[] = ['match', ['get', 'DAUID']];
-      Object.entries(daScores).forEach(([daId, scores]: [string, any]) => {
-        const val = mode === 'equal' ? scores.equal : scores.economic;
-        let color = '#0F172A';
-        if (val >= 75) color = '#7F1D1D';
-        else if (val >= 60) color = '#991B1B';
-        else if (val >= 45) color = '#92400E';
-        else if (val >= 30) color = '#065F46';
-        else color = '#064E3B';
-
-        matchExpr.push(daId, color);
-      });
-      matchExpr.push('#0F172A'); // fallback
-
-      map.setPaintProperty('da-fill', 'fill-color', matchExpr);
     }
   }, [stops, mode, daScores]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
 
-    const source = map.getSource('selected-buffer') as mapboxgl.GeoJSONSource;
+    const renderBuffer = () => {
+      const source = map.getSource('selected-buffer') as mapboxgl.GeoJSONSource;
 
-    if (!selectedStopId) {
-      if (source) source.setData({ type: 'FeatureCollection', features: [] });
-      return;
-    }
+      if (!selectedStopId) {
+        if (source) source.setData({ type: 'FeatureCollection', features: [] });
+        return;
+      }
 
-    const targetStop = stops.find((s) => s.stop_id === selectedStopId);
-    if (!targetStop) return;
+      const targetStop = stops.find((s) => s.stop_id === selectedStopId);
+      if (!targetStop) return;
 
-    // Pan map smoothly to selected stop
-    map.flyTo({
-      center: [targetStop.lon, targetStop.lat],
-      zoom: 15.0,
-      duration: 1200,
-    });
-
-    // Create 400m geodesic polygon buffer in GeoJSON coordinates
-    const centerLon = targetStop.lon;
-    const centerLat = targetStop.lat;
-    const radiusMeters = 400.0;
-
-    const coords: number[][] = [];
-    const points = 64;
-    for (let i = 0; i <= points; i++) {
-      const angle = (i * 360) / points;
-      const rad = (angle * Math.PI) / 180;
-      const dx = (radiusMeters * Math.cos(rad)) / (111320 * Math.cos((centerLat * Math.PI) / 180));
-      const dy = (radiusMeters * Math.sin(rad)) / 110574;
-      coords.push([centerLon + dx, centerLat + dy]);
-    }
-
-    if (source) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Polygon',
-              coordinates: [coords],
-            },
-          },
-        ],
+      map.flyTo({
+        center: [targetStop.lon, targetStop.lat],
+        zoom: 15.0,
+        duration: 1200,
       });
+
+      const centerLon = targetStop.lon;
+      const centerLat = targetStop.lat;
+      const radiusMeters = 400.0;
+
+      const coords: number[][] = [];
+      const points = 64;
+      for (let i = 0; i <= points; i++) {
+        const angle = (i * 360) / points;
+        const rad = (angle * Math.PI) / 180;
+        const dx = (radiusMeters * Math.cos(rad)) / (111320 * Math.cos((centerLat * Math.PI) / 180));
+        const dy = (radiusMeters * Math.sin(rad)) / 110574;
+        coords.push([centerLon + dx, centerLat + dy]);
+      }
+
+      if (source) {
+        source.setData({
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Polygon',
+                coordinates: [coords],
+              },
+            },
+          ],
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      renderBuffer();
+    } else {
+      map.once('load', renderBuffer);
     }
   }, [selectedStopId, stops]);
 
@@ -368,8 +396,6 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     </div>
   );
 };
-
-const PIE_COLORS = ['#06B6D4', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981'];
 
 function generatePieChartSvg(das: Array<{ da_id: string; pct: number }>): string {
   if (!das || das.length === 0) return '';
@@ -406,7 +432,7 @@ function generatePieChartSvg(das: Array<{ da_id: string; pct: number }>): string
   });
 
   return `
-    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="drop-shadow-md">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="drop-shadow-sm">
       ${paths.join('')}
     </svg>
   `;
