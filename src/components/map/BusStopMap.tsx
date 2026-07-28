@@ -178,22 +178,23 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             'interpolate',
             ['linear'],
             ['zoom'],
-            9, 3.5,
-            12, 5.5,
-            15, 9.5,
+            9, 3,
+            12, 5,
+            15, 8.5,
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'score'],
-            20, '#059669', // Emerald (Low Vulnerability)
-            40, '#D97706', // Amber (Moderate)
-            65, '#EA580C', // Orange (Mod-High)
-            85, '#DC2626', // Red (High Vulnerability)
+            0, '#10b981',   // Emerald Green (Lowest score)
+            25, '#84cc16',  // Lime Green
+            45, '#eab308',  // Yellow
+            65, '#f97316',  // Orange
+            85, '#ef4444',  // Red (Highest score)
+            100, '#dc2626'  // Deep Red
           ],
-          'circle-opacity': 0.9,
-          'circle-stroke-width': 1.2,
-          'circle-stroke-color': '#FFFFFF',
+          'circle-opacity': 0.85,
+          'circle-stroke-width': 0,
         },
       });
 
@@ -246,11 +247,11 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                 <div class="p-3 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl text-slate-900 shadow-xl space-y-2 text-xs">
                   <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
                     <div>
-                      <span class="font-mono text-[11px] text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 font-bold">#${targetStop.stop_id}</span>
+                      <span class="font-mono text-[11px] text-[#1e3a8a] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-bold">#${targetStop.stop_id}</span>
                       <div class="font-bold text-slate-800 text-xs mt-1 truncate max-w-[180px]">${targetStop.stop_name}</div>
                     </div>
                     <div class="text-right">
-                      <div class="font-mono font-bold text-sm text-sky-700">${score.toFixed(1)}</div>
+                      <div class="font-mono font-bold text-sm text-[#1e3a8a]">${score.toFixed(1)}</div>
                       <div class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Score</div>
                     </div>
                   </div>
