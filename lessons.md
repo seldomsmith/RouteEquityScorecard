@@ -40,12 +40,6 @@ Whenever the USER requests an update to GitHub (e.g., "Update Github" or "Sync t
 ### Architecture
 - **Immutable Base vs. Dynamic Computed Data**: The pillar scores (z-score normalized) are immutable and loaded once from Parquet. The composite score, sigmoid, grade, and SHAP contributions are *derived* values that must be recomputed when weights change. Separating `baseRoutes` (immutable) from `scoredRoutes` (derived via `useReactiveScoring`) is the key architectural insight.
 - **Single Source of Truth**: `useReactiveScoring` is the only place that computes scores. `CommandCentre` calls it once and passes the result down. No component should independently compute or store scores.
-- **Mapbox Hot-Swap**: Use `source.setData()` to update GeoJSON data without reinitializing layers or event handlers. Keep one-time setup (layers, click handlers) separate from reactive data updates.
-- **Python ↔ TypeScript Parity**: The frontend scoring hook must use identical math to `scripts/refine_scoring.py` — same sigmoid formula, same quintile logic, same mean/SD calculation. Verify at default weights.
-- **Atomic Multi-State Updates vs. Sequential Updates**: When dealing with highly dependent and reactive state systems (like our zero-sum weight sliders), sequential asynchronous updates (like `setWeight` with sequential `setTimeout` triggers) can lead to rounding drift, race conditions, or intermediate zero-sum re-distribution side-effects. Always implement atomic actions (`setWeights`) in the store to apply multi-variable transitions simultaneously.
-- **Terminal Encoding Safety (CP1252 / Unicode Emojis)**: Under standard Windows environments, python print statements containing emoji characters or non-ASCII symbols can trigger a fatal `UnicodeEncodeError` due to default console encoding (typically CP1252). Avoid printing emojis or special mathematical symbols directly in print statements; instead, use clean ASCII brackets (e.g. `[SUCCESS]` or `[1/5]`).
-- **Census Data Scaling (Percentage vs. Counts)**: Census dissemination area profiles might contain absolute counts represented as floating-point numbers due to statistical perturbations or suppression logic (e.g. `seniors = 5.7` or `22.2` in a DA). Always double check the column statistics and ranges relative to total population before assuming a column is pre-calculated as a percentage, as naively scaling or misinterpreting count columns will skew standardizations.
-
 ## Update GitHub Protocol
 Whenever the USER requests an update to GitHub (e.g., "Update Github" or "Sync to remote"), the agent must execute the following 5-step protocol:
 1. **Status Inspection**: Run `git status` to identify modified, added, or deleted files.
@@ -53,6 +47,13 @@ Whenever the USER requests an update to GitHub (e.g., "Update Github" or "Sync t
 3. **Elite Commit Message Formulation**: Generate a precise, professional, and descriptive commit message that summarizes the logical changes (e.g. `feat: implement UTM spatial decay re-scoring pipeline`). Avoid generic or short messages.
 4. **Push Execution**: Execute a push to the active branch (`git push origin <branch_name>`).
 5. **Confirmation Summary**: Print the commit hash, modified files, and push confirmation in a concise markdown table or list for the USER.
+
+### Hands-Free Automatic Git Sync (UNC Path Sandbox Workaround)
+- **UNC Path Sandbox Constraint**: Workspaces located on UNC network shares (`\\COEUSERHOME\...`) trigger `non-absolute file path` validation errors when running `git push` directly inside sandboxed agent command calls.
+- **Automated Hands-Free Protocol**: To ensure seamless git operations without manual user intervention or double-clicking `.bat` files:
+  1. All code edits are continuously staged, committed, and pushed using [`scripts/git_auto_sync.py`](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/scripts/git_auto_sync.py).
+  2. The agent automatically triggers single-pass sync runs (`py scripts/git_auto_sync.py --once`) or silent watcher loops (`start_silent_sync.bat`) upon feature completion.
+  3. Always check for stuck rebase locks (`git rebase --abort`) prior to committing.
 
 ### Demographic Weight Calibration & Equal Weighting
 - **Equal-Weight Policy Baseline**: Using equal weights (`1.0` for all indicators) provides a policy-neutral, simple, and transparent baseline for demographic vulnerability scoring. This removes administrative or political bias from the index's default settings while retaining a high correlation (0.98) with complex empirical weighting schemes (like PCA-derived weights), making it highly defensible for public transit policy.

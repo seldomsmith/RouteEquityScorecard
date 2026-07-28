@@ -178,10 +178,20 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className={`px-2.5 py-1 rounded-lg border ${badge.bg} text-right font-mono font-bold text-xs shadow-sm`}>
-                    <div>{score.toFixed(1)}</div>
-                    <div className="text-[9px] uppercase tracking-wider font-semibold opacity-90">{badge.label}</div>
-                  </div>
+                  {(() => {
+                    const percentile = mode === 'equal' 
+                      ? (stop.equal_percentile ?? stop.equal_score)
+                      : (stop.economic_percentile ?? stop.economic_score);
+                    const badge = getScoreBadge(percentile);
+                    return (
+                      <div className={`px-2.5 py-1 rounded-lg border ${badge.bg} text-right font-mono font-bold text-xs shadow-sm`}>
+                        <div>{percentile.toFixed(0)}th %ile</div>
+                        <div className="text-[8px] uppercase tracking-wider font-semibold opacity-90 text-slate-500">
+                          Score: {score.toFixed(1)}
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-[#1e3a8a] translate-x-0.5' : 'text-slate-400 group-hover:text-slate-600'}`} />
                 </div>
               </button>
