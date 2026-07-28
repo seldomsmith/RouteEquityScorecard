@@ -89,15 +89,16 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
   const isLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (!mapContainerRef.current || !route2Data || !route3Data || !daGeoJson) return;
+    if (!mapContainerRef.current || !route2Data || !route3Data || !daGeoJson || !route2Data.coords || route2Data.coords.length === 0) return;
 
     const coordinates = route2Data.coords.map((c: any) => [c[1], c[0]]);
+    const firstCoord = coordinates[0] || [-113.4938, 53.5461];
     const initialBounds = coordinates.reduce(
       (acc: any, coord: any) => [
         [Math.min(acc[0][0], coord[0]), Math.min(acc[0][1], coord[1])],
         [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
       ],
-      [[coordinates[0][0], coordinates[0][1]], [coordinates[0][0], coordinates[0][1]]]
+      [[firstCoord[0], firstCoord[1]], [firstCoord[0], firstCoord[1]]]
     );
 
     const map = new mapboxgl.Map({
@@ -127,9 +128,10 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
 
   // Handle route swaps and map updates
   useEffect(() => {
-    if (isLoadedRef.current && mapRef.current && activeRouteData) {
+    if (isLoadedRef.current && mapRef.current && activeRouteData && activeRouteData.coords && activeRouteData.coords.length > 0) {
       // Calculate bounds dynamically matching ExplainerMap's auto-bounding logic to ensure perfectly centered alignment
       const coordinates = activeRouteData.coords.map((c: any) => [c[1], c[0]]);
+      const firstCoord = coordinates[0] || [-113.4938, 53.5461];
       const bounds = coordinates.reduce(
         (acc: any, coord: any) => {
           return [
@@ -137,14 +139,16 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
             [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
           ];
         },
-        [[coordinates[0][0], coordinates[0][1]], [coordinates[0][0], coordinates[0][1]]]
+        [[firstCoord[0], firstCoord[1]], [firstCoord[0], firstCoord[1]]]
       );
 
-      mapRef.current.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
-        padding: 40,
-        linear: true,
-        duration: 800
-      });
+      if (mapRef.current) {
+        mapRef.current.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
+          padding: 40,
+          linear: true,
+          duration: 800
+        });
+      }
 
       updateMapData();
     }

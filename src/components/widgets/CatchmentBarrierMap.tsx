@@ -8,6 +8,7 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1c
 
 export const CatchmentBarrierMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -51,8 +52,10 @@ export const CatchmentBarrierMap: React.FC = () => {
       interactive: false,
       attributionControl: false,
     });
+    mapRef.current = map;
 
     map.on('load', () => {
+      if (!mapRef.current) return;
       // 1. Direct theoretical straight-line corridor path (Green)
       map.addSource('theoretical-direct-path', {
         type: 'geojson',
@@ -142,7 +145,10 @@ export const CatchmentBarrierMap: React.FC = () => {
     });
 
     return () => {
-      map.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 

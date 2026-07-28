@@ -42,10 +42,11 @@ export const ExplainerMap: React.FC<ExplainerMapProps> = ({
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
-    if (!mapContainerRef.current || !routeCoords.length || !daGeoJson) return;
+    if (!mapContainerRef.current || !routeCoords || !routeCoords.length || !daGeoJson) return;
 
     // Convert coords to Mapbox [lng, lat]
     const coordinates = routeCoords.map((c) => [c[1], c[0]]);
+    const firstCoord = coordinates[0] || [-113.4938, 53.5461];
 
     // Calculate bounds to focus the camera
     const bounds = coordinates.reduce(
@@ -55,7 +56,7 @@ export const ExplainerMap: React.FC<ExplainerMapProps> = ({
           [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])],
         ];
       },
-      [[coordinates[0][0], coordinates[0][1]], [coordinates[0][0], coordinates[0][1]]]
+      [[firstCoord[0], firstCoord[1]], [firstCoord[0], firstCoord[1]]]
     );
 
     // Initialize Mapbox instance

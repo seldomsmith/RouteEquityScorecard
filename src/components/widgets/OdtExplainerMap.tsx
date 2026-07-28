@@ -111,7 +111,10 @@ export const OdtExplainerMap: React.FC<OdtExplainerMapProps> = ({ odtGeoJson, ro
     });
 
     return () => {
-      map.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, [odtGeoJson, routeData]);
 
