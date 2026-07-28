@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { 
   Bus, 
   Home, 
@@ -23,13 +24,13 @@ import {
   Area
 } from 'recharts';
 import { RouteTicket } from './ui/RouteTicket';
-import { ExplainerMap } from './widgets/ExplainerMap';
+const ExplainerMap = dynamic(() => import('./widgets/ExplainerMap').then(m => m.ExplainerMap), { ssr: false });
 import { MonteCarloPlinko } from './widgets/MonteCarloPlinko';
-import { OdtExplainerMap } from './widgets/OdtExplainerMap';
+const OdtExplainerMap = dynamic(() => import('./widgets/OdtExplainerMap').then(m => m.OdtExplainerMap), { ssr: false });
 import { FourPillars } from './widgets/FourPillars';
-import { InteractiveToggleMap } from './widgets/InteractiveToggleMap';
+const InteractiveToggleMap = dynamic(() => import('./widgets/InteractiveToggleMap').then(m => m.InteractiveToggleMap), { ssr: false });
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
-import { CatchmentBarrierMap } from './widgets/CatchmentBarrierMap';
+const CatchmentBarrierMap = dynamic(() => import('./widgets/CatchmentBarrierMap').then(m => m.CatchmentBarrierMap), { ssr: false });
 import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';

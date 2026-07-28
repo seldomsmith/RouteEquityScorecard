@@ -637,10 +637,12 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
       routesAdded.current = true;
     };
 
-    if (map.current.isStyleLoaded()) {
-      addRoutes();
-    } else {
-      map.current.on('load', addRoutes);
+    if (map.current) {
+      if (map.current.isStyleLoaded()) {
+        addRoutes();
+      } else {
+        map.current.on('load', addRoutes);
+      }
     }
   }, [routes, setSelectedRoute]);
 
@@ -804,13 +806,17 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
         return res.json();
       })
       .then((data) => {
-        if (active) {
+        if (active && map.current) {
           source.setData(data);
           
           // Apply dynamic grade color matching immediately
           const gradeColor = selectedRouteGrade ? (GRADE_COLORS[selectedRouteGrade] || '#0F766E') : '#0F766E';
-          map.current!.setPaintProperty('isochrone-fill', 'fill-color', gradeColor);
-          map.current!.setPaintProperty('isochrone-line', 'line-color', gradeColor);
+          if (map.current.getLayer('isochrone-fill')) {
+            map.current.setPaintProperty('isochrone-fill', 'fill-color', gradeColor);
+          }
+          if (map.current.getLayer('isochrone-line')) {
+            map.current.setPaintProperty('isochrone-line', 'line-color', gradeColor);
+          }
         }
       })
       .catch((err) => {
