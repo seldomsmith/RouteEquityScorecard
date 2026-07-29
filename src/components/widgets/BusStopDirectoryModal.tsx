@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { BusStopRecord } from '@/components/widgets/BusStopDirectory';
 import { BusStopGrade, GRADE_CONFIG } from '@/components/widgets/BusStopGradeLegend';
+import { useRouteStore } from '@/store/routeStore';
 
 export type CimdDimensionKey = 'econ' | 'res' | 'eth' | 'sit';
 
@@ -42,10 +43,13 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
 
+  // Read real DA population lookup from global store
+  const daPopLookup = useRouteStore((s) => s.daPopLookup);
+
   // Calculate dynamic score for a stop based on selected CIMD dimensions
   const getDynamicScore = (stop: BusStopRecord): { score: number; pop: number } => {
     if (!stop.das || stop.das.length === 0) {
-      return { score: stop.equal_score, pop: 1200 };
+      return { score: stop.is_regional ? 0 : stop.equal_score, pop: stop.is_regional ? 0 : 1200 };
     }
 
     const numDims = activeDimensions.length || 4;
@@ -63,12 +67,14 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
 
       const overlapPct = (da.pct || 0) / 100;
       blendedSum += daDimScore * overlapPct;
-      approxPop += Math.round(1800 * overlapPct);
+
+      const realDaPop = daPopLookup[da.da_id] || 1650;
+      approxPop += Math.round(realDaPop * overlapPct);
     });
 
     return { 
-      score: Number(blendedSum.toFixed(1)), 
-      pop: Math.max(150, approxPop) 
+      score: stop.is_regional ? 0 : Number(blendedSum.toFixed(1)), 
+      pop: stop.is_regional ? 0 : Math.max(80, approxPop) 
     };
   };
 
