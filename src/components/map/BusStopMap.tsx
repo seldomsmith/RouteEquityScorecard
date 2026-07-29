@@ -42,7 +42,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const popupRef.current = useRef<mapboxgl.Popup | null>(null);
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
   const isLoadedRef = useRef<boolean>(false);
 
   // Helper to push stops data into Mapbox source
@@ -144,7 +144,6 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         else if (val >= 50) color = '#C4B5FD'; // Lavender
         else if (val >= 35) color = '#DDD6FE'; // Soft Tinted Purple
         else color = '#F5F3FF';                  // Very Light Purple Tint Base
-        else color = '#F1F5F9';                  // Very Light Baseline Slate
 
         matchExpr.push(daId, color);
       });
