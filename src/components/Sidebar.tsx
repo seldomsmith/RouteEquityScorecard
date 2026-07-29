@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
+import { GlobalNavMenu, PageView } from '@/components/widgets/GlobalNavMenu';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
@@ -12,7 +12,7 @@ import LineSidebar from '@/components/widgets/LineSidebar';
 interface SidebarProps {
   routes: any[];
   onViewDirectory?: () => void;
-  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
+  onNavigate?: (page: PageView) => void;
 }
 
 const WEIGHT_LABELS: Record<string, { label: string; desc: string; color: string }> = {
@@ -119,7 +119,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
         onClose={() => setIsMenuOpen(false)}
         onNavigate={onNavigate}
         onViewDirectory={onViewDirectory}
-        onViewBusStopDirectory={onViewBusStopDirectory}
         activeItemIndex={2}
       />
 
