@@ -12,7 +12,9 @@ import {
   Layers,
   MapPin,
   Building2,
-  Users
+  Users,
+  Compass,
+  Award
 } from 'lucide-react';
 import { 
   ScatterChart, 
@@ -25,12 +27,15 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   Legend,
-  CartesianGrid
+  CartesianGrid,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis
 } from 'recharts';
 import { BusStopRecord } from '@/components/widgets/BusStopDirectory';
 import { BusStopGrade, GRADE_CONFIG } from '@/components/widgets/BusStopGradeLegend';
@@ -63,7 +68,6 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [activeDimensions, setActiveDimensions] = useState<CimdDimensionKey[]>(['econ', 'res', 'eth', 'sit']);
   const [selectedGradeFilter, setSelectedGradeFilter] = useState<BusStopGrade | 'ALL'>('ALL');
-  const [selectedScatterPoint, setSelectedScatterPoint] = useState<any | null>(null);
 
   const daPopLookup = useRouteStore((s) => s.daPopLookup);
 
@@ -128,13 +132,16 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
           ...s,
           dynamicScore: 0,
           approxPop: 0,
+          daCount: 0,
           dynamicGrade: 'Regional' as BusStopGrade,
           dynamicPercentile: null as number | null,
+          neighborhood: 'Regional Area'
         };
       }
 
       let blendedSum = 0;
       let approxPop = 0;
+      const daCount = s.das ? s.das.length : 0;
 
       if (s.das && s.das.length > 0) {
         s.das.forEach((da) => {
@@ -159,6 +166,8 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         ...s,
         dynamicScore: Number(blendedSum.toFixed(1)),
         approxPop: Math.max(80, approxPop),
+        daCount: Math.max(1, daCount),
+        neighborhood: s.das && s.das[0] ? `DA ${s.das[0].da_id}` : 'Central Edmonton'
       };
     });
 
@@ -201,56 +210,13 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     return processedStops.filter((s) => s.dynamicGrade === selectedGradeFilter);
   }, [processedStops, selectedGradeFilter]);
 
-  // 1. CIMD Dimension Profiles (Averages across selected grade)
-  const cimdProfileData = useMemo(() => {
-    const counts: Record<string, { count: number; econ: number; res: number; eth: number; sit: number }> = {
-      A: { count: 0, econ: 0, res: 0, eth: 0, sit: 0 },
-      B: { count: 0, econ: 0, res: 0, eth: 0, sit: 0 },
-      C: { count: 0, econ: 0, res: 0, eth: 0, sit: 0 },
-      D: { count: 0, econ: 0, res: 0, eth: 0, sit: 0 },
-      E: { count: 0, econ: 0, res: 0, eth: 0, sit: 0 },
-    };
-
-    processedStops.forEach((s) => {
-      if (s.is_regional || !counts[s.dynamicGrade]) return;
-      const grp = counts[s.dynamicGrade];
-      grp.count++;
-      if (s.das && s.das.length > 0) {
-        let e = 0, r = 0, et = 0, st = 0;
-        s.das.forEach((da) => {
-          const w = (da.pct || 0) / 100;
-          e += (da.econ ?? 50) * w;
-          r += (da.res ?? 50) * w;
-          et += (da.eth ?? 50) * w;
-          st += (da.sit ?? 50) * w;
-        });
-        grp.econ += e;
-        grp.res += r;
-        grp.eth += et;
-        grp.sit += st;
-      }
-    });
-
-    return (['A', 'B', 'C', 'D', 'E'] as const).map((g) => {
-      const item = counts[g];
-      const div = item.count || 1;
-      return {
-        grade: `Grade ${g}`,
-        Economic: Math.round(item.econ / div),
-        Residential: Math.round(item.res / div),
-        Ethnocultural: Math.round(item.eth / div),
-        Situational: Math.round(item.sit / div),
-      };
-    });
-  }, [processedStops]);
-
-  // 2. Scatter Plot Data (Sampled to max 300 points for fluid rendering)
+  // 1. Scatter Plot Data: X = Blended Score (0-100), Y = Number of Served DAs (1-6+)
   const scatterPlotData = useMemo(() => {
     const municipal = filteredStops.filter((s) => !s.is_regional);
-    const step = Math.max(1, Math.floor(municipal.length / 300));
+    const step = Math.max(1, Math.floor(municipal.length / 350));
     return municipal.filter((_, idx) => idx % step === 0).map((s) => ({
       x: s.dynamicScore,
-      y: s.approxPop,
+      y: s.daCount,
       z: 100,
       name: s.stop_name,
       stop_id: s.stop_id,
@@ -259,29 +225,79 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     }));
   }, [filteredStops]);
 
-  // 3. Lorenz Population Area Curve
-  const lorenzCurveData = useMemo(() => {
-    const sorted = [...processedStops.filter((s) => !s.is_regional)].sort((a, b) => a.dynamicScore - b.dynamicScore);
-    const totalPop = sorted.reduce((sum, s) => sum + s.approxPop, 0) || 1;
-    
-    let cumPop = 0;
-    const pointsCount = 40;
-    const step = Math.max(1, Math.floor(sorted.length / pointsCount));
-    
-    const result: any[] = [];
-    sorted.forEach((s, idx) => {
-      cumPop += s.approxPop;
-      if (idx % step === 0 || idx === sorted.length - 1) {
-        const xPct = Math.round((idx / (sorted.length - 1 || 1)) * 100);
-        const yPct = Number(((cumPop / totalPop) * 100).toFixed(1));
-        result.push({
-          percentile: `${xPct}%`,
-          actualCumPop: yPct,
-          perfectEquality: xPct
-        });
+  // 2. CIMD Radar Profile Chart Data (Comparing Grade E vs. Grade A vs. City Avg)
+  const radarData = useMemo(() => {
+    const dims = [
+      { key: 'econ', label: 'Economic Dependency' },
+      { key: 'res', label: 'Residential Instability' },
+      { key: 'eth', label: 'Ethno-cultural Comp.' },
+      { key: 'sit', label: 'Situational Vuln.' },
+    ] as const;
+
+    const calcGroupAvg = (targetGrade?: string) => {
+      const targetList = targetGrade 
+        ? processedStops.filter((s) => !s.is_regional && s.dynamicGrade === targetGrade)
+        : processedStops.filter((s) => !s.is_regional);
+      
+      const sums = { econ: 0, res: 0, eth: 0, sit: 0 };
+      let count = 0;
+
+      targetList.forEach((s) => {
+        if (s.das && s.das.length > 0) {
+          count++;
+          s.das.forEach((da) => {
+            const w = (da.pct || 0) / 100;
+            sums.econ += (da.econ ?? 50) * w;
+            sums.res += (da.res ?? 50) * w;
+            sums.eth += (da.eth ?? 50) * w;
+            sums.sit += (da.sit ?? 50) * w;
+          });
+        }
+      });
+
+      const div = count || 1;
+      return {
+        econ: Math.round(sums.econ / div),
+        res: Math.round(sums.res / div),
+        eth: Math.round(sums.eth / div),
+        sit: Math.round(sums.sit / div),
+      };
+    };
+
+    const avgCity = calcGroupAvg();
+    const avgGradeA = calcGroupAvg('A');
+    const avgGradeE = calcGroupAvg('E');
+
+    return dims.map((d) => ({
+      dimension: d.label,
+      GradeE: avgGradeE[d.key],
+      GradeA: avgGradeA[d.key],
+      CityAvg: avgCity[d.key],
+    }));
+  }, [processedStops]);
+
+  // 3. Top 10 Most Vulnerable Neighbourhood DA Clusters
+  const neighbourhoodRankData = useMemo(() => {
+    const clusters: Record<string, { sum: number; count: number }> = {};
+
+    processedStops.forEach((s) => {
+      if (s.is_regional || !s.neighborhood) return;
+      if (!clusters[s.neighborhood]) {
+        clusters[s.neighborhood] = { sum: 0, count: 0 };
       }
+      clusters[s.neighborhood].sum += s.dynamicScore;
+      clusters[s.neighborhood].count += 1;
     });
-    return result;
+
+    const list = Object.entries(clusters).map(([name, data]) => ({
+      name,
+      avgScore: Number((data.sum / (data.count || 1)).toFixed(1)),
+      count: data.count
+    }));
+
+    // Top 10 lowest scores (Most Vulnerable)
+    list.sort((a, b) => a.avgScore - b.avgScore);
+    return list.slice(0, 10);
   }, [processedStops]);
 
   // 4. Grade Donut Distribution Data
@@ -291,41 +307,13 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
       if (counts[s.dynamicGrade] !== undefined) counts[s.dynamicGrade]++;
     });
 
+    const total = processedStops.length || 1;
     return (['A', 'B', 'C', 'D', 'E', 'Regional'] as const).map((g) => ({
       name: g === 'Regional' ? 'Regional Partner' : `Grade ${g}`,
       value: counts[g],
+      pct: Number(((counts[g] / total) * 100).toFixed(1)),
       color: GRADE_COLORS[g]
     }));
-  }, [processedStops]);
-
-  // 5. Multi-Route Density Bar Chart Data
-  const densityBarData = useMemo(() => {
-    const categories = [
-      { key: '1 Route', min: 1, max: 1 },
-      { key: '2 Routes', min: 2, max: 2 },
-      { key: '3-5 Routes', min: 3, max: 5 },
-      { key: '6+ Routes', min: 6, max: 99 }
-    ];
-
-    return categories.map((cat) => {
-      const counts: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-      processedStops.forEach((s) => {
-        if (s.is_regional) return;
-        const numRoutes = s.das ? Math.min(6, Math.max(1, Math.floor((s.approxPop / 400)))) : 1;
-        if (numRoutes >= cat.min && numRoutes <= cat.max) {
-          if (counts[s.dynamicGrade] !== undefined) counts[s.dynamicGrade]++;
-        }
-      });
-
-      return {
-        category: cat.key,
-        GradeA: counts['A'],
-        GradeB: counts['B'],
-        GradeC: counts['C'],
-        GradeD: counts['D'],
-        GradeE: counts['E'],
-      };
-    });
   }, [processedStops]);
 
   const handleExportCSV = () => {
@@ -367,7 +355,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
               <BarChart2 className="w-5 h-5 text-[#1e3a8a]" /> ETS Bus Stop Analytics Workspace
             </h1>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              City-wide spatial vulnerability, catchment density, and equity distribution analytics
+              City-wide spatial vulnerability, catchment overlap, and demographic radar profiles
             </p>
           </div>
         </div>
@@ -426,14 +414,14 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         {loading ? (
           <div className="h-full flex flex-col items-center justify-center bg-slate-50 text-slate-500">
             <div className="w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full animate-spin mb-3"></div>
-            <span className="text-xs font-bold uppercase tracking-wider">Generating Visualizations for 6,700+ Bus Stops...</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Analyzing 6,700+ Bus Stop Geometries...</span>
           </div>
         ) : (
           <div className="space-y-6 max-w-7xl mx-auto">
             {/* Top Stat Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Analyzed Stops</div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Analyzed Bus Stops</div>
                 <div className="text-2xl font-black text-slate-900 mt-1 font-mono">{processedStops.length.toLocaleString()}</div>
                 <div className="text-[10px] text-emerald-600 font-bold mt-1">GTFS Verified</div>
               </div>
@@ -442,7 +430,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                 <div className="text-2xl font-black text-[#1e3a8a] mt-1 font-mono">
                   {processedStops.filter((s) => !s.is_regional).length.toLocaleString()}
                 </div>
-                <div className="text-[10px] text-slate-400 font-bold mt-1">Edmonton City Limits</div>
+                <div className="text-[10px] text-slate-400 font-bold mt-1">20% Quintile Split</div>
               </div>
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Regional Partner Stops</div>
@@ -452,36 +440,36 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                 <div className="text-[10px] text-slate-400 font-bold mt-1">St. Albert, Sherwood Park, Spruce Grove</div>
               </div>
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Avg Catchment Pop</div>
-                <div className="text-2xl font-black text-amber-600 mt-1 font-mono">
-                  {Math.round(processedStops.reduce((sum, s) => sum + s.approxPop, 0) / (processedStops.length || 1)).toLocaleString()}
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Quintile Cut Thresholds</div>
+                <div className="text-sm font-black text-amber-600 mt-2 font-mono">
+                  E &lt; 38 | D &lt; 51 | C &lt; 64 | B &lt; 78
                 </div>
-                <div className="text-[10px] text-slate-400 font-bold mt-1">People per 400m Walk Buffer</div>
+                <div className="text-[10px] text-slate-400 font-bold mt-0.5">Dynamic Score Boundaries</div>
               </div>
             </div>
 
             {/* 2-Column Section 1 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Chart 1: Catchment Size vs. Equity Need Scatter */}
+              {/* Chart 1: DA Catchment Overlap vs. Equity Score (Scatter Matrix) */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <div>
                       <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                        <TrendingUp className="w-4 h-4 text-[#1e3a8a]" /> Density vs. Equity Need Scatter
+                        <TrendingUp className="w-4 h-4 text-[#1e3a8a]" /> DA Catchment Overlap vs. Equity Score
                       </h3>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                        High Population + High Equity Need quadrant highlights target investment areas
+                        Plots stops by number of served Dissemination Areas (Y) vs Equity Score (X)
                       </p>
                     </div>
                   </div>
                   <div className="h-72 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
+                      <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis type="number" dataKey="x" name="Equity Score" unit="" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Blended Equity Score', position: 'bottom', offset: 0, fontSize: 10, fill: '#64748b' }} />
-                        <YAxis type="number" dataKey="y" name="Population" stroke="#94a3b8" fontSize={10} label={{ value: 'Catchment Density', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
-                        <ZAxis type="number" dataKey="z" range={[40, 40]} />
+                        <XAxis type="number" dataKey="x" name="Equity Score" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Blended Equity Score (0-100)', position: 'bottom', offset: 0, fontSize: 10, fill: '#64748b' }} />
+                        <YAxis type="number" dataKey="y" name="DA Count" domain={[1, 6]} allowDecimals={false} stroke="#94a3b8" fontSize={10} label={{ value: 'Served DAs Count', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
+                        <ZAxis type="number" dataKey="z" range={[35, 35]} />
                         <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
@@ -489,12 +477,12 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                               <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 z-50 border border-slate-700">
                                 <div className="font-bold border-b border-slate-700 pb-1">{data.name} (#{data.stop_id})</div>
                                 <div className="flex justify-between text-[11px] gap-4">
-                                  <span className="text-slate-400">Blended Score:</span>
+                                  <span className="text-slate-400">Equity Score:</span>
                                   <span className="font-mono font-bold">{data.x} / 100</span>
                                 </div>
                                 <div className="flex justify-between text-[11px] gap-4">
-                                  <span className="text-slate-400">Catchment Pop:</span>
-                                  <span className="font-mono font-bold">{data.y.toLocaleString()}</span>
+                                  <span className="text-slate-400">DAs Served:</span>
+                                  <span className="font-mono font-bold">{data.y} DA(s)</span>
                                 </div>
                                 <div className="flex justify-between text-[11px] gap-4">
                                   <span className="text-slate-400">Grade Tier:</span>
@@ -516,32 +504,31 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                 </div>
               </div>
 
-              {/* Chart 2: CIMD Dimension Profiles */}
+              {/* Chart 2: CIMD Radar Profile */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <div>
                       <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                        <Layers className="w-4 h-4 text-[#1e3a8a]" /> CIMD Vulnerability Drivers by Grade
+                        <Compass className="w-4 h-4 text-rose-600" /> CIMD Radar Profile (Grade E vs. Grade A vs. City)
                       </h3>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                        Average CIMD sub-dimension scores across stop grade categories
+                        Compares socio-economic vulnerability drivers across high and low-performing stops
                       </p>
                     </div>
                   </div>
-                  <div className="h-72 w-full">
+                  <div className="h-72 w-full flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={cimdProfileData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="grade" stroke="#94a3b8" fontSize={10} />
-                        <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} />
+                      <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
+                        <PolarGrid stroke="#e2e8f0" />
+                        <PolarAngleAxis dataKey="dimension" stroke="#64748b" fontSize={10} />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#cbd5e1" fontSize={9} />
+                        <Radar name="Grade E (Low Equity)" dataKey="GradeE" stroke="#EF4444" fill="#EF4444" fillOpacity={0.35} />
+                        <Radar name="Grade A (High Equity)" dataKey="GradeA" stroke="#10B981" fill="#10B981" fillOpacity={0.25} />
+                        <Radar name="City Average" dataKey="CityAvg" stroke="#64748B" fill="#64748B" fillOpacity={0.15} />
+                        <Legend wrapperStyle={{ fontSize: '10px' }} />
                         <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px' }} />
-                        <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
-                        <Bar dataKey="Economic" fill="#C084FC" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Residential" fill="#60A5FA" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Ethnocultural" fill="#FBBF24" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Situational" fill="#F472B6" radius={[4, 4, 0, 0]} />
-                      </BarChart>
+                      </RadarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -550,41 +537,40 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
 
             {/* 2-Column Section 2 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Chart 3: Cumulative Population Lorenz S-Curve */}
+              {/* Chart 3: Top 10 Most Vulnerable Neighbourhood Clusters */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <div>
                       <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                        <TrendingUp className="w-4 h-4 text-emerald-600" /> Cumulative Population Lorenz "S-Curve"
+                        <MapPin className="w-4 h-4 text-amber-600" /> Top 10 Most Vulnerable Neighbourhood DA Clusters
                       </h3>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                        Measures transit accessibility distribution equality across Edmonton neighborhoods
+                        Edmonton DA clusters with the lowest average bus stop equity scores
                       </p>
                     </div>
                   </div>
                   <div className="h-72 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={lorenzCurveData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <BarChart layout="vertical" data={neighbourhoodRankData} margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="percentile" stroke="#94a3b8" fontSize={10} />
-                        <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} unit="%" />
+                        <XAxis type="number" domain={[0, 100]} stroke="#94a3b8" fontSize={10} />
+                        <YAxis type="category" dataKey="name" stroke="#64748b" fontSize={10} width={80} />
                         <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px' }} />
-                        <Area type="monotone" dataKey="actualCumPop" name="Cumulative Population Served" stroke="#10B981" fill="#D1FAE5" strokeWidth={2} />
-                        <Area type="monotone" dataKey="perfectEquality" name="Line of Perfect Equality" stroke="#94A3B8" fill="none" strokeDasharray="4 4" strokeWidth={1.5} />
-                      </AreaChart>
+                        <Bar dataKey="avgScore" name="Avg Stop Score" fill="#F97316" radius={[0, 4, 4, 0]} />
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
               </div>
 
-              {/* Chart 4: Grade Donut Distribution */}
+              {/* Chart 4: Dynamic Grade Donut Distribution */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <div>
                       <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                        <PieIcon className="w-4 h-4 text-[#1e3a8a]" /> Grade Tier Distribution
+                        <PieIcon className="w-4 h-4 text-[#1e3a8a]" /> Quintile Tier Share Distribution
                       </h3>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                         Dynamic quintile proportions of municipal and regional bus stop inventory
@@ -607,42 +593,23 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
-                        <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px' }} />
+                        <RechartsTooltip content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-xl text-xs space-y-1 border border-slate-700">
+                                <div className="font-bold">{data.name}</div>
+                                <div className="text-slate-300 font-mono">{data.value.toLocaleString()} stops ({data.pct}%)</div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} />
                         <Legend wrapperStyle={{ fontSize: '10px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Bottom Row: Multi-Route Density Bar */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-[#1e3a8a]" /> Transit Node Multi-Route Density
-                  </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Categorizes stops by corridor connection density and grade breakdown
-                  </p>
-                </div>
-              </div>
-              <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={densityBarData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="category" stroke="#94a3b8" fontSize={10} />
-                    <YAxis stroke="#94a3b8" fontSize={10} />
-                    <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px' }} />
-                    <Legend wrapperStyle={{ fontSize: '10px' }} />
-                    <Bar dataKey="GradeA" name="Grade A" stackId="a" fill="#10B981" />
-                    <Bar dataKey="GradeB" name="Grade B" stackId="a" fill="#3B82F6" />
-                    <Bar dataKey="GradeC" name="Grade C" stackId="a" fill="#F59E0B" />
-                    <Bar dataKey="GradeD" name="Grade D" stackId="a" fill="#F97316" />
-                    <Bar dataKey="GradeE" name="Grade E" stackId="a" fill="#EF4444" opacity={0.9} />
-                  </BarChart>
-                </ResponsiveContainer>
               </div>
             </div>
           </div>
