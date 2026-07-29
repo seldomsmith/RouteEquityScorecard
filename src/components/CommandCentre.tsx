@@ -18,8 +18,10 @@ import { mapStabilityClass } from '@/utils/stability';
 
 const Map = dynamic(() => import('@/components/map/Map'), { ssr: false });
 
+import { PageView } from '@/components/widgets/GlobalNavMenu';
+
 interface CommandCentreProps {
-  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
+  onNavigate?: (page: PageView) => void;
 }
 
 export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
