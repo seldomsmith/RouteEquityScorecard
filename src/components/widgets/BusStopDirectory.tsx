@@ -12,6 +12,8 @@ export interface BusStopRecord {
   economic_score: number;
   equal_percentile?: number | null;
   economic_percentile?: number | null;
+  equal_grade?: string;
+  economic_grade?: string;
   is_regional?: boolean;
   das: Array<{
     da_id: string;
@@ -182,25 +184,38 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {(() => {
-                    if (stop.is_regional) {
+                    const grade = mode === 'equal' 
+                      ? (stop.equal_grade || (stop.is_regional ? 'Regional' : 'C'))
+                      : (stop.economic_grade || (stop.is_regional ? 'Regional' : 'C'));
+                    const percentile = mode === 'equal' 
+                      ? (stop.equal_percentile ?? null)
+                      : (stop.economic_percentile ?? null);
+
+                    if (stop.is_regional || grade === 'Regional') {
                       return (
-                        <div className="px-2.5 py-1 rounded-lg border bg-slate-100 text-slate-500 border-slate-200 text-right font-mono font-bold text-xs shadow-sm opacity-80">
-                          <div>N/A</div>
+                        <div className="px-2.5 py-1 rounded-lg border bg-slate-100 text-slate-500 border-slate-200 text-right font-mono font-bold text-xs shadow-xs opacity-85">
+                          <div className="text-slate-600 font-bold">Regional</div>
                           <div className="text-[8px] uppercase tracking-wider font-semibold opacity-90 text-slate-400">
-                            Regional
+                            Outside City
                           </div>
                         </div>
                       );
                     }
-                    const percentile = mode === 'equal' 
-                      ? (stop.equal_percentile ?? stop.equal_score)
-                      : (stop.economic_percentile ?? stop.economic_score);
-                    const badge = getScoreBadge(percentile);
+
+                    const cfgMap: Record<string, { bg: string; text: string }> = {
+                      A: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', text: 'Grade A' },
+                      B: { bg: 'bg-blue-50 text-blue-700 border-blue-200', text: 'Grade B' },
+                      C: { bg: 'bg-amber-50 text-amber-700 border-amber-200', text: 'Grade C' },
+                      D: { bg: 'bg-orange-50 text-orange-700 border-orange-200', text: 'Grade D' },
+                      E: { bg: 'bg-red-50 text-red-700 border-red-200', text: 'Grade E' },
+                    };
+                    const cfg = cfgMap[grade] || cfgMap['C'];
+
                     return (
-                      <div className={`px-2.5 py-1 rounded-lg border ${badge.bg} text-right font-mono font-bold text-xs shadow-sm`}>
-                        <div>{percentile !== null && percentile !== undefined ? `${percentile.toFixed(0)}th %ile` : 'N/A'}</div>
-                        <div className="text-[8px] uppercase tracking-wider font-semibold opacity-90 text-slate-500">
-                          Score: {score.toFixed(1)}
+                      <div className={`px-2.5 py-1 rounded-lg border ${cfg.bg} text-right font-mono font-bold text-xs shadow-xs`}>
+                        <div>{cfg.text}</div>
+                        <div className="text-[8px] uppercase tracking-wider font-semibold opacity-90">
+                          {percentile !== null && percentile !== undefined ? `${percentile.toFixed(0)}th %ile` : `Score: ${score.toFixed(1)}`}
                         </div>
                       </div>
                     );
