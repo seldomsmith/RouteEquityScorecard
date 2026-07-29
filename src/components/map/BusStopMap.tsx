@@ -40,12 +40,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   const isLoadedRef = useRef<boolean>(false);
 
   // Helper to push stops data into Mapbox source
-  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[]) => {
+  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[] = []) => {
     const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
     if (!source || currentStops.length === 0) return;
 
     // Filter stops by selectedGrades
-    const filteredStops = currentGrades.length === 6 
+    const filteredStops = currentGrades?.length === 6 || !currentGrades?.length
       ? currentStops 
       : currentStops.filter((s) => {
           const grade = (currentMode === 'equal' 
@@ -251,7 +251,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
       // Initial data push on map load
       if (stops.length > 0) {
-        updateStopsSource(map, stops, mode);
+        updateStopsSource(map, stops, mode, selectedGrades);
         updateDaHeatmap(map, daScores, mode);
       }
 
