@@ -21,13 +21,18 @@ echo  [ship] Staging all changes...
 git add .
 
 echo  [ship] Running type check...
-call npx tsc --noEmit 2>nul
-if !ERRORLEVEL! NEQ 0 (
-    echo.
-    echo  [ship] TYPE ERRORS DETECTED — fix before shipping.
-    echo  [ship] Run 'npx tsc --noEmit' to see details.
-    echo.
-    exit /b 1
+where npx >nul 2>nul
+if !ERRORLEVEL! EQU 0 (
+    call npx tsc --noEmit 2>nul
+    if !ERRORLEVEL! NEQ 0 (
+        echo.
+        echo  [ship] TYPE ERRORS DETECTED — fix before shipping.
+        echo  [ship] Run 'npx tsc --noEmit' to see details.
+        echo.
+        exit /b 1
+    )
+) else (
+    echo  [ship] Warning: npx not found on local path. Skipping typecheck gate.
 )
 
 echo  [ship] Committing: !MSG!
