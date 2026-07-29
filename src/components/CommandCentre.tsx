@@ -12,7 +12,6 @@ import { NetworkDistribution } from '@/components/charts/NetworkDistribution';
 import { Sidebar } from '@/components/Sidebar';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { RouteStabilityScatter } from '@/components/charts/RouteStabilityScatter';
-import { DataExplorerModal } from '@/components/widgets/DataExplorerModal';
 import { TernaryWeightTerrain } from '@/components/widgets/TernaryWeightTerrain';
 import { mapStabilityClass } from '@/utils/stability';
 
@@ -40,7 +39,6 @@ export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
   const [sensitivityData4Pillar, setSensitivityData4Pillar] = React.useState<Record<string, any>>({});
   const [sensitivityData2Pillar, setSensitivityData2Pillar] = React.useState<Record<string, any>>({});
   const [daAreaMap, setDaAreaMap] = React.useState<Record<string, number>>({});
-  const [showDataExplorer, setShowDataExplorer] = React.useState(false);
 
   const sensitivityData = is2PillarActive ? sensitivityData2Pillar : sensitivityData4Pillar;
 
@@ -277,7 +275,7 @@ export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
       <div className="w-72 border-r border-slate-200 h-full flex-shrink-0 hidden md:block">
         <Sidebar 
           routes={muniRoutes} 
-          onViewDirectory={() => setShowDataExplorer(true)} 
+          onViewDirectory={() => onNavigate?.('directory')} 
           onNavigate={onNavigate}
         />
       </div>
@@ -361,14 +359,6 @@ export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
         </div>
       </div>
       <SpotlightSearch routes={muniRoutes} />
-      
-      <DataExplorerModal 
-        isOpen={showDataExplorer} 
-        onClose={() => setShowDataExplorer(false)} 
-        allRoutesData={muniRoutes}
-        weights={weights} 
-        sensitivityData={Object.values(sensitivityData)}
-      />
     </div>
   );
 };
