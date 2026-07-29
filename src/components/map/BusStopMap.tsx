@@ -377,15 +377,15 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     if (!map) return;
 
     if (map.isStyleLoaded()) {
-      updateStopsSource(map, stops, mode);
+      updateStopsSource(map, stops, mode, selectedGrades);
       updateDaHeatmap(map, daScores, mode);
     } else {
       map.once('load', () => {
-        updateStopsSource(map, stops, mode);
+        updateStopsSource(map, stops, mode, selectedGrades);
         updateDaHeatmap(map, daScores, mode);
       });
     }
-  }, [stops, mode, daScores]);
+  }, [stops, mode, daScores, selectedGrades]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
