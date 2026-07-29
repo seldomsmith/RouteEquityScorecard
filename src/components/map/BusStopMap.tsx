@@ -426,14 +426,14 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
     if (map.isStyleLoaded()) {
       updateStopsSource(map, stops, mode, selectedGrades);
-      updateDaHeatmap(map, daScores, mode, targetStop);
+      updateDaHeatmap(map, daScores, targetStop);
     } else {
       map.once('load', () => {
         updateStopsSource(map, stops, mode, selectedGrades);
-        updateDaHeatmap(map, daScores, mode, targetStop);
+        updateDaHeatmap(map, daScores, targetStop);
       });
     }
-  }, [stops, mode, daScores, selectedGrades, selectedStopId]);
+  }, [stops, mode, daScores, selectedGrades, selectedStopId, activeDimensions, showHeatmap]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
@@ -444,7 +444,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
       const source = map.getSource('selected-buffer') as mapboxgl.GeoJSONSource;
       const targetStop = stops.find((s) => s.stop_id === selectedStopId) || null;
 
-      updateDaHeatmap(map, daScores, mode, targetStop);
+      updateDaHeatmap(map, daScores, targetStop);
 
       if (!selectedStopId || !targetStop) {
         if (source) source.setData({ type: 'FeatureCollection', features: [] });
