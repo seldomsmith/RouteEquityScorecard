@@ -9,6 +9,8 @@ mapboxgl.accessToken =
   'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' +
   '.55Khr0Cuwie_8YBv_QPfsA';
 
+import { BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
+
 interface BusStopMapProps {
   stops: BusStopRecord[];
   daScores: Record<string, any>;
@@ -16,6 +18,7 @@ interface BusStopMapProps {
   mode: 'equal' | 'economic';
   is3dEnabled: boolean;
   isDirectoryOpen?: boolean;
+  selectedGrades?: BusStopGrade[];
   onSelectStop: (stopId: string | null) => void;
 }
 
@@ -28,6 +31,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   mode,
   is3dEnabled,
   isDirectoryOpen,
+  selectedGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
   onSelectStop
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -36,14 +40,27 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   const isLoadedRef = useRef<boolean>(false);
 
   // Helper to push stops data into Mapbox source
-  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic') => {
+  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[]) => {
     const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
     if (!source || currentStops.length === 0) return;
 
-    const features: GeoJSON.Feature[] = currentStops.map((s) => {
+    // Filter stops by selectedGrades
+    const filteredStops = currentGrades.length === 6 
+      ? currentStops 
+      : currentStops.filter((s) => {
+          const grade = (currentMode === 'equal' 
+            ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
+            : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
+          return currentGrades.includes(grade);
+        });
+
+    const features: GeoJSON.Feature[] = filteredStops.map((s) => {
       const score = currentMode === 'equal' ? s.equal_score : s.economic_score;
       const rawPercentile = currentMode === 'equal' ? s.equal_percentile : s.economic_percentile;
       const percentile = (rawPercentile !== undefined && rawPercentile !== null) ? rawPercentile : score;
+      const grade = currentMode === 'equal' 
+        ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
+        : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'));
 
       return {
         type: 'Feature',
@@ -52,6 +69,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           stop_name: s.stop_name,
           score,
           percentile,
+          grade,
           is_regional: s.is_regional ? 1 : 0,
         },
         geometry: {
@@ -194,20 +212,23 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           ],
           'circle-color': [
             'case',
-            ['==', ['get', 'is_regional'], 1], '#10b981', // Regional stops colored Emerald Green
+            ['==', ['get', 'is_regional'], 1], '#94A3B8', // Regional stops grayed out (Slate-400)
             [
-              'interpolate',
-              ['linear'],
-              ['get', 'percentile'],
-              0, '#10b981',   // Emerald Green (0th %ile / lowest score)
-              20, '#84cc16',  // Lime Green (20th %ile)
-              40, '#eab308',  // Yellow (40th %ile)
-              65, '#f97316',  // Orange (65th %ile)
-              85, '#ef4444',  // Red (85th %ile)
-              100, '#dc2626'  // Deep Red (100th %ile)
+              'match',
+              ['get', 'grade'],
+              'A', '#10B981', // Grade A: Emerald Green
+              'B', '#3B82F6', // Grade B: Royal Blue
+              'C', '#F59E0B', // Grade C: Amber Yellow
+              'D', '#F97316', // Grade D: Orange
+              'E', '#EF4444', // Grade E: Red
+              '#10B981'       // Fallback Emerald
             ]
           ],
-          'circle-opacity': 0.85,
+          'circle-opacity': [
+            'case',
+            ['==', ['get', 'is_regional'], 1], 0.45,
+            0.85
+          ],
           'circle-stroke-width': 0,
         },
       });
