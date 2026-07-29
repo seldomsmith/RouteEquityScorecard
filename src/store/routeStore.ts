@@ -43,6 +43,9 @@ interface RouteState {
   // CIMD Vulnerability Mode
   cimdMode: boolean;
   setCimdMode: (val: boolean) => void;
+
+  // Real DA Population Lookup (extracted from DuckDB route metadata)
+  daPopLookup: Record<string, number>;
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
@@ -61,6 +64,8 @@ export const useRouteStore = create<RouteState>((set) => ({
   activeMetric: 'composite',
   
   removedRoutes: [],
+  
+  daPopLookup: {},
   
   setWeight: (key, value) => set((state) => {
     if (state.disabledWeights.includes(key)) return {};
