@@ -22,6 +22,11 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **Menu Standardization & Bus Stop Quintile A-E Filter Integration (Phase 26)**:
+  - Created standardized `GlobalNavMenu.tsx` component with header **`ETS ROUTE SCORECARD MENU`** and exact ordered items: `Landing Page`, `Explain this to me!`, `Equity Scorecard Dashboard`, `Route Directory`, and `Bus Stop Analysis`.
+  - Embedded `GlobalNavMenu` across all application pages with top-left trigger button for 100% navigation consistency.
+  - Updated `build_stop_vulnerability_asset.py` to assign quintile letter grades (A–E) to Edmonton city bus stops based on continuous percentile ranks, and flag regional stops as `Regional`.
+  - Built interactive floating map legend `BusStopGradeLegend.tsx` for Bus Stop Analysis, enabling users to toggle Grade A (Emerald), Grade B (Blue), Grade C (Amber), Grade D (Orange), Grade E (Red), and Regional (Slate Gray) stops dynamically on both the map and directory.
 - **On Demand Transit (ODT) Zones Integration (Phase 4.5)**:
   - Formulated a 21-zone neighborhood list matching official ETS ODT boundaries to capture 135 census DAs.
   - Updated `scripts/update_vulnerability_index.py` and `scripts/calculate_functional_monopoly.py` to discount vulnerability ($V_i$) by 10% and FMI monopoly score contribution by 50% for DAs in ODT zones.
