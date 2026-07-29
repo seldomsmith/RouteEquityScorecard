@@ -52,6 +52,14 @@
 - [x] Create non-technical methodology guide `docs/BUS_STOP_METHODOLOGY_EXPLAINER.md` <!-- id: 75, priority: high -->
 - [ ] Build interactive "Explain this to me" module for Bus Stop Analysis in the frontend <!-- id: 76, priority: high -->
 
+## Phase 15: Bus Stop Analysis & Directory Major Upgrades
+- [ ] 1. Dynamic 4-Dimension CIMD selector in header with equal weight auto-budgeting (1/2/3/4 selection = 100%, 50%, 33.3%, 25%) <!-- id: 77, priority: high -->
+- [ ] 2. Default light DA heatmap base layer with dynamic shading, spectrum legend, toggle, and minimizable legend card <!-- id: 78, priority: high -->
+- [ ] 3. 400m catchment buffer update: rich purple solid line, 1pt stroke width, hollow fill <!-- id: 79, priority: high -->
+- [ ] 4. Full-page Bus Stop Directory Modal with Grade filter tabs, sortable columns (Stop ID, Neighbourhood, Population 400m, Blended Score, Percentile), and expandable DA breakdown sub-rows <!-- id: 80, priority: critical -->
+- [ ] 5. Add "Bus Stop Directory" link to all navigation menus (`GlobalNavMenu`, `StaggeredMenu`, header/sidebars) <!-- id: 81, priority: high -->
+- [ ] 6. Clean up: Remove obsolete inline directory sidebar from `BusStopAnalysis.tsx` for cleaner map focus <!-- id: 82, priority: medium -->
+
 ## Phase 3.6: Quadrant & Diagnostics Dashboard Polish [COMPLETE]
 - [x] Update title of quadrant scatterplot to "Population-Equity Quadrant" <!-- id: 40, priority: high -->
 - [x] Standardize and lock X and Y axes domains and reference lines dynamically from overall network statistics <!-- id: 41, priority: high -->
