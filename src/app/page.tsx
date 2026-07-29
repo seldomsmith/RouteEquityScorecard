@@ -7,6 +7,7 @@ import { Scrollytelling } from "@/components/Scrollytelling";
 import { ScrollytellingTwoPillar } from "@/components/ScrollytellingTwoPillar";
 import { BusStopAnalysis } from "@/components/BusStopAnalysis";
 import { BusStopDirectoryPage } from "@/components/BusStopDirectoryPage";
+import { BusStopGraphsPage } from "@/components/BusStopGraphsPage";
 import { RouteDirectoryPage } from "@/components/RouteDirectoryPage";
 import { PageView } from "@/components/widgets/GlobalNavMenu";
 
@@ -38,6 +39,18 @@ export default function Home() {
   if (view === 'bus-stop-directory') {
     return (
       <BusStopDirectoryPage 
+        onNavigate={handleNavigate}
+        onSelectStopOnMap={(stopId) => {
+          setTargetBusStopId(stopId);
+          setView('bus-stop-analysis');
+        }}
+      />
+    );
+  }
+
+  if (view === 'bus-stop-graphs') {
+    return (
+      <BusStopGraphsPage 
         onNavigate={handleNavigate}
         onSelectStopOnMap={(stopId) => {
           setTargetBusStopId(stopId);
