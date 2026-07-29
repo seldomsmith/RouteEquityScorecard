@@ -61,7 +61,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
   const [selectedGradeFilter, setSelectedGradeFilter] = useState<BusStopGrade | 'ALL'>('ALL');
 
   const daPopLookup = useRouteStore((s) => s.daPopLookup);
-  const baseRoutes = useRouteStore((s) => s.baseRoutes);
+  const baseRoutes = useRouteStore((s) => s.baseRoutes) || [];
 
   // Load static populations fallback
   useEffect(() => {
