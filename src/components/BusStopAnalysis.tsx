@@ -1,18 +1,16 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { 
   BusStopRecord, 
   BusStopDirectory 
 } from '@/components/widgets/BusStopDirectory';
-import LineSidebar from '@/components/widgets/LineSidebar';
+import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
+import { BusStopGradeLegend, BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
 import { 
   Layers, 
   Box, 
   Menu, 
   X, 
-  MapPin,
   ChevronDown
 } from 'lucide-react';
 
@@ -34,6 +32,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
   const [isDirectoryOpen, setIsDirectoryOpen] = useState<boolean>(true);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedGrades, setSelectedGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
 
   // Load pre-computed Bus Stop Vulnerability asset
   useEffect(() => {
@@ -54,78 +53,39 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
 
   const selectedStop = stops.find((s) => s.stop_id === selectedStopId);
 
-  const menuItems = [
-    'Directory',
-    'Explain this to me!',
-    'Dashboard',
-    'Landing Page',
-    'Bus Stop Analysis'
-  ];
+  // Calculate grade counts for active mode
+  const gradeCounts = useMemo(() => {
+    const counts: Record<BusStopGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, Regional: 0 };
+    stops.forEach((s) => {
+      const g = (mode === 'equal'
+        ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
+        : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
+      if (counts[g] !== undefined) {
+        counts[g]++;
+      }
+    });
+    return counts;
+  }, [stops, mode]);
 
-  const handleMenuItemClick = (index: number, label: string) => {
-    setIsNavMenuOpen(false);
-    if (label === 'Directory') {
-      onNavigate?.('directory');
-    } else if (label === 'Explain this to me!') {
-      onNavigate?.('scrollytelling');
-    } else if (label === 'Dashboard') {
-      onNavigate?.('dashboard');
-    } else if (label === 'Landing Page') {
-      onNavigate?.('landing');
-    } else if (label === 'Bus Stop Analysis') {
-      onNavigate?.('bus-stop-analysis');
-    }
+  const handleToggleGrade = (grade: BusStopGrade) => {
+    setSelectedGrades((prev) => {
+      if (prev.includes(grade)) {
+        if (prev.length === 1) return prev; // Keep at least one selected
+        return prev.filter((g) => g !== grade);
+      }
+      return [...prev, grade];
+    });
   };
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-white text-slate-800 flex flex-col font-sans select-none [&_.mapboxgl-ctrl-bottom-left]:hidden [&_.mapboxgl-ctrl-attrib-inner]:hidden">
-      {/* Frosted Overlay Navigation Menu (Identical to Main Dashboard) */}
-      {isNavMenuOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md transition-all duration-300 flex items-start justify-start p-6 md:p-10"
-          onClick={() => setIsNavMenuOpen(false)}
-        >
-          {/* Menu Dropdown Container */}
-          <div 
-            className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-              <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
-                Navigation Menu
-              </span>
-              <button 
-                onClick={() => setIsNavMenuOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-                title="Close Menu"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <LineSidebar
-              items={menuItems}
-              accentColor="#1e3a8a"
-              textColor="#1e3a8a"
-              markerColor="#94a3b8"
-              showIndex={true}
-              showMarker={true}
-              proximityRadius={110}
-              maxShift={46}
-              falloff="smooth"
-              markerLength={55}
-              markerGap={28}
-              tickScale={0.08}
-              scaleTick={true}
-              itemGap={13}
-              fontSize={1.1}
-              smoothing={800}
-              defaultActive={4}
-              onItemClick={handleMenuItemClick}
-            />
-          </div>
-        </div>
-      )}
+      {/* Standardized Global Navigation Menu */}
+      <GlobalNavMenu
+        isOpen={isNavMenuOpen}
+        onClose={() => setIsNavMenuOpen(false)}
+        onNavigate={onNavigate}
+        activeItemIndex={4}
+      />
 
       {/* Header Bar matching main dashboard exact layout */}
       <header className="relative z-40 h-14 bg-white border-b border-slate-100 px-5 flex items-center justify-between shadow-xs">
@@ -208,15 +168,27 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
               <p className="text-xs font-mono font-medium">Loading 6,700+ GTFS Bus Stops...</p>
             </div>
           ) : (
-            <BusStopMap
-              stops={stops}
-              daScores={daScores}
-              selectedStopId={selectedStopId}
-              mode={mode}
-              is3dEnabled={is3dEnabled}
-              isDirectoryOpen={isDirectoryOpen}
-              onSelectStop={(id) => setSelectedStopId(id)}
-            />
+            <>
+              <BusStopMap
+                stops={stops}
+                daScores={daScores}
+                selectedStopId={selectedStopId}
+                mode={mode}
+                is3dEnabled={is3dEnabled}
+                isDirectoryOpen={isDirectoryOpen}
+                selectedGrades={selectedGrades}
+                onSelectStop={(id) => setSelectedStopId(id)}
+              />
+
+              {/* Floating Grade Legend Control */}
+              <div className="absolute bottom-6 left-6 z-30">
+                <BusStopGradeLegend
+                  selectedGrades={selectedGrades}
+                  onToggleGrade={handleToggleGrade}
+                  gradeCounts={gradeCounts}
+                />
+              </div>
+            </>
           )}
 
           {/* Banner for Selected Stop */}
@@ -278,6 +250,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
             stops={stops}
             selectedStopId={selectedStopId}
             mode={mode}
+            selectedGrades={selectedGrades}
             onSelectStop={(id) => setSelectedStopId(id)}
           />
         )}
