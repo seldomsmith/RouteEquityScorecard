@@ -43,6 +43,8 @@ interface RouteState {
   // CIMD Vulnerability Mode
   cimdMode: boolean;
   setCimdMode: (val: boolean) => void;
+  activeDimensions: ('econ' | 'res' | 'eth' | 'sit')[];
+  toggleDimension: (dim: 'econ' | 'res' | 'eth' | 'sit') => void;
 
   // Real DA Population Lookup (extracted from DuckDB route metadata)
   daPopLookup: Record<string, number>;
@@ -278,4 +280,12 @@ export const useRouteStore = create<RouteState>((set) => ({
   // CIMD Vulnerability Mode
   cimdMode: false,
   setCimdMode: (val) => set({ cimdMode: val }),
+  activeDimensions: ['econ', 'res', 'eth', 'sit'],
+  toggleDimension: (dim) => set((state) => {
+    if (state.activeDimensions.includes(dim)) {
+      if (state.activeDimensions.length === 1) return {}; // Keep at least one selected
+      return { activeDimensions: state.activeDimensions.filter((d) => d !== dim) };
+    }
+    return { activeDimensions: [...state.activeDimensions, dim] };
+  }),
 }));
