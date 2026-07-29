@@ -119,6 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
         onClose={() => setIsMenuOpen(false)}
         onNavigate={onNavigate}
         onViewDirectory={onViewDirectory}
+        onViewBusStopDirectory={onViewBusStopDirectory}
         activeItemIndex={2}
       />
 

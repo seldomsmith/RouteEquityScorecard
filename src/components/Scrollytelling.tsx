@@ -366,6 +366,9 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
           onNavigate={(page) => {
             if (page === 'landing') onBack();
             else if (page === 'dashboard') onJumpIn();
+            else if (page === 'bus-stop-analysis') {
+              onJumpIn();
+            }
           }}
           activeItemIndex={1}
         />
