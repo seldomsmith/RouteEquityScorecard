@@ -32,6 +32,7 @@ const InteractiveToggleMap = dynamic(() => import('./widgets/InteractiveToggleMa
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 const CatchmentBarrierMap = dynamic(() => import('./widgets/CatchmentBarrierMap').then(m => m.CatchmentBarrierMap), { ssr: false });
 import { StaggeredMenu } from './widgets/StaggeredMenu';
+import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { RouteWaterfall } from './RouteWaterfall';
@@ -359,7 +360,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
     return (
       <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
         {/* Global Navigation Menu */}
-        <StaggeredMenu
+        <GlobalNavMenu
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
           onNavigate={(page) => {
