@@ -376,6 +376,38 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
           </div>
         </div>
 
+        {/* CIMD Criteria Weight Controls */}
+        {cimdMode && (
+          <div className="hidden lg:flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl p-1 shadow-2xs">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
+              Criteria Weights ({(100 / (activeDimensions.length || 4)).toFixed(0)}% each):
+            </span>
+            {(
+              [
+                { key: 'econ', label: 'Economic' },
+                { key: 'res', label: 'Residential' },
+                { key: 'eth', label: 'Ethnocultural' },
+                { key: 'sit', label: 'Situational' },
+              ] as const
+            ).map((dim) => {
+              const isActive = activeDimensions.includes(dim.key);
+              return (
+                <button
+                  key={dim.key}
+                  onClick={() => toggleDimension(dim.key)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-[#1e3a8a] text-white shadow-xs'
+                      : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {dim.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportCSV}
