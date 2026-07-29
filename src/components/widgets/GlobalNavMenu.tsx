@@ -8,7 +8,8 @@ export type PageView =
   | 'scrollytelling' 
   | 'scrollytelling-two-pillar' 
   | 'directory' 
-  | 'bus-stop-analysis';
+  | 'bus-stop-analysis'
+  | 'bus-stop-directory';
 
 interface GlobalNavMenuProps {
   isOpen: boolean;
@@ -55,11 +56,7 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
     } else if (label === 'Bus Stop Analysis') {
       onNavigate?.('bus-stop-analysis');
     } else if (label === 'Bus Stop Directory') {
-      if (onViewBusStopDirectory) {
-        onViewBusStopDirectory();
-      } else {
-        onNavigate?.('bus-stop-analysis');
-      }
+      onNavigate?.('bus-stop-directory');
     }
   };
 
