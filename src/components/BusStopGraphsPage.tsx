@@ -687,7 +687,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                       }
                       return null;
                     }} />
-                    <Bar dataKey="spread" name="Score Disparity Spread" fill="#F59E0B" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="scoreRange" name="Score Disparity Range" radius={[4, 4, 4, 4]}>
                       {routeDisparityData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
