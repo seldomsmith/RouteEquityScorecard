@@ -294,4 +294,8 @@ export const useRouteStore = create<RouteState>((set) => ({
     }
     return { activeDimensions: [...state.activeDimensions, dim] };
   }),
+
+  // Heatmap Palette Mode
+  heatmapPalette: 'purple',
+  setHeatmapPalette: (palette) => set({ heatmapPalette: palette }),
 }));
