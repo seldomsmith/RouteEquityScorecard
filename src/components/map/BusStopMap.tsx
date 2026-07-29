@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { BusStopRecord } from '@/components/widgets/BusStopDirectory';
+import { useRouteStore } from '@/store/routeStore';
 
 mapboxgl.accessToken =
   'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' +
@@ -13,6 +14,24 @@ import { BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
 
 export type CimdDimensionKey = 'econ' | 'res' | 'eth' | 'sit';
 
+interface PaletteColors {
+  l1: string; // low (under 35)
+  l2: string; // med-low (35-50)
+  l3: string; // med (50-65)
+  l4: string; // med-high (65-80)
+  l5: string; // high (over 80)
+}
+
+const PALETTES: Record<string, PaletteColors> = {
+  purple: { l1: '#FAF5FF', l2: '#DDD6FE', l3: '#C4B5FD', l4: '#A78BFA', l5: '#7C3AED' },
+  teal: { l1: '#F0FDFA', l2: '#CCFBF1', l3: '#99F6E4', l4: '#5EEAD4', l5: '#0F766E' },
+  emerald: { l1: '#F0FDF4', l2: '#DCFCE7', l3: '#BBF7D0', l4: '#86EFAC', l5: '#064E3B' },
+  carbon: { l1: '#F8FAFC', l2: '#E2E8F0', l3: '#CBD5E1', l4: '#94A3B8', l5: '#0F172A' },
+  divergent: { l1: '#D1FAE5', l2: '#A7F3D0', l3: '#FEF3C7', l4: '#FDE68A', l5: '#EF4444' }, // Green to Red
+  sunrise: { l1: '#FEF3C7', l2: '#FDE68A', l3: '#F472B6', l4: '#E11D48', l5: '#BE185D' }, // Yellow to Pink
+  sunset: { l1: '#FFEDD5', l2: '#FED7AA', l3: '#F97316', l4: '#EA580C', l5: '#991B1B' } // Orange to Red
+};
+
 interface BusStopMapProps {
   stops: BusStopRecord[];
   daScores: Record<string, any>;
@@ -21,7 +40,7 @@ interface BusStopMapProps {
   is3dEnabled: boolean;
   isDirectoryOpen?: boolean;
   selectedGrades?: BusStopGrade[];
-  activeDimensions?: CimdDimensionKey[];
+  activeDimensions: CimdDimensionKey[];
   showHeatmap?: boolean;
   onSelectStop: (stopId: string | null) => void;
 }
@@ -36,7 +55,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   is3dEnabled,
   isDirectoryOpen,
   selectedGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
-  activeDimensions = ['econ', 'res', 'eth', 'sit'],
+  activeDimensions,
   showHeatmap = true,
   onSelectStop
 }) => {
@@ -44,6 +63,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const isLoadedRef = useRef<boolean>(false);
+  const heatmapPalette = useRouteStore((s) => s.heatmapPalette);
 
   // Helper to push stops data into Mapbox source
   const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[] = []) => {
@@ -106,6 +126,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     const dimWeight = 1 / numDims;
 
     const matchExpr: any[] = ['match', ['get', 'DAUID']];
+    const colors = PALETTES[heatmapPalette] || PALETTES.purple;
 
     if (targetStop && targetStop.das && targetStop.das.length > 0) {
       // Isolate heatmap to selected stop's 400m catchment DAs
@@ -119,12 +140,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         if (activeDimensions.includes('eth')) score += (daItemAny.eth ?? 50) * dimWeight;
         if (activeDimensions.includes('sit')) score += (daItemAny.sit ?? 50) * dimWeight;
 
-        let color = '#F3E8FF';
-        if (score >= 80) color = '#4C1D95';      // Deep Dark Purple (Highest Equity Need)
-        else if (score >= 65) color = '#6D28D9'; // Rich Purple
-        else if (score >= 50) color = '#8B5CF6'; // Vibrant Violet
-        else if (score >= 35) color = '#C4B5FD'; // Soft Lavender
-        else color = '#F3E8FF';                  // Light Pale Purple (Low Equity Need)
+        let color = colors.l1;
+        if (score >= 80) color = colors.l5;
+        else if (score >= 65) color = colors.l4;
+        else if (score >= 50) color = colors.l3;
+        else if (score >= 35) color = colors.l2;
+        else color = colors.l1;
 
         matchExpr.push(daId, color);
       });
@@ -138,12 +159,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         if (activeDimensions.includes('eth')) val += (scores.eth ?? 50) * dimWeight;
         if (activeDimensions.includes('sit')) val += (scores.sit ?? 50) * dimWeight;
 
-        let color = '#FAF5FF';
-        if (val >= 80) color = '#7C3AED';      // Deep Purple
-        else if (val >= 65) color = '#A78BFA'; // Medium Purple
-        else if (val >= 50) color = '#C4B5FD'; // Lavender
-        else if (val >= 35) color = '#DDD6FE'; // Soft Tinted Purple
-        else color = '#F5F3FF';                  // Very Light Purple Tint Base
+        let color = colors.l1;
+        if (val >= 80) color = colors.l5;
+        else if (val >= 65) color = colors.l4;
+        else if (val >= 50) color = colors.l3;
+        else if (val >= 35) color = colors.l2;
+        else color = colors.l1;
 
         matchExpr.push(daId, color);
       });
@@ -433,7 +454,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         updateDaHeatmap(map, daScores, targetStop);
       });
     }
-  }, [stops, mode, daScores, selectedGrades, selectedStopId, activeDimensions, showHeatmap]);
+  }, [stops, mode, daScores, selectedGrades, selectedStopId, activeDimensions, showHeatmap, heatmapPalette]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
@@ -493,7 +514,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     } else {
       map.once('load', renderBuffer);
     }
-  }, [selectedStopId, stops, daScores, mode]);
+  }, [selectedStopId, stops, daScores, mode, heatmapPalette]);
 
   return (
     <div className="relative w-full h-full">
