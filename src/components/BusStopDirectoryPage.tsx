@@ -395,7 +395,8 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
               <span>Loading Edmonton Bus Stop Records...</span>
             </div>
           ) : (
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <>
+              <table className="w-full text-left border-collapse min-w-[900px]">
               <thead className="sticky top-0 bg-slate-100/95 backdrop-blur-md z-10 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                 <tr>
                   <th className="py-3.5 px-4 w-12"></th>
@@ -643,37 +644,38 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
               </tbody>
             </table>
 
-            {/* Pagination Controls */}
-            {filteredStops.length > itemsPerPage && (
-              <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between">
-                <div className="text-xs font-semibold text-slate-500">
-                  Showing <span className="font-bold text-slate-700">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
-                  <span className="font-bold text-slate-700">
-                    {Math.min(currentPage * itemsPerPage, filteredStops.length)}
-                  </span>{' '}
-                  of <span className="font-bold text-slate-700">{filteredStops.length}</span> bus stops
+              {/* Pagination Controls */}
+              {filteredStops.length > itemsPerPage && (
+                <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+                  <div className="text-xs font-semibold text-slate-500">
+                    Showing <span className="font-bold text-slate-700">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+                    <span className="font-bold text-slate-700">
+                      {Math.min(currentPage * itemsPerPage, filteredStops.length)}
+                    </span>{' '}
+                    of <span className="font-bold text-slate-700">{filteredStops.length}</span> bus stops
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-xs font-bold text-slate-650 px-2">
+                      Page {currentPage} of {Math.ceil(filteredStops.length / itemsPerPage)}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(Math.ceil(filteredStops.length / itemsPerPage), p + 1))}
+                      disabled={currentPage >= Math.ceil(filteredStops.length / itemsPerPage)}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-xs font-bold text-slate-650 px-2">
-                    Page {currentPage} of {Math.ceil(filteredStops.length / itemsPerPage)}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.min(Math.ceil(filteredStops.length / itemsPerPage), p + 1))}
-                    disabled={currentPage >= Math.ceil(filteredStops.length / itemsPerPage)}
-                    className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </>
           )}
         </div>
       </div>
