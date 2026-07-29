@@ -254,7 +254,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
 
   // 4. Route Grade Disparity Ratio Bar Chart Data (Sample 20 Key Routes)
   const routeDisparityData = useMemo(() => {
-    if (baseRoutes.length === 0) return [];
+    if (!baseRoutes || baseRoutes.length === 0) return [];
     
     return baseRoutes.slice(0, 20).map((r) => {
       const minScore = Math.max(15, Math.round(r.composite_score * 0.65));
@@ -274,7 +274,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
 
   // 5. Corridors of Vulnerability Scatter Plot Data (Route Length vs Avg Stop Score)
   const corridorsScatterData = useMemo(() => {
-    if (baseRoutes.length === 0) return [];
+    if (!baseRoutes || baseRoutes.length === 0) return [];
 
     return baseRoutes.filter((r) => !r.is_regional).map((r) => ({
       x: Number((r.route_length_km || 12.4).toFixed(1)),
