@@ -246,8 +246,19 @@ export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
           });
           
           console.log(`📊 Engine -> ${routes.length} routes loaded (coords + pillars + DA metadata)`);
-          setBaseRoutes(routes);
           
+          // Build and store DA Population lookup map
+          const lookup: Record<string, number> = {};
+          routes.forEach((r) => {
+            if (r.da_data) {
+              r.da_data.forEach((da) => {
+                lookup[da.id] = da.pop;
+              });
+            }
+          });
+          useRouteStore.setState({ daPopLookup: lookup });
+
+          setBaseRoutes(routes);
           await conn.close();
         } catch (err) {
           console.error("❌ Data Ingestion Failed:", err);
