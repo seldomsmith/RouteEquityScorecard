@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { 
-  BusStopRecord, 
-  BusStopDirectory 
+  BusStopRecord 
 } from '@/components/widgets/BusStopDirectory';
 import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
 import { BusStopGradeLegend, BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
+import { BusStopDirectoryModal, CimdDimensionKey } from '@/components/widgets/BusStopDirectoryModal';
 import { 
   Layers, 
   Box, 
   Menu, 
   X, 
-  ChevronDown
+  ChevronDown,
+  BookOpen
 } from 'lucide-react';
 
 const BusStopMap = dynamic(
@@ -27,12 +28,15 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
   const [stops, setStops] = useState<BusStopRecord[]>([]);
   const [daScores, setDaScores] = useState<Record<string, any>>({});
   const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
-  const [mode, setMode] = useState<'equal' | 'economic'>('equal');
   const [is3dEnabled, setIs3dEnabled] = useState<boolean>(false);
-  const [isDirectoryOpen, setIsDirectoryOpen] = useState<boolean>(true);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState<boolean>(false);
+  const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState<boolean>(false);
+  const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedGrades, setSelectedGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
+  
+  // 4 CIMD Dimension Toggles
+  const [activeDimensions, setActiveDimensions] = useState<CimdDimensionKey[]>(['econ', 'res', 'eth', 'sit']);
 
   // Load pre-computed Bus Stop Vulnerability asset
   useEffect(() => {
@@ -53,19 +57,61 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
 
   const selectedStop = stops.find((s) => s.stop_id === selectedStopId);
 
-  // Calculate grade counts for active mode
+  // Toggle CIMD dimensions with auto-equal weight budgeting
+  const handleToggleDimension = (dim: CimdDimensionKey) => {
+    setActiveDimensions((prev) => {
+      if (prev.includes(dim)) {
+        if (prev.length === 1) return prev; // Keep at least 1 dimension selected
+        return prev.filter((d) => d !== dim);
+      }
+      return [...prev, dim];
+    });
+  };
+
+  const currentDimWeightPct = useMemo(() => {
+    const len = activeDimensions.length || 4;
+    return (100 / len).toFixed(len === 3 ? 1 : 0);
+  }, [activeDimensions]);
+
+  // Calculate dynamic grade counts
   const gradeCounts = useMemo(() => {
     const counts: Record<BusStopGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, Regional: 0 };
+    const numDims = activeDimensions.length || 4;
+    const dimWeight = 1 / numDims;
+
     stops.forEach((s) => {
-      const g = (mode === 'equal'
-        ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
-        : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
-      if (counts[g] !== undefined) {
-        counts[g]++;
+      if (s.is_regional) {
+        counts['Regional']++;
+        return;
       }
+
+      let blendedScore = 0;
+      if (s.das && s.das.length > 0) {
+        s.das.forEach((da) => {
+          let score = 0;
+          if (activeDimensions.includes('econ')) score += (da.econ ?? 50) * dimWeight;
+          if (activeDimensions.includes('res')) score += (da.res ?? 50) * dimWeight;
+          if (activeDimensions.includes('eth')) score += (da.eth ?? 50) * dimWeight;
+          if (activeDimensions.includes('sit')) score += (da.sit ?? 50) * dimWeight;
+
+          blendedScore += score * ((da.pct || 0) / 100);
+        });
+      } else {
+        blendedScore = s.equal_score;
+      }
+
+      let grade: BusStopGrade = 'C';
+      if (blendedScore >= 80) grade = 'A';
+      else if (blendedScore >= 65) grade = 'B';
+      else if (blendedScore >= 50) grade = 'C';
+      else if (blendedScore >= 35) grade = 'D';
+      else grade = 'E';
+
+      if (counts[grade] !== undefined) counts[grade]++;
     });
+
     return counts;
-  }, [stops, mode]);
+  }, [stops, activeDimensions]);
 
   const handleToggleGrade = (grade: BusStopGrade) => {
     setSelectedGrades((prev) => {
@@ -83,7 +129,18 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onNavigate={onNavigate}
+        onViewBusStopDirectory={() => setIsDirectoryModalOpen(true)}
         activeItemIndex={4}
+      />
+
+      {/* Full-Page Bus Stop Directory Modal */}
+      <BusStopDirectoryModal
+        isOpen={isDirectoryModalOpen}
+        onClose={() => setIsDirectoryModalOpen(false)}
+        stops={stops}
+        selectedStopId={selectedStopId}
+        activeDimensions={activeDimensions}
+        onSelectStop={(id) => setSelectedStopId(id)}
       />
 
       {/* Header Bar matching main dashboard exact layout */}
@@ -104,36 +161,51 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
           </button>
         </div>
 
-        {/* Floating Right Controls */}
+        {/* 4 CIMD Dimension Toggles with Auto-Equal Weighting */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 rounded-xl p-1 shadow-2xs">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
+            CIMD Criteria ({currentDimWeightPct}% each):
+          </span>
+
+          {(
+            [
+              { key: 'econ', label: 'Economic' },
+              { key: 'res', label: 'Residential' },
+              { key: 'eth', label: 'Ethnocultural' },
+              { key: 'sit', label: 'Situational' },
+            ] as const
+          ).map((dim) => {
+            const isActive = activeDimensions.includes(dim.key);
+            return (
+              <button
+                key={dim.key}
+                onClick={() => handleToggleDimension(dim.key)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  isActive
+                    ? 'bg-[#1e3a8a] text-white shadow-xs'
+                    : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {dim.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* CIMD Mode Toggle */}
-          <div className="flex items-center bg-slate-100 border border-slate-200/80 rounded-lg p-0.5 shadow-xs">
-            <button
-              onClick={() => setMode('equal')}
-              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                mode === 'equal'
-                  ? 'bg-[#1e3a8a] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              CIMD Equal (25%)
-            </button>
-            <button
-              onClick={() => setMode('economic')}
-              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                mode === 'economic'
-                  ? 'bg-[#1e3a8a] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              100% Economic
-            </button>
-          </div>
+          {/* Full Directory Modal Trigger Button */}
+          <button
+            onClick={() => setIsDirectoryModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-[#1e3a8a] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs hover:bg-[#152e6f] transition-all"
+          >
+            <BookOpen className="w-4 h-4" /> Bus Stop Directory
+          </button>
 
           {/* 3D Feature Toggle */}
           <button
             onClick={() => setIs3dEnabled(!is3dEnabled)}
-            className={`px-3 py-1 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
+            className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
               is3dEnabled
                 ? 'bg-blue-50 border-blue-200 text-[#1e3a8a]'
                 : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -142,22 +214,10 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
           >
             <Box className="w-4 h-4" /> 3D
           </button>
-
-          {/* Directory Toggle Button */}
-          <button
-            onClick={() => setIsDirectoryOpen(!isDirectoryOpen)}
-            className={`px-3 py-1 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
-              isDirectoryOpen
-                ? 'bg-blue-50 border-blue-200 text-[#1e3a8a]'
-                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <Layers className="w-4 h-4" /> Directory
-          </button>
         </div>
       </header>
 
-      {/* Main Content Area: Flex container where map takes 100% width when directory is hidden */}
+      {/* Main Content Area */}
       <div className="relative flex-1 flex overflow-hidden">
         {/* Fullscreen Map Canvas */}
         <div className="flex-1 relative h-full w-full">
@@ -172,19 +232,22 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
                 stops={stops}
                 daScores={daScores}
                 selectedStopId={selectedStopId}
-                mode={mode}
+                mode="equal"
                 is3dEnabled={is3dEnabled}
-                isDirectoryOpen={isDirectoryOpen}
                 selectedGrades={selectedGrades}
+                activeDimensions={activeDimensions}
+                showHeatmap={showHeatmap}
                 onSelectStop={(id) => setSelectedStopId(id)}
               />
 
-              {/* Floating Grade Legend Control */}
+              {/* Floating Grade Legend & Minimizable Controls */}
               <div className="absolute bottom-6 left-6 z-30">
                 <BusStopGradeLegend
                   selectedGrades={selectedGrades}
                   onToggleGrade={handleToggleGrade}
                   gradeCounts={gradeCounts}
+                  showHeatmap={showHeatmap}
+                  onToggleHeatmap={() => setShowHeatmap(!showHeatmap)}
                 />
               </div>
             </>
@@ -217,9 +280,9 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
                     </div>
                   ) : (
                     <div className="text-lg font-mono font-bold text-[#1e3a8a]">
-                      {((mode === 'equal' ? selectedStop.equal_percentile : selectedStop.economic_percentile) ?? 0).toFixed(0)}th %ile
+                      {(selectedStop.equal_percentile ?? 0).toFixed(0)}th %ile
                       <span className="text-xs font-normal text-slate-500 ml-1.5 font-sans">
-                        (Score: {(mode === 'equal' ? selectedStop.equal_score : selectedStop.economic_score).toFixed(1)})
+                        (Score: {selectedStop.equal_score.toFixed(1)})
                       </span>
                     </div>
                   )}
@@ -242,18 +305,8 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
             </div>
           )}
         </div>
-
-        {/* Collapsible Right Directory Sidebar */}
-        {isDirectoryOpen && (
-          <BusStopDirectory
-            stops={stops}
-            selectedStopId={selectedStopId}
-            mode={mode}
-            selectedGrades={selectedGrades}
-            onSelectStop={(id) => setSelectedStopId(id)}
-          />
-        )}
       </div>
     </div>
   );
 };
+
