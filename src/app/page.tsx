@@ -7,6 +7,7 @@ import { Scrollytelling } from "@/components/Scrollytelling";
 import { ScrollytellingTwoPillar } from "@/components/ScrollytellingTwoPillar";
 import { BusStopAnalysis } from "@/components/BusStopAnalysis";
 import { BusStopDirectoryPage } from "@/components/BusStopDirectoryPage";
+import { RouteDirectoryPage } from "@/components/RouteDirectoryPage";
 import { PageView } from "@/components/widgets/GlobalNavMenu";
 
 export default function Home() {
@@ -16,6 +17,10 @@ export default function Home() {
   const handleNavigate = (page: PageView) => {
     setView(page);
   };
+
+  if (view === 'directory') {
+    return <RouteDirectoryPage onNavigate={handleNavigate} />;
+  }
 
   if (view === 'dashboard') {
     return <CommandCentre onNavigate={handleNavigate} />;
