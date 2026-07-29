@@ -70,7 +70,6 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
   const handleToggleGrade = (grade: BusStopGrade) => {
     setSelectedGrades((prev) => {
       if (prev.includes(grade)) {
-        if (prev.length === 1) return prev; // Keep at least one selected
         return prev.filter((g) => g !== grade);
       }
       return [...prev, grade];

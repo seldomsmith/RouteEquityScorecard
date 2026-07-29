@@ -10,12 +10,12 @@ interface BusStopGradeLegendProps {
 }
 
 export const GRADE_CONFIG: Record<BusStopGrade, { label: string; color: string; bg: string; border: string }> = {
-  A: { label: 'Grade A', color: '#10B981', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', border: 'border-emerald-500' },
+  A: { label: 'Grade A (High Equity)', color: '#10B981', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', border: 'border-emerald-500' },
   B: { label: 'Grade B', color: '#3B82F6', bg: 'bg-blue-50 text-blue-700 border-blue-200', border: 'border-blue-500' },
   C: { label: 'Grade C', color: '#F59E0B', bg: 'bg-amber-50 text-amber-700 border-amber-200', border: 'border-amber-500' },
   D: { label: 'Grade D', color: '#F97316', bg: 'bg-orange-50 text-orange-700 border-orange-200', border: 'border-orange-500' },
-  E: { label: 'Grade E', color: '#EF4444', bg: 'bg-red-50 text-red-700 border-red-200', border: 'border-red-500' },
-  Regional: { label: 'Regional', color: '#94A3B8', bg: 'bg-slate-100 text-slate-600 border-slate-200', border: 'border-slate-400' },
+  E: { label: 'Grade E (Low Equity)', color: '#EF4444', bg: 'bg-red-50 text-red-700 border-red-200', border: 'border-red-500' },
+  Regional: { label: 'Regional Stops', color: '#94A3B8', bg: 'bg-slate-100 text-slate-600 border-slate-200', border: 'border-slate-400' },
 };
 
 export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
@@ -26,7 +26,7 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
   const grades: BusStopGrade[] = ['A', 'B', 'C', 'D', 'E', 'Regional'];
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl border border-slate-200 shadow-2xl rounded-2xl p-3.5 w-52 text-slate-800 space-y-2.5">
+    <div className="bg-white/95 backdrop-blur-xl border border-slate-200 shadow-2xl rounded-2xl p-3.5 w-60 text-slate-800 space-y-2.5">
       <div className="flex items-center justify-between border-b border-slate-100 pb-2">
         <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
           <Layers className="w-3.5 h-3.5 text-[#1e3a8a]" /> Grade Filter

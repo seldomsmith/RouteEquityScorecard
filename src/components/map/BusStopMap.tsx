@@ -45,14 +45,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     if (!source || currentStops.length === 0) return;
 
     // Filter stops by selectedGrades
-    const filteredStops = currentGrades?.length === 6 || !currentGrades?.length
-      ? currentStops 
-      : currentStops.filter((s) => {
-          const grade = (currentMode === 'equal' 
-            ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
-            : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
-          return currentGrades.includes(grade);
-        });
+    const filteredStops = currentStops.filter((s) => {
+      const grade = (currentMode === 'equal' 
+        ? (s.is_regional ? 'Regional' : (s.equal_grade || 'C'))
+        : (s.is_regional ? 'Regional' : (s.economic_grade || 'C'))) as BusStopGrade;
+      return currentGrades ? currentGrades.includes(grade) : true;
+    });
 
     const features: GeoJSON.Feature[] = filteredStops.map((s) => {
       const score = currentMode === 'equal' ? s.equal_score : s.economic_score;
@@ -69,8 +67,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           stop_name: s.stop_name,
           score,
           percentile,
-          grade,
-          is_regional: s.is_regional ? 1 : 0,
+          grade: s.is_regional ? 'Regional' : grade,
+          is_regional: (s.is_regional || grade === 'Regional') ? 1 : 0,
         },
         geometry: {
           type: 'Point',

@@ -51,14 +51,12 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
     let res = stops;
 
     // Filter by selected grades
-    if (selectedGrades.length < 6) {
-      res = res.filter((s) => {
-        const grade = (mode === 'equal' 
-          ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
-          : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
-        return selectedGrades.includes(grade);
-      });
-    }
+    res = res.filter((s) => {
+      const grade = (mode === 'equal' 
+        ? (s.is_regional ? 'Regional' : (s.equal_grade || 'C'))
+        : (s.is_regional ? 'Regional' : (s.economic_grade || 'C'))) as BusStopGrade;
+      return selectedGrades.includes(grade);
+    });
 
     if (term) {
       res = res.filter(
