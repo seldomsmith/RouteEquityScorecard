@@ -71,20 +71,15 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     if (!source || currentStops.length === 0) return;
 
     // Filter stops by selectedGrades
-    const filteredStops = currentStops.filter((s) => {
-      const grade = (currentMode === 'equal' 
-        ? (s.is_regional ? 'Regional' : (s.equal_grade || 'C'))
-        : (s.is_regional ? 'Regional' : (s.economic_grade || 'C'))) as BusStopGrade;
-      return currentGrades ? currentGrades.includes(grade) : true;
+    const filteredStops = currentStops.filter((s: any) => {
+      const grade = s.is_regional ? 'Regional' : (s.dynamicGrade || 'C');
+      return currentGrades ? currentGrades.includes(grade as BusStopGrade) : true;
     });
 
-    const features: GeoJSON.Feature[] = filteredStops.map((s) => {
-      const score = currentMode === 'equal' ? s.equal_score : s.economic_score;
-      const rawPercentile = currentMode === 'equal' ? s.equal_percentile : s.economic_percentile;
-      const percentile = (rawPercentile !== undefined && rawPercentile !== null) ? rawPercentile : score;
-      const grade = currentMode === 'equal' 
-        ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
-        : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'));
+    const features: GeoJSON.Feature[] = filteredStops.map((s: any) => {
+      const score = s.is_regional ? 0 : (s.dynamicScore ?? s.equal_score);
+      const percentile = s.is_regional ? 0 : (s.dynamicPercentile ?? s.equal_percentile ?? score);
+      const grade = s.is_regional ? 'Regional' : (s.dynamicGrade || 'C');
 
       return {
         type: 'Feature',
@@ -93,8 +88,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           stop_name: s.stop_name,
           score,
           percentile,
-          grade: s.is_regional ? 'Regional' : grade,
-          is_regional: (s.is_regional || grade === 'Regional') ? 1 : 0,
+          grade,
+          is_regional: s.is_regional ? 1 : 0,
         },
         geometry: {
           type: 'Point',

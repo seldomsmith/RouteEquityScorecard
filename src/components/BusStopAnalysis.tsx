@@ -86,45 +86,96 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
     return (100 / len).toFixed(len === 3 ? 1 : 0);
   }, [activeDimensions]);
 
-  // Calculate dynamic grade counts
-  const gradeCounts = useMemo(() => {
-    const counts: Record<BusStopGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, Regional: 0 };
+  // Compute dynamic scores, percentiles, and quintile-based grades
+  const processedStops = useMemo(() => {
+    if (stops.length === 0) return [];
+    
     const numDims = activeDimensions.length || 4;
     const dimWeight = 1 / numDims;
 
-    stops.forEach((s) => {
+    const scoredList = stops.map((s) => {
       if (s.is_regional) {
-        counts['Regional']++;
-        return;
+        return {
+          ...s,
+          dynamicScore: 0,
+          dynamicGrade: 'Regional' as BusStopGrade,
+          dynamicPercentile: null as number | null,
+        };
       }
 
-      let blendedScore = 0;
-      if (s.das && s.das.length > 0) {
-        s.das.forEach((da) => {
-          let score = 0;
-          if (activeDimensions.includes('econ')) score += (da.econ ?? 50) * dimWeight;
-          if (activeDimensions.includes('res')) score += (da.res ?? 50) * dimWeight;
-          if (activeDimensions.includes('eth')) score += (da.eth ?? 50) * dimWeight;
-          if (activeDimensions.includes('sit')) score += (da.sit ?? 50) * dimWeight;
-
-          blendedScore += score * ((da.pct || 0) / 100);
-        });
-      } else {
-        blendedScore = s.equal_score;
+      if (!s.das || s.das.length === 0) {
+        return {
+          ...s,
+          dynamicScore: s.equal_score,
+          dynamicGrade: 'C' as BusStopGrade,
+          dynamicPercentile: 50,
+        };
       }
 
-      let grade: BusStopGrade = 'C';
-      if (blendedScore >= 80) grade = 'A';
-      else if (blendedScore >= 65) grade = 'B';
-      else if (blendedScore >= 50) grade = 'C';
-      else if (blendedScore >= 35) grade = 'D';
-      else grade = 'E';
+      let blendedSum = 0;
+      s.das.forEach((da) => {
+        let daDimScore = 0;
+        if (activeDimensions.includes('econ')) daDimScore += (da.econ ?? 50) * dimWeight;
+        if (activeDimensions.includes('res')) daDimScore += (da.res ?? 50) * dimWeight;
+        if (activeDimensions.includes('eth')) daDimScore += (da.eth ?? 50) * dimWeight;
+        if (activeDimensions.includes('sit')) daDimScore += (da.sit ?? 50) * dimWeight;
 
-      if (counts[grade] !== undefined) counts[grade]++;
+        const overlapPct = (da.pct || 0) / 100;
+        blendedSum += daDimScore * overlapPct;
+      });
+
+      return {
+        ...s,
+        dynamicScore: Number(blendedSum.toFixed(1)),
+      };
     });
 
-    return counts;
+    const municipalStops = scoredList.filter((s) => !s.is_regional);
+    const sortedMuni = [...municipalStops].sort((a, b) => a.dynamicScore - b.dynamicScore);
+    const n_muni = sortedMuni.length || 1;
+
+    // Quintile cuts based on sorted scores
+    const cuts = [0.2, 0.4, 0.6, 0.8].map((p) => {
+      const idx = Math.min(Math.floor(n_muni * p), n_muni - 1);
+      return sortedMuni[idx]?.dynamicScore ?? 50;
+    });
+
+    return scoredList.map((s) => {
+      if (s.is_regional) {
+        return s as any;
+      }
+      
+      let grade: BusStopGrade = 'C';
+      const score = s.dynamicScore;
+      if (score >= cuts[3]) grade = 'A';
+      else if (score >= cuts[2]) grade = 'B';
+      else if (score >= cuts[1]) grade = 'C';
+      else if (score >= cuts[0]) grade = 'D';
+      else grade = 'E';
+
+      // Estimate percentile roughly for display
+      const idx = sortedMuni.findIndex((item) => item.stop_id === s.stop_id);
+      const percentile = idx >= 0 ? Number(((idx / (n_muni - 1 || 1)) * 100).toFixed(1)) : 50;
+
+      return {
+        ...s,
+        dynamicGrade: grade,
+        dynamicPercentile: percentile,
+      };
+    });
   }, [stops, activeDimensions]);
+
+  // Calculate dynamic grade counts
+  const gradeCounts = useMemo(() => {
+    const counts: Record<BusStopGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, Regional: 0 };
+    processedStops.forEach((s) => {
+      const grade = s.dynamicGrade;
+      if (counts[grade] !== undefined) {
+        counts[grade]++;
+      }
+    });
+    return counts;
+  }, [processedStops]);
 
   const handleToggleGrade = (grade: BusStopGrade) => {
     setSelectedGrades((prev) => {
@@ -241,7 +292,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
           ) : (
             <>
               <BusStopMap
-                stops={stops}
+                stops={processedStops}
                 daScores={daScores}
                 selectedStopId={selectedStopId}
                 mode="equal"
