@@ -53,6 +53,20 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
   // Read real DA population lookup from global store
   const daPopLookup = useRouteStore((s) => s.daPopLookup);
 
+  // Load static populations if empty
+  useEffect(() => {
+    if (Object.keys(daPopLookup).length === 0) {
+      fetch('/data/da_populations.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            useRouteStore.setState({ daPopLookup: data });
+          }
+        })
+        .catch((err) => console.log('Static DA populations JSON not found, waiting for DuckDB load fallback:', err));
+    }
+  }, [daPopLookup]);
+
   // Load Bus Stop records
   useEffect(() => {
     fetch('/data/bus_stop_vulnerability.json')
