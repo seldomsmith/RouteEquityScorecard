@@ -353,35 +353,55 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
   };
 
 
-  return (
-    <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
-      
-      {/* 🚌 Fixed Scrollytelling Header with Subway Map Scroll Progress Tracker */}
-      <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={onBack}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200"
-            title="Return to Home"
-          >
-            <Home className="w-5 h-5" />
-          </button>
-          <div className="flex flex-col">
-            <span className="text-xs font-black text-blue-900 uppercase tracking-widest leading-none">ETS Route Equity Scorecard</span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[10px] font-semibold text-teal-650 leading-none">Scroll down to read</span>
-              <button 
-                onClick={() => {
-                  setIsSplitScreen(!isSplitScreen);
-                  if (onToggleVersion) onToggleVersion();
-                }}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400 hover:scale-110`}
-                title="Toggle 2-Pillar View"
-              />
-              <span className="text-[10px] font-semibold text-slate-400 leading-none transition-colors duration-300">Two Pillars</span>
+    // Menu state
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    return (
+      <div ref={containerRef} className="h-screen w-full flex flex-col bg-slate-50 font-sans relative overflow-y-auto scroll-smooth custom-scrollbar">
+        {/* Global Navigation Menu */}
+        <StaggeredMenu
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          onNavigate={(page) => {
+            if (page === 'landing') onBack();
+            else if (page === 'dashboard') onJumpIn();
+          }}
+          activeItemIndex={1}
+        />
+        
+        {/* 🚌 Fixed Scrollytelling Header with Subway Map Scroll Progress Tracker */}
+        <header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 z-50 h-16 px-4 md:px-8 flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onBack}
+              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200"
+              title="Return to Home"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="px-3 py-1.5 text-[10px] font-bold text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200 transition-all uppercase tracking-wider shadow-sm flex items-center gap-1.5"
+            >
+              <Menu className="w-3.5 h-3.5" />
+              <span>Menu</span>
+            </button>
+            <div className="flex flex-col">
+              <span className="text-xs font-black text-blue-900 uppercase tracking-widest leading-none">ETS Route Equity Scorecard</span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-[10px] font-semibold text-teal-650 leading-none">Scroll down to read</span>
+                <button 
+                  onClick={() => {
+                    setIsSplitScreen(!isSplitScreen);
+                    if (onToggleVersion) onToggleVersion();
+                  }}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400 hover:scale-110`}
+                  title="Toggle 2-Pillar View"
+                />
+                <span className="text-[10px] font-semibold text-slate-400 leading-none transition-colors duration-300">Two Pillars</span>
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Subway Map Progress Bar */}
         <div className="flex-1 max-w-xl mx-8 relative hidden md:block px-4">
