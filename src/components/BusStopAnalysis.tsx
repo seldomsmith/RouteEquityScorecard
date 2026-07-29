@@ -15,6 +15,8 @@ import {
   BookOpen
 } from 'lucide-react';
 
+import { checkIsRegional } from '@/utils/regional';
+
 const BusStopMap = dynamic(
   () => import('@/components/map/BusStopMap').then((m) => m.BusStopMap),
   { ssr: false }
@@ -47,7 +49,14 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
       .then((res) => res.json())
       .then((data) => {
         if (data && data.stops) {
-          setStops(data.stops);
+          const mapped = data.stops.map((s: BusStopRecord) => {
+            const regional = checkIsRegional(s.lat, s.lon);
+            return {
+              ...s,
+              is_regional: regional
+            };
+          });
+          setStops(mapped);
           setDaScores(data.da_scores || {});
         }
         setLoading(false);
