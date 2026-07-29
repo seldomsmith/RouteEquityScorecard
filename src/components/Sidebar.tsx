@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
 import { useRouteStore } from '@/store/routeStore';
 import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
@@ -112,53 +113,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
 
   return (
     <div className="h-full flex flex-col bg-white relative">
-      {/* Frosted Backdrop Overlay for Menu */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md transition-all duration-300 flex items-start justify-start p-6 md:p-10"
-          onClick={() => setIsMenuOpen(false)}
-        >
-          {/* Menu Dropdown Container */}
-          <div 
-            className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-              <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
-                Navigation Menu
-              </span>
-              <button 
-                onClick={() => setIsMenuOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-                title="Close Menu"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <LineSidebar
-              items={menuItems}
-              accentColor="#1e3a8a"
-              textColor="#1e3a8a"
-              markerColor="#94a3b8"
-              showIndex={true}
-              showMarker={true}
-              proximityRadius={110}
-              maxShift={46}
-              falloff="smooth"
-              markerLength={55}
-              markerGap={28}
-              tickScale={0.08}
-              scaleTick={true}
-              itemGap={13}
-              fontSize={1.1}
-              smoothing={800}
-              defaultActive={0}
-              onItemClick={handleMenuItemClick}
-            />
-          </div>
-        </div>
-      )}
+      {/* Standardized Global Navigation Menu */}
+      <GlobalNavMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onNavigate={onNavigate}
+        onViewDirectory={onViewDirectory}
+        activeItemIndex={2}
+      />
 
       {/* Header */}
       <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
