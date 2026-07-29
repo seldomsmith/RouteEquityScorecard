@@ -58,6 +58,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
           });
           setStops(mapped);
           setDaScores(data.da_scores || {});
+          useRouteStore.setState({ daScores: data.da_scores || {} });
         }
         setLoading(false);
       })

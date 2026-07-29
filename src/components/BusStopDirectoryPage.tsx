@@ -59,6 +59,7 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
             };
           });
           setStops(mapped);
+          useRouteStore.setState({ daScores: data.da_scores || {} });
         }
         setLoading(false);
       })

@@ -69,6 +69,7 @@ export const useRouteStore = create<RouteState>((set) => ({
   removedRoutes: [],
   
   daPopLookup: {},
+  daScores: {},
   
   setWeight: (key, value) => set((state) => {
     if (state.disabledWeights.includes(key)) return {};
