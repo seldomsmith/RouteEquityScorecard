@@ -466,7 +466,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     } else {
       map.once('load', renderBuffer);
     }
-  }, [selectedStopId, stops]);
+  }, [selectedStopId, stops, daScores, mode]);
 
   return (
     <div className="relative w-full h-full">
