@@ -6,7 +6,8 @@
     "dev": "next dev --hostname 0.0.0.0 --port 3000",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0 --port 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.28.0",
