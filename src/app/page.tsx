@@ -6,16 +6,15 @@ import { LandingPage } from "@/components/LandingPage";
 import { Scrollytelling } from "@/components/Scrollytelling";
 import { ScrollytellingTwoPillar } from "@/components/ScrollytellingTwoPillar";
 import { BusStopAnalysis } from "@/components/BusStopAnalysis";
+import { BusStopDirectoryPage } from "@/components/BusStopDirectoryPage";
+import { PageView } from "@/components/widgets/GlobalNavMenu";
 
 export default function Home() {
-  const [view, setView] = useState<'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'bus-stop-analysis'>('landing');
+  const [view, setView] = useState<PageView>('landing');
+  const [targetBusStopId, setTargetBusStopId] = useState<string | null>(null);
 
-  const handleNavigate = (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => {
-    if (page === 'landing') setView('landing');
-    else if (page === 'dashboard') setView('dashboard');
-    else if (page === 'scrollytelling') setView('scrollytelling');
-    else if (page === 'scrollytelling-two-pillar') setView('scrollytelling-two-pillar');
-    else if (page === 'bus-stop-analysis') setView('bus-stop-analysis');
+  const handleNavigate = (page: PageView) => {
+    setView(page);
   };
 
   if (view === 'dashboard') {
@@ -23,7 +22,24 @@ export default function Home() {
   }
 
   if (view === 'bus-stop-analysis') {
-    return <BusStopAnalysis onNavigate={handleNavigate} />;
+    return (
+      <BusStopAnalysis 
+        onNavigate={handleNavigate} 
+        initialSelectedStopId={targetBusStopId}
+      />
+    );
+  }
+
+  if (view === 'bus-stop-directory') {
+    return (
+      <BusStopDirectoryPage 
+        onNavigate={handleNavigate}
+        onSelectStopOnMap={(stopId) => {
+          setTargetBusStopId(stopId);
+          setView('bus-stop-analysis');
+        }}
+      />
+    );
   }
 
   if (view === 'scrollytelling') {
