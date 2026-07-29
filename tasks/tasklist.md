@@ -48,6 +48,10 @@
 - [ ] Implement "Time-Pulse" 24-hour Simulation Playback (Temporal risk visualization) <!-- id: 26, priority: future -->
 - [ ] Brainstorm Spatial 3D Extrusion Map features <!-- id: 27, priority: future -->
 
+## Phase 14: Non-Technical Bus Stop Methodology Explainer
+- [x] Create non-technical methodology guide `docs/BUS_STOP_METHODOLOGY_EXPLAINER.md` <!-- id: 75, priority: high -->
+- [ ] Build interactive "Explain this to me" module for Bus Stop Analysis in the frontend <!-- id: 76, priority: high -->
+
 ## Phase 3.6: Quadrant & Diagnostics Dashboard Polish [COMPLETE]
 - [x] Update title of quadrant scatterplot to "Population-Equity Quadrant" <!-- id: 40, priority: high -->
 - [x] Standardize and lock X and Y axes domains and reference lines dynamically from overall network statistics <!-- id: 41, priority: high -->
