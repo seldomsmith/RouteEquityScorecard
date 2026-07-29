@@ -20,14 +20,17 @@ const BusStopMap = dynamic(
   { ssr: false }
 );
 
+import { PageView } from '@/components/widgets/GlobalNavMenu';
+
 interface BusStopAnalysisProps {
-  onNavigate?: (page: 'landing' | 'dashboard' | 'scrollytelling' | 'scrollytelling-two-pillar' | 'directory' | 'bus-stop-analysis') => void;
+  onNavigate?: (page: PageView) => void;
+  initialSelectedStopId?: string | null;
 }
 
-export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) => {
+export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, initialSelectedStopId = null }) => {
   const [stops, setStops] = useState<BusStopRecord[]>([]);
   const [daScores, setDaScores] = useState<Record<string, any>>({});
-  const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
+  const [selectedStopId, setSelectedStopId] = useState<string | null>(initialSelectedStopId);
   const [is3dEnabled, setIs3dEnabled] = useState<boolean>(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState<boolean>(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState<boolean>(false);
@@ -194,9 +197,9 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate }) 
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Full Directory Modal Trigger Button */}
+          {/* Full Directory Page Trigger Button */}
           <button
-            onClick={() => setIsDirectoryModalOpen(true)}
+            onClick={() => onNavigate?.('bus-stop-directory')}
             className="px-3.5 py-1.5 rounded-xl bg-[#1e3a8a] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs hover:bg-[#152e6f] transition-all"
           >
             <BookOpen className="w-4 h-4" /> Bus Stop Directory
