@@ -83,23 +83,44 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     });
   };
 
-  // Helper to update DA heatmap fill colors
-  const updateDaHeatmap = (map: mapboxgl.Map, currentDaScores: Record<string, any>, currentMode: 'equal' | 'economic') => {
-    if (!map.getLayer('da-fill') || !currentDaScores || Object.keys(currentDaScores).length === 0) return;
+  // Helper to update DA heatmap fill colors (isolated to selected stop's 400m DAs)
+  const updateDaHeatmap = (
+    map: mapboxgl.Map, 
+    currentDaScores: Record<string, any>, 
+    currentMode: 'equal' | 'economic',
+    targetStop?: BusStopRecord | null
+  ) => {
+    if (!map.getLayer('da-fill')) return;
 
+    if (!targetStop || !targetStop.das || targetStop.das.length === 0) {
+      // Clear heatmap if no stop is selected
+      map.setPaintProperty('da-fill', 'fill-color', 'rgba(0, 0, 0, 0)');
+      return;
+    }
+
+    const activeDaIds = new Set(targetStop.das.map((d) => String(d.da_id)));
     const matchExpr: any[] = ['match', ['get', 'DAUID']];
-    Object.entries(currentDaScores).forEach(([daId, scores]: [string, any]) => {
-      const val = currentMode === 'equal' ? scores.equal : scores.economic;
-      let color = '#F8FAFC'; // Light baseline
-      if (val >= 75) color = '#FCA5A5'; // Soft Red
-      else if (val >= 60) color = '#FDBA74'; // Soft Orange
-      else if (val >= 45) color = '#FEF08A'; // Soft Yellow
-      else if (val >= 30) color = '#A7F3D0'; // Soft Green
-      else color = '#E2E8F0'; // Default light slate
+
+    targetStop.das.forEach((daItem) => {
+      const daId = String(daItem.da_id);
+      const scores = currentDaScores[daId];
+      const score = currentMode === 'equal' 
+        ? (daItem.equal_score ?? scores?.equal ?? 50)
+        : (daItem.economic_score ?? scores?.economic ?? 50);
+
+      // Color palette: Intense vivid color for high equity, pale tint for low equity
+      let color = '#F1F5F9';
+      if (score >= 80) color = '#047857';      // Deep Emerald Green (High Equity)
+      else if (score >= 65) color = '#10B981'; // Emerald Green
+      else if (score >= 50) color = '#3B82F6'; // Vibrant Blue
+      else if (score >= 35) color = '#F59E0B'; // Amber
+      else color = '#E2E8F0';                  // Pale Light Slate (Low Equity)
 
       matchExpr.push(daId, color);
     });
-    matchExpr.push('#F8FAFC');
+
+    // Fallback for non-intersecting DAs is completely transparent
+    matchExpr.push('rgba(0, 0, 0, 0)');
 
     map.setPaintProperty('da-fill', 'fill-color', matchExpr);
   };
@@ -374,16 +395,18 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     const map = mapRef.current;
     if (!map) return;
 
+    const targetStop = stops.find((s) => s.stop_id === selectedStopId) || null;
+
     if (map.isStyleLoaded()) {
       updateStopsSource(map, stops, mode, selectedGrades);
-      updateDaHeatmap(map, daScores, mode);
+      updateDaHeatmap(map, daScores, mode, targetStop);
     } else {
       map.once('load', () => {
         updateStopsSource(map, stops, mode, selectedGrades);
-        updateDaHeatmap(map, daScores, mode);
+        updateDaHeatmap(map, daScores, mode, targetStop);
       });
     }
-  }, [stops, mode, daScores, selectedGrades]);
+  }, [stops, mode, daScores, selectedGrades, selectedStopId]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
@@ -392,14 +415,14 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
     const renderBuffer = () => {
       const source = map.getSource('selected-buffer') as mapboxgl.GeoJSONSource;
+      const targetStop = stops.find((s) => s.stop_id === selectedStopId) || null;
 
-      if (!selectedStopId) {
+      updateDaHeatmap(map, daScores, mode, targetStop);
+
+      if (!selectedStopId || !targetStop) {
         if (source) source.setData({ type: 'FeatureCollection', features: [] });
         return;
       }
-
-      const targetStop = stops.find((s) => s.stop_id === selectedStopId);
-      if (!targetStop) return;
 
       map.flyTo({
         center: [targetStop.lon, targetStop.lat],
