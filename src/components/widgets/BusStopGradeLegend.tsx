@@ -20,6 +20,20 @@ export const GRADE_CONFIG: Record<BusStopGrade, { label: string; color: string; 
   Regional: { label: 'Regional Stops', color: '#94A3B8', bg: 'bg-slate-100 text-slate-600 border-slate-200', border: 'border-slate-400' },
 };
 
+import { useRouteStore } from '@/store/routeStore';
+
+const PALETTE_GRADIENTS: Record<string, string> = {
+  purple: 'from-purple-100 via-purple-400 to-purple-800',
+  teal: 'from-teal-100 via-teal-400 to-teal-800',
+  emerald: 'from-emerald-100 via-emerald-400 to-emerald-800',
+  carbon: 'from-slate-100 via-slate-400 to-slate-800',
+  divergent: 'from-[#D1FAE5] via-[#FEF3C7] to-[#EF4444]',
+  sunrise: 'from-[#FEF3C7] via-[#F472B6] to-[#BE185D]',
+  sunset: 'from-[#FFEDD5] via-[#F97316] to-[#991B1B]',
+};
+
+const PALETTE_ORDER = ['purple', 'teal', 'emerald', 'carbon', 'divergent', 'sunrise', 'sunset'] as const;
+
 export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
   selectedGrades,
   onToggleGrade,
@@ -29,6 +43,16 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
 }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const grades: BusStopGrade[] = ['A', 'B', 'C', 'D', 'E', 'Regional'];
+
+  // Global Heatmap color palette hooks
+  const heatmapPalette = useRouteStore((s) => s.heatmapPalette);
+  const setHeatmapPalette = useRouteStore((s) => s.setHeatmapPalette);
+
+  const handleCyclePalette = () => {
+    const currentIndex = PALETTE_ORDER.indexOf(heatmapPalette);
+    const nextIndex = (currentIndex + 1) % PALETTE_ORDER.length;
+    setHeatmapPalette(PALETTE_ORDER[nextIndex]);
+  };
 
   if (isMinimized) {
     return (
@@ -84,11 +108,18 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
         </div>
 
         {showHeatmap && (
-          <div className="space-y-1 pt-1">
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-purple-100 via-purple-400 to-purple-800 shadow-inner" />
-            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-              <span>Light (Low Equity Need)</span>
-              <span>Dark (High Equity Need)</span>
+          <div className="space-y-1 pt-1 flex flex-col items-stretch">
+            <button
+              onClick={handleCyclePalette}
+              className={`h-3 w-full rounded-full bg-gradient-to-r ${PALETTE_GRADIENTS[heatmapPalette]} shadow-inner border border-white hover:scale-[1.01] hover:brightness-105 active:scale-95 cursor-pointer transition-all duration-150 flex items-center justify-center`}
+              title="Click to cycle heatmap color palette"
+            />
+            <div className="flex justify-between text-[8px] font-black text-slate-400 uppercase tracking-wide px-0.5">
+              <span>Light (Low Need)</span>
+              <span>Dark (High Need)</span>
+            </div>
+            <div className="text-center text-[9px] font-bold text-slate-500/80 tracking-wide pt-0.5 select-none hover:text-slate-700 transition-colors cursor-pointer" onClick={handleCyclePalette}>
+              Click to Select Heat Map Colours
             </div>
           </div>
         )}
