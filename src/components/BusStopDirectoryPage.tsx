@@ -186,8 +186,20 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
     }
 
     return list.sort((a, b) => {
-      let valA: any = a[sortField === 'score' ? 'dynamicScore' : sortField === 'percentile' ? 'dynamicPercentile' : sortField === 'pop' ? 'approxPop' : sortField];
-      let valB: any = b[sortField === 'score' ? 'dynamicScore' : sortField === 'percentile' ? 'dynamicPercentile' : sortField === 'pop' ? 'approxPop' : sortField];
+      let valA: any = a[
+        sortField === 'score' ? 'dynamicScore' : 
+        sortField === 'percentile' ? 'dynamicPercentile' : 
+        sortField === 'pop' ? 'approxPop' : 
+        sortField === 'name' ? 'stop_name' : 
+        sortField
+      ];
+      let valB: any = b[
+        sortField === 'score' ? 'dynamicScore' : 
+        sortField === 'percentile' ? 'dynamicPercentile' : 
+        sortField === 'pop' ? 'approxPop' : 
+        sortField === 'name' ? 'stop_name' : 
+        sortField
+      ];
 
       if (valA === null || valA === undefined) valA = -1;
       if (valB === null || valB === undefined) valB = -1;
