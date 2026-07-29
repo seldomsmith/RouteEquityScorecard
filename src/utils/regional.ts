@@ -11,6 +11,9 @@ export function checkIsRegional(lat: number, lon: number): boolean {
   
   // Fort Saskatchewan bounding box
   const inFortSask = lat >= 53.67 && lat <= 53.75 && lon >= -113.25 && lon <= -113.10;
+
+  // Spruce Grove bounding box
+  const inSpruceGrove = lat >= 53.51 && lat <= 53.57 && lon >= -113.95 && lon <= -113.83;
   
-  return inStAlbert || inSherwoodPark || inFortSask;
+  return inStAlbert || inSherwoodPark || inFortSask || inSpruceGrove;
 }
