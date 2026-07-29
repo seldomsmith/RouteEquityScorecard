@@ -50,6 +50,7 @@ export default function Home() {
     <LandingPage 
       onTellMeHow={() => setView('scrollytelling')} 
       onJumpIn={() => setView('dashboard')} 
+      onNavigate={handleNavigate}
     />
   );
 }
