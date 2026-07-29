@@ -42,7 +42,7 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<string | 'ALL'>('ALL');
   const [selectedStability, setSelectedStability] = useState<string | 'ALL'>('ALL');
-  const [sortField, setSortField] = useState<'short_name' | 'name' | 'score' | 'pop' | 'stability'>('score');
+  const [sortField, setSortField] = useState<'short_name' | 'name' | 'score' | 'pop' | 'stability' | 'score_mean' | 'score_std'>('score');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
 
@@ -257,8 +257,17 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
         const sensB = sensitivityData[b.route_id];
         valA = sensA ? sensA.score_std : 0.0;
         valB = sensB ? sensB.score_std : 0.0;
-        // Low standard deviation = High stability
         return sortOrder === 'asc' ? valA - valB : valB - valA;
+      } else if (sortField === 'score_mean') {
+        const sensA = sensitivityData[a.route_id];
+        const sensB = sensitivityData[b.route_id];
+        valA = sensA ? sensA.score_mean : a.composite_score;
+        valB = sensB ? sensB.score_mean : b.composite_score;
+      } else if (sortField === 'score_std') {
+        const sensA = sensitivityData[a.route_id];
+        const sensB = sensitivityData[b.route_id];
+        valA = sensA ? sensA.score_std : 0.0;
+        valB = sensB ? sensB.score_std : 0.0;
       }
 
       if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
@@ -464,7 +473,19 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                   </th>
                   <th className="py-3.5 px-4 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score')}>
                     <div className="flex items-center justify-center gap-1">
-                      <span>Equity Score</span>
+                      <span>Live Score</span>
+                      <ArrowUpDown className="w-3 h-3" />
+                    </div>
+                  </th>
+                  <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_mean')}>
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Simulated Mean</span>
+                      <ArrowUpDown className="w-3 h-3" />
+                    </div>
+                  </th>
+                  <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_std')}>
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Volatility (σ)</span>
                       <ArrowUpDown className="w-3 h-3" />
                     </div>
                   </th>
@@ -528,6 +549,12 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                           </td>
                           <td className="py-3 px-4 text-center font-mono font-black text-slate-800 text-sm">
                             {route.composite_score.toFixed(1)}
+                          </td>
+                          <td className="py-3 px-4 text-center font-mono font-bold text-slate-700">
+                            {sens ? sens.score_mean.toFixed(1) : route.composite_score.toFixed(1)}
+                          </td>
+                          <td className="py-3 px-4 text-center font-mono font-semibold text-slate-500">
+                            {sens ? sens.score_std.toFixed(2) : '0.00'}
                           </td>
                           <td className="py-3 px-4 text-center">
                             <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white shadow-sm border ${gradeColor}`}>
