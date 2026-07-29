@@ -1,17 +1,39 @@
-"use client";
-
-import React from 'react';
+import React, { useState } from 'react';
 import { RouteWaterfall } from './RouteWaterfall';
 import { BorderGlow } from './BorderGlow';
+import { GlobalNavMenu, PageView } from './widgets/GlobalNavMenu';
+import { Menu, ChevronDown } from 'lucide-react';
 
 interface LandingPageProps {
   onTellMeHow: () => void;
   onJumpIn: () => void;
+  onNavigate?: (page: PageView) => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn, onNavigate }) => {
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen w-full flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-12 md:py-24 relative overflow-hidden bg-slate-50 font-sans">
+      {/* Standardized Global Navigation Menu */}
+      <GlobalNavMenu
+        isOpen={isNavMenuOpen}
+        onClose={() => setIsNavMenuOpen(false)}
+        onNavigate={onNavigate}
+        activeItemIndex={0}
+      />
+
+      {/* Top Left Menu Trigger */}
+      <div className="absolute top-6 left-6 z-40">
+        <button
+          onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+          className="px-3.5 py-2 text-xs font-bold text-[#1e3a8a] bg-white/90 hover:bg-white backdrop-blur-md rounded-xl border border-slate-200/80 transition-all uppercase tracking-wider shadow-md flex items-center gap-2"
+        >
+          <Menu className="w-4 h-4" />
+          <span>MENU</span>
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isNavMenuOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
       {/* Route Waterfall Animated Background */}
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <RouteWaterfall opacity={0.35} />
