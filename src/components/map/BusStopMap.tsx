@@ -11,6 +11,8 @@ mapboxgl.accessToken =
 
 import { BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
 
+export type CimdDimensionKey = 'econ' | 'res' | 'eth' | 'sit';
+
 interface BusStopMapProps {
   stops: BusStopRecord[];
   daScores: Record<string, any>;
@@ -19,6 +21,8 @@ interface BusStopMapProps {
   is3dEnabled: boolean;
   isDirectoryOpen?: boolean;
   selectedGrades?: BusStopGrade[];
+  activeDimensions?: CimdDimensionKey[];
+  showHeatmap?: boolean;
   onSelectStop: (stopId: string | null) => void;
 }
 
@@ -32,11 +36,13 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   is3dEnabled,
   isDirectoryOpen,
   selectedGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
+  activeDimensions = ['econ', 'res', 'eth', 'sit'],
+  showHeatmap = true,
   onSelectStop
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const popupRef.current = useRef<mapboxgl.Popup | null>(null);
   const isLoadedRef = useRef<boolean>(false);
 
   // Helper to push stops data into Mapbox source
@@ -83,44 +89,66 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     });
   };
 
-  // Helper to update DA heatmap fill colors (isolated to selected stop's 400m DAs)
+  // Helper to update DA heatmap fill colors (supporting full-map base layer and selected stop 400m isolation)
   const updateDaHeatmap = (
     map: mapboxgl.Map, 
     currentDaScores: Record<string, any>, 
-    currentMode: 'equal' | 'economic',
     targetStop?: BusStopRecord | null
   ) => {
     if (!map.getLayer('da-fill')) return;
 
-    if (!targetStop || !targetStop.das || targetStop.das.length === 0) {
-      // Clear heatmap if no stop is selected
+    if (!showHeatmap) {
       map.setPaintProperty('da-fill', 'fill-color', 'rgba(0, 0, 0, 0)');
       return;
     }
 
-    const activeDaIds = new Set(targetStop.das.map((d) => String(d.da_id)));
+    const numDims = activeDimensions.length || 4;
+    const dimWeight = 1 / numDims;
+
     const matchExpr: any[] = ['match', ['get', 'DAUID']];
 
-    targetStop.das.forEach((daItem) => {
-      const daId = String(daItem.da_id);
-      const scores = currentDaScores[daId];
-      const score = currentMode === 'equal' 
-        ? (daItem.equal_score ?? scores?.equal ?? 50)
-        : (daItem.economic_score ?? scores?.economic ?? 50);
+    if (targetStop && targetStop.das && targetStop.das.length > 0) {
+      // Isolate heatmap to selected stop's 400m catchment DAs
+      targetStop.das.forEach((daItem) => {
+        const daId = String(daItem.da_id);
+        const daItemAny = daItem as any;
+        
+        let score = 0;
+        if (activeDimensions.includes('econ')) score += (daItemAny.econ ?? 50) * dimWeight;
+        if (activeDimensions.includes('res')) score += (daItemAny.res ?? 50) * dimWeight;
+        if (activeDimensions.includes('eth')) score += (daItemAny.eth ?? 50) * dimWeight;
+        if (activeDimensions.includes('sit')) score += (daItemAny.sit ?? 50) * dimWeight;
 
-      // Color palette: Intense vivid color for high equity, pale tint for low equity
-      let color = '#F1F5F9';
-      if (score >= 80) color = '#047857';      // Deep Emerald Green (High Equity)
-      else if (score >= 65) color = '#10B981'; // Emerald Green
-      else if (score >= 50) color = '#3B82F6'; // Vibrant Blue
-      else if (score >= 35) color = '#F59E0B'; // Amber
-      else color = '#E2E8F0';                  // Pale Light Slate (Low Equity)
+        let color = '#E2E8F0';
+        if (score >= 80) color = '#059669';      // Deep Emerald Green (High Equity)
+        else if (score >= 65) color = '#10B981'; // Emerald Green
+        else if (score >= 50) color = '#3B82F6'; // Royal Blue
+        else if (score >= 35) color = '#F59E0B'; // Amber
+        else color = '#CBD5E1';                  // Pale Slate (Low Equity)
 
-      matchExpr.push(daId, color);
-    });
+        matchExpr.push(daId, color);
+      });
+      matchExpr.push('rgba(0, 0, 0, 0)');
+    } else {
+      // Default Base Layer Light Heatmap across all city DAs based on active CIMD criteria
+      Object.entries(currentDaScores).forEach(([daId, scores]: [string, any]) => {
+        let val = 0;
+        if (activeDimensions.includes('econ')) val += (scores.econ ?? scores.economic ?? 50) * dimWeight;
+        if (activeDimensions.includes('res')) val += (scores.res ?? 50) * dimWeight;
+        if (activeDimensions.includes('eth')) val += (scores.eth ?? 50) * dimWeight;
+        if (activeDimensions.includes('sit')) val += (scores.sit ?? 50) * dimWeight;
 
-    // Fallback for non-intersecting DAs is completely transparent
-    matchExpr.push('rgba(0, 0, 0, 0)');
+        let color = '#F8FAFC';
+        if (val >= 80) color = '#A7F3D0';      // Soft Mint Green
+        else if (val >= 65) color = '#BAE6FD'; // Light Blue
+        else if (val >= 50) color = '#FEF08A'; // Soft Yellow
+        else if (val >= 35) color = '#FED7AA'; // Soft Orange
+        else color = '#F1F5F9';                  // Very Light Baseline Slate
+
+        matchExpr.push(daId, color);
+      });
+      matchExpr.push('#F8FAFC');
+    }
 
     map.setPaintProperty('da-fill', 'fill-color', matchExpr);
   };
