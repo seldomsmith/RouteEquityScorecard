@@ -45,6 +45,7 @@ interface RouteState {
   setCimdMode: (val: boolean) => void;
   activeDimensions: ('econ' | 'res' | 'eth' | 'sit')[];
   toggleDimension: (dim: 'econ' | 'res' | 'eth' | 'sit') => void;
+  daScores: Record<string, any>;
 
   // Real DA Population Lookup (extracted from DuckDB route metadata)
   daPopLookup: Record<string, number>;
