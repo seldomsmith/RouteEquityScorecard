@@ -17,6 +17,8 @@ import {
 
 import { checkIsRegional } from '@/utils/regional';
 
+import { useRouteStore } from '@/store/routeStore';
+
 const BusStopMap = dynamic(
   () => import('@/components/map/BusStopMap').then((m) => m.BusStopMap),
   { ssr: false }
@@ -42,6 +44,22 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
   
   // 4 CIMD Dimension Toggles
   const [activeDimensions, setActiveDimensions] = useState<CimdDimensionKey[]>(['econ', 'res', 'eth', 'sit']);
+
+  const daPopLookup = useRouteStore((s) => s.daPopLookup);
+
+  // Load static populations if empty
+  useEffect(() => {
+    if (Object.keys(daPopLookup).length === 0) {
+      fetch('/data/da_populations.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            useRouteStore.setState({ daPopLookup: data });
+          }
+        })
+        .catch((err) => console.log('Static DA populations JSON not found, waiting for DuckDB load fallback:', err));
+    }
+  }, [daPopLookup]);
 
   // Load pre-computed Bus Stop Vulnerability asset
   useEffect(() => {
