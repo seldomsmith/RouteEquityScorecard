@@ -31,6 +31,7 @@ interface BusStopDirectoryProps {
   stops: BusStopRecord[];
   selectedStopId: string | null;
   mode: 'equal' | 'economic';
+  selectedGrades?: BusStopGrade[];
   onSelectStop: (stopId: string) => void;
 }
 
@@ -38,6 +39,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
   stops,
   selectedStopId,
   mode,
+  selectedGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
   onSelectStop
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +49,16 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
   const filteredStops = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
     let res = stops;
+
+    // Filter by selected grades
+    if (selectedGrades.length < 6) {
+      res = res.filter((s) => {
+        const grade = (mode === 'equal' 
+          ? (s.equal_grade || (s.is_regional ? 'Regional' : 'C'))
+          : (s.economic_grade || (s.is_regional ? 'Regional' : 'C'))) as BusStopGrade;
+        return selectedGrades.includes(grade);
+      });
+    }
 
     if (term) {
       res = res.filter(
@@ -69,7 +81,7 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
       if (sortOrder === 'asc') return percentileA - percentileB;
       return a.stop_name.localeCompare(b.stop_name);
     });
-  }, [stops, searchTerm, sortOrder, mode]);
+  }, [stops, searchTerm, sortOrder, mode, selectedGrades]);
 
   // Vulnerability score badge helper
   const getScoreBadge = (score: number) => {
