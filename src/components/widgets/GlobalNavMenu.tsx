@@ -16,7 +16,6 @@ interface GlobalNavMenuProps {
   onClose: () => void;
   onNavigate?: (page: PageView) => void;
   onViewDirectory?: () => void;
-  onViewBusStopDirectory?: () => void;
   activeItemIndex?: number;
 }
 
@@ -34,7 +33,6 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
   onClose,
   onNavigate,
   onViewDirectory,
-  onViewBusStopDirectory,
   activeItemIndex = 0
 }) => {
   if (!isOpen) return null;
