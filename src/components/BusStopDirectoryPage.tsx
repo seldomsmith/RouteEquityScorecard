@@ -40,6 +40,15 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
   const [sortField, setSortField] = useState<'stop_id' | 'name' | 'pop' | 'score' | 'percentile'>('percentile');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+
+  // Reset page when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedGrade, sortField, sortOrder, activeDimensions]);
 
   // Read real DA population lookup from global store
   const daPopLookup = useRouteStore((s) => s.daPopLookup);
@@ -195,6 +204,12 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
       return sortOrder === 'asc' ? valA - valB : valB - valA;
     });
   }, [processedStops, selectedGrade, searchTerm, sortField, sortOrder]);
+
+  // Paginated subset of stops
+  const paginatedStops = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredStops.slice(start, start + itemsPerPage);
+  }, [filteredStops, currentPage]);
 
   const handleSort = (field: typeof sortField) => {
     if (sortField === field) {
@@ -417,12 +432,14 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
               <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
                 {filteredStops.length === 0 ? (
                   <tr>
+                {paginatedStops.length === 0 ? (
+                  <tr>
                     <td colSpan={8} className="text-center py-16 text-slate-400 font-medium">
                       No bus stops matching search or active filters.
                     </td>
                   </tr>
                 ) : (
-                  filteredStops.map((stop) => {
+                  paginatedStops.map((stop) => {
                     const isExpanded = expandedStopId === stop.stop_id;
                     const cfg = GRADE_CONFIG[stop.dynamicGrade];
                     const gradeColor = stop.is_regional ? 'bg-slate-450 border-slate-500'
@@ -627,6 +644,38 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
                 )}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            {filteredStops.length > itemsPerPage && (
+              <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+                <div className="text-xs font-semibold text-slate-500">
+                  Showing <span className="font-bold text-slate-700">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+                  <span className="font-bold text-slate-700">
+                    {Math.min(currentPage * itemsPerPage, filteredStops.length)}
+                  </span>{' '}
+                  of <span className="font-bold text-slate-700">{filteredStops.length}</span> bus stops
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-bold text-slate-650 px-2">
+                    Page {currentPage} of {Math.ceil(filteredStops.length / itemsPerPage)}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(Math.ceil(filteredStops.length / itemsPerPage), p + 1))}
+                    disabled={currentPage >= Math.ceil(filteredStops.length / itemsPerPage)}
+                    className="px-3 py-1.5 text-xs font-bold text-slate-750 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           )}
         </div>
       </div>
