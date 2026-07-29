@@ -430,8 +430,6 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
               </thead>
 
               <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
-                {filteredStops.length === 0 ? (
-                  <tr>
                 {paginatedStops.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="text-center py-16 text-slate-400 font-medium">
