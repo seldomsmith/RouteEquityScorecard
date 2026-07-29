@@ -42,8 +42,6 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
   // Calculate dynamic score for a stop based on selected CIMD dimensions
   const getDynamicScore = (stop: BusStopRecord): { score: number; pop: number } => {
     if (!stop.das || stop.das.length === 0) {
@@ -164,6 +162,8 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
       setSortOrder('desc');
     }
   };
+
+  if (!isOpen) return null;
 
   const gradesList: (BusStopGrade | 'ALL')[] = ['ALL', 'A', 'B', 'C', 'D', 'E', 'Regional'];
 
