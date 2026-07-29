@@ -119,12 +119,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         if (activeDimensions.includes('eth')) score += (daItemAny.eth ?? 50) * dimWeight;
         if (activeDimensions.includes('sit')) score += (daItemAny.sit ?? 50) * dimWeight;
 
-        let color = '#E2E8F0';
-        if (score >= 80) color = '#059669';      // Deep Emerald Green (High Equity)
-        else if (score >= 65) color = '#10B981'; // Emerald Green
-        else if (score >= 50) color = '#3B82F6'; // Royal Blue
-        else if (score >= 35) color = '#F59E0B'; // Amber
-        else color = '#CBD5E1';                  // Pale Slate (Low Equity)
+        let color = '#F3E8FF';
+        if (score >= 80) color = '#4C1D95';      // Deep Dark Purple (Highest Equity Need)
+        else if (score >= 65) color = '#6D28D9'; // Rich Purple
+        else if (score >= 50) color = '#8B5CF6'; // Vibrant Violet
+        else if (score >= 35) color = '#C4B5FD'; // Soft Lavender
+        else color = '#F3E8FF';                  // Light Pale Purple (Low Equity Need)
 
         matchExpr.push(daId, color);
       });
@@ -138,11 +138,12 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         if (activeDimensions.includes('eth')) val += (scores.eth ?? 50) * dimWeight;
         if (activeDimensions.includes('sit')) val += (scores.sit ?? 50) * dimWeight;
 
-        let color = '#F8FAFC';
-        if (val >= 80) color = '#A7F3D0';      // Soft Mint Green
-        else if (val >= 65) color = '#BAE6FD'; // Light Blue
-        else if (val >= 50) color = '#FEF08A'; // Soft Yellow
-        else if (val >= 35) color = '#FED7AA'; // Soft Orange
+        let color = '#FAF5FF';
+        if (val >= 80) color = '#7C3AED';      // Deep Purple
+        else if (val >= 65) color = '#A78BFA'; // Medium Purple
+        else if (val >= 50) color = '#C4B5FD'; // Lavender
+        else if (val >= 35) color = '#DDD6FE'; // Soft Tinted Purple
+        else color = '#F5F3FF';                  // Very Light Purple Tint Base
         else color = '#F1F5F9';                  // Very Light Baseline Slate
 
         matchExpr.push(daId, color);

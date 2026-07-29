@@ -85,10 +85,10 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
 
         {showHeatmap && (
           <div className="space-y-1 pt-1">
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-slate-200 via-blue-400 via-amber-400 to-emerald-600 shadow-inner" />
+            <div className="h-2 w-full rounded-full bg-gradient-to-r from-purple-100 via-purple-400 to-purple-800 shadow-inner" />
             <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-              <span>Low Equity</span>
-              <span>High Equity</span>
+              <span>Light (Low Equity Need)</span>
+              <span>Dark (High Equity Need)</span>
             </div>
           </div>
         )}
