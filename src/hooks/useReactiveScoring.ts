@@ -4,16 +4,11 @@
  * Replicates the Python scoring pipeline (refine_scoring.py) in pure TypeScript.
  * Recalculates composite scores, sigmoid transforms, quintile grades, and SHAP
  * contributions in real time as policy weights change.
- *
- * The pillar scores (pillar_1…4) are pre-normalized via z-score (mean≈50, SD≈20)
- * and are immutable. Only the weighted composite, sigmoid calibration, and grade
- * assignment change when weights are adjusted.
- *
- * Performance: 235 routes × 4 multiplications + 1 sort = microseconds.
  */
 
 import { useMemo } from 'react';
 import { RouteWithDAs } from '@/components/charts/EquityMatrix';
+import { useRouteStore } from '@/store/routeStore';
 
 /* ── Types ─────────────────────────────────────────────────────────── */
 
@@ -59,44 +54,78 @@ const PILLAR_MAP = [
   { key: 'pillar_4', storeKey: 'opportunity',    label: 'Opportunity',   color_pos: '#10B981', color_neg: '#F43F5E' },
 ] as const;
 
-/* ── Math Utilities ────────────────────────────────────────────────── */
+/* ── Helper Math ───────────────────────────────────────────────────── */
 
-/** Sigmoid function — compresses middle, stretches extremes. */
-function sigmoid(x: number, midpoint: number, steepness: number): number {
-  const exponent = -steepness * (x - midpoint);
-  // Guard against overflow
-  if (exponent > 500) return 0;
-  if (exponent < -500) return 100;
-  return 100 / (1 + Math.exp(exponent));
+function mean(arr: number[]): number {
+  if (arr.length === 0) return 0;
+  return arr.reduce((sum, val) => sum + val, 0) / arr.length;
 }
 
-/** Compute mean of an array. */
-function mean(values: number[]): number {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, v) => sum + v, 0) / values.length;
+function stddev(arr: number[], avg: number): number {
+  if (arr.length <= 1) return 0;
+  const variance = arr.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / (arr.length - 1);
+  return Math.sqrt(variance);
 }
 
-/** Compute population standard deviation of an array. */
-function stddev(values: number[], avg?: number): number {
-  if (values.length === 0) return 0;
-  const m = avg ?? mean(values);
-  return Math.sqrt(values.reduce((sum, v) => sum + (v - m) ** 2, 0) / values.length);
+function sigmoid(x: number, mid: number, k: number): number {
+  // Map raw weighted sum into a calibrated 0-100 scale
+  const s = 1.0 / (1.0 + Math.exp(-k * (x - mid)));
+  return s;
 }
 
-/* ── The Hook ──────────────────────────────────────────────────────── */
+// Computes dynamic route vulnerability score based on selected active CIMD dimensions and DA scores
+function getDynamicRouteVuln(
+  route: RouteWithDAs,
+  daScores: Record<string, any>,
+  activeDimensions: ('econ' | 'res' | 'eth' | 'sit')[]
+): number {
+  if (!route.da_data || route.da_data.length === 0) {
+    return route.pillar_1; // fallback
+  }
+
+  let routeVulnSum = 0;
+  let routePopSum = 0;
+  
+  const numDims = activeDimensions.length || 4;
+  const dimWeight = 1 / numDims;
+
+  route.da_data.forEach((da) => {
+    const daScoresItem = daScores[da.id];
+    if (daScoresItem) {
+      let score = 0;
+      if (activeDimensions.includes('econ')) score += (daScoresItem.econ ?? daScoresItem.economic ?? 50) * dimWeight;
+      if (activeDimensions.includes('res')) score += (daScoresItem.res ?? 50) * dimWeight;
+      if (activeDimensions.includes('eth')) score += (daScoresItem.eth ?? 50) * dimWeight;
+      if (activeDimensions.includes('sit')) score += (daScoresItem.sit ?? 50) * dimWeight;
+      
+      routeVulnSum += score * da.pop;
+      routePopSum += da.pop;
+    }
+  });
+  
+  if (routePopSum > 0) {
+    return routeVulnSum / routePopSum;
+  }
+  return route.pillar_1; // fallback
+}
+
+/* ── Hook ──────────────────────────────────────────────────────────── */
 
 export function useReactiveScoring(
   baseRoutes: RouteWithDAs[],
   weights: PolicyWeights,
-  cimdMode = false,
+  cimdMode: boolean
 ): { scoredRoutes: ScoredRoute[]; networkStats: NetworkStats } {
+  const activeDimensions = useRouteStore((s) => s.activeDimensions);
+  const daScores = useRouteStore((s) => s.daScores);
+
   return useMemo(() => {
-    if (!baseRoutes.length) {
+    if (!baseRoutes || baseRoutes.length === 0) {
       return {
         scoredRoutes: [],
         networkStats: {
-          sigmoidMidpoint: 50,
-          sigmoidSteepness: 0.08,
+          sigmoidMidpoint: 0,
+          sigmoidSteepness: 0,
           quintileCuts: [20, 40, 60, 80],
           pillarMeans: {},
           gradeDistribution: { A: 0, B: 0, C: 0, D: 0, E: 0 },
@@ -111,7 +140,12 @@ export function useReactiveScoring(
     // ── 1. Compute per-pillar network means (municipal only) ──────
     const pillarMeans: Record<string, number> = {};
     for (const p of PILLAR_MAP) {
-      const values = municipalRoutes.map((r) => (r as any)[p.key] as number || 0);
+      const values = municipalRoutes.map((r) => {
+        if (p.key === 'pillar_1' && cimdMode && Object.keys(daScores).length > 0) {
+          return getDynamicRouteVuln(r, daScores, activeDimensions);
+        }
+        return (r as any)[p.key] as number || 0;
+      });
       pillarMeans[p.key] = mean(values);
     }
 
@@ -124,8 +158,8 @@ export function useReactiveScoring(
     };
 
     const rawComposites = municipalRoutes.map((r) => {
-      const vuln = cimdMode
-        ? ((r as any).pillar_1_cimd ?? r.pillar_1)
+      const vuln = cimdMode && Object.keys(daScores).length > 0
+        ? getDynamicRouteVuln(r, daScores, activeDimensions)
         : r.pillar_1;
       return (
         (vuln * w.pillar_1) +
@@ -138,12 +172,11 @@ export function useReactiveScoring(
     // ── 3. Calibrate sigmoid from composite distribution ──────────
     const compMean = mean(rawComposites);
     const compSd = stddev(rawComposites, compMean);
-    // Steepness calibrated so ±2 SD covers roughly the 10–90 score range
     const steepness = compSd > 0 ? 4.0 / (2 * compSd) : 0.08;
 
     // ── 4. Apply sigmoid transform ────────────────────────────────
     const finalScores = rawComposites.map((raw) =>
-      Math.round(sigmoid(raw, compMean, steepness) * 100) / 100
+      Math.round(sigmoid(raw, compMean, steepness) * 100)
     );
 
     // ── 5. Quintile grading ───────────────────────────────────────
@@ -167,7 +200,9 @@ export function useReactiveScoring(
 
       // SHAP: φ_j = (w_j) × (pillar_j - network_mean_of_pillar_j)
       const shap: ShapContribution[] = PILLAR_MAP.map((p) => {
-        const pillarScore = (route as any)[p.key] as number || 0;
+        const pillarScore = (p.key === 'pillar_1' && cimdMode && Object.keys(daScores).length > 0)
+          ? getDynamicRouteVuln(route, daScores, activeDimensions)
+          : ((route as any)[p.key] as number || 0);
         const pillarMean = pillarMeans[p.key];
         const weightFrac = w[p.key as keyof typeof w];
         const shapValue = weightFrac * (pillarScore - pillarMean);
@@ -183,8 +218,14 @@ export function useReactiveScoring(
         };
       });
 
+      // Update route's pillar_1_cimd dynamically for downstream display
+      const dynVuln = cimdMode && Object.keys(daScores).length > 0
+        ? getDynamicRouteVuln(route, daScores, activeDimensions)
+        : route.pillar_1;
+
       return {
         ...route,
+        pillar_1_cimd: dynVuln,
         baseline_grade: route.grade,
         composite_score: finalScores[i],
         composite_score_raw: Math.round(rawComposites[i] * 100) / 100,
@@ -219,12 +260,12 @@ export function useReactiveScoring(
     return {
       scoredRoutes,
       networkStats: {
-        sigmoidMidpoint: Math.round(compMean * 100) / 100,
-        sigmoidSteepness: Math.round(steepness * 10000) / 10000,
-        quintileCuts: cuts.map((c) => Math.round(c * 100) / 100),
+        sigmoidMidpoint: compMean,
+        sigmoidSteepness: steepness,
+        quintileCuts: cuts,
         pillarMeans,
         gradeDistribution,
       },
     };
-  }, [baseRoutes, weights, cimdMode]);
+  }, [baseRoutes, weights, cimdMode, activeDimensions, daScores]);
 }

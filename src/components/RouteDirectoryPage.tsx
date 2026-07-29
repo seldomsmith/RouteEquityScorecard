@@ -34,6 +34,9 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
   const selectedRouteStore = useRouteStore((s) => s.selectedRoute);
   const setSelectedRouteStore = useRouteStore((s) => s.setSelectedRoute);
   const cimdMode = useRouteStore((s) => s.cimdMode);
+  const activeDimensions = useRouteStore((s) => s.activeDimensions);
+  const toggleDimension = useRouteStore((s) => s.toggleDimension);
+  const daScores = useRouteStore((s) => s.daScores);
 
   const [baseRoutes, setBaseRoutes] = useState<RouteWithDAs[]>([]);
   const [sensitivityData, setSensitivityData] = useState<Record<string, any>>({});
@@ -45,6 +48,20 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
   const [sortField, setSortField] = useState<'short_name' | 'name' | 'score' | 'pop' | 'stability' | 'score_mean' | 'score_std'>('score');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
+
+  // Fallback load of daScores if empty
+  useEffect(() => {
+    if (Object.keys(daScores).length === 0) {
+      fetch('/data/bus_stop_vulnerability.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.da_scores) {
+            useRouteStore.setState({ daScores: data.da_scores });
+          }
+        })
+        .catch((err) => console.error('Failed to load da_scores fallback in RouteDirectoryPage:', err));
+    }
+  }, [daScores]);
 
   // Load Sensitivity summary (stability metrics)
   useEffect(() => {
