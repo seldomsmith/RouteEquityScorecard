@@ -15,6 +15,7 @@ interface GlobalNavMenuProps {
   onClose: () => void;
   onNavigate?: (page: PageView) => void;
   onViewDirectory?: () => void;
+  onViewBusStopDirectory?: () => void;
   activeItemIndex?: number;
 }
 
@@ -23,7 +24,8 @@ export const MENU_ITEMS = [
   'Explain this to me!',
   'Equity Scorecard Dashboard',
   'Route Directory',
-  'Bus Stop Analysis'
+  'Bus Stop Analysis',
+  'Bus Stop Directory'
 ];
 
 export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
@@ -31,6 +33,7 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
   onClose,
   onNavigate,
   onViewDirectory,
+  onViewBusStopDirectory,
   activeItemIndex = 0
 }) => {
   if (!isOpen) return null;
@@ -51,6 +54,12 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
       }
     } else if (label === 'Bus Stop Analysis') {
       onNavigate?.('bus-stop-analysis');
+    } else if (label === 'Bus Stop Directory') {
+      if (onViewBusStopDirectory) {
+        onViewBusStopDirectory();
+      } else {
+        onNavigate?.('bus-stop-analysis');
+      }
     }
   };
 
