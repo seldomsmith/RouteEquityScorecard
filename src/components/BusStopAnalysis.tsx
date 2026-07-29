@@ -132,7 +132,6 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onNavigate={onNavigate}
-        onViewBusStopDirectory={() => setIsDirectoryModalOpen(true)}
         activeItemIndex={4}
       />
 
