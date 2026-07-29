@@ -9,7 +9,8 @@ export type PageView =
   | 'scrollytelling-two-pillar' 
   | 'directory' 
   | 'bus-stop-analysis'
-  | 'bus-stop-directory';
+  | 'bus-stop-directory'
+  | 'bus-stop-graphs';
 
 interface GlobalNavMenuProps {
   isOpen: boolean;
@@ -25,7 +26,8 @@ export const MENU_ITEMS = [
   'Equity Scorecard Dashboard',
   'Route Directory',
   'Bus Stop Analysis',
-  'Bus Stop Directory'
+  'Bus Stop Directory',
+  'Bus Stop Graphs'
 ];
 
 export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
@@ -46,15 +48,13 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
     } else if (label === 'Equity Scorecard Dashboard') {
       onNavigate?.('dashboard');
     } else if (label === 'Route Directory') {
-      if (onViewDirectory) {
-        onViewDirectory();
-      } else {
-        onNavigate?.('dashboard');
-      }
+      onNavigate?.('directory');
     } else if (label === 'Bus Stop Analysis') {
       onNavigate?.('bus-stop-analysis');
     } else if (label === 'Bus Stop Directory') {
       onNavigate?.('bus-stop-directory');
+    } else if (label === 'Bus Stop Graphs') {
+      onNavigate?.('bus-stop-graphs');
     }
   };
 
