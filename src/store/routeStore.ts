@@ -49,6 +49,10 @@ interface RouteState {
 
   // Real DA Population Lookup (extracted from DuckDB route metadata)
   daPopLookup: Record<string, number>;
+
+  // Heatmap Color Palette Mode
+  heatmapPalette: 'purple' | 'teal' | 'emerald' | 'carbon' | 'divergent' | 'sunrise' | 'sunset';
+  setHeatmapPalette: (palette: 'purple' | 'teal' | 'emerald' | 'carbon' | 'divergent' | 'sunrise' | 'sunset') => void;
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
