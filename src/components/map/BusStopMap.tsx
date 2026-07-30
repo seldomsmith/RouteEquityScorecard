@@ -236,7 +236,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         source: 'selected-buffer',
         paint: {
           'fill-color': '#7C3AED',
-          'fill-opacity': 0.0,
+          'fill-opacity': 0.25,
         },
       });
 
@@ -245,8 +245,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         type: 'line',
         source: 'selected-buffer',
         paint: {
-          'line-color': '#7C3AED',
-          'line-width': 1.5,
+          'line-color': '#6D28D9',
+          'line-width': 2.5,
         },
       });
 
