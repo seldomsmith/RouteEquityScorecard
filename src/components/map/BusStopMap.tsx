@@ -516,7 +516,29 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             const numDims = activeDimensions.length || 4;
             const dimWeight = 1 / numDims;
 
-            // 1. Process dynamic route scores based on active CIMD dimensions and stop catchments
+            // 1. Process dynamic route scores directly from bus stop catchments serving each corridor
+            const routeStopScores: Record<string, { totalScore: number; totalPop: number }> = {};
+
+            stops.forEach((s) => {
+              const eqScore = s.equal_score || 50;
+              // If stop is served by routes or we match stop catchments
+              const daList = s.das || [];
+              let stopVal = 0;
+              if (daList.length > 0) {
+                daList.forEach((d: any) => {
+                  let val = 0;
+                  if (activeDimensions.includes('econ')) val += (d.econ ?? d.economic_score ?? 50) * dimWeight;
+                  if (activeDimensions.includes('res')) val += (d.res ?? 50) * dimWeight;
+                  if (activeDimensions.includes('eth')) val += (d.eth ?? 50) * dimWeight;
+                  if (activeDimensions.includes('sit')) val += (d.sit ?? 50) * dimWeight;
+                  stopVal += val * (d.pct / 100.0);
+                });
+              } else {
+                stopVal = eqScore;
+              }
+              (s as any)._activeVal = stopVal;
+            });
+
             const evaluatedRoutes = data.routes.map((r: any) => {
               const shortName = String(r.short_name || r.route_id || '').trim();
 
@@ -534,7 +556,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                 return { ...r, dynamicScore: 0, dynamicGrade: 'Regional', isRegional: true };
               }
 
-              // Compute dynamic CIMD score across served DA catchments
+              // Compute dynamic CIMD score across served DAs for this route
               let scoreSum = 0;
               let popSum = 0;
               if (r.da_metadata && r.da_metadata.length > 0) {
@@ -555,18 +577,19 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
               return { ...r, dynamicScore, isRegional: false };
             });
 
-            // 2. Rank municipal routes to assign 20% quintile grades A-E
+            // 2. Rank municipal routes: HIGH VULNERABILITY SCORE = GRADE A (Emerald Green)
             const municipalRoutes = evaluatedRoutes.filter((r: any) => !r.isRegional);
-            municipalRoutes.sort((a: any, b: any) => a.dynamicScore - b.dynamicScore);
+            municipalRoutes.sort((a: any, b: any) => b.dynamicScore - a.dynamicScore); // DESCENDING order so highest score = rank 0 (Grade A)
             const nMuni = municipalRoutes.length || 1;
 
             municipalRoutes.forEach((r: any, idx: number) => {
-              const pct = (idx / (nMuni - 1 || 1)) * 100.0;
+              const percentile = ((nMuni - 1 - idx) / (nMuni - 1 || 1)) * 100.0;
               let g = 'E';
-              if (pct >= 80.0) g = 'A';
-              else if (pct >= 60.0) g = 'B';
-              else if (pct >= 40.0) g = 'C';
-              else if (pct >= 20.0) g = 'D';
+              if (percentile >= 80.0) g = 'A';       // Top 20% highest vulnerability -> Grade A (Emerald Green)
+              else if (percentile >= 60.0) g = 'B'; // Next 20% -> Grade B (Royal Blue)
+              else if (percentile >= 40.0) g = 'C'; // Middle 20% -> Grade C (Amber)
+              else if (percentile >= 20.0) g = 'D'; // Lower 20% -> Grade D (Orange)
+              else g = 'E';                         // Lowest 20% vulnerability -> Grade E (Red)
               r.dynamicGrade = g;
             });
 
