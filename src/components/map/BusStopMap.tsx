@@ -274,6 +274,33 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         },
       });
 
+      // 2. Add Selected Route Intersecting DAs Source & Layers
+      map.addSource('selected-route-das', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+
+      map.addLayer({
+        id: 'selected-route-das-fill',
+        type: 'fill',
+        source: 'selected-route-das',
+        paint: {
+          'fill-color': '#10B981',
+          'fill-opacity': 0.25,
+        },
+      });
+
+      map.addLayer({
+        id: 'selected-route-das-line',
+        type: 'line',
+        source: 'selected-route-das',
+        paint: {
+          'line-color': '#059669',
+          'line-width': 2.0,
+          'line-dasharray': [2, 2],
+        },
+      });
+
       // 3. Add Transit Routes Line Source & Layer
       map.addSource('transit-routes', {
         type: 'geojson',
@@ -281,11 +308,33 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
       });
 
       map.addLayer({
+        id: 'transit-routes-casing',
+        type: 'line',
+        source: 'transit-routes',
+        paint: {
+          'line-width': 7,
+          'line-color': '#059669',
+          'line-opacity': [
+            'case',
+            ['==', ['get', 'is_selected'], 1], 0.9,
+            0.0
+          ]
+        },
+        layout: {
+          'visibility': showRoutes ? 'visible' : 'none'
+        }
+      });
+
+      map.addLayer({
         id: 'transit-routes-lines',
         type: 'line',
         source: 'transit-routes',
         paint: {
-          'line-width': 3,
+          'line-width': [
+            'case',
+            ['==', ['get', 'is_selected'], 1], 5,
+            3
+          ],
           'line-color': [
             'case',
             ['==', ['get', 'is_regional'], 1], '#94A3B8', // Dark gray for regional routes
@@ -451,10 +500,96 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         }
       });
 
-      map.on('mouseleave', 'bus-stop-points', () => {
+      // ---------------- ROUTE HOVER & CLICK HANDLERS ----------------
+      map.on('mousemove', 'transit-routes-lines', (e) => {
+        if (e.features && e.features.length > 0) {
+          map.getCanvas().style.cursor = 'pointer';
+          const props = e.features[0].properties;
+          if (props && popupRef.current) {
+            const shortName = props.short_name || props.route_id || '';
+            const name = props.name || '';
+            const grade = props.grade || 'C';
+            const isReg = props.is_regional === 1;
+
+            const contentHtml = `
+              <div class="p-2.5 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl text-slate-900 shadow-xl space-y-1 text-xs min-w-[200px]">
+                <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-1">
+                  <span class="font-bold text-slate-800">Route ${shortName}</span>
+                  ${isReg ? `
+                    <span class="font-mono text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Regional</span>
+                  ` : `
+                    <span class="font-bold text-[10px] px-1.5 py-0.5 rounded ${
+                      grade === 'A' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                      grade === 'B' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                      grade === 'C' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                      grade === 'D' ? 'bg-orange-50 text-orange-700 border border-orange-200' :
+                      'bg-red-50 text-red-700 border border-red-200'
+                    }">Grade ${grade}</span>
+                  `}
+                </div>
+                <div class="text-[11px] text-slate-600 truncate font-medium pt-0.5">${name}</div>
+              </div>
+            `;
+
+            popupRef.current.setLngLat(e.lngLat).setHTML(contentHtml).addTo(map);
+          }
+        }
+      });
+
+      map.on('mouseleave', 'transit-routes-lines', () => {
         map.getCanvas().style.cursor = '';
-        if (popupRef.current) {
-          popupRef.current.remove();
+        if (popupRef.current) popupRef.current.remove();
+      });
+
+      map.on('click', 'transit-routes-lines', (e) => {
+        if (e.features && e.features.length > 0) {
+          const props = e.features[0].properties;
+          if (props && props.route_id) {
+            const rId = String(props.route_id);
+            setSelectedRouteId(rId);
+
+            // Fetch route's DA metadata to shade contributing DAs
+            fetch('/data/golden_route_record.json')
+              .then((res) => res.json())
+              .then((data) => {
+                const targetRoute = data.routes.find((r: any) => String(r.route_id) === rId);
+                if (!targetRoute) return;
+
+                const daList = targetRoute.da_metadata || [];
+                const targetDaIds = new Set(daList.map((d: any) => String(d.da_id)));
+
+                // Fetch da_boundaries_simple.geojson and filter for target DAs
+                fetch('/data/da_boundaries_simple.geojson')
+                  .then((res) => res.json())
+                  .then((geoData) => {
+                    const matchedFeatures = geoData.features.filter((f: any) => targetDaIds.has(String(f.properties.DAUID)));
+                    const daSource = map.getSource('selected-route-das') as mapboxgl.GeoJSONSource;
+                    if (daSource) {
+                      daSource.setData({
+                        type: 'FeatureCollection',
+                        features: matchedFeatures
+                      });
+                    }
+                  });
+
+                // Fly map to route coordinates
+                if (targetRoute.coords && targetRoute.coords.length > 0) {
+                  const bounds = new mapboxgl.LngLatBounds();
+                  targetRoute.coords.forEach((c: any) => bounds.extend([c[1], c[0]]));
+                  map.fitBounds(bounds, { padding: 80, maxZoom: 14, duration: 1200 });
+                }
+              });
+          }
+        }
+      });
+
+      // Clear route selection when clicking empty map canvas
+      map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['bus-stop-points', 'transit-routes-lines'] });
+        if (features.length === 0) {
+          setSelectedRouteId(null);
+          const daSource = map.getSource('selected-route-das') as mapboxgl.GeoJSONSource;
+          if (daSource) daSource.setData({ type: 'FeatureCollection', features: [] });
         }
       });
     });
@@ -619,7 +754,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                   short_name: r.short_name,
                   name: r.name,
                   grade: r.dynamicGrade || 'C',
-                  is_regional: r.isRegional ? 1 : 0
+                  is_regional: r.isRegional ? 1 : 0,
+                  is_selected: String(r.route_id) === String(selectedRouteId) ? 1 : 0
                 },
                 geometry: {
                   type: 'LineString',
@@ -652,7 +788,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     } else {
       map.once('load', applyUpdates);
     }
-  }, [stops, mode, daScores, selectedGrades, selectedRouteGrades, selectedStopId, activeDimensions, showHeatmap, showRoutes, showStops, heatmapPalette]);
+  }, [stops, mode, daScores, selectedGrades, selectedRouteGrades, selectedStopId, selectedRouteId, activeDimensions, showHeatmap, showRoutes, showStops, heatmapPalette]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
