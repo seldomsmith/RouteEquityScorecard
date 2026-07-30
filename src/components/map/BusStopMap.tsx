@@ -217,7 +217,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         source: 'da-boundaries',
         paint: {
           'fill-color': '#F8FAFC',
-          'fill-opacity': 0.45,
+          'fill-opacity': 0.80,
         },
       });
 
@@ -274,14 +274,18 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         paint: {
           'line-width': 3,
           'line-color': [
-            'match',
-            ['get', 'grade'],
-            'A', '#10B981',
-            'B', '#3B82F6',
-            'C', '#F59E0B',
-            'D', '#F97316',
-            'E', '#EF4444',
-            '#3B82F6'
+            'case',
+            ['==', ['get', 'is_regional'], 1], '#94A3B8', // Dark gray for regional routes
+            [
+              'match',
+              ['get', 'grade'],
+              'A', '#10B981',
+              'B', '#3B82F6',
+              'C', '#F59E0B',
+              'D', '#F97316',
+              'E', '#EF4444',
+              '#3B82F6'
+            ]
           ],
           'line-opacity': 0.85
         },
@@ -503,17 +507,78 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           .then((res) => res.json())
           .then((data) => {
             if (!data || !data.routes) return;
-            const routeFeatures = data.routes
+
+            const numDims = activeDimensions.length || 4;
+            const dimWeight = 1 / numDims;
+
+            // 1. Process dynamic route scores based on active CIMD dimensions and stop catchments
+            const evaluatedRoutes = data.routes.map((r: any) => {
+              const shortName = String(r.short_name || r.route_id || '').trim();
+
+              // Regional route check — EXCLUDE St. Albert, Strathcona, Spruce Grove, Leduc, Beaumont
+              // KEEP Route 747 (Airport Express) as municipal!
+              const isRegional = 
+                shortName !== '747' && (
+                  shortName.startsWith('A') ||
+                  shortName.startsWith('L') ||
+                  shortName.startsWith('4') ||
+                  ['201','202','203','204','208','211','401','411','413','414','540','560'].includes(shortName)
+                );
+
+              if (isRegional) {
+                return { ...r, dynamicScore: 0, dynamicGrade: 'Regional', isRegional: true };
+              }
+
+              // Compute dynamic CIMD score across served DA catchments
+              let scoreSum = 0;
+              let popSum = 0;
+              if (r.da_metadata && r.da_metadata.length > 0) {
+                r.da_metadata.forEach((daItem: any) => {
+                  let s = 0;
+                  if (activeDimensions.includes('econ')) s += (daItem.econ ?? daItem.economic ?? 50) * dimWeight;
+                  if (activeDimensions.includes('res')) s += (daItem.res ?? 50) * dimWeight;
+                  if (activeDimensions.includes('eth')) s += (daItem.eth ?? 50) * dimWeight;
+                  if (activeDimensions.includes('sit')) s += (daItem.sit ?? 50) * dimWeight;
+
+                  const p = daItem.pop || 100;
+                  scoreSum += s * p;
+                  popSum += p;
+                });
+              }
+
+              const dynamicScore = popSum > 0 ? (scoreSum / popSum) : (r.pillar_1_vulnerability || 50);
+              return { ...r, dynamicScore, isRegional: false };
+            });
+
+            // 2. Rank municipal routes to assign 20% quintile grades A-E
+            const municipalRoutes = evaluatedRoutes.filter((r: any) => !r.isRegional);
+            municipalRoutes.sort((a: any, b: any) => a.dynamicScore - b.dynamicScore);
+            const nMuni = municipalRoutes.length || 1;
+
+            municipalRoutes.forEach((r: any, idx: number) => {
+              const pct = (idx / (nMuni - 1 || 1)) * 100.0;
+              let g = 'E';
+              if (pct >= 80.0) g = 'A';
+              else if (pct >= 60.0) g = 'B';
+              else if (pct >= 40.0) g = 'C';
+              else if (pct >= 20.0) g = 'D';
+              r.dynamicGrade = g;
+            });
+
+            // 3. Build Mapbox GeoJSON Features
+            const routeFeatures = evaluatedRoutes
               .filter((r: any) => {
-                const grade = r.grade || 'C';
-                return selectedRouteGrades ? selectedRouteGrades.includes(grade as any) : true;
+                const g = r.dynamicGrade || 'C';
+                return selectedRouteGrades ? selectedRouteGrades.includes(g as any) : true;
               })
               .map((r: any) => ({
                 type: 'Feature',
                 properties: {
                   route_id: r.route_id,
+                  short_name: r.short_name,
                   name: r.name,
-                  grade: r.grade || 'C'
+                  grade: r.dynamicGrade || 'C',
+                  is_regional: r.isRegional ? 1 : 0
                 },
                 geometry: {
                   type: 'LineString',
