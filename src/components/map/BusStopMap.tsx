@@ -119,9 +119,11 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     if (!map.getLayer('da-fill')) return;
 
     if (!showHeatmap) {
-      map.setPaintProperty('da-fill', 'fill-color', 'rgba(0, 0, 0, 0)');
+      map.setLayoutProperty('da-fill', 'visibility', 'none');
       return;
     }
+
+    map.setLayoutProperty('da-fill', 'visibility', 'visible');
 
     const numDims = activeDimensions.length || 4;
     const dimWeight = 1 / numDims;
@@ -151,14 +153,14 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         matchExpr.push(daId, color);
       });
       matchExpr.push('rgba(0, 0, 0, 0)');
-    } else {
-      // Default Base Layer Light Heatmap across all city DAs based on active CIMD criteria
+    } else if (currentDaScores && Object.keys(currentDaScores).length > 0) {
+      // Default Base Layer Heatmap across all city DAs based on active CIMD criteria
       Object.entries(currentDaScores).forEach(([daId, scores]: [string, any]) => {
         let val = 0;
         if (activeDimensions.includes('econ')) val += (scores.econ ?? scores.economic ?? 50) * dimWeight;
         if (activeDimensions.includes('res')) val += (scores.res ?? 50) * dimWeight;
-        if (activeDimensions.includes('eth')) val += (scores.eth ?? 50) * dimWeight;
-        if (activeDimensions.includes('sit')) val += (scores.sit ?? 50) * dimWeight;
+        if (activeDimensions.includes('eth')) val += (scores.eth ?? scores.economic ?? 50) * dimWeight;
+        if (activeDimensions.includes('sit')) val += (scores.sit ?? scores.economic ?? 50) * dimWeight;
 
         let color = colors.l1;
         if (val >= 80) color = colors.l5;
@@ -170,6 +172,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         matchExpr.push(daId, color);
       });
       matchExpr.push('#F8FAFC');
+    } else {
+      map.setPaintProperty('da-fill', 'fill-color', '#F8FAFC');
+      return;
     }
 
     map.setPaintProperty('da-fill', 'fill-color', matchExpr);
@@ -256,7 +261,36 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         },
       });
 
-      // 3. Add Bus Stops Source & Circle Point Layer
+      // 3. Add Transit Routes Line Source & Layer
+      map.addSource('transit-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+
+      map.addLayer({
+        id: 'transit-routes-lines',
+        type: 'line',
+        source: 'transit-routes',
+        paint: {
+          'line-width': 3,
+          'line-color': [
+            'match',
+            ['get', 'grade'],
+            'A', '#10B981',
+            'B', '#3B82F6',
+            'C', '#F59E0B',
+            'D', '#F97316',
+            'E', '#EF4444',
+            '#3B82F6'
+          ],
+          'line-opacity': 0.85
+        },
+        layout: {
+          'visibility': showRoutes ? 'visible' : 'none'
+        }
+      });
+
+      // 4. Add Bus Stops Source & Circle Point Layer
       map.addSource('bus-stops', {
         type: 'geojson',
         data: {
@@ -269,6 +303,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         id: 'bus-stop-points',
         type: 'circle',
         source: 'bus-stops',
+        layout: {
+          'visibility': showStops ? 'visible' : 'none'
+        },
         paint: {
           'circle-radius': [
             'interpolate',
@@ -439,23 +476,69 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     }
   }, [is3dEnabled]);
 
-  // Update stops source and DA heatmap when props change
+  // Update stops source, route lines source, and layer visibility when props change
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
     const targetStop = stops.find((s) => s.stop_id === selectedStopId) || null;
 
-    if (map.isStyleLoaded()) {
+    const applyUpdates = () => {
+      // 1. Update Bus Stops
       updateStopsSource(map, stops, mode, selectedGrades);
+      if (map.getLayer('bus-stop-points')) {
+        map.setLayoutProperty('bus-stop-points', 'visibility', showStops ? 'visible' : 'none');
+      }
+
+      // 2. Update DA Heatmap
       updateDaHeatmap(map, daScores, targetStop);
+
+      // 3. Update Transit Routes Layer Visibility & Fetch Geometries
+      if (map.getLayer('transit-routes-lines')) {
+        map.setLayoutProperty('transit-routes-lines', 'visibility', showRoutes ? 'visible' : 'none');
+      }
+
+      if (showRoutes) {
+        fetch('/data/golden_route_record.json')
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data || !data.routes) return;
+            const routeFeatures = data.routes
+              .filter((r: any) => {
+                const grade = r.grade || 'C';
+                return selectedRouteGrades ? selectedRouteGrades.includes(grade as any) : true;
+              })
+              .map((r: any) => ({
+                type: 'Feature',
+                properties: {
+                  route_id: r.route_id,
+                  name: r.name,
+                  grade: r.grade || 'C'
+                },
+                geometry: {
+                  type: 'LineString',
+                  coordinates: (r.coords || []).map((c: any) => [c[1], c[0]])
+                }
+              }));
+
+            const rSource = map.getSource('transit-routes') as mapboxgl.GeoJSONSource;
+            if (rSource) {
+              rSource.setData({
+                type: 'FeatureCollection',
+                features: routeFeatures
+              });
+            }
+          })
+          .catch((err) => console.error("Failed to load golden route records for map layer:", err));
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      applyUpdates();
     } else {
-      map.once('load', () => {
-        updateStopsSource(map, stops, mode, selectedGrades);
-        updateDaHeatmap(map, daScores, targetStop);
-      });
+      map.once('load', applyUpdates);
     }
-  }, [stops, mode, daScores, selectedGrades, selectedStopId, activeDimensions, showHeatmap, heatmapPalette]);
+  }, [stops, mode, daScores, selectedGrades, selectedRouteGrades, selectedStopId, activeDimensions, showHeatmap, showRoutes, showStops, heatmapPalette]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
