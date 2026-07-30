@@ -1,7 +1,6 @@
 """
-Build Bus Stop Vulnerability Pre-Computation Asset with Continuous Granular CIMD Factor Scores
-Processes GTFS bus stops (~6,000+), constructs 400m geodesic buffers,
-calculates proportional DA area overlaps, and computes continuous CIMD vulnerability scores.
+Build Bus Stop Vulnerability Pre-Computation Asset with Min-Max Continuous Raw CIMD Factor Scores
+Formula: Normalized Score = 1.0 + 99.0 * ((Raw - Min) / (Max - Min))
 Outputs to `public/data/bus_stop_vulnerability.json`.
 """
 import json
@@ -12,7 +11,7 @@ import geopandas as gpd
 
 def main():
     print("=" * 60)
-    print("BUILDING GRANULAR CONTINUOUS BUS STOP VULNERABILITY ASSET")
+    print("BUILDING MIN-MAX CONTINUOUS BUS STOP VULNERABILITY ASSET")
     print("=" * 60)
     start_time = time.time()
 
@@ -46,95 +45,92 @@ def main():
     # Ensure DAUID is string
     gdf_das['DAUID'] = gdf_das['DAUID'].astype(str).str.strip()
 
-    # 3. Load Granular Continuous CIMD Scores from Excel or CSV
+    # 3. Load Granular Raw Continuous CIMD Factor Scores from Excel
     excel_path = "data/prairies_scores_quintiles_EN.xlsx"
-    csv_path = "scratch/prairies_cimd/prairies_scores_quintiles_EN.csv"
-    
-    df_cimd = None
-    if os.path.exists(excel_path):
-        print(f"\n[3/5] Loading granular continuous CIMD scores from Excel '{excel_path}'...")
-        try:
-            df_cimd = pd.read_excel(excel_path)
-        except Exception as e:
-            print(f"  Warning: Excel load error: {e}. Checking CSV...")
+    if not os.path.exists(excel_path):
+        raise FileNotFoundError(f"Excel file not found at '{excel_path}'")
 
-    if df_cimd is None and os.path.exists(csv_path):
-        print(f"\n[3/5] Loading CIMD scores from CSV '{csv_path}'...")
-        df_cimd = pd.read_csv(csv_path)
+    print(f"\n[3/5] Loading raw continuous factor scores from Excel '{excel_path}'...")
+    df_excel = pd.read_excel(excel_path)
+
+    # Detect DA column
+    da_col = next((c for c in df_excel.columns if 'DA' in str(c).upper() or 'DISSEMINATION' in str(c).upper()), None)
+    if not da_col:
+        raise ValueError("Could not find DAUID column in Excel file.")
+
+    # Detect Raw Factor Score Columns (prefer 'Factor score' or 'score' over 'Quintile')
+    econ_col = next((c for c in df_excel.columns if 'ECONOMIC' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
+    res_col = next((c for c in df_excel.columns if 'RESIDENTIAL' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
+    eth_col = next((c for c in df_excel.columns if 'ETHNO' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
+    sit_col = next((c for c in df_excel.columns if 'SITUATIONAL' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
+
+    # Fallback if specific Factor Score title isn't separate
+    if not econ_col: econ_col = [c for c in df_excel.columns if 'ECONOMIC' in str(c).upper()][0]
+    if not res_col: res_col = [c for c in df_excel.columns if 'RESIDENTIAL' in str(c).upper()][0]
+    if not eth_col: eth_col = [c for c in df_excel.columns if 'ETHNO' in str(c).upper()][0]
+    if not sit_col: sit_col = [c for c in df_excel.columns if 'SITUATIONAL' in str(c).upper()][0]
+
+    print(f"  Target Columns Identified:")
+    print(f"    DA: {da_col}")
+    print(f"    Econ: {econ_col}")
+    print(f"    Res:  {res_col}")
+    print(f"    Eth:  {eth_col}")
+    print(f"    Sit:  {sit_col}")
+
+    # Prepare DataFrame & numeric values
+    df_excel['da_str'] = df_excel[da_col].astype(str).str.split('.').str[0].str.strip()
+    df_excel['raw_econ'] = pd.to_numeric(df_excel[econ_col], errors='coerce')
+    df_excel['raw_res'] = pd.to_numeric(df_excel[res_col], errors='coerce')
+    df_excel['raw_eth'] = pd.to_numeric(df_excel[eth_col], errors='coerce')
+    df_excel['raw_sit'] = pd.to_numeric(df_excel[sit_col], errors='coerce')
+
+    # Min-Max Scaling helper (1.0 to 100.0)
+    def min_max_scale(series):
+        min_v = series.min()
+        max_v = series.max()
+        if max_v == min_v:
+            return pd.Series(50.0, index=series.index)
+        return 1.0 + 99.0 * ((series - min_v) / (max_v - min_v))
+
+    df_excel['norm_econ'] = min_max_scale(df_excel['raw_econ'])
+    df_excel['norm_res'] = min_max_scale(df_excel['raw_res'])
+    df_excel['norm_eth'] = min_max_scale(df_excel['raw_eth'])
+    df_excel['norm_sit'] = min_max_scale(df_excel['raw_sit'])
 
     cimd_scores = {}
     da_scores_export = {}
 
-    if df_cimd is not None:
-        # Detect DA column name
-        da_col = None
-        for c in df_cimd.columns:
-            if 'DA' in str(c).upper() or 'DISSEMINATION' in str(c).upper():
-                da_col = c
-                break
-        
-        if da_col:
-            # Extract score columns or quintiles
-            econ_col = next((c for c in df_cimd.columns if 'ECONOMIC' in str(c).upper() and 'SCORE' in str(c).upper()), None)
-            res_col = next((c for c in df_cimd.columns if 'RESIDENTIAL' in str(c).upper() and 'SCORE' in str(c).upper()), None)
-            eth_col = next((c for c in df_cimd.columns if 'ETHNO' in str(c).upper() and 'SCORE' in str(c).upper()), None)
-            sit_col = next((c for c in df_cimd.columns if 'SITUATIONAL' in str(c).upper() and 'SCORE' in str(c).upper()), None)
+    for _, row in df_excel.iterrows():
+        da_str = row['da_str']
+        if not da_str or da_str == 'nan':
+            continue
 
-            # Fallback to quintile columns if continuous score columns not explicitly named
-            if not econ_col:
-                econ_col = next((c for c in df_cimd.columns if 'ECONOMIC' in str(c).upper()), None)
-            if not res_col:
-                res_col = next((c for c in df_cimd.columns if 'RESIDENTIAL' in str(c).upper()), None)
-            if not eth_col:
-                eth_col = next((c for c in df_cimd.columns if 'ETHNO' in str(c).upper()), None)
-            if not sit_col:
-                sit_col = next((c for c in df_cimd.columns if 'SITUATIONAL' in str(c).upper()), None)
+        econ = round(float(row['norm_econ']), 1) if not pd.isna(row['norm_econ']) else 50.0
+        res = round(float(row['norm_res']), 1) if not pd.isna(row['norm_res']) else 50.0
+        eth = round(float(row['norm_eth']), 1) if not pd.isna(row['norm_eth']) else 50.0
+        sit = round(float(row['norm_sit']), 1) if not pd.isna(row['norm_sit']) else 50.0
 
-            # Normalize raw values across DAs to 0-100 continuous scale
-            for _, row in df_cimd.iterrows():
-                da_str = str(row.get(da_col, "")).strip().split('.')[0]
-                if not da_str:
-                    continue
+        equal_score = round((econ + res + eth + sit) / 4.0, 1)
 
-                def parse_val(col_name):
-                    try:
-                        val = float(row.get(col_name, 3))
-                        return val
-                    except:
-                        return 3.0
+        item = {
+            "econ": econ,
+            "res": res,
+            "eth": eth,
+            "sit": sit,
+            "equal": equal_score,
+            "economic": econ
+        }
+        cimd_scores[da_str] = item
+        da_scores_export[da_str] = item
 
-                raw_econ = parse_val(econ_col)
-                raw_res = parse_val(res_col)
-                raw_eth = parse_val(eth_col)
-                raw_sit = parse_val(sit_col)
-
-                # Continuous 0-100 scaling
-                econ = raw_econ * 20.0 if raw_econ <= 5.0 else min(100.0, max(0.0, raw_econ))
-                res = raw_res * 20.0 if raw_res <= 5.0 else min(100.0, max(0.0, raw_res))
-                eth = raw_eth * 20.0 if raw_eth <= 5.0 else min(100.0, max(0.0, raw_eth))
-                sit = raw_sit * 20.0 if raw_sit <= 5.0 else min(100.0, max(0.0, raw_sit))
-
-                equal_score = round((econ + res + eth + sit) / 4.0, 1)
-
-                item = {
-                    "econ": round(econ, 1),
-                    "res": round(res, 1),
-                    "eth": round(eth, 1),
-                    "sit": round(sit, 1),
-                    "equal": equal_score,
-                    "economic": round(econ, 1)
-                }
-                cimd_scores[da_str] = item
-                da_scores_export[da_str] = item
-
-        print(f"  Processed continuous CIMD scores for {len(cimd_scores)} DAs.")
+    print(f"  Successfully computed Min-Max continuous scores for {len(cimd_scores)} DAs.")
 
     # 4. Project Geometries to Alberta 10-TM (EPSG:3400 - meters)
     print("\n[4/5] Projecting to EPSG:3400 and computing 400m geodesic buffers...")
     gdf_stops_3400 = gdf_stops.to_crs(epsg=3400)
     gdf_das_3400 = gdf_das.to_crs(epsg=3400)
 
-    # Build spatial index on DA polygons for fast lookup
+    # Build spatial index on DA polygons
     da_sindex = gdf_das_3400.sindex
 
     # 5. Spatial Buffer Intersections & Area-Weighted Scoring
@@ -151,7 +147,7 @@ def main():
         stop_geom_3400 = stop.geometry
         buffer_3400 = stop_geom_3400.buffer(400.0)
 
-        # Find intersecting DAs using spatial index
+        # Intersecting DAs
         possible_matches_index = list(da_sindex.intersection(buffer_3400.bounds))
         possible_matches = gdf_das_3400.iloc[possible_matches_index]
         precise_matches = possible_matches[possible_matches.intersects(buffer_3400)]
@@ -179,7 +175,6 @@ def main():
                     "sit": da_info.get("sit", 50.0)
                 })
 
-        # Calculate proportional weights (normalizing to sum = 1.0)
         weighted_equal_score = 0.0
         weighted_econ_score = 0.0
         processed_da_list = []
@@ -236,7 +231,6 @@ def main():
             s["equal_percentile"] = eq_pct
             s["economic_percentile"] = ec_pct
 
-            # Assign quintile grade A-E
             def get_grade(pct):
                 if pct >= 80.0: return "A"
                 if pct >= 60.0: return "B"
@@ -247,7 +241,7 @@ def main():
             s["equal_grade"] = get_grade(eq_pct)
             s["economic_grade"] = get_grade(ec_pct)
 
-    # Output to public/data/bus_stop_vulnerability.json
+    # Export
     output_asset = {
         "total_stops": len(stops_data),
         "da_scores": da_scores_export,
@@ -260,7 +254,7 @@ def main():
         json.dump(output_asset, f, indent=None)
 
     elapsed = round(time.time() - start_time, 2)
-    print(f"\n✅ SUCCESS: Asset generated at '{output_path}' with {len(stops_data)} stops in {elapsed}s.")
+    print(f"\n✅ SUCCESS: Continuous Min-Max asset generated at '{output_path}' with {len(stops_data)} stops in {elapsed}s.")
 
 if __name__ == '__main__':
     main()
