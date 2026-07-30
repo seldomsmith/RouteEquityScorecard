@@ -243,7 +243,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
       .then((text) => {
         const lines = text.split('\n');
         if (lines.length === 0) return;
-        const headers = lines[0].split(',').map((h) => h.trim());
+        const headers = lines[0].replace(/^\uFEFF/, '').split(',').map((h) => h.trim());
         const list: any[] = [];
         for (let i = 1; lines.length > i; i++) {
           const line = lines[i].trim();
@@ -622,6 +622,40 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                 </p>
               </>
             )}
+
+            {/* Connecting Bus Stop Catchments to Route Vulnerability */}
+            <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded-3xl space-y-4 shadow-sm">
+              <div className="space-y-1">
+                <span className="text-[10px] font-black text-blue-900 uppercase tracking-widest bg-blue-100/60 px-2.5 py-1 rounded-md">
+                  Stop-Catchment Methodology
+                </span>
+                <h3 className="text-xl font-bold text-slate-900 pt-1">
+                  Connecting Bus Stop Catchments to Route Vulnerability
+                </h3>
+                <p className="text-xs text-slate-500 font-semibold">
+                  Linking neighborhood walkability directly to transit corridor scores.
+                </p>
+              </div>
+
+              <p className="text-slate-600 text-sm leading-relaxed">
+                A route’s vulnerability score is built directly from the bus stops along its path. Each GTFS bus stop forms a 400-meter walk catchment, representing a 5-minute walking radius. We measure the area overlap across intersecting Dissemination Areas (DAs) to calculate a population-weighted equity score for each stop.
+              </p>
+
+              <p className="text-slate-600 text-sm leading-relaxed">
+                The overall <strong>Pillar 1 (Vulnerability)</strong> score for a route is the population-weighted average of all bus stops serving that corridor:
+              </p>
+
+              {/* LaTeX Equation Container */}
+              <div className="my-4 p-4 bg-white border border-slate-200 rounded-2xl text-center shadow-xs">
+                <span className="text-xs font-mono font-bold text-blue-950">
+                  {"\\text{Route Vulnerability } (V_R) = \\frac{\\sum_{s \\in R} \\text{Catchment Population}_s \\times \\text{Stop Equity Score}_s}{\\sum_{s \\in R} \\text{Catchment Population}_s}"}
+                </span>
+              </div>
+
+              <p className="text-slate-600 text-sm leading-relaxed">
+                This creates a direct connection across the platform: adjusting socio-economic criteria weights updates individual bus stop scores, which immediately recalculates the vulnerability score for the entire route.
+              </p>
+            </div>
 
             {/* Tell me more about the math */}
             <div className="pt-2 flex justify-center">
