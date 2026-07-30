@@ -37,7 +37,7 @@ import { ShapWaterfall } from './charts/ShapWaterfall';
 import { GroceryFlowViz } from './widgets/GroceryFlowViz';
 import { RouteWaterfall } from './RouteWaterfall';
 import { DataExplorerModal } from './widgets/DataExplorerModal';
-import { Maximize2, X, HelpCircle } from 'lucide-react';
+import { Maximize2, X, HelpCircle, Menu } from 'lucide-react';
 import { mapStabilityClass } from '@/utils/stability';
 interface ScrollytellingProps {
   onBack: () => void;

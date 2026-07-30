@@ -20,8 +20,14 @@
 
 ---
 
-## L-002: React Hook Ordering — Conditional Returns Before Hooks (2026-07-29)
+## L-003: Unimported Lucide Icon Identifiers (2026-07-30)
 
-**What happened**: `BusStopDirectoryModal.tsx` had `if (!isOpen) return null` placed before `useMemo` calls, violating React's rules of hooks. When the modal opened, React saw more hooks than in the previous render and threw.
+**What happened**: `Scrollytelling.tsx` rendered `<Menu className="w-3.5 h-3.5" />` on line 390, but `Menu` was omitted from the `lucide-react` import statement at the top of the file. Navigation to the "Explain this to me!" scrollytelling page crashed with a client-side exception: `ReferenceError: Menu is not defined`.
 
-**Defensive rule**: ALL hooks (`useState`, `useMemo`, `useCallback`, `useEffect`, `useRef`) must execute before ANY conditional return statement. Period. No exceptions. Move early-return guards to after the last hook call.
+**Root cause**: Adding UI elements (like global header menu triggers) quickly without verifying that every JSX component symbol is present in the file's top-level imports.
+
+**Defensive rules**:
+
+1. **Verify every JSX component symbol is explicitly imported.** Whenever inserting a icon component like `<Menu />`, `<ChevronRight />`, or `<BarChart2 />`, verify line-by-line that the identifier is present in the top-level `import { ... } from 'lucide-react'` declaration.
+2. **Never rely on global scope for JSX components.** Icons and components are modular exports; an unimported icon will evaluate to `undefined` and throw a client-side exception at runtime.
+

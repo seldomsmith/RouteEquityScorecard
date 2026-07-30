@@ -4,18 +4,22 @@
 Refining analytical modeling, service impact simulations, and advanced research reporting.
 
 ## Sprint Backlog
+### Phase 27: Bus Stop Scrollytelling Workspace
+1. **Bus Stop Scrollytelling Page ("Explain this to me! — Bus Stop Analysis")** [HIGH]
+   - Develop an interactive Mapbox scrollytelling walkthrough for Bus Stop Analysis explaining CIMD dimensions, 400m walk catchments, quintile grading (A–E), 3 real-world case studies (Abbottsfield, Oliver, Windermere), and methodological limitations. See [busstop_scrollytelling.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/docs/busstop_scrollytelling.md).
+
 ### Phase 25: Regional Route Exclusion & Opportunity Adjustments
-1. **Regional Route Exclusion** [HIGH]
+2. **Regional Route Exclusion** [HIGH]
    - Exclude 42 regional routes (St. Albert 'A*', Strathcona '4*', Leduc 'L*', Beaumont '540', Spruce Grove '560', Airport '747') from municipal scoring, grading, and charts (Population Equity, S-Curve, Volatility vs Mean Scatter plot), while keeping them on the map styled in dark gray with full DA overlays.
-2. **Opportunity Score (Pillar 4) Airport Dilution Log** [MEDIUM]
+3. **Opportunity Score (Pillar 4) Airport Dilution Log** [MEDIUM]
    - Record and address the under-representation of the Edmonton International Airport (EIA) opportunity value due to simple point-count buffers on regional corridors.
 
 ### Phase 4.5: Simulation & Data Pipeline
-3. **Service Impact Simulation (Draft Mode)** [HIGH]
+4. **Service Impact Simulation (Draft Mode)** [HIGH]
    - *Deferred*: Design dynamic "what-if" corridor removals/additions and re-score the network's equity live in-memory. See [service_impact_simulation_plan.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/tasks/service_impact_simulation_plan.md).
-4. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
+5. **Data Pipeline Optimization & Backend Integration** [MEDIUM]
    - Formulate integration steps for PostGIS/Python or R5 routing configurations.
-5. **Policy Sensitivity Explorer UI Tab** [FUTURE]
+6. **Policy Sensitivity Explorer UI Tab** [FUTURE]
    - Develop an interactive frontend workspace where users can visualize the Monte Carlo simplex terrain and click on routes to see their OLS driver sensitivity trends.
 
 ---
