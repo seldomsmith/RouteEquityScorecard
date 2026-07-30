@@ -7,7 +7,7 @@ import { RoutePoint } from '@/components/charts/EquityQuadrant';
 import { mapStabilityClass } from '@/utils/stability';
 
 import { X, ChevronDown, Menu as MenuIcon } from 'lucide-react';
-import LineSidebar from '@/components/widgets/LineSidebar';
+import { CimdCriteriaModal } from '@/components/widgets/CimdCriteriaModal';
 
 interface SidebarProps {
   routes: any[];
@@ -39,6 +39,7 @@ const STABILITY_DOT: Record<string, string> = {
 
 export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isCimdModalOpen, setIsCimdModalOpen] = React.useState(false);
   const weights = useRouteStore((s) => s.weights);
   const setWeight = useRouteStore((s) => s.setWeight);
   const setWeights = useRouteStore((s) => s.setWeights);
@@ -179,8 +180,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
                     </span>
                     {key === 'vulnerability' && (
                       <button
-                        onClick={() => setCimdMode(!cimdMode)}
-                        title={cimdMode ? 'CIMD mode active — click to revert to custom index' : 'Switch vulnerability to CIMD (StatCan)'}
+                        onClick={() => {
+                          if (!cimdMode) setCimdMode(true);
+                          setIsCimdModalOpen(true);
+                        }}
+                        title="Configure CIMD sub-dimension criteria weights"
                         className="flex items-center gap-1 ml-1 group"
                       >
                         <span className={`inline-flex w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 flex-shrink-0
@@ -426,6 +430,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
           </div>
         </div>
       </div>
+      <CimdCriteriaModal isOpen={isCimdModalOpen} onClose={() => setIsCimdModalOpen(false)} />
     </div>
   );
 };
