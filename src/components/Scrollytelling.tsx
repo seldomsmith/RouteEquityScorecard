@@ -31,6 +31,7 @@ import { FourPillars } from './widgets/FourPillars';
 const InteractiveToggleMap = dynamic(() => import('./widgets/InteractiveToggleMap').then(m => m.InteractiveToggleMap), { ssr: false });
 import { OffPeakFrequencyChart } from './widgets/OffPeakFrequencyChart';
 const CatchmentBarrierMap = dynamic(() => import('./widgets/CatchmentBarrierMap').then(m => m.CatchmentBarrierMap), { ssr: false });
+const StopCatchmentAnimationMap = dynamic(() => import('./widgets/StopCatchmentAnimationMap').then(m => m.StopCatchmentAnimationMap), { ssr: false });
 import { StaggeredMenu } from './widgets/StaggeredMenu';
 import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
 import { ShapWaterfall } from './charts/ShapWaterfall';
@@ -623,38 +624,22 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
               </>
             )}
 
-            {/* Connecting Bus Stop Catchments to Route Vulnerability */}
-            <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded-3xl space-y-4 shadow-sm">
-              <div className="space-y-1">
-                <span className="text-[10px] font-black text-blue-900 uppercase tracking-widest bg-blue-100/60 px-2.5 py-1 rounded-md">
-                  Stop-Catchment Methodology
-                </span>
-                <h3 className="text-xl font-bold text-slate-900 pt-1">
-                  Connecting Bus Stop Catchments to Route Vulnerability
-                </h3>
-                <p className="text-xs text-slate-500 font-semibold">
-                  Linking neighborhood walkability directly to transit corridor scores.
-                </p>
-              </div>
+            {/* Connecting Bus Stop Catchments to Route Vulnerability — Plain Language & Un-boxed Flow */}
+            <div className="mt-8 space-y-4">
+              <h3 className="text-xl font-bold text-slate-900">
+                Connecting Bus Stop Catchments to Route Vulnerability
+              </h3>
 
-              <p className="text-slate-600 text-sm leading-relaxed">
-                A route’s vulnerability score is built directly from the bus stops along its path. Each GTFS bus stop forms a 400-meter walk catchment, representing a 5-minute walking radius. We measure the area overlap across intersecting Dissemination Areas (DAs) to calculate a population-weighted equity score for each stop.
+              <p className="text-slate-600 text-base leading-relaxed">
+                A route’s vulnerability score is built directly from the bus stops along its path. Each bus stop forms a 400-meter walk catchment, representing a standard 5-minute walking radius. We measure the area overlap across intersecting Dissemination Areas to calculate an equity score for each stop.
               </p>
 
-              <p className="text-slate-600 text-sm leading-relaxed">
-                The overall <strong>Pillar 1 (Vulnerability)</strong> score for a route is the population-weighted average of all bus stops serving that corridor:
+              <p className="text-slate-600 text-base leading-relaxed">
+                The overall vulnerability score for a route is calculated by taking the average score of all bus stops along that corridor, weighted by the population living within each stop's walking distance. This creates a direct connection across the platform: adjusting socio-economic criteria weights updates individual bus stop scores, which immediately recalculates the vulnerability score for the entire route.
               </p>
 
-              {/* LaTeX Equation Container */}
-              <div className="my-4 p-4 bg-white border border-slate-200 rounded-2xl text-center shadow-xs">
-                <span className="text-xs font-mono font-bold text-blue-950">
-                  {"\\text{Route Vulnerability } (V_R) = \\frac{\\sum_{s \\in R} \\text{Catchment Population}_s \\times \\text{Stop Equity Score}_s}{\\sum_{s \\in R} \\text{Catchment Population}_s}"}
-                </span>
-              </div>
-
-              <p className="text-slate-600 text-sm leading-relaxed">
-                This creates a direct connection across the platform: adjusting socio-economic criteria weights updates individual bus stop scores, which immediately recalculates the vulnerability score for the entire route.
-              </p>
+              {/* Animated Mapbox Bus Stop Catchment Visual */}
+              <StopCatchmentAnimationMap routeData={route2Data} daGeoJson={daGeoJson} />
             </div>
 
             {/* Tell me more about the math */}
