@@ -71,6 +71,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   const isLoadedRef = useRef<boolean>(false);
   const heatmapPalette = useRouteStore((s) => s.heatmapPalette);
 
+  // Selected Route state for interactive highlighting
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+
   // Helper to push stops data into Mapbox source
   const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[] = []) => {
     const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
