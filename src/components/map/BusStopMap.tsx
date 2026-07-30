@@ -40,8 +40,11 @@ interface BusStopMapProps {
   is3dEnabled: boolean;
   isDirectoryOpen?: boolean;
   selectedGrades?: BusStopGrade[];
+  selectedRouteGrades?: BusStopGrade[];
   activeDimensions: CimdDimensionKey[];
   showHeatmap?: boolean;
+  showRoutes?: boolean;
+  showStops?: boolean;
   onSelectStop: (stopId: string | null) => void;
 }
 
@@ -55,8 +58,11 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   is3dEnabled,
   isDirectoryOpen,
   selectedGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
+  selectedRouteGrades = ['A', 'B', 'C', 'D', 'E', 'Regional'],
   activeDimensions,
   showHeatmap = true,
+  showRoutes = false,
+  showStops = true,
   onSelectStop
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);

@@ -39,11 +39,20 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
   const [isNavMenuOpen, setIsNavMenuOpen] = useState<boolean>(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState<boolean>(false);
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
+  const [showRoutes, setShowRoutes] = useState<boolean>(false);
+  const [showStops, setShowStops] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedGrades, setSelectedGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
+  const [selectedRouteGrades, setSelectedRouteGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
   
   // 4 CIMD Dimension Toggles
   const [activeDimensions, setActiveDimensions] = useState<CimdDimensionKey[]>(['econ', 'res', 'eth', 'sit']);
+
+  const handleToggleRouteGrade = (grade: BusStopGrade) => {
+    setSelectedRouteGrades((prev) =>
+      prev.includes(grade) ? prev.filter((g) => g !== grade) : [...prev, grade]
+    );
+  };
 
   const daPopLookup = useRouteStore((s) => s.daPopLookup);
 
@@ -316,8 +325,11 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                 mode="equal"
                 is3dEnabled={is3dEnabled}
                 selectedGrades={selectedGrades}
+                selectedRouteGrades={selectedRouteGrades}
                 activeDimensions={activeDimensions}
                 showHeatmap={showHeatmap}
+                showRoutes={showRoutes}
+                showStops={showStops}
                 onSelectStop={(id) => setSelectedStopId(id)}
               />
 
@@ -326,9 +338,15 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                 <BusStopGradeLegend
                   selectedGrades={selectedGrades}
                   onToggleGrade={handleToggleGrade}
+                  selectedRouteGrades={selectedRouteGrades}
+                  onToggleRouteGrade={handleToggleRouteGrade}
                   gradeCounts={gradeCounts}
                   showHeatmap={showHeatmap}
                   onToggleHeatmap={() => setShowHeatmap(!showHeatmap)}
+                  showRoutes={showRoutes}
+                  onToggleRoutes={() => setShowRoutes(!showRoutes)}
+                  showStops={showStops}
+                  onToggleStops={() => setShowStops(!showStops)}
                 />
               </div>
             </>
