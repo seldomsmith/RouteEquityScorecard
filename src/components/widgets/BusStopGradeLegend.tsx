@@ -40,7 +40,7 @@ const PALETTE_GRADIENTS: Record<string, string> = {
   sunset: 'from-[#FFEDD5] via-[#F97316] to-[#991B1B]',
 };
 
-const PALETTE_ORDER = ['purple', 'teal', 'emerald', 'carbon', 'divergent', 'sunrise', 'sunset'] as const;
+const PALETTE_ORDER = ['divergent', 'purple', 'teal', 'emerald', 'carbon', 'sunrise', 'sunset'] as const;
 
 export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
   selectedGrades,

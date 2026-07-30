@@ -27,7 +27,7 @@ const PALETTES: Record<string, PaletteColors> = {
   teal: { l1: '#F0FDFA', l2: '#CCFBF1', l3: '#99F6E4', l4: '#5EEAD4', l5: '#0F766E' },
   emerald: { l1: '#F0FDF4', l2: '#DCFCE7', l3: '#BBF7D0', l4: '#86EFAC', l5: '#064E3B' },
   carbon: { l1: '#F8FAFC', l2: '#E2E8F0', l3: '#CBD5E1', l4: '#94A3B8', l5: '#0F172A' },
-  divergent: { l1: '#D1FAE5', l2: '#A7F3D0', l3: '#FEF3C7', l4: '#FDE68A', l5: '#EF4444' }, // Green to Red
+  divergent: { l1: '#059669', l2: '#10B981', l3: '#F59E0B', l4: '#EF4444', l5: '#991B1B' }, // Vibrant Emerald Green to Deep Crimson Red
   sunrise: { l1: '#FEF3C7', l2: '#FDE68A', l3: '#F472B6', l4: '#E11D48', l5: '#BE185D' }, // Yellow to Pink
   sunset: { l1: '#FFEDD5', l2: '#FED7AA', l3: '#F97316', l4: '#EA580C', l5: '#991B1B' } // Orange to Red
 };
@@ -129,7 +129,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     const dimWeight = 1 / numDims;
 
     const matchExpr: any[] = ['match', ['get', 'DAUID']];
-    const colors = PALETTES[heatmapPalette] || PALETTES.purple;
+    const colors = PALETTES[heatmapPalette] || PALETTES.divergent;
 
     if (targetStop && targetStop.das && targetStop.das.length > 0) {
       // Isolate heatmap to selected stop's 400m catchment DAs
@@ -154,20 +154,33 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
       });
       matchExpr.push('rgba(0, 0, 0, 0)');
     } else if (currentDaScores && Object.keys(currentDaScores).length > 0) {
-      // Default Base Layer Heatmap across all city DAs based on active CIMD criteria
+      // 1. Calculate active CIMD score for every DA
+      const daEntries: { daId: string; score: number }[] = [];
       Object.entries(currentDaScores).forEach(([daId, scores]: [string, any]) => {
         let val = 0;
         if (activeDimensions.includes('econ')) val += (scores.econ ?? scores.economic ?? 50) * dimWeight;
         if (activeDimensions.includes('res')) val += (scores.res ?? 50) * dimWeight;
         if (activeDimensions.includes('eth')) val += (scores.eth ?? scores.economic ?? 50) * dimWeight;
         if (activeDimensions.includes('sit')) val += (scores.sit ?? scores.economic ?? 50) * dimWeight;
+        daEntries.push({ daId, score: val });
+      });
 
+      // 2. Compute 5-Tier Quantile Breakpoints (20%, 40%, 60%, 80%) across city DAs
+      daEntries.sort((a, b) => a.score - b.score);
+      const N = daEntries.length || 1;
+      const q20 = daEntries[Math.floor(N * 0.20)]?.score ?? 20;
+      const q40 = daEntries[Math.floor(N * 0.40)]?.score ?? 40;
+      const q60 = daEntries[Math.floor(N * 0.60)]?.score ?? 60;
+      const q80 = daEntries[Math.floor(N * 0.80)]?.score ?? 80;
+
+      // 3. Map high-contrast quantile colors
+      daEntries.forEach(({ daId, score }) => {
         let color = colors.l1;
-        if (val >= 80) color = colors.l5;
-        else if (val >= 65) color = colors.l4;
-        else if (val >= 50) color = colors.l3;
-        else if (val >= 35) color = colors.l2;
-        else color = colors.l1;
+        if (score >= q80) color = colors.l5;       // Top 20% Highest Need -> Deep Crimson Red
+        else if (score >= q60) color = colors.l4; // 60-80% -> Coral Red
+        else if (score >= q40) color = colors.l3; // 40-60% -> Amber Yellow
+        else if (score >= q20) color = colors.l2; // 20-40% -> Teal Green
+        else color = colors.l1;                  // Bottom 20% Lowest Need -> Emerald Green
 
         matchExpr.push(daId, color);
       });

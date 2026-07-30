@@ -296,6 +296,6 @@ export const useRouteStore = create<RouteState>((set) => ({
   }),
 
   // Heatmap Palette Mode
-  heatmapPalette: 'purple',
+  heatmapPalette: 'divergent',
   setHeatmapPalette: (palette) => set({ heatmapPalette: palette }),
 }));
