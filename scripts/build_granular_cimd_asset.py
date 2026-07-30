@@ -6,8 +6,48 @@ Outputs to `public/data/bus_stop_vulnerability.json`.
 import json
 import os
 import time
+import zipfile
+import xml.etree.ElementTree as ET
 import pandas as pd
-import geopandas as gpd
+
+def parse_xlsx_raw(excel_path):
+    """Native Python zipfile + XML parser for .xlsx to completely bypass openpyxl metadata corruptions."""
+    print("  Executing native zipfile/xml parser for Excel...")
+    with zipfile.ZipFile(excel_path, 'r') as z:
+        # Load shared strings if available
+        shared_strings = []
+        if 'xl/sharedStrings.xml' in z.namelist():
+            ss_tree = ET.fromstring(z.read('xl/sharedStrings.xml'))
+            for si in ss_tree.findall('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}si'):
+                text = "".join([t.text or "" for t in si.findall('.//{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t')])
+                shared_strings.append(text)
+
+        # Parse sheet1.xml
+        sheet_tree = ET.fromstring(z.read('xl/worksheets/sheet1.xml'))
+        sheet_data = sheet_tree.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheetData')
+
+        rows = []
+        for row_elem in sheet_data.findall('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row'):
+            row_vals = {}
+            for cell in row_elem.findall('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c'):
+                r_ref = cell.attrib.get('r', '')
+                t_type = cell.attrib.get('t', '')
+                v_elem = cell.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v')
+                val = v_elem.text if v_elem is not None else None
+
+                if t_type == 's' and val is not None:
+                    val = shared_strings[int(val)] if int(val) < len(shared_strings) else val
+
+                col_letter = "".join([c for c in r_ref if c.isalpha()])
+                row_vals[col_letter] = val
+            rows.append(row_vals)
+
+        df = pd.DataFrame(rows)
+        # First row as header
+        header = df.iloc[0]
+        df = df[1:].copy()
+        df.columns = header
+        return df
 
 def main():
     print("=" * 60)
@@ -15,63 +55,48 @@ def main():
     print("=" * 60)
     start_time = time.time()
 
-    # 1. Load Bus Stops GeoJSON
-    candidate_paths = [
-        "public/data/stops_with_jobs.geojson",
-        "data/stops_with_jobs.geojson",
-    ]
-    stops_geojson_path = None
-    for p in candidate_paths:
-        if os.path.exists(p):
-            stops_geojson_path = p
-            break
+    # 1. Load Existing Bus Stop Vulnerability Asset (for stop list & DA catchments)
+    asset_path = "public/data/bus_stop_vulnerability.json"
+    if not os.path.exists(asset_path):
+        raise FileNotFoundError(f"Asset file not found at '{asset_path}'")
 
-    if not stops_geojson_path:
-        raise FileNotFoundError(f"Stops GeoJSON not found in paths: {candidate_paths}")
+    print(f"\n[1/4] Ingesting bus stops from '{asset_path}'...")
+    with open(asset_path, "r") as f:
+        existing_data = json.load(f)
 
-    print(f"\n[1/5] Ingesting bus stops from '{stops_geojson_path}'...")
-    gdf_stops = gpd.read_file(stops_geojson_path)
-    print(f"  Loaded {len(gdf_stops)} bus stops.")
+    stops_list = existing_data.get("stops", [])
+    print(f"  Loaded {len(stops_list)} bus stops.")
 
-    # 2. Load DA Boundaries GeoJSON
-    da_geojson_path = "public/data/da_boundaries_simple.geojson"
-    if not os.path.exists(da_geojson_path):
-        da_geojson_path = "data/da_boundaries.geojson"
-
-    print(f"\n[2/5] Ingesting DA boundaries from '{da_geojson_path}'...")
-    gdf_das = gpd.read_file(da_geojson_path)
-    print(f"  Loaded {len(gdf_das)} Dissemination Areas (DAs).")
-
-    # Ensure DAUID is string
-    gdf_das['DAUID'] = gdf_das['DAUID'].astype(str).str.strip()
-
-    # 3. Load Granular Raw Continuous CIMD Factor Scores from Excel
+    # 2. Load Granular Raw Continuous CIMD Factor Scores from Excel
     excel_path = "data/prairies_scores_quintiles_EN.xlsx"
     if not os.path.exists(excel_path):
         raise FileNotFoundError(f"Excel file not found at '{excel_path}'")
 
-    print(f"\n[3/5] Loading raw continuous factor scores from Excel '{excel_path}'...")
-    df_excel = pd.read_excel(excel_path)
+    print(f"\n[2/4] Loading raw continuous factor scores from Excel '{excel_path}'...")
+    df_excel = parse_xlsx_raw(excel_path)
+
+    # Clean column names
+    df_excel.columns = [str(c).strip() for c in df_excel.columns]
 
     # Detect DA column
-    da_col = next((c for c in df_excel.columns if 'DA' in str(c).upper() or 'DISSEMINATION' in str(c).upper()), None)
+    da_col = next((c for c in df_excel.columns if 'DA' in c.upper() or 'DISSEMINATION' in c.upper()), None)
     if not da_col:
-        raise ValueError("Could not find DAUID column in Excel file.")
+        raise ValueError(f"Could not find DAUID column in Excel file. Found columns: {list(df_excel.columns)}")
 
     # Detect Raw Factor Score Columns (prefer 'Factor score' or 'score' over 'Quintile')
-    econ_col = next((c for c in df_excel.columns if 'ECONOMIC' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
-    res_col = next((c for c in df_excel.columns if 'RESIDENTIAL' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
-    eth_col = next((c for c in df_excel.columns if 'ETHNO' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
-    sit_col = next((c for c in df_excel.columns if 'SITUATIONAL' in str(c).upper() and ('FACTOR' in str(c).upper() or 'SCORE' in str(c).upper()) and 'QUINTILE' not in str(c).upper()), None)
+    econ_col = next((c for c in df_excel.columns if 'ECONOMIC' in c.upper() and ('FACTOR' in c.upper() or 'SCORE' in c.upper()) and 'QUINTILE' not in c.upper()), None)
+    res_col = next((c for c in df_excel.columns if 'RESIDENTIAL' in c.upper() and ('FACTOR' in c.upper() or 'SCORE' in c.upper()) and 'QUINTILE' not in c.upper()), None)
+    eth_col = next((c for c in df_excel.columns if 'ETHNO' in c.upper() and ('FACTOR' in c.upper() or 'SCORE' in c.upper()) and 'QUINTILE' not in c.upper()), None)
+    sit_col = next((c for c in df_excel.columns if 'SITUATIONAL' in c.upper() and ('FACTOR' in c.upper() or 'SCORE' in c.upper()) and 'QUINTILE' not in c.upper()), None)
 
     # Fallback if specific Factor Score title isn't separate
-    if not econ_col: econ_col = [c for c in df_excel.columns if 'ECONOMIC' in str(c).upper()][0]
-    if not res_col: res_col = [c for c in df_excel.columns if 'RESIDENTIAL' in str(c).upper()][0]
-    if not eth_col: eth_col = [c for c in df_excel.columns if 'ETHNO' in str(c).upper()][0]
-    if not sit_col: sit_col = [c for c in df_excel.columns if 'SITUATIONAL' in str(c).upper()][0]
+    if not econ_col: econ_col = [c for c in df_excel.columns if 'ECONOMIC' in c.upper()][0]
+    if not res_col: res_col = [c for c in df_excel.columns if 'RESIDENTIAL' in c.upper()][0]
+    if not eth_col: eth_col = [c for c in df_excel.columns if 'ETHNO' in c.upper()][0]
+    if not sit_col: sit_col = [c for c in df_excel.columns if 'SITUATIONAL' in c.upper()][0]
 
     print(f"  Target Columns Identified:")
-    print(f"    DA: {da_col}")
+    print(f"    DA:   {da_col}")
     print(f"    Econ: {econ_col}")
     print(f"    Res:  {res_col}")
     print(f"    Eth:  {eth_col}")
@@ -125,93 +150,67 @@ def main():
 
     print(f"  Successfully computed Min-Max continuous scores for {len(cimd_scores)} DAs.")
 
-    # 4. Project Geometries to Alberta 10-TM (EPSG:3400 - meters)
-    print("\n[4/5] Projecting to EPSG:3400 and computing 400m geodesic buffers...")
-    gdf_stops_3400 = gdf_stops.to_crs(epsg=3400)
-    gdf_das_3400 = gdf_das.to_crs(epsg=3400)
+    # 3. Update Stop Catchment DA Scores with Min-Max Continuous Values
+    print("\n[3/4] Re-calculating population-weighted catchment scores for all stops...")
+    updated_stops = []
 
-    # Build spatial index on DA polygons
-    da_sindex = gdf_das_3400.sindex
-
-    # 5. Spatial Buffer Intersections & Area-Weighted Scoring
-    print("\n[5/5] Performing spatial buffer area intersections for all stops...")
-    stops_data = []
-
-    for idx, stop in gdf_stops_3400.iterrows():
-        stop_id = str(stop.get("stop_id", "")).strip()
-        stop_name = str(stop.get("stop_name", "")).strip().replace('"', '')
-        orig_geom = gdf_stops.geometry.iloc[idx]
-        lon, lat = orig_geom.x, orig_geom.y
-
-        # Create 400m geodesic buffer
-        stop_geom_3400 = stop.geometry
-        buffer_3400 = stop_geom_3400.buffer(400.0)
-
-        # Intersecting DAs
-        possible_matches_index = list(da_sindex.intersection(buffer_3400.bounds))
-        possible_matches = gdf_das_3400.iloc[possible_matches_index]
-        precise_matches = possible_matches[possible_matches.intersects(buffer_3400)]
-
-        da_breakdown = []
-        total_overlap_area = 0.0
-
-        for _, da_row in precise_matches.iterrows():
-            da_id = str(da_row["DAUID"]).strip()
-            da_geom = da_row.geometry
-            intersection = buffer_3400.intersection(da_geom)
-            overlap_area = intersection.area
-
-            if overlap_area > 0:
-                total_overlap_area += overlap_area
-                da_info = cimd_scores.get(da_id, {"equal": 50.0, "economic": 50.0, "econ": 50.0, "res": 50.0, "eth": 50.0, "sit": 50.0})
-                da_breakdown.append({
-                    "da_id": da_id,
-                    "overlap_area": overlap_area,
-                    "equal_score": da_info["equal"],
-                    "economic_score": da_info["economic"],
-                    "econ": da_info.get("econ", 50.0),
-                    "res": da_info.get("res", 50.0),
-                    "eth": da_info.get("eth", 50.0),
-                    "sit": da_info.get("sit", 50.0)
-                })
+    for stop in stops_list:
+        stop_id = stop["stop_id"]
+        stop_name = stop["stop_name"]
+        lon = stop["lon"]
+        lat = stop["lat"]
+        is_regional = stop.get("is_regional", False)
+        das = stop.get("das", [])
 
         weighted_equal_score = 0.0
         weighted_econ_score = 0.0
-        processed_da_list = []
+        updated_da_list = []
 
-        if total_overlap_area > 0:
-            for item in da_breakdown:
-                pct = item["overlap_area"] / total_overlap_area
-                weighted_equal_score += item["equal_score"] * pct
-                weighted_econ_score += item["economic_score"] * pct
+        if das and len(das) > 0:
+            for d in das:
+                da_id = str(d["da_id"]).strip()
+                pct = d["pct"]
+                frac = pct / 100.0
 
-                processed_da_list.append({
-                    "da_id": item["da_id"],
-                    "pct": round(pct * 100.0, 1),
-                    "equal_score": item["equal_score"],
-                    "economic_score": item["economic_score"],
-                    "econ": item["econ"],
-                    "res": item["res"],
-                    "eth": item["eth"],
-                    "sit": item["sit"]
+                da_info = cimd_scores.get(da_id, {
+                    "equal": d.get("equal_score", 50.0),
+                    "economic": d.get("economic_score", 50.0),
+                    "econ": d.get("econ", 50.0),
+                    "res": d.get("res", 50.0),
+                    "eth": d.get("eth", 50.0),
+                    "sit": d.get("sit", 50.0)
+                })
+
+                weighted_equal_score += da_info["equal"] * frac
+                weighted_econ_score += da_info["economic"] * frac
+
+                updated_da_list.append({
+                    "da_id": da_id,
+                    "pct": pct,
+                    "equal_score": da_info["equal"],
+                    "economic_score": da_info["economic"],
+                    "econ": da_info["econ"],
+                    "res": da_info["res"],
+                    "eth": da_info["eth"],
+                    "sit": da_info["sit"]
                 })
         else:
             weighted_equal_score = 50.0
             weighted_econ_score = 50.0
 
-        stops_data.append({
+        updated_stops.append({
             "stop_id": stop_id,
             "stop_name": stop_name,
-            "lon": round(lon, 6),
-            "lat": round(lat, 6),
+            "lon": lon,
+            "lat": lat,
             "equal_score": round(weighted_equal_score, 1),
             "economic_score": round(weighted_econ_score, 1),
-            "is_regional": False,
-            "das": processed_da_list
+            "is_regional": is_regional,
+            "das": updated_da_list
         })
 
     # Sort and calculate dynamic quintiles across stops
-    municipal_stops = [s for s in stops_data if not s["is_regional"]]
+    municipal_stops = [s for s in updated_stops if not s["is_regional"]]
     sorted_equal = sorted(municipal_stops, key=lambda x: x["equal_score"])
     sorted_econ = sorted(municipal_stops, key=lambda x: x["economic_score"])
     n = len(municipal_stops) or 1
@@ -219,7 +218,7 @@ def main():
     equal_rank = {s["stop_id"]: idx for idx, s in enumerate(sorted_equal)}
     econ_rank = {s["stop_id"]: idx for idx, s in enumerate(sorted_econ)}
 
-    for s in stops_data:
+    for s in updated_stops:
         if s["is_regional"]:
             s["equal_percentile"] = None
             s["economic_percentile"] = None
@@ -241,20 +240,19 @@ def main():
             s["equal_grade"] = get_grade(eq_pct)
             s["economic_grade"] = get_grade(ec_pct)
 
-    # Export
+    # 4. Output Updated Asset
     output_asset = {
-        "total_stops": len(stops_data),
+        "total_stops": len(updated_stops),
         "da_scores": da_scores_export,
-        "stops": stops_data
+        "stops": updated_stops
     }
 
     output_path = "public/data/bus_stop_vulnerability.json"
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(output_asset, f, indent=None)
 
     elapsed = round(time.time() - start_time, 2)
-    print(f"\n✅ SUCCESS: Continuous Min-Max asset generated at '{output_path}' with {len(stops_data)} stops in {elapsed}s.")
+    print(f"\n[4/4] ✅ SUCCESS: Continuous Min-Max asset generated at '{output_path}' with {len(updated_stops)} stops in {elapsed}s.")
 
 if __name__ == '__main__':
     main()
