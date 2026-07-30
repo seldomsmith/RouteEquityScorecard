@@ -488,16 +488,21 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     const targetStop = stops.find((s) => s.stop_id === selectedStopId) || null;
 
     const applyUpdates = () => {
-      // 1. Update Bus Stops
-      updateStopsSource(map, stops, mode, selectedGrades);
+      // 1. Update Bus Stops Layer & Visibility
       if (map.getLayer('bus-stop-points')) {
         map.setLayoutProperty('bus-stop-points', 'visibility', showStops ? 'visible' : 'none');
+      }
+      if (showStops) {
+        updateStopsSource(map, stops, mode, selectedGrades);
+      } else {
+        const sSource = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
+        if (sSource) sSource.setData({ type: 'FeatureCollection', features: [] });
       }
 
       // 2. Update DA Heatmap
       updateDaHeatmap(map, daScores, targetStop);
 
-      // 3. Update Transit Routes Layer Visibility & Fetch Geometries
+      // 3. Update Transit Routes Layer & Visibility
       if (map.getLayer('transit-routes-lines')) {
         map.setLayoutProperty('transit-routes-lines', 'visibility', showRoutes ? 'visible' : 'none');
       }
@@ -595,6 +600,14 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             }
           })
           .catch((err) => console.error("Failed to load golden route records for map layer:", err));
+      } else {
+        const rSource = map.getSource('transit-routes') as mapboxgl.GeoJSONSource;
+        if (rSource) {
+          rSource.setData({
+            type: 'FeatureCollection',
+            features: []
+          });
+        }
       }
     };
 
