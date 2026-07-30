@@ -45,8 +45,8 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
   const [selectedGrades, setSelectedGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
   const [selectedRouteGrades, setSelectedRouteGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
   
-  // 4 CIMD Dimension Toggles
-  const [activeDimensions, setActiveDimensions] = useState<CimdDimensionKey[]>(['econ', 'res', 'eth', 'sit']);
+  // Subscribe to global CIMD activeDimensions from routeStore
+  const activeDimensions = useRouteStore((s) => s.activeDimensions);
 
   const handleToggleRouteGrade = (grade: BusStopGrade) => {
     setSelectedRouteGrades((prev) =>
@@ -97,15 +97,10 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
 
   const selectedStop = stops.find((s) => s.stop_id === selectedStopId);
 
-  // Toggle CIMD dimensions with auto-equal weight budgeting
+  // Toggle CIMD dimensions via global routeStore
+  const toggleDimensionStore = useRouteStore((s) => s.toggleDimension);
   const handleToggleDimension = (dim: CimdDimensionKey) => {
-    setActiveDimensions((prev) => {
-      if (prev.includes(dim)) {
-        if (prev.length === 1) return prev; // Keep at least 1 dimension selected
-        return prev.filter((d) => d !== dim);
-      }
-      return [...prev, dim];
-    });
+    toggleDimensionStore(dim);
   };
 
   const currentDimWeightPct = useMemo(() => {
