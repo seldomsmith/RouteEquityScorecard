@@ -680,34 +680,33 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                   {/* Scrollable Modal Content */}
                   <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
                     <div className="border-b border-slate-200 pb-4">
-                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Vulnerability Methodology: Additive Scoring</h3>
-                      <p className="text-xs text-slate-500 mt-1">How demographic profiles along a route generate the final score.</p>
+                      <h3 className="text-2xl font-black text-slate-900 leading-tight">Vulnerability Methodology: Canadian Index of Multiple Deprivation (CIMD)</h3>
+                      <p className="text-xs text-slate-500 mt-1">How Statistics Canada's 4-dimension deprivation model generates the final route score.</p>
                     </div>
                     
                     <div className="text-sm text-slate-600 space-y-4">
                       <p className="leading-relaxed">
-                        The Transit Vulnerability index is calculated at the Dissemination Area (DA) level. Each DA starts with a base score of 0. For each of the five core socio-demographic risk groups, we check if the DA falls within the top 20% (quintile 5) network-wide:
+                        The Transit Vulnerability index is calculated at the Dissemination Area (DA) level using Statistics Canada's Canadian Index of Multiple Deprivation (CIMD). Each DA is evaluated across four standardized social and economic deprivation dimensions:
                       </p>
                       
-                      {/* Visual Grid representing demographic categories */}
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 py-2">
+                      {/* Visual Grid representing 4 CIMD criteria */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-2">
                         {[
-                          { label: 'Low Income', desc: 'Worst 20%', val: '+1.0' },
-                          { label: 'Seniors (65+)', desc: 'Worst 20%', val: '+1.0' },
-                          { label: 'Youth (\\x3c18)', desc: 'Worst 20%', val: '+1.0' },
-                          { label: 'Lone Parents', desc: 'Worst 20%', val: '+1.0' },
-                          { label: 'Visible Minorities', desc: 'Worst 20%', val: '+1.0' }
+                          { label: 'Economic Deprivation', desc: 'Financial & Employment Hardship', val: 'CIMD Econ' },
+                          { label: 'Residential Instability', desc: 'Housing & Mobility Hardship', val: 'CIMD Res' },
+                          { label: 'Ethnocultural Concentration', desc: 'Immigrant & Language Diversity', val: 'CIMD Eth' },
+                          { label: 'Situational Vulnerability', desc: 'Demographic Isolation & Support Need', val: 'CIMD Sit' }
                         ].map((item, index) => (
-                          <div key={index} className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-200 text-center shadow-sm">
+                          <div key={index} className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white border border-slate-200 text-center shadow-sm">
                             <span className="text-xs font-bold text-slate-800 leading-tight">{item.label}</span>
-                            <span className="text-[10px] text-slate-400 font-medium mt-1">{item.desc}</span>
+                            <span className="text-[10px] text-slate-400 font-medium mt-1 leading-snug">{item.desc}</span>
                             <span className="text-xs font-black text-teal-600 mt-2 bg-teal-50 px-2.5 py-0.5 rounded-full">{item.val}</span>
                           </div>
                         ))}
                       </div>
 
                       <p className="leading-relaxed">
-                        A DA's vulnerability score ranges from <strong>0.0 to 5.0</strong>. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then converted to a scale of 0 to 100 relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents score higher.
+                        A DA's composite vulnerability score ranges from <strong>0.0 to 100.0</strong> based on the active CIMD criteria selected. The route's overall score is calculated by taking the average of these vulnerability scores across all neighbourhoods it serves, weighted by each neighbourhood's population. This population-weighted average is then calibrated relative to all other bus routes in the city, ensuring that routes serving larger numbers of vulnerable residents receive higher equity priority scores.
                       </p>
 
                       <div className="border-t border-slate-200 pt-6 mt-6 space-y-6">
