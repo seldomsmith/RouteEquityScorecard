@@ -42,6 +42,20 @@ export const CommandCentre: React.FC<CommandCentreProps> = ({ onNavigate }) => {
 
   const sensitivityData = is2PillarActive ? sensitivityData2Pillar : sensitivityData4Pillar;
 
+  // Load DA CIMD scores on startup to ensure dynamic criteria calculations react immediately
+  React.useEffect(() => {
+    if (Object.keys(useRouteStore.getState().daScores).length === 0) {
+      fetch('/data/bus_stop_vulnerability.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.da_scores) {
+            useRouteStore.setState({ daScores: data.da_scores });
+          }
+        })
+        .catch((err) => console.error('Failed to load da_scores in CommandCentre:', err));
+    }
+  }, []);
+
   // Fetch DA boundaries to build land area lookup
   React.useEffect(() => {
     fetch('/data/da_boundaries_simple.geojson')

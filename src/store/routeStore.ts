@@ -240,14 +240,6 @@ export const useRouteStore = create<RouteState>((set) => ({
       }
     }
 
-    // Special case: If only vulnerability and opportunity are enabled (resilience and monopoly are disabled)
-    if (newDisabled.includes('resilience') && newDisabled.includes('monopoly')) {
-      newWeights.vulnerability = 30;
-      newWeights.opportunity = 70;
-      newWeights.resilience = 0;
-      newWeights.monopoly = 0;
-    }
-
     return {
       disabledWeights: newDisabled,
       weights: newWeights
