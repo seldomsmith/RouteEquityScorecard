@@ -229,6 +229,7 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
       const filteredDaFeatures = daGeoJson.features
         .filter((f: any) => servedDaIds.has(String(f.properties?.DAUID)))
         .map((f: any) => {
+          const daInfo = daMap.get(String(f.properties.DAUID));
           const econ = Number(daInfo?.econ ?? 50);
           const res = Number(daInfo?.res ?? 50);
           const eth = Number(daInfo?.eth ?? 50);

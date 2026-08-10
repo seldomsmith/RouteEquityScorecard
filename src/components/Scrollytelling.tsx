@@ -711,107 +711,95 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
 
                       <div className="border-t border-slate-200 pt-6 mt-6 space-y-6">
                         <div className="border-b border-slate-200 pb-4">
-                          <h3 className="text-2xl font-black text-slate-900 leading-tight">Neighbourhood Data Reliability Analysis</h3>
-                          <p className="text-xs text-slate-500 mt-1">Measuring the stability and volatility of vulnerability rankings across Edmonton.</p>
+                          <h3 className="text-2xl font-black text-slate-900 leading-tight">Route Scorecard Policy Sensitivity Analysis</h3>
+                          <p className="text-xs text-slate-500 mt-1">Measuring the stability and volatility of transit route equity rankings across policy weight combinations.</p>
                         </div>
                         
                         <p className="text-slate-600 text-sm leading-relaxed">
-                          We wanted to know if the vulnerability rankings for different Edmonton neighbourhoods would change significantly when evaluating Statistics Canada's Canadian Index of Multiple Deprivation (CIMD). Incorporating four core dimensions—Economic Deprivation, Residential Instability, Ethnocultural Concentration, and Situational Vulnerability—our analysis tests how stable the equity ratings remain across varying criteria weights.
+                          We evaluated how route equity rankings across Edmonton's municipal transit network respond to shifts in policy priorities. By running sensitivity simulations across policy weight variations (balancing Vulnerability, Off-Peak Service, Monopoly, and Opportunity), our analysis tests how stable equity grades remain across different operational priorities.
                         </p>
 
                         <div className="space-y-2">
                           <h4 className="text-base font-bold text-slate-800">How We Tested the Data</h4>
                           <p className="text-slate-600 text-sm leading-relaxed">
-                            We tested over <strong>88,000 different weight combinations</strong> across Edmonton’s 1,762 populated neighbourhoods (Dissemination Areas). This involved about <strong>156 million calculations</strong> to see if changing the "math" behind the scores would drastically flip which areas were considered high-need versus low-need.
+                            We tested over <strong>88,000 different policy weight combinations</strong> across Edmonton’s municipal bus routes. This involved extensive computational simulations to see if shifting policy weights would drastically alter route priority grades (A through E).
                           </p>
                           <p className="text-slate-600 text-sm leading-relaxed">
-                            The goal was to measure the "volatility", or how much a score moves, when the weights change. If a neighbourhood’s score stays roughly the same regardless of the weights, the data is considered stable and reliable.
+                            The goal was to measure <strong>volatility (standard deviation)</strong> and grade stability. If a route’s score stays consistently high across varying policy weights, it is classified as a <strong>Bedrock Essential</strong> corridor. If its score shifts significantly depending on specific policy priorities, it is identified as a <strong>Policy Swing Corridor</strong>.
                           </p>
                         </div>
 
                         <div className="space-y-3">
-                          <h4 className="text-base font-bold text-slate-805 text-[14px]">Neighbourhood Stability Examples</h4>
+                          <h4 className="text-base font-bold text-slate-800 text-[14px]">Route Stability Examples</h4>
                           <p className="text-slate-600 text-sm leading-relaxed">
-                            This table shows how different types of neighbourhoods reacted to the thousands of weight changes. Most areas remained very consistent.
+                            This table shows how different types of transit corridors reacted to thousands of policy weight variations:
                           </p>
 
                           <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
                             <table className="min-w-full divide-y divide-slate-200">
                               <thead className="bg-slate-50 font-bold text-slate-700 text-xs">
                                 <tr>
-                                  <th className="px-4 py-3 text-left">Neighbourhood Name</th>
+                                  <th className="px-4 py-3 text-left">Route Name</th>
                                   <th className="px-4 py-3 text-right">Mean Score (0-100)</th>
-                                  <th className="px-4 py-3 text-right">Standard Deviation (Volatility)</th>
+                                  <th className="px-4 py-3 text-right">Volatility (Std Dev)</th>
                                   <th className="px-4 py-3 text-left">Priority Stability Class</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-slate-200 font-semibold text-slate-655 text-xs">
+                              <tbody className="divide-y divide-slate-200 font-semibold text-slate-650 text-xs">
                                 <tr>
-                                  <td className="px-4 py-3">ABBOTTSFIELD</td>
-                                  <td className="px-4 py-3 text-right">66.11</td>
-                                  <td className="px-4 py-3 text-right text-rose-600">12.54</td>
-                                  <td className="px-4 py-3 text-rose-700 bg-rose-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Highly Volatile (Borderline C/B Node)</td>
+                                  <td className="px-4 py-3 font-mono">002 — WEM - Stadium - Clareview</td>
+                                  <td className="px-4 py-3 text-right font-mono text-emerald-600 font-bold">99.33</td>
+                                  <td className="px-4 py-3 text-right font-mono text-slate-600">0.69</td>
+                                  <td className="px-4 py-3"><span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Bedrock Essential (Always High Equity)</span></td>
                                 </tr>
                                 <tr>
-                                  <td className="px-4 py-3">QUEEN MARY PARK</td>
-                                  <td className="px-4 py-3 text-right">56.53</td>
-                                  <td className="px-4 py-3 text-right text-amber-600">9.59</td>
-                                  <td className="px-4 py-3 text-amber-700 bg-amber-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Moderately Volatile</td>
+                                  <td className="px-4 py-3 font-mono">008 — Abbottsfield - Downtown - University</td>
+                                  <td className="px-4 py-3 text-right font-mono text-emerald-600 font-bold">99.34</td>
+                                  <td className="px-4 py-3 text-right font-mono text-slate-600">0.57</td>
+                                  <td className="px-4 py-3"><span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Bedrock Essential (Always High Equity)</span></td>
                                 </tr>
                                 <tr>
-                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
-                                  <td className="px-4 py-3 text-right">48.48</td>
-                                  <td className="px-4 py-3 text-right text-emerald-600">6.37</td>
-                                  <td className="px-4 py-3 text-emerald-700 bg-emerald-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">High Stability (Consistent Average Need)</td>
+                                  <td className="px-4 py-3 font-mono">003 — Westmount - Stadium</td>
+                                  <td className="px-4 py-3 text-right font-mono text-amber-600 font-bold">64.80</td>
+                                  <td className="px-4 py-3 text-right font-mono text-amber-600">20.71</td>
+                                  <td className="px-4 py-3"><span className="text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Policy Swing Corridor (Weight Sensitive)</span></td>
                                 </tr>
                                 <tr>
-                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
-                                  <td className="px-4 py-3 text-right">28.05</td>
-                                  <td className="px-4 py-3 text-right text-emerald-600">4.12</td>
-                                  <td className="px-4 py-3 text-emerald-700 bg-emerald-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">High Stability (Consistent Low-Moderate Need)</td>
+                                  <td className="px-4 py-3 font-mono">006 — Davies - Southgate</td>
+                                  <td className="px-4 py-3 text-right font-mono text-amber-600 font-bold">57.01</td>
+                                  <td className="px-4 py-3 text-right font-mono text-rose-600">26.13</td>
+                                  <td className="px-4 py-3"><span className="text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Policy Swing Corridor (Weight Sensitive)</span></td>
                                 </tr>
                                 <tr>
-                                  <td className="px-4 py-3">BELLEVUE</td>
-                                  <td className="px-4 py-3 text-right">21.93</td>
-                                  <td className="px-4 py-3 text-right text-blue-600">3.16</td>
-                                  <td className="px-4 py-3 text-blue-700 bg-blue-50/50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Highly Resilient (Consistent Low Need)</td>
-                                </tr>
-                                <tr>
-                                  <td className="px-4 py-3">BEACON HEIGHTS</td>
-                                  <td className="px-4 py-3 text-right">0.00</td>
-                                  <td className="px-4 py-3 text-right text-slate-500">0.00</td>
-                                  <td className="px-4 py-3 text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full inline-block mt-1 text-[10px]">Absolute Stability (Unpopulated Area)</td>
+                                  <td className="px-4 py-3 font-mono">031 — Leger - University</td>
+                                  <td className="px-4 py-3 text-right font-mono text-slate-600 font-bold">12.66</td>
+                                  <td className="px-4 py-3 text-right font-mono text-slate-600">8.28</td>
+                                  <td className="px-4 py-3"><span className="text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Policy Swing Corridor (Low Priority Node)</span></td>
                                 </tr>
                               </tbody>
                             </table>
                           </div>
                           <p className="text-slate-400 text-[10px] italic">
-                            (Note: The full dataset for all 1,762 Dissemination Areas is neighbourhood_vulnerability_sensitivity)
+                            (Note: The full sensitivity dataset across all municipal transit routes is available in sensitivity_summary.csv)
                           </p>
                         </div>
 
                         <div className="space-y-3">
                           <h4 className="text-base font-bold text-slate-800">Key Findings: What the Results Mean</h4>
                           <p className="text-slate-600 text-sm leading-relaxed">
-                            The most important takeaway is that <strong>Edmonton’s neighbourhood rankings are incredibly stable</strong>. Even when we significantly changed the weights, 95% of neighbourhoods saw their scores shift by less than 10 points on a 100-point scale. This means that a high-need neighbourhood stays high-priority, no matter how you tweak the formula.
+                            The analysis confirms that core equity corridors remain highly stable regardless of reasonable policy weight adjustments. Key findings include:
                           </p>
-                        </div>
-
-                        <div className="space-y-3">
-                          <h4 className="text-base font-bold text-slate-800">Why the Rankings Stay Steady</h4>
-                          <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2 leading-relaxed">
-                            <li><strong>Standardized Scaling:</strong> Every indicator is converted to a common scale first. This prevents one large group from drowning out others just because of their population size.</li>
-                            <li><strong>Limited Weight Ranges:</strong> By keeping the weights within a reasonable range, we ensure no single variable can take over the entire index.</li>
-                            <li><strong>Linear Stability:</strong> Neighbourhoods with very low needs are the most stable—their scores almost never change. As needs increase, volatility rises slightly because there are more active factors to weight, but the overall priority level remains clear.</li>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-600 text-sm">
+                            <li><strong>Fair and Defensible Grades:</strong> Route equity grades are mathematically grounded. A route achieves a high equity priority because it serves real, demonstrated needs across policy scenarios.</li>
+                            <li><strong>Core Equity Bedrocks:</strong> High-priority routes (like Route 002 and Route 008) maintain top equity grades across 95%+ of policy scenarios.</li>
+                            <li><strong>Transparent Policy Trade-offs:</strong> Policy Swing Corridors clearly reveal operational trade-offs when shifting emphasis between Off-Peak frequency, Monopoly protection, and Destination Opportunity.</li>
                           </ul>
-                        </div>
-
                         <div className="space-y-3">
                           <h4 className="text-base font-bold text-slate-800">Practical Impacts for the ETS Route Equity Scorecard</h4>
                           <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2 leading-relaxed">
-                            <li><strong>Fair and Defensible Grades:</strong> Since the neighbourhood scores are so stable, the final "A to E" grades for transit routes are mathematically solid. A route gets a high equity grade because it serves real needs, not because of biased weighting.</li>
-                            <li><strong>Simple Math is Better:</strong> Because complex statistical models gave nearly identical results to a simple average, we can use a transparent "Equal Weight" model. This is much easier to explain to the public and city council.</li>
-                            <li><strong>Focus on Service, Not Debates:</strong> Decision makers do not need to spend time determining which group is "more important." The math proves that the geographic patterns of need are robust.</li>
+                            <li><strong>Fair and Defensible Grades:</strong> Since transit route equity scores are grounded in empirical sensitivity analysis, the final "A to E" grades for transit routes are mathematically solid. A route gets a high equity grade because it serves real, demonstrated needs across policy scenarios.</li>
+                            <li><strong>Transparent Policy Trade-Offs:</strong> By testing over 88,000 policy weight scenarios, decision-makers can clearly visualize how shifting emphasis between Off-Peak frequency, Monopoly protection, and Destination Opportunity impacts route grades.</li>
+                            <li><strong>Focus on Service, Not Debates:</strong> Decision makers can focus on service allocation and transit equity improvements rather than debating static formula weights. The analysis proves that high-priority equity corridors remain robust across varying operational priorities.</li>
                           </ul>
                         </div>
                       </div>
