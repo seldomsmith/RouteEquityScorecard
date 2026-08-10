@@ -23,13 +23,13 @@ interface PaletteColors {
 }
 
 const PALETTES: Record<string, PaletteColors> = {
-  purple: { l1: '#FAF5FF', l2: '#DDD6FE', l3: '#C4B5FD', l4: '#A78BFA', l5: '#8B5CF6' },
-  teal: { l1: '#F0FDFA', l2: '#CCFBF1', l3: '#99F6E4', l4: '#5EEAD4', l5: '#14B8A6' },
-  emerald: { l1: '#F0FDF4', l2: '#DCFCE7', l3: '#BBF7D0', l4: '#86EFAC', l5: '#059669' },
-  carbon: { l1: '#F8FAFC', l2: '#E2E8F0', l3: '#CBD5E1', l4: '#94A3B8', l5: '#334155' },
-  divergent: { l1: '#059669', l2: '#10B981', l3: '#F59E0B', l4: '#F87171', l5: '#B23636' }, // Softened Crimson Red (25% reduced intensity)
-  sunrise: { l1: '#FEF3C7', l2: '#FDE68A', l3: '#F472B6', l4: '#E11D48', l5: '#DB2777' }, // Softer pink/rose
-  sunset: { l1: '#FFEDD5', l2: '#FED7AA', l3: '#F97316', l4: '#EA580C', l5: '#B23636' } // Softer deep red
+  purple: { l1: '#FAF5FF', l2: '#EDE9FE', l3: '#DDD6FE', l4: '#C4B5FD', l5: '#A78BFA' },
+  teal: { l1: '#F0FDFA', l2: '#E0F2FE', l3: '#BAE6FD', l4: '#7DD3FC', l5: '#38BDF8' },
+  emerald: { l1: '#F0FDF4', l2: '#D1FAE5', l3: '#A7F3D0', l4: '#6EE7B7', l5: '#34D399' },
+  carbon: { l1: '#F8FAFC', l2: '#F1F5F9', l3: '#E2E8F0', l4: '#CBD5E1', l5: '#94A3B8' },
+  divergent: { l1: '#A7F3D0', l2: '#6EE7B7', l3: '#FDE68A', l4: '#FCA5A5', l5: '#E11D48' }, // Soft desaturated pastel scale
+  sunrise: { l1: '#FEF3C7', l2: '#FDE68A', l3: '#FBCFE8', l4: '#F472B6', l5: '#E11D48' },
+  sunset: { l1: '#FFEDD5', l2: '#FED7AA', l3: '#FDBA74', l4: '#FB923C', l5: '#E11D48' }
 };
 
 interface BusStopMapProps {
@@ -233,7 +233,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
         source: 'da-boundaries',
         paint: {
           'fill-color': '#F8FAFC',
-          'fill-opacity': 0.60,
+          'fill-opacity': 0.28,
         },
       });
 
