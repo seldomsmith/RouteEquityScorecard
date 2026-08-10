@@ -76,7 +76,7 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
     >
       {/* Menu Dropdown Container */}
       <div 
-        className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative max-h-[90vh] overflow-y-auto"
+        className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-6 sm:p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative max-h-[85vh] overflow-y-auto overflow-x-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
@@ -98,17 +98,13 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
           textColor="#1e3a8a"
           markerColor="#94a3b8"
           showIndex={false}
-          showMarker={true}
+          showMarker={false}
           proximityRadius={80}
           maxShift={0}
           falloff="smooth"
-          markerLength={55}
-          markerGap={28}
-          tickScale={0.08}
-          scaleTick={true}
-          itemGap={13}
-          fontSize={1.1}
-          smoothing={800}
+          scaleTick={false}
+          itemGap={8}
+          smoothing={300}
           defaultActive={computedActiveIndex}
           onItemClick={handleMenuItemClick}
         />
