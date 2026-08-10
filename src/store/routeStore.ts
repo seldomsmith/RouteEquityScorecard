@@ -284,12 +284,12 @@ export const useRouteStore = create<RouteState>((set) => ({
   }),
 
   // CIMD Vulnerability Mode
-  cimdMode: false,
+  // CIMD Vulnerability Mode (Permanent standard)
+  cimdMode: true,
   setCimdMode: (val) => set({ cimdMode: val }),
   activeDimensions: ['econ', 'res', 'eth', 'sit'],
   toggleDimension: (dim) => set((state) => {
     if (state.activeDimensions.includes(dim)) {
-      if (state.activeDimensions.length === 1) return {}; // Keep at least one selected
       return { activeDimensions: state.activeDimensions.filter((d) => d !== dim) };
     }
     return { activeDimensions: [...state.activeDimensions, dim] };

@@ -82,13 +82,14 @@ export const ExplainerMap: React.FC<ExplainerMapProps> = ({
         .filter((f: any) => servedDaIds.has(String(f.properties?.DAUID)))
         .map((f: any) => {
           const daInfo = daMap.get(String(f.properties.DAUID));
-          const lowIncome = Number(daInfo?.low_income_pct || 0);
-          const minority = Number(daInfo?.minority_pct || 0);
-          const senior = Number(daInfo?.senior_pct || 0);
+          const econ = Number(daInfo?.econ ?? 50);
+          const res = Number(daInfo?.res ?? 50);
+          const eth = Number(daInfo?.eth ?? 50);
+          const sit = Number(daInfo?.sit ?? 50);
           
           const vIndex = (daInfo?.vulnerability_index !== undefined && daInfo?.vulnerability_index !== null)
             ? Number(daInfo.vulnerability_index)
-            : (lowIncome + minority + senior) / 3;
+            : (econ + res + eth + sit) / 4;
 
           return {
             ...f,

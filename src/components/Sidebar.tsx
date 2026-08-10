@@ -55,6 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
   const toggleStabilityClass = useRouteStore((s) => s.toggleStabilityClass);
   const cimdMode = useRouteStore((s) => s.cimdMode);
   const setCimdMode = useRouteStore((s) => s.setCimdMode);
+  const activeDimensions = useRouteStore((s) => s.activeDimensions);
+  const toggleDimension = useRouteStore((s) => s.toggleDimension);
 
   const menuItems = [
     'Directory',
@@ -178,28 +180,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
                     <span className={`text-[11px] font-semibold transition-colors duration-150 ${isDisabled ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-600'}`}>
                       {label}
                     </span>
-                    {key === 'vulnerability' && (
-                      <button
-                        onClick={() => {
-                          if (!cimdMode) setCimdMode(true);
-                          setIsCimdModalOpen(true);
-                        }}
-                        title="Configure CIMD sub-dimension criteria weights"
-                        className="flex items-center gap-1 ml-1 group"
-                      >
-                        <span className={`inline-flex w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 flex-shrink-0
-                          ${ cimdMode
-                            ? 'bg-teal-500 border-teal-500 shadow-[0_0_0_2px_rgba(20,184,166,0.25)]'
-                            : 'bg-transparent border-slate-300 group-hover:border-teal-400'
-                          }`}
-                        />
-                        <span className={`text-[9px] font-bold tracking-widest uppercase transition-colors duration-200
-                          ${ cimdMode ? 'text-teal-600' : 'text-slate-400 group-hover:text-teal-500' }`}
-                        >
-                          CIMD
-                        </span>
-                      </button>
-                    )}
                   </div>
                   <span className={`text-[11px] font-mono font-bold transition-colors duration-150 ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
                     {val}%
@@ -225,6 +205,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
                     background: `linear-gradient(to right, ${isDisabled ? '#CBD5E1' : color} ${val}%, #E2E8F0 ${val}%)`,
                   }}
                 />
+                {key === 'vulnerability' && !isDisabled && (
+                  <div className="mt-2 pt-1.5 border-t border-slate-100 bg-slate-50/60 p-2 rounded-lg border">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
+                        CIMD Criteria ({activeDimensions.length}/4)
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-teal-600">
+                        {activeDimensions.length > 0
+                          ? `${(100 / activeDimensions.length).toFixed(0)}% each`
+                          : '0% (Deactivated)'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1">
+                      {[
+                        { key: 'econ', label: 'Economic' },
+                        { key: 'res', label: 'Residential' },
+                        { key: 'eth', label: 'Ethnocultural' },
+                        { key: 'sit', label: 'Situational' },
+                      ].map((dim) => {
+                        const isActive = activeDimensions.includes(dim.key as any);
+                        return (
+                          <button
+                            key={dim.key}
+                            type="button"
+                            onClick={() => toggleDimension(dim.key as any)}
+                            className={`flex items-center gap-1.5 px-1.5 py-1 rounded text-[9px] font-medium transition-all text-left ${
+                              isActive
+                                ? 'bg-teal-50 border-teal-300 text-teal-800 font-semibold shadow-xs'
+                                : 'bg-white border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-2.5 h-2.5 rounded-sm border flex items-center justify-center text-[7px] font-bold transition-colors flex-shrink-0 ${
+                                isActive
+                                  ? 'bg-teal-600 border-teal-600 text-white'
+                                  : 'bg-white border-slate-300'
+                              }`}
+                            >
+                              {isActive ? '✓' : ''}
+                            </span>
+                            <span className="truncate">{dim.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

@@ -717,7 +717,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                         </div>
                         
                         <p className="text-slate-600 text-sm leading-relaxed">
-                          We wanted to know if the vulnerability rankings for different Edmonton neighbourhoods would change significantly if we shifted the importance of our six demographic markers: Low Income, Visible Minorities, Seniors, Recent Immigrants, Lone Parents, and Youth. To test this, we ran a "sensitivity analysis" to see how stable the data really is.
+                          We wanted to know if the vulnerability rankings for different Edmonton neighbourhoods would change significantly when evaluating Statistics Canada's Canadian Index of Multiple Deprivation (CIMD). Incorporating four core dimensions—Economic Deprivation, Residential Instability, Ethnocultural Concentration, and Situational Vulnerability—our analysis tests how stable the equity ratings remain across varying criteria weights.
                         </p>
 
                         <div className="space-y-2">

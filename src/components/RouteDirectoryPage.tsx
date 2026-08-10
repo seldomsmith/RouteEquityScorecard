@@ -380,7 +380,7 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
         {cimdMode && (
           <div className="hidden lg:flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl p-1 shadow-2xs">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
-              Criteria Weights ({(100 / (activeDimensions.length || 4)).toFixed(0)}% each):
+              Criteria Weights ({activeDimensions.length > 0 ? `${(100 / activeDimensions.length).toFixed(0)}% each` : '0% (Deactivated)'}):
             </span>
             {(
               [

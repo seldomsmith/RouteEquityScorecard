@@ -79,14 +79,18 @@ function getDynamicRouteVuln(
   daScores: Record<string, any>,
   activeDimensions: ('econ' | 'res' | 'eth' | 'sit')[]
 ): number {
+  if (activeDimensions.length === 0) {
+    return 0;
+  }
+
   if (!route.da_data || route.da_data.length === 0) {
-    return route.pillar_1; // fallback
+    return route.pillar_1_cimd ?? route.pillar_1;
   }
 
   let routeVulnSum = 0;
   let routePopSum = 0;
   
-  const numDims = activeDimensions.length || 4;
+  const numDims = activeDimensions.length;
   const dimWeight = 1 / numDims;
 
   route.da_data.forEach((da) => {
@@ -106,7 +110,7 @@ function getDynamicRouteVuln(
   if (routePopSum > 0) {
     return routeVulnSum / routePopSum;
   }
-  return route.pillar_1; // fallback
+  return route.pillar_1_cimd ?? route.pillar_1;
 }
 
 /* ── Hook ──────────────────────────────────────────────────────────── */
@@ -114,7 +118,7 @@ function getDynamicRouteVuln(
 export function useReactiveScoring(
   baseRoutes: RouteWithDAs[],
   weights: PolicyWeights,
-  cimdMode: boolean
+  cimdMode: boolean = true
 ): { scoredRoutes: ScoredRoute[]; networkStats: NetworkStats } {
   const activeDimensions = useRouteStore((s) => s.activeDimensions);
   const daScores = useRouteStore((s) => s.daScores);
@@ -141,7 +145,7 @@ export function useReactiveScoring(
     const pillarMeans: Record<string, number> = {};
     for (const p of PILLAR_MAP) {
       const values = municipalRoutes.map((r) => {
-        if (p.key === 'pillar_1' && cimdMode && Object.keys(daScores).length > 0) {
+        if (p.key === 'pillar_1') {
           return getDynamicRouteVuln(r, daScores, activeDimensions);
         }
         return (r as any)[p.key] as number || 0;
@@ -158,9 +162,7 @@ export function useReactiveScoring(
     };
 
     const rawComposites = municipalRoutes.map((r) => {
-      const vuln = cimdMode && Object.keys(daScores).length > 0
-        ? getDynamicRouteVuln(r, daScores, activeDimensions)
-        : r.pillar_1;
+      const vuln = getDynamicRouteVuln(r, daScores, activeDimensions);
       return (
         (vuln * w.pillar_1) +
         (r.pillar_2 * w.pillar_2) +
@@ -200,7 +202,7 @@ export function useReactiveScoring(
 
       // SHAP: φ_j = (w_j) × (pillar_j - network_mean_of_pillar_j)
       const shap: ShapContribution[] = PILLAR_MAP.map((p) => {
-        const pillarScore = (p.key === 'pillar_1' && cimdMode && Object.keys(daScores).length > 0)
+        const pillarScore = (p.key === 'pillar_1')
           ? getDynamicRouteVuln(route, daScores, activeDimensions)
           : ((route as any)[p.key] as number || 0);
         const pillarMean = pillarMeans[p.key];
@@ -219,9 +221,18 @@ export function useReactiveScoring(
       });
 
       // Update route's pillar_1_cimd dynamically for downstream display
-      const dynVuln = cimdMode && Object.keys(daScores).length > 0
-        ? getDynamicRouteVuln(route, daScores, activeDimensions)
-        : route.pillar_1;
+      const dynVuln = getDynamicRouteVuln(route, daScores, activeDimensions);
+
+      return {
+        ...route,
+        pillar_1_cimd: dynVuln,
+        baseline_grade: route.grade,
+        composite_score: finalScores[i],
+        composite_score_raw: Math.round(rawComposites[i] * 100) / 100,
+        grade,
+        shap,
+      };
+    });
 
       return {
         ...route,
