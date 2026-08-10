@@ -22,8 +22,18 @@ const DEFAULT_ITEMS = [
   'Support'
 ];
 
+export interface SidebarItemObject {
+  label: string;
+  code?: string;
+  isHeader?: boolean;
+  indent?: boolean;
+  page?: any;
+}
+
+export type SidebarItem = string | SidebarItemObject;
+
 export interface LineSidebarProps {
-  items?: string[];
+  items?: SidebarItem[];
   accentColor?: string;
   textColor?: string;
   markerColor?: string;
@@ -40,7 +50,7 @@ export interface LineSidebarProps {
   fontSize?: number;
   smoothing?: number;
   defaultActive?: number | null;
-  onItemClick?: (index: number, label: string) => void;
+  onItemClick?: (index: number, label: string, page?: any) => void;
   className?: string;
 }
 
@@ -134,9 +144,9 @@ export const LineSidebar: React.FC<LineSidebarProps> = ({
   }, [startLoop]);
 
   const handleClick = useCallback(
-    (index: number, label: string) => {
+    (index: number, label: string, page?: any) => {
       setActiveIndex(index);
-      onItemClick?.(index, label);
+      onItemClick?.(index, label, page);
     },
     [onItemClick]
   );
@@ -169,23 +179,32 @@ export const LineSidebar: React.FC<LineSidebarProps> = ({
       } as React.CSSProperties}
     >
       <ul ref={listRef} className="line-sidebar__list" onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
-        {items.map((label, index) => (
-          <li
-            key={`${label}-${index}`}
-            ref={el => {
-              itemRefs.current[index] = el;
-            }}
-            className="line-sidebar__item"
-            aria-current={activeIndex === index ? 'true' : undefined}
-            onClick={() => handleClick(index, label)}
-          >
-            {showMarker && <span className="line-sidebar__marker" aria-hidden="true" />}
-            <span className="line-sidebar__label">
-              {showIndex && <span className="line-sidebar__index">{String(index + 1).padStart(2, '0')}</span>}
-              <span className="line-sidebar__text">{label}</span>
-            </span>
-          </li>
-        ))}
+        {items.map((item, index) => {
+          const isObj = typeof item !== 'string';
+          const label = isObj ? item.label : item;
+          const code = isObj ? item.code : (showIndex ? String(index + 1).padStart(2, '0') : undefined);
+          const isHeader = isObj ? item.isHeader : false;
+          const isIndented = isObj ? item.indent : false;
+          const page = isObj ? item.page : undefined;
+
+          return (
+            <li
+              key={`${label}-${index}`}
+              ref={el => {
+                itemRefs.current[index] = el;
+              }}
+              className={`line-sidebar__item${isHeader ? ' line-sidebar__item--header' : ''}${isIndented ? ' line-sidebar__item--indented' : ''}`}
+              aria-current={activeIndex === index ? 'true' : undefined}
+              onClick={() => handleClick(index, label, page)}
+            >
+              {showMarker && <span className="line-sidebar__marker" aria-hidden="true" />}
+              <span className="line-sidebar__label">
+                {code && <span className="line-sidebar__index">{code}</span>}
+                <span className="line-sidebar__text">{label}</span>
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

@@ -84,3 +84,23 @@
   transform-origin: left center;
   transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.6));
 }
+
+.line-sidebar__item--indented {
+  padding-left: 1.5rem;
+}
+
+.line-sidebar__item--header {
+  margin-top: 0.5rem;
+}
+
+.line-sidebar__item--header .line-sidebar__label {
+  font-weight: 800;
+  font-size: calc(var(--font-size) * 1.05);
+  letter-spacing: -0.01em;
+}
+
+.line-sidebar__item--header .line-sidebar__index {
+  font-weight: 800;
+  opacity: 0.9;
+}
+

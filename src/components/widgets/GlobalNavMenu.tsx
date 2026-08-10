@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import LineSidebar from '@/components/widgets/LineSidebar';
+import LineSidebar, { SidebarItemObject } from '@/components/widgets/LineSidebar';
 
 export type PageView = 
   | 'landing' 
@@ -20,15 +20,23 @@ interface GlobalNavMenuProps {
   activeItemIndex?: number;
 }
 
-export const MENU_ITEMS = [
-  'Landing Page',
-  'Explain this to me!',
-  'Equity Scorecard Dashboard',
-  'Route Directory',
-  'Bus Stop Analysis',
-  'Bus Stop Directory',
-  'Bus Stop Graphs'
+export interface NavMenuItem extends SidebarItemObject {
+  page?: PageView;
+}
+
+export const STRUCTURED_MENU_ITEMS: NavMenuItem[] = [
+  { label: 'Landing Page', page: 'landing' },
+  { label: 'Route Equity Score Card', code: '1.0', isHeader: true, page: 'scrollytelling' },
+  { label: 'Explain this to me!', code: '1.1', indent: true, page: 'scrollytelling' },
+  { label: 'Route Equity Scorecard Dashboard', code: '1.2', indent: true, page: 'dashboard' },
+  { label: 'Route Directory', code: '1.3', indent: true, page: 'directory' },
+  { label: 'Bus Stop Equity Scorecard', code: '2.0', isHeader: true, page: 'bus-stop-analysis' },
+  { label: 'Bus Stop Equity Dashboard', code: '2.1', indent: true, page: 'bus-stop-analysis' },
+  { label: 'Bus Stop Directory', code: '2.2', indent: true, page: 'bus-stop-directory' },
+  { label: 'Bus Stop Graphs and Figures', code: '2.3', indent: true, page: 'bus-stop-graphs' }
 ];
+
+export const MENU_ITEMS = STRUCTURED_MENU_ITEMS.map(i => i.label);
 
 export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
   isOpen,
@@ -39,24 +47,27 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const handleMenuItemClick = (index: number, label: string) => {
+  const handleMenuItemClick = (index: number, label: string, page?: PageView) => {
     onClose();
-    if (label === 'Landing Page') {
-      onNavigate?.('landing');
-    } else if (label === 'Explain this to me!') {
-      onNavigate?.('scrollytelling');
-    } else if (label === 'Equity Scorecard Dashboard') {
-      onNavigate?.('dashboard');
-    } else if (label === 'Route Directory') {
-      onNavigate?.('directory');
-    } else if (label === 'Bus Stop Analysis') {
-      onNavigate?.('bus-stop-analysis');
-    } else if (label === 'Bus Stop Directory') {
-      onNavigate?.('bus-stop-directory');
-    } else if (label === 'Bus Stop Graphs') {
-      onNavigate?.('bus-stop-graphs');
+    const targetPage = page || STRUCTURED_MENU_ITEMS[index]?.page;
+    if (targetPage) {
+      onNavigate?.(targetPage);
     }
   };
+
+  const legacyIndexMap: Record<number, number> = {
+    0: 0, // Landing Page
+    1: 2, // Explain this to me!
+    2: 3, // Route Equity Scorecard Dashboard
+    3: 4, // Route Directory
+    4: 6, // Bus Stop Equity Dashboard
+    5: 7, // Bus Stop Directory
+    6: 8  // Bus Stop Graphs and Figures
+  };
+
+  const computedActiveIndex = (activeItemIndex in legacyIndexMap && activeItemIndex < 7) 
+    ? legacyIndexMap[activeItemIndex] 
+    : activeItemIndex;
 
   return (
     <div 
@@ -65,7 +76,7 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
     >
       {/* Menu Dropdown Container */}
       <div 
-        className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative"
+        className="bg-white border border-slate-200 shadow-2xl rounded-2xl p-8 max-w-md w-full animate-in fade-in zoom-in-95 duration-200 relative max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
@@ -82,14 +93,14 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
         </div>
 
         <LineSidebar
-          items={MENU_ITEMS}
+          items={STRUCTURED_MENU_ITEMS}
           accentColor="#1e3a8a"
           textColor="#1e3a8a"
           markerColor="#94a3b8"
-          showIndex={true}
+          showIndex={false}
           showMarker={true}
-          proximityRadius={110}
-          maxShift={46}
+          proximityRadius={80}
+          maxShift={0}
           falloff="smooth"
           markerLength={55}
           markerGap={28}
@@ -98,7 +109,7 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
           itemGap={13}
           fontSize={1.1}
           smoothing={800}
-          defaultActive={activeItemIndex}
+          defaultActive={computedActiveIndex}
           onItemClick={handleMenuItemClick}
         />
       </div>
