@@ -635,7 +635,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
               </p>
 
               <p className="text-slate-600 text-base leading-relaxed">
-                The overall vulnerability score for a route is calculated by taking the average score of all bus stops along that corridor, weighted by the population living within each stop's walking distance. This creates a direct connection across the platform: adjusting socio-economic criteria weights updates individual bus stop scores, which immediately recalculates the vulnerability score for the entire route.
+                The overall vulnerability score for a route is calculated by taking the average score of all bus stops along that corridor, weighted by the population living within each stop's walking distance. This creates a direct connection across the platform: adjusting CIMD criteria weights (Economic, Residential, Ethnocultural, Situational) updates individual bus stop scores, which immediately recalculates the vulnerability score for the entire route.
               </p>
 
               {/* Animated Mapbox Bus Stop Catchment Visual */}
