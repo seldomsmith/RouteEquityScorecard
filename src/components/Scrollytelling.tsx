@@ -794,6 +794,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
                             <li><strong>Core Equity Bedrocks:</strong> High-priority routes (like Route 002 and Route 008) maintain top equity grades across 95%+ of policy scenarios.</li>
                             <li><strong>Transparent Policy Trade-offs:</strong> Policy Swing Corridors clearly reveal operational trade-offs when shifting emphasis between Off-Peak frequency, Monopoly protection, and Destination Opportunity.</li>
                           </ul>
+                        </div>
                         <div className="space-y-3">
                           <h4 className="text-base font-bold text-slate-800">Practical Impacts for the ETS Route Equity Scorecard</h4>
                           <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2 leading-relaxed">
