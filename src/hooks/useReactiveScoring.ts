@@ -234,17 +234,6 @@ export function useReactiveScoring(
       };
     });
 
-      return {
-        ...route,
-        pillar_1_cimd: dynVuln,
-        baseline_grade: route.grade,
-        composite_score: finalScores[i],
-        composite_score_raw: Math.round(rawComposites[i] * 100) / 100,
-        grade,
-        shap,
-      };
-    });
-
     const scoredRegionalRoutes: ScoredRoute[] = regionalRoutes.map((route) => {
       const shap: ShapContribution[] = PILLAR_MAP.map((p) => ({
         pillar: p.key,
