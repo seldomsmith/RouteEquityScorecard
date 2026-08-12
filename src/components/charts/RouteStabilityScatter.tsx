@@ -50,40 +50,47 @@ const CLASS_LABELS: Record<string, string> = {
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
-  if (!active || !payload?.length) return null;
+  if (!active || !payload || !payload.length || !payload[0]?.payload) return null;
   const d = payload[0].payload as SensitivityRow;
+  if (!d) return null;
 
-  // Determine primary driver
+  // Determine primary driver safely
   const drivers = [
-    { name: 'Vulnerability', val: d.driver_vulnerability },
-    { name: 'Off-Peak Service', val: d.driver_temporal },
-    { name: 'Monopoly', val: d.driver_monopoly },
-    { name: 'Opportunity', val: d.driver_opportunity },
+    { name: 'Vulnerability', val: Number(d.driver_vulnerability || 0) },
+    { name: 'Off-Peak Service', val: Number(d.driver_temporal || 0) },
+    { name: 'Monopoly', val: Number(d.driver_monopoly || 0) },
+    { name: 'Opportunity', val: Number(d.driver_opportunity || 0) },
   ];
-  const primaryDriver = drivers.sort((a, b) => b.val - a.val)[0].name;
+  const sorted = [...drivers].sort((a, b) => b.val - a.val);
+  const primaryDriver = sorted[0]?.name || 'N/A';
+
+  const meanStr = typeof d.score_mean === 'number' ? d.score_mean.toFixed(1) : 'N/A';
+  const stdStr = typeof d.score_std === 'number' ? d.score_std.toFixed(2) : 'N/A';
+  const minStr = typeof d.score_min === 'number' ? d.score_min.toFixed(0) : 'N/A';
+  const maxStr = typeof d.score_max === 'number' ? d.score_max.toFixed(0) : 'N/A';
 
   return (
     <div className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-lg shadow-xl px-3.5 py-2.5 text-xs max-w-sm">
-      <p className="font-bold text-slate-900">{d.name}</p>
+      <p className="font-bold text-slate-900">{d.name || d.route_id || 'Route'}</p>
       <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-        {CLASS_LABELS[d.stability_class] || d.stability_class} (Route {d.short_name})
+        {CLASS_LABELS[d.stability_class] || d.stability_class || 'Standard'} (Route {d.short_name || d.route_id})
       </p>
 
       <div className="mt-2 space-y-1 text-slate-600 pt-1.5 border-t border-slate-100">
         <div className="flex justify-between gap-4">
           <span>Mean Score:</span>
-          <span className="font-bold text-slate-800">{d.score_mean.toFixed(1)}</span>
+          <span className="font-bold text-slate-800">{meanStr}</span>
         </div>
         <div className="flex justify-between gap-4">
           <span>Volatility ($R_r$):</span>
-          <span className="font-bold text-slate-800">{d.score_std.toFixed(2)}</span>
+          <span className="font-bold text-slate-800">{stdStr}</span>
         </div>
         <div className="flex justify-between gap-4">
           <span>Primary Driver:</span>
           <span className="font-semibold text-brand-teal-600">{primaryDriver}</span>
         </div>
         <div className="flex justify-between gap-4 text-[10px] text-slate-400 mt-1 italic">
-          <span>Range: {d.score_min.toFixed(0)} - {d.score_max.toFixed(0)}</span>
+          <span>Range: {minStr} - {maxStr}</span>
         </div>
       </div>
     </div>

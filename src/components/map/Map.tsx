@@ -881,7 +881,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             ['in', ['get', stabilityKey], ['literal', selectedStabilityClasses]]
           ]);
         } else {
-          map.current.setFilter('routes-line', null);
+          map.current.setFilter('routes-line', undefined as any);
           map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
         }
       } else {
@@ -893,7 +893,7 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
             ['==', ['get', 'grade'], selectedGrade],
           ]);
         } else {
-          map.current.setFilter('routes-line', null);
+          map.current.setFilter('routes-line', undefined as any);
           map.current.setFilter('routes-highlight', ['==', ['get', 'route_id'], selectedRoute || '']);
         }
       }

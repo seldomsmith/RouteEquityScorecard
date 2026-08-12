@@ -107,46 +107,57 @@ export const ShapWaterfall: React.FC<WaterfallProps> = ({ route, networkStats, s
 
   const shap = React.useMemo(() => {
     if (!route) return [];
-    if (isStabilityMode) {
-      // Option 3: Sensitivity Drivers Waterfall
-      // Baseline is score_mean (mean rank under uniform 25% weights)
-      // Deviation is w_j - 0.25
+    if (isStabilityMode && sensitivityRow) {
+      const dv = Number(sensitivityRow.driver_vulnerability || 0);
+      const dt = Number(sensitivityRow.driver_temporal || 0);
+      const dm = Number(sensitivityRow.driver_monopoly || 0);
+      const dopp = Number(sensitivityRow.driver_opportunity || 0);
+      const wRes = Number(weights.resilience ?? (weights as any).offPeak ?? 25);
+      const wVuln = Number(weights.vulnerability ?? 25);
+      const wMono = Number(weights.monopoly ?? 25);
+      const wOpp = Number(weights.opportunity ?? 25);
+
+      const v1 = dv * ((wVuln - 25) / 100);
+      const v2 = dt * ((wRes - 25) / 100);
+      const v3 = dm * ((wMono - 25) / 100);
+      const v4 = dopp * ((wOpp - 25) / 100);
+
       return [
         {
           pillar: 'pillar_1',
           label: 'Vuln Sensitivity',
-          value: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100),
-          color: sensitivityRow.driver_vulnerability * ((weights.vulnerability - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
-          rawScore: sensitivityRow.driver_vulnerability,
+          value: isNaN(v1) ? 0 : v1,
+          color: (v1 || 0) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: dv,
           networkMean: 25,
-          weight: weights.vulnerability / 100,
+          weight: wVuln / 100,
         },
         {
           pillar: 'pillar_2',
           label: 'Off-Peak Sens',
-          value: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100),
-          color: sensitivityRow.driver_temporal * ((weights.resilience - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
-          rawScore: sensitivityRow.driver_temporal,
+          value: isNaN(v2) ? 0 : v2,
+          color: (v2 || 0) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: dt,
           networkMean: 25,
-          weight: weights.resilience / 100,
+          weight: wRes / 100,
         },
         {
           pillar: 'pillar_3',
           label: 'Monopoly Sens',
-          value: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100),
-          color: sensitivityRow.driver_monopoly * ((weights.monopoly - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
-          rawScore: sensitivityRow.driver_monopoly,
+          value: isNaN(v3) ? 0 : v3,
+          color: (v3 || 0) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: dm,
           networkMean: 25,
-          weight: weights.monopoly / 100,
+          weight: wMono / 100,
         },
         {
           pillar: 'pillar_4',
           label: 'Opp Sensitivity',
-          value: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100),
-          color: sensitivityRow.driver_opportunity * ((weights.opportunity - 25) / 100) >= 0 ? '#10B981' : '#F43F5E',
-          rawScore: sensitivityRow.driver_opportunity,
+          value: isNaN(v4) ? 0 : v4,
+          color: (v4 || 0) >= 0 ? '#10B981' : '#F43F5E',
+          rawScore: dopp,
           networkMean: 25,
-          weight: weights.opportunity / 100,
+          weight: wOpp / 100,
         },
       ];
     }
