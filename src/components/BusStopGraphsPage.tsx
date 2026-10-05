@@ -264,106 +264,70 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     }));
   }, [filteredStops]);
 
-  // 4. Route Grade Disparity Ratio Bar Chart Data (Floating Range [Min, Max])
+  // 4. Route Grade Disparity Ratio Bar Chart Data (Actual Min & Max Stop Score per GTFS Route)
   const routeDisparityData = useMemo(() => {
-    const routeList = [
-      { id: '1', name: 'Route 1', min: 28, max: 84, grade: 'B' },
-      { id: '2', name: 'Route 2', min: 32, max: 89, grade: 'A' },
-      { id: '4', name: 'Route 4', min: 22, max: 78, grade: 'C' },
-      { id: '7', name: 'Route 7', min: 40, max: 92, grade: 'A' },
-      { id: '8', name: 'Route 8', min: 18, max: 76, grade: 'D' },
-      { id: '9', name: 'Route 9', min: 35, max: 88, grade: 'B' },
-      { id: '51', name: 'Route 51', min: 45, max: 95, grade: 'A' },
-      { id: '52', name: 'Route 52', min: 25, max: 82, grade: 'C' },
-      { id: '100', name: 'Route 100', min: 50, max: 98, grade: 'A' },
-      { id: '110', name: 'Route 110', min: 15, max: 68, grade: 'E' },
-      { id: '500', name: 'Route 500', min: 30, max: 85, grade: 'B' },
-      { id: '510', name: 'Route 510', min: 42, max: 90, grade: 'A' },
-      { id: '700', name: 'Route 700', min: 20, max: 72, grade: 'D' },
-      { id: '710', name: 'Route 710', min: 38, max: 86, grade: 'C' },
-      { id: '800', name: 'Route 800', min: 12, max: 65, grade: 'E' },
-      { id: '900', name: 'Route 900', min: 48, max: 94, grade: 'A' },
-    ];
+    if (processedStops.length === 0) return [];
 
-    if (baseRoutes && baseRoutes.length > 0) {
-      return baseRoutes.slice(0, 20).map((r) => {
-        const minScore = Math.max(12, Math.round(r.composite_score * 0.55));
-        const maxScore = Math.min(98, Math.round(r.composite_score * 1.35));
-        return {
-          routeName: `Route ${r.short_name || r.route_id}`,
-          scoreRange: [minScore, maxScore],
-          minScore,
-          maxScore,
-          spread: maxScore - minScore,
-          color: GRADE_COLORS[r.grade] || '#94A3B8'
-        };
+    // Group actual stop scores by route short name
+    const routeScoresMap = new Map<string, number[]>();
+    processedStops.forEach((s) => {
+      if (s.is_regional || !s.routesList || s.routesList.length === 0) return;
+      s.routesList.forEach((rName) => {
+        if (!routeScoresMap.has(rName)) {
+          routeScoresMap.set(rName, []);
+        }
+        routeScoresMap.get(rName)!.push(s.dynamicScore);
       });
-    }
+    });
 
-    return routeList.map((r) => ({
-      routeName: r.name,
-      scoreRange: [r.min, r.max],
-      minScore: r.min,
-      maxScore: r.max,
-      spread: r.max - r.min,
-      color: GRADE_COLORS[r.grade]
-    }));
-  }, [baseRoutes]);
+    // Select the top 20 most frequent routes or routes present in baseRoutes
+    const candidateRouteNames = Array.from(routeScoresMap.keys())
+      .filter((rName) => routeScoresMap.get(rName)!.length >= 4) // routes with at least 4 served stops
+      .sort((a, b) => {
+        const numA = parseInt(a, 10);
+        const numB = parseInt(b, 10);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return a.localeCompare(b);
+      })
+      .slice(0, 20);
 
-  // 5. Corridors of Vulnerability Scatter Plot Data (50+ Corridors across 3km–42km)
+    return candidateRouteNames.map((rName) => {
+      const scores = routeScoresMap.get(rName)!;
+      const minScore = Math.min(...scores);
+      const maxScore = Math.max(...scores);
+      const spread = Number((maxScore - minScore).toFixed(1));
+
+      // Find matching route grade from baseRoutes if available
+      const matchedRoute = baseRoutes.find((br) => String(br.short_name) === rName || String(br.route_id) === rName);
+      const grade = (matchedRoute?.grade as BusStopGrade) || (spread > 40 ? 'D' : spread > 25 ? 'C' : 'B');
+
+      return {
+        routeName: `Route ${rName}`,
+        scoreRange: [minScore, maxScore],
+        minScore,
+        maxScore,
+        spread,
+        stopsSampled: scores.length,
+        color: GRADE_COLORS[grade] || '#64748B'
+      };
+    });
+  }, [processedStops, baseRoutes]);
+
+  // 5. Corridors of Vulnerability Scatter Plot Data (Route Length vs Actual Average Stop Equity)
   const corridorsScatterData = useMemo(() => {
-    if (baseRoutes && baseRoutes.length > 0 && baseRoutes.length >= 30) {
-      return baseRoutes.filter((r) => !r.is_regional).map((r) => ({
-        x: Number((r.route_length_km || 12.4).toFixed(1)),
+    if (!baseRoutes || baseRoutes.length === 0) return [];
+
+    // Map verified routes directly; no synthetic or hardcoded placeholder networks
+    return baseRoutes
+      .filter((r) => !r.is_regional && (r.route_length_km ?? 0) > 0)
+      .map((r) => ({
+        x: Number((r.route_length_km || 0).toFixed(1)),
         y: Math.round(r.composite_score),
         z: 100,
         routeName: `Route ${r.short_name} (${r.name})`,
         grade: r.grade,
-        color: GRADE_COLORS[r.grade] || '#94A3B8'
+        color: GRADE_COLORS[r.grade] || '#64748B'
       }));
-    }
-
-    const corridorNetwork = [
-      { id: '1', len: 24.5, score: 72, grade: 'B' },
-      { id: '2', len: 18.2, score: 78, grade: 'A' },
-      { id: '4', len: 21.0, score: 55, grade: 'C' },
-      { id: '5', len: 8.5, score: 32, grade: 'E' },
-      { id: '7', len: 14.8, score: 85, grade: 'A' },
-      { id: '8', len: 31.4, score: 42, grade: 'D' },
-      { id: '9', len: 28.9, score: 68, grade: 'B' },
-      { id: '11', len: 6.2, score: 28, grade: 'E' },
-      { id: '12', len: 11.4, score: 62, grade: 'C' },
-      { id: '15', len: 15.6, score: 88, grade: 'A' },
-      { id: '23', len: 9.8, score: 45, grade: 'D' },
-      { id: '51', len: 19.5, score: 92, grade: 'A' },
-      { id: '52', len: 22.1, score: 58, grade: 'C' },
-      { id: '54', len: 7.4, score: 36, grade: 'E' },
-      { id: '56', len: 13.2, score: 74, grade: 'B' },
-      { id: '100', len: 16.0, score: 95, grade: 'A' },
-      { id: '110', len: 27.5, score: 39, grade: 'D' },
-      { id: '120', len: 33.0, score: 82, grade: 'A' },
-      { id: '130', len: 5.1, score: 25, grade: 'E' },
-      { id: '500', len: 26.2, score: 71, grade: 'B' },
-      { id: '510', len: 12.8, score: 86, grade: 'A' },
-      { id: '520', len: 35.4, score: 48, grade: 'D' },
-      { id: '700', len: 22.4, score: 52, grade: 'C' },
-      { id: '710', len: 17.1, score: 64, grade: 'B' },
-      { id: '800', len: 29.1, score: 34, grade: 'E' },
-      { id: '810', len: 38.2, score: 79, grade: 'A' },
-      { id: '900', len: 17.6, score: 89, grade: 'A' },
-      { id: '910', len: 41.5, score: 61, grade: 'C' },
-      { id: '920', len: 4.8, score: 22, grade: 'E' },
-      { id: '930', len: 10.2, score: 77, grade: 'B' }
-    ];
-
-    return corridorNetwork.map((c) => ({
-      x: c.len,
-      y: c.score,
-      z: 100,
-      routeName: `Route ${c.id}`,
-      grade: c.grade as BusStopGrade,
-      color: GRADE_COLORS[c.grade]
-    }));
   }, [baseRoutes]);
 
   const handleExportCSV = () => {
@@ -490,49 +454,56 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
           </div>
         ) : (
           <div className="space-y-6 max-w-7xl mx-auto">
-            {/* Top Stat Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Analyzed Bus Stops</div>
-                <div className="text-2xl font-black text-slate-900 mt-1 font-mono">{processedStops.length.toLocaleString()}</div>
-                <div className="text-[10px] text-emerald-600 font-bold mt-1">GTFS Verified</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Municipal Stops</div>
-                <div className="text-2xl font-black text-[#1e3a8a] mt-1 font-mono">
-                  {processedStops.filter((s) => !s.is_regional).length.toLocaleString()}
+            {/* Operational Summary Ribbon */}
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-6 divide-x divide-slate-100">
+                <div className="pr-2">
+                  <div className="text-[11px] font-semibold text-slate-500">Analyzed Bus Stops</div>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-xl font-bold font-mono text-slate-900">{processedStops.length.toLocaleString()}</span>
+                    <span className="text-[11px] text-slate-500 font-medium">GTFS active network</span>
+                  </div>
                 </div>
-                <div className="text-[10px] text-slate-400 font-bold mt-1">20% Quintile Split</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Regional Partner Stops</div>
-                <div className="text-2xl font-black text-slate-500 mt-1 font-mono">
-                  {processedStops.filter((s) => s.is_regional).length.toLocaleString()}
+                <div className="pl-6 pr-2">
+                  <div className="text-[11px] font-semibold text-slate-500">Edmonton Stops</div>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-xl font-bold font-mono text-slate-800">
+                      {processedStops.filter((s) => !s.is_regional).length.toLocaleString()}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium">Quintile evaluated</span>
+                  </div>
                 </div>
-                <div className="text-[10px] text-slate-400 font-bold mt-1">St. Albert, Sherwood Park, Spruce Grove</div>
+                <div className="pl-6 pr-2">
+                  <div className="text-[11px] font-semibold text-slate-500">Regional Stops</div>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-xl font-bold font-mono text-slate-600">
+                      {processedStops.filter((s) => s.is_regional).length.toLocaleString()}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium">Adjacent municipalities</span>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Grade Color Keys</div>
-                <div className="flex items-center gap-1.5 mt-2">
+              <div className="flex items-center gap-2 border-t md:border-t-0 pt-2 md:pt-0">
+                <span className="text-[11px] font-semibold text-slate-500 mr-1">Grade scale:</span>
+                <div className="flex items-center gap-1.5">
                   {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => (
-                    <span key={g} className="px-2 py-0.5 rounded text-[10px] font-black text-white" style={{ backgroundColor: GRADE_COLORS[g] }}>
+                    <span key={g} className="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-2xs" style={{ backgroundColor: GRADE_COLORS[g] }}>
                       {g}
                     </span>
                   ))}
                 </div>
-                <div className="text-[10px] text-slate-400 font-bold mt-1">Dynamic Quintile Tiers</div>
               </div>
             </div>
 
             {/* Vertically Stacked Chart 1: DA Catchment Overlap vs. Equity Score */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <TrendingUp className="w-4 h-4 text-[#1e3a8a]" /> 1. DA Catchment Overlap vs. Equity Score
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-slate-600" /> 1. DA Catchment Overlap vs. Equity Score
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Plots stops by the number of served Dissemination Areas (Y) vs. Blended Equity Score (X)
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Distribution of bus stops by overlapping Dissemination Areas (Y) relative to Blended Equity Score (X)
                   </p>
                 </div>
               </div>
@@ -577,14 +548,14 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             </div>
 
             {/* Vertically Stacked Chart 2: Routes Served vs. Equity Score */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <TrendingUp className="w-4 h-4 text-emerald-600" /> 2. Number of Routes Served vs. Equity Score
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-slate-600" /> 2. Number of Routes Served vs. Equity Score
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Plots stops by corridor transit service density / route connections (Y) vs. Blended Equity Score (X)
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Corridor route connectivity (Y) relative to Blended Equity Score (X)
                   </p>
                 </div>
               </div>
@@ -635,14 +606,14 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             </div>
 
             {/* Vertically Stacked Chart 3: Stop Equity vs. Route Service Frequency */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-purple-600" /> 3. Stop Equity vs. Corridor Service Frequency (Peak Trips/Hour)
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-slate-600" /> 3. Stop Equity vs. Corridor Service Frequency (Peak Trips/Hour)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Identifies service frequency gaps using verified weekday GTFS schedules
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Hourly peak departures relative to equity need using verified weekday GTFS schedules
                   </p>
                 </div>
               </div>
@@ -699,14 +670,14 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             </div>
 
             {/* Vertically Stacked Chart 4: Route Grade Disparity Ratio Range Bars */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <GitCommit className="w-4 h-4 text-amber-600" /> 4. Route Equity Disparity Ratio (Stop Score Range per Corridor)
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <GitCommit className="w-4 h-4 text-slate-600" /> 4. Route Equity Disparity Ratio (Stop Score Range per Corridor)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Measures score spread (min to max stop score) along each transit corridor
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Spread between minimum and maximum stop equity scores along sampled corridors
                   </p>
                 </div>
               </div>
@@ -750,54 +721,60 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             </div>
 
             {/* Vertically Stacked Chart 5: Corridors of Vulnerability */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-blue-600" /> 5. Corridors of Vulnerability (Route Length vs. Averaged Stop Equity)
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-slate-600" /> 5. Corridors of Vulnerability (Route Length vs. Averaged Stop Equity)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Plots entire transit corridors by total length in kilometers (X) vs. route-averaged stop equity score (Y)
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Transit corridors plotted by length in kilometers (X) relative to route composite equity score (Y)
                   </p>
                 </div>
               </div>
               <div className="h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis type="number" dataKey="x" name="Route Length" unit=" km" domain={[0, 40]} stroke="#94a3b8" fontSize={10} label={{ value: 'Route Length (km)', position: 'bottom', offset: 5, fontSize: 10, fill: '#64748b' }} />
-                    <YAxis type="number" dataKey="y" name="Route Avg Score" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Route Avg Stop Score', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
-                    <ZAxis type="number" dataKey="z" range={[45, 45]} />
-                    <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 z-50 border border-slate-700">
-                            <div className="font-bold border-b border-slate-700 pb-1">{data.routeName}</div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Route Length:</span>
-                              <span className="font-mono font-bold">{data.x} km</span>
+                {corridorsScatterData.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-xs text-slate-400 font-medium">
+                    Loading verified transit corridors...
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis type="number" dataKey="x" name="Route Length" unit=" km" domain={[0, 40]} stroke="#94a3b8" fontSize={10} label={{ value: 'Route Length (km)', position: 'bottom', offset: 5, fontSize: 10, fill: '#64748b' }} />
+                      <YAxis type="number" dataKey="y" name="Route Avg Score" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Route Composite Score', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
+                      <ZAxis type="number" dataKey="z" range={[45, 45]} />
+                      <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 z-50 border border-slate-700">
+                              <div className="font-bold border-b border-slate-700 pb-1">{data.routeName}</div>
+                              <div className="flex justify-between text-[11px] gap-4">
+                                <span className="text-slate-400">Route Length:</span>
+                                <span className="font-mono font-bold">{data.x} km</span>
+                              </div>
+                              <div className="flex justify-between text-[11px] gap-4">
+                                <span className="text-slate-400">Composite Score:</span>
+                                <span className="font-mono font-bold">{data.y} / 100</span>
+                              </div>
+                              <div className="flex justify-between text-[11px] gap-4">
+                                <span className="text-slate-400">Route Grade:</span>
+                                <span className="font-bold" style={{ color: data.color }}>Grade {data.grade}</span>
+                              </div>
                             </div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Avg Stop Equity Score:</span>
-                              <span className="font-mono font-bold">{data.y} / 100</span>
-                            </div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Route Grade:</span>
-                              <span className="font-bold" style={{ color: data.color }}>Grade {data.grade}</span>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }} />
-                    <Scatter name="Corridors" data={corridorsScatterData} fill="#3B82F6">
-                      {corridorsScatterData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
+                          );
+                        }
+                        return null;
+                      }} />
+                      <Scatter name="Corridors" data={corridorsScatterData} fill="#3B82F6">
+                        {corridorsScatterData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Scatter>
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
 
