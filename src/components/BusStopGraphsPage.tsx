@@ -155,8 +155,12 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         approxPop = 1200;
       }
 
-      const routesServed = Math.max(1, Math.min(8, Math.floor(daCount * 1.5) + (s.stop_name.includes('Transit Centre') ? 4 : 0)));
-      const tripsPerHour = Math.max(2, Math.min(24, Math.floor(routesServed * 2.5) + (s.stop_name.includes('LRT') || s.stop_name.includes('Transit Centre') ? 6 : 0)));
+      // Pure GTFS service schedule metrics (no synthetic formula approximations)
+      const routesList = s.routes_served ?? [];
+      const routesServed = s.route_count ?? (routesList.length > 0 ? routesList.length : null);
+      const tripsPerHour = s.peak_trips_per_hour ?? null;
+      const offpeakTripsPerHour = s.offpeak_trips_per_hour ?? null;
+      const dailyTrips = s.daily_trips ?? null;
 
       return {
         ...s,
@@ -164,7 +168,10 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         approxPop: Math.max(80, approxPop),
         daCount: Math.max(1, daCount),
         routesServed,
-        tripsPerHour
+        routesList,
+        tripsPerHour,
+        offpeakTripsPerHour,
+        dailyTrips
       };
     });
 
@@ -222,13 +229,15 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     }));
   }, [filteredStops]);
 
-  // 2. Scatter Plot Data 2: X = Blended Score (0-100), Y = Number of Routes Served (1-8+)
+  // 2. Scatter Plot Data 2: X = Blended Score (0-100), Y = Verified GTFS Routes Served
   const routeScatterData = useMemo(() => {
-    const municipal = filteredStops.filter((s) => !s.is_regional);
-    const step = Math.max(1, Math.floor(municipal.length / 350));
-    return municipal.filter((_, idx) => idx % step === 0).map((s) => ({
+    // Only plot stops that have verified GTFS schedule data (nulls are excluded from scatter plotting)
+    const validScheduledStops = filteredStops.filter((s) => !s.is_regional && s.routesServed !== null && s.routesServed !== undefined);
+    const step = Math.max(1, Math.floor(validScheduledStops.length / 350));
+    return validScheduledStops.filter((_, idx) => idx % step === 0).map((s) => ({
       x: s.dynamicScore,
       y: s.routesServed,
+      routesList: s.routesList,
       z: 100,
       name: s.stop_name,
       stop_id: s.stop_id,
@@ -237,13 +246,16 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     }));
   }, [filteredStops]);
 
-  // 3. Scatter Plot Data 3: Stop Equity vs Route Service Frequency (Trips/Hr)
+  // 3. Scatter Plot Data 3: Stop Equity vs Verified GTFS Service Frequency (Peak Trips/Hr)
   const frequencyScatterData = useMemo(() => {
-    const municipal = filteredStops.filter((s) => !s.is_regional);
-    const step = Math.max(1, Math.floor(municipal.length / 350));
-    return municipal.filter((_, idx) => idx % step === 0).map((s) => ({
+    // Only plot stops that have verified GTFS schedule arrival records
+    const validScheduledStops = filteredStops.filter((s) => !s.is_regional && s.tripsPerHour !== null && s.tripsPerHour !== undefined);
+    const step = Math.max(1, Math.floor(validScheduledStops.length / 350));
+    return validScheduledStops.filter((_, idx) => idx % step === 0).map((s) => ({
       x: s.dynamicScore,
       y: s.tripsPerHour,
+      offpeakY: s.offpeakTripsPerHour,
+      dailyTrips: s.dailyTrips,
       z: 100,
       name: s.stop_name,
       stop_id: s.stop_id,
@@ -355,8 +367,30 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
   }, [baseRoutes]);
 
   const handleExportCSV = () => {
-    const headers = ['Stop ID', 'Stop Name', 'Blended Score', 'Grade', 'Served DAs', 'Routes Served', 'Trips/Hour'];
-    const rows = processedStops.map((s) => [s.stop_id, s.stop_name, s.dynamicScore, s.dynamicGrade, s.daCount, s.routesServed, s.tripsPerHour]);
+    const headers = [
+      'Stop ID', 
+      'Stop Name', 
+      'Blended Score', 
+      'Grade', 
+      'Served DAs', 
+      'GTFS Route Count', 
+      'GTFS Routes Served', 
+      'Peak Trips/Hour', 
+      'Off-Peak Trips/Hour', 
+      'Daily Weekday Trips'
+    ];
+    const rows = processedStops.map((s) => [
+      s.stop_id, 
+      s.stop_name, 
+      s.dynamicScore, 
+      s.dynamicGrade, 
+      s.daCount, 
+      s.routesServed ?? '', 
+      (s.routesList || []).join('; '), 
+      s.tripsPerHour ?? '', 
+      s.offpeakTripsPerHour ?? '', 
+      s.dailyTrips ?? ''
+    ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.map((v) => `"${v}"`).join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -559,13 +593,14 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                   <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                     <XAxis type="number" dataKey="x" name="Equity Score" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Blended Equity Score (0-100)', position: 'bottom', offset: 5, fontSize: 10, fill: '#64748b' }} />
-                    <YAxis type="number" dataKey="y" name="Routes Served" domain={[1, 8]} allowDecimals={false} stroke="#94a3b8" fontSize={10} label={{ value: 'Routes Served at Stop', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
+                    <YAxis type="number" dataKey="y" name="Routes Served" domain={[1, 'auto']} allowDecimals={false} stroke="#94a3b8" fontSize={10} label={{ value: 'GTFS Routes Served at Stop', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
                     <ZAxis type="number" dataKey="z" range={[35, 35]} />
                     <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
+                        const routesList = (data.routesList || []).join(', ');
                         return (
-                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 z-50 border border-slate-700">
+                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 z-50 border border-slate-700 max-w-xs">
                             <div className="font-bold border-b border-slate-700 pb-1">{data.name} (#{data.stop_id})</div>
                             <div className="flex justify-between text-[11px] gap-4">
                               <span className="text-slate-400">Equity Score:</span>
@@ -575,7 +610,12 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                               <span className="text-slate-400">Routes Served:</span>
                               <span className="font-mono font-bold">{data.y} Route(s)</span>
                             </div>
-                            <div className="flex justify-between text-[11px] gap-4">
+                            {routesList && (
+                              <div className="text-[10px] text-emerald-300 font-mono bg-slate-800/80 p-1 rounded border border-slate-700/50 break-words">
+                                Routes: {routesList}
+                              </div>
+                            )}
+                            <div className="flex justify-between text-[11px] gap-4 pt-0.5">
                               <span className="text-slate-400">Grade Tier:</span>
                               <span className="font-bold" style={{ color: data.color }}>Grade {data.grade}</span>
                             </div>
@@ -599,10 +639,10 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
                   <h3 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-purple-600" /> 3. Stop Equity vs. Corridor Service Frequency (Trips/Hour)
+                    <Clock className="w-4 h-4 text-purple-600" /> 3. Stop Equity vs. Corridor Service Frequency (Peak Trips/Hour)
                   </h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    Identifies service frequency gaps (high vulnerability stops receiving low hourly trips)
+                    Identifies service frequency gaps using verified weekday GTFS schedules
                   </p>
                 </div>
               </div>
@@ -611,23 +651,35 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
                   <ScatterChart margin={{ top: 10, right: 20, bottom: 25, left: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                     <XAxis type="number" dataKey="x" name="Equity Score" domain={[0, 100]} stroke="#94a3b8" fontSize={10} label={{ value: 'Blended Equity Score (0-100)', position: 'bottom', offset: 5, fontSize: 10, fill: '#64748b' }} />
-                    <YAxis type="number" dataKey="y" name="Trips per Hour" domain={[0, 24]} allowDecimals={false} stroke="#94a3b8" fontSize={10} label={{ value: 'Trips per Hour (Frequency)', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
+                    <YAxis type="number" dataKey="y" name="Trips per Hour" domain={[0, 'auto']} allowDecimals={false} stroke="#94a3b8" fontSize={10} label={{ value: 'Peak Trips / Hour', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
                     <ZAxis type="number" dataKey="z" range={[35, 35]} />
                     <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 z-50 border border-slate-700">
+                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 z-50 border border-slate-700">
                             <div className="font-bold border-b border-slate-700 pb-1">{data.name} (#{data.stop_id})</div>
                             <div className="flex justify-between text-[11px] gap-4">
                               <span className="text-slate-400">Equity Score:</span>
                               <span className="font-mono font-bold">{data.x} / 100</span>
                             </div>
                             <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Hourly Service Frequency:</span>
+                              <span className="text-slate-400">Peak Frequency:</span>
                               <span className="font-mono font-bold">{data.y} Trips / Hr</span>
                             </div>
-                            <div className="flex justify-between text-[11px] gap-4">
+                            {data.offpeakY !== null && data.offpeakY !== undefined && (
+                              <div className="flex justify-between text-[11px] gap-4">
+                                <span className="text-slate-400">Off-Peak Frequency:</span>
+                                <span className="font-mono font-bold text-slate-300">{data.offpeakY} Trips / Hr</span>
+                              </div>
+                            )}
+                            {data.dailyTrips !== null && data.dailyTrips !== undefined && (
+                              <div className="flex justify-between text-[11px] gap-4">
+                                <span className="text-slate-400">Daily Weekday Trips:</span>
+                                <span className="font-mono text-purple-300">{data.dailyTrips} departures</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-[11px] gap-4 pt-0.5">
                               <span className="text-slate-400">Grade Tier:</span>
                               <span className="font-bold" style={{ color: data.color }}>Grade {data.grade}</span>
                             </div>

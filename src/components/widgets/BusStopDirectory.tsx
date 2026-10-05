@@ -15,6 +15,11 @@ export interface BusStopRecord {
   equal_grade?: string;
   economic_grade?: string;
   is_regional?: boolean;
+  routes_served?: string[];
+  route_count?: number | null;
+  peak_trips_per_hour?: number | null;
+  offpeak_trips_per_hour?: number | null;
+  daily_trips?: number | null;
   das: Array<{
     da_id: string;
     pct: number;

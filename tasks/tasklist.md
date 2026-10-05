@@ -383,6 +383,15 @@
 - [x] Filter out regional routes from frontend dashboards, quadrant charts, S-curves, and stability tables <!-- id: 142, priority: critical -->
 - [x] Verify build and functionality <!-- id: 143, priority: critical -->
 
+## Phase 26: Purge Synthetic Stop Metrics & Real GTFS Service Integration
+- [x] Incorporate GTFS ingestion into `scripts/build_stop_vulnerability_asset.py` (parse `routes.txt`, `trips.txt`, `stop_times.txt`) <!-- id: 144, priority: critical -->
+- [x] Calculate real `routes_served`, `route_count`, `peak_trips_per_hour`, `offpeak_trips_per_hour`, and `daily_trips` per stop <!-- id: 145, priority: critical -->
+- [x] Export real metrics to `public/data/bus_stop_vulnerability.json` (leaving null for stops with no scheduled service) <!-- id: 146, priority: critical -->
+- [x] Purge synthetic formula heuristics in `BusStopGraphsPage.tsx` (`routesServed` and `tripsPerHour` based on DA count) <!-- id: 147, priority: critical -->
+- [x] Update frontend tooltips and scatter plots to display actual route names, actual frequencies, and clean blank/null indicators <!-- id: 148, priority: high -->
+- [x] Verify stops #7990 and #7674 match verified GTFS schedule data <!-- id: 149, priority: high -->
+
+
 ## Backlog: Future Layout Redesign
 
 
