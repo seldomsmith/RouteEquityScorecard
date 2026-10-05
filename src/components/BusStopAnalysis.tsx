@@ -77,7 +77,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
       .then((data) => {
         if (data && data.stops) {
           const mapped = data.stops.map((s: BusStopRecord) => {
-            const regional = checkIsRegional(s.lat, s.lon);
+            const regional = checkIsRegional(s.lat, s.lon, s.stop_id);
             return {
               ...s,
               is_regional: regional

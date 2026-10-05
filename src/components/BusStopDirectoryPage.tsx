@@ -75,7 +75,7 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
         if (data && data.stops) {
           // Apply client-side regional detector
           const mapped = data.stops.map((s: BusStopRecord) => {
-            const regional = checkIsRegional(s.lat, s.lon);
+            const regional = checkIsRegional(s.lat, s.lon, s.stop_id);
             return {
               ...s,
               is_regional: regional,
