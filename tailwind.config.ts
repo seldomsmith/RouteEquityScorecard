@@ -41,8 +41,8 @@ const config: Config = {
         "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
-        mono: ["var(--font-roboto-mono)", "ui-monospace", "SFMono-Regular"],
+        sans: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        mono: ["var(--font-roboto-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       keyframes: {
         'gradient-x': {
