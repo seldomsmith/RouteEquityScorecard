@@ -264,7 +264,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
     }));
   }, [filteredStops]);
 
-  // 4. Route Grade Disparity Ratio Bar Chart Data (Actual Min & Max Stop Score per GTFS Route)
+  // 4. Route Grade Disparity Ratio Data (ALL Non-School GTFS Routes Ranked Largest to Least Disparity)
   const routeDisparityData = useMemo(() => {
     if (processedStops.length === 0) return [];
 
@@ -280,30 +280,34 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
       });
     });
 
-    // Select the top 20 most frequent routes or routes present in baseRoutes
-    const candidateRouteNames = Array.from(routeScoresMap.keys())
-      .filter((rName) => routeScoresMap.get(rName)!.length >= 4) // routes with at least 4 served stops
-      .sort((a, b) => {
-        const numA = parseInt(a, 10);
-        const numB = parseInt(b, 10);
-        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-        return a.localeCompare(b);
-      })
-      .slice(0, 20);
+    // Helper to check if a route is a school special (numbered 600-899 or flagged in baseRoutes)
+    const isSchoolSpecial = (rName: string) => {
+      const num = parseInt(rName, 10);
+      if (!isNaN(num) && num >= 600 && num <= 899) return true;
+      const matched = baseRoutes.find((br) => String(br.short_name) === rName || String(br.route_id) === rName);
+      if (matched && (matched.category === 'school_special' || (matched as any).category === 'school')) return true;
+      return false;
+    };
 
-    return candidateRouteNames.map((rName) => {
+    // Filter for ALL active regular transit routes (excluding school specials)
+    const activeRouteNames = Array.from(routeScoresMap.keys()).filter((rName) => {
+      if (isSchoolSpecial(rName)) return false;
+      const scores = routeScoresMap.get(rName)!;
+      return scores.length >= 2; // at least 2 served stops to compute a disparity range
+    });
+
+    const parsedRoutes = activeRouteNames.map((rName) => {
       const scores = routeScoresMap.get(rName)!;
       const minScore = Math.min(...scores);
       const maxScore = Math.max(...scores);
       const spread = Number((maxScore - minScore).toFixed(1));
 
-      // Find matching route grade from baseRoutes if available
       const matchedRoute = baseRoutes.find((br) => String(br.short_name) === rName || String(br.route_id) === rName);
       const grade = (matchedRoute?.grade as BusStopGrade) || (spread > 40 ? 'D' : spread > 25 ? 'C' : 'B');
 
       return {
+        routeId: rName,
         routeName: `Route ${rName}`,
-        scoreRange: [minScore, maxScore],
         minScore,
         maxScore,
         spread,
@@ -311,6 +315,9 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         color: GRADE_COLORS[grade] || '#64748B'
       };
     });
+
+    // Rank from largest disparity spread to least
+    return parsedRoutes.sort((a, b) => b.spread - a.spread);
   }, [processedStops, baseRoutes]);
 
   // 5. Corridors of Vulnerability Scatter Plot Data (Route Length vs Actual Average Stop Equity)
@@ -366,7 +373,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-slate-50 flex flex-col font-sans text-slate-800 select-none">
+    <div className="w-screen h-screen overflow-hidden bg-white flex flex-col font-sans text-slate-800 select-none">
       {/* Global Header */}
       <GlobalNavMenu
         isOpen={isNavMenuOpen}
@@ -391,7 +398,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
               <BarChart2 className="w-5 h-5 text-[#1e3a8a]" /> ETS Bus Stop & Route Analytics Matrix
             </h1>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              Vertically stacked analytics matrix combining stop-level catchments with corridor-level service operations
+              Analytics matrix combining stop-level catchments with corridor-level service operations
             </p>
           </div>
         </div>
@@ -446,61 +453,20 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
       </header>
 
       {/* Main Stacked Layout */}
-      <main className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
+      <main className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar bg-white">
         {loading ? (
-          <div className="h-full flex flex-col items-center justify-center bg-slate-50 text-slate-500">
+          <div className="h-full flex flex-col items-center justify-center bg-white text-slate-500">
             <div className="w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full animate-spin mb-3"></div>
             <span className="text-xs font-bold uppercase tracking-wider">Analyzing 6,700+ Bus Stop Geometries...</span>
           </div>
         ) : (
           <div className="space-y-6 max-w-7xl mx-auto">
-            {/* Operational Summary Ribbon */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-6 divide-x divide-slate-100">
-                <div className="pr-2">
-                  <div className="text-[11px] font-semibold text-slate-500">Analyzed Bus Stops</div>
-                  <div className="flex items-baseline gap-2 mt-0.5">
-                    <span className="text-xl font-bold font-mono text-slate-900">{processedStops.length.toLocaleString()}</span>
-                    <span className="text-[11px] text-slate-500 font-medium">GTFS active network</span>
-                  </div>
-                </div>
-                <div className="pl-6 pr-2">
-                  <div className="text-[11px] font-semibold text-slate-500">Edmonton Stops</div>
-                  <div className="flex items-baseline gap-2 mt-0.5">
-                    <span className="text-xl font-bold font-mono text-slate-800">
-                      {processedStops.filter((s) => !s.is_regional).length.toLocaleString()}
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-medium">Quintile evaluated</span>
-                  </div>
-                </div>
-                <div className="pl-6 pr-2">
-                  <div className="text-[11px] font-semibold text-slate-500">Regional Stops</div>
-                  <div className="flex items-baseline gap-2 mt-0.5">
-                    <span className="text-xl font-bold font-mono text-slate-600">
-                      {processedStops.filter((s) => s.is_regional).length.toLocaleString()}
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-medium">Adjacent municipalities</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 border-t md:border-t-0 pt-2 md:pt-0">
-                <span className="text-[11px] font-semibold text-slate-500 mr-1">Grade scale:</span>
-                <div className="flex items-center gap-1.5">
-                  {(['A', 'B', 'C', 'D', 'E'] as const).map((g) => (
-                    <span key={g} className="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-2xs" style={{ backgroundColor: GRADE_COLORS[g] }}>
-                      {g}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {/* Vertically Stacked Chart 1: DA Catchment Overlap vs. Equity Score */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-slate-600" /> 1. DA Catchment Overlap vs. Equity Score
+                  <h3 className="text-sm font-bold text-slate-900">
+                    1. DA Catchment Overlap vs. Equity Score
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Distribution of bus stops by overlapping Dissemination Areas (Y) relative to Blended Equity Score (X)
@@ -551,8 +517,8 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-slate-600" /> 2. Number of Routes Served vs. Equity Score
+                  <h3 className="text-sm font-bold text-slate-900">
+                    2. Number of Routes Served vs. Equity Score
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Corridor route connectivity (Y) relative to Blended Equity Score (X)
@@ -609,8 +575,8 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-600" /> 3. Stop Equity vs. Corridor Service Frequency (Peak Trips/Hour)
+                  <h3 className="text-sm font-bold text-slate-900">
+                    3. Stop Equity vs. Corridor Service Frequency (Peak Trips/Hour)
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Hourly peak departures relative to equity need using verified weekday GTFS schedules
@@ -669,54 +635,105 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
               </div>
             </div>
 
-            {/* Vertically Stacked Chart 4: Route Grade Disparity Ratio Range Bars */}
+            {/* Vertically Stacked Chart 4: Route Equity Disparity Dumbbells */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <GitCommit className="w-4 h-4 text-slate-600" /> 4. Route Equity Disparity Ratio (Stop Score Range per Corridor)
+                  <h3 className="text-sm font-bold text-slate-900">
+                    4. Route Equity Disparity Ratio (Stop Score Range per Corridor)
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Spread between minimum and maximum stop equity scores along sampled corridors
+                    All regular GTFS routes ranked from largest disparity spread to least (min to max stop score)
                   </p>
                 </div>
+                <div className="text-xs font-mono font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded border border-slate-200">
+                  {routeDisparityData.length} Routes Analyzed
+                </div>
               </div>
-              <div className="h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={routeDisparityData} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="routeName" stroke="#94a3b8" fontSize={9} interval={0} angle={-35} textAnchor="end" />
-                    <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} label={{ value: 'Equity Score Range (0-100)', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }} />
-                    <RechartsTooltip content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 border border-slate-700">
-                            <div className="font-bold border-b border-slate-700 pb-1">{data.routeName}</div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Min Stop Score:</span>
-                              <span className="font-mono font-bold text-rose-400">{data.minScore}</span>
-                            </div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Max Stop Score:</span>
-                              <span className="font-mono font-bold text-emerald-400">{data.maxScore}</span>
-                            </div>
-                            <div className="flex justify-between text-[11px] gap-4">
-                              <span className="text-slate-400">Disparity Spread:</span>
-                              <span className="font-mono font-bold text-amber-400">{data.spread} points</span>
-                            </div>
+
+              {/* High-Density Scrollable Dumbbell Corridor List */}
+              <div className="max-h-[520px] overflow-y-auto pr-2 custom-scrollbar">
+                {/* Score Scale Header */}
+                <div className="sticky top-0 bg-white/95 backdrop-blur-xs z-10 pb-2 mb-2 border-b border-slate-100 flex items-center text-[10px] font-mono text-slate-400 font-bold">
+                  <div className="w-24 shrink-0">Route</div>
+                  <div className="flex-1 relative h-4">
+                    <span className="absolute left-0">0</span>
+                    <span className="absolute left-1/4 -translate-x-1/2">25</span>
+                    <span className="absolute left-1/2 -translate-x-1/2">50</span>
+                    <span className="absolute left-3/4 -translate-x-1/2">75</span>
+                    <span className="absolute right-0">100</span>
+                  </div>
+                  <div className="w-20 text-right shrink-0">Spread</div>
+                </div>
+
+                <div className="space-y-1.5 py-1">
+                  {routeDisparityData.map((r) => {
+                    const leftPct = Math.max(0, Math.min(100, r.minScore));
+                    const widthPct = Math.max(0.5, Math.min(100 - leftPct, r.maxScore - r.minScore));
+                    return (
+                      <div 
+                        key={r.routeId}
+                        className="group flex items-center hover:bg-slate-50/80 px-2 py-1 rounded-md transition-colors text-xs"
+                      >
+                        {/* Route Label */}
+                        <div className="w-24 shrink-0 font-mono font-bold text-slate-700 flex items-center gap-1.5">
+                          <span 
+                            className="w-2 h-2 rounded-full shrink-0" 
+                            style={{ backgroundColor: r.color }} 
+                          />
+                          <span className="truncate">{r.routeName}</span>
+                        </div>
+
+                        {/* Dumbbell Track */}
+                        <div className="flex-1 relative h-5 flex items-center mx-2">
+                          {/* Background Grid Lines */}
+                          <div className="absolute inset-0 flex justify-between pointer-events-none opacity-20">
+                            <div className="border-r border-slate-300 h-full" />
+                            <div className="border-r border-slate-300 h-full" />
+                            <div className="border-r border-slate-300 h-full" />
+                            <div className="border-r border-slate-300 h-full" />
+                            <div className="border-r border-slate-300 h-full" />
                           </div>
-                        );
-                      }
-                      return null;
-                    }} />
-                    <Bar dataKey="scoreRange" name="Score Disparity Range" radius={[4, 4, 4, 4]}>
-                      {routeDisparityData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+
+                          {/* Connecting Skinny Bar */}
+                          <div
+                            className="absolute h-[2px] rounded-full transition-all group-hover:h-[3px]"
+                            style={{
+                              left: `${leftPct}%`,
+                              width: `${widthPct}%`,
+                              backgroundColor: r.color
+                            }}
+                          />
+
+                          {/* Left End Node (Min Score) */}
+                          <div
+                            className="absolute w-2 h-2 rounded-full border border-white shadow-xs -translate-x-1/2 transition-transform group-hover:scale-125"
+                            style={{
+                              left: `${leftPct}%`,
+                              backgroundColor: r.color
+                            }}
+                            title={`Min: ${r.minScore}`}
+                          />
+
+                          {/* Right End Node (Max Score) */}
+                          <div
+                            className="absolute w-2 h-2 rounded-full border border-white shadow-xs -translate-x-1/2 transition-transform group-hover:scale-125"
+                            style={{
+                              left: `${leftPct + widthPct}%`,
+                              backgroundColor: r.color
+                            }}
+                            title={`Max: ${r.maxScore}`}
+                          />
+                        </div>
+
+                        {/* Spread Value */}
+                        <div className="w-20 text-right shrink-0 font-mono font-bold text-slate-600">
+                          {r.spread.toFixed(1)} <span className="text-[10px] text-slate-400 font-normal">pts</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -724,8 +741,8 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-slate-600" /> 5. Corridors of Vulnerability (Route Length vs. Averaged Stop Equity)
+                  <h3 className="text-sm font-bold text-slate-900">
+                    5. Corridors of Vulnerability (Route Length vs. Averaged Stop Equity)
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Transit corridors plotted by length in kilometers (X) relative to route composite equity score (Y)
