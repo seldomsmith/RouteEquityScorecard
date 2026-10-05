@@ -9,6 +9,7 @@ import { BusStopAnalysis } from "@/components/BusStopAnalysis";
 import { BusStopDirectoryPage } from "@/components/BusStopDirectoryPage";
 import { BusStopGraphsPage } from "@/components/BusStopGraphsPage";
 import { RouteDirectoryPage } from "@/components/RouteDirectoryPage";
+import { BusStopScrollytelling } from "@/components/BusStopScrollytelling";
 import { PageView } from "@/components/widgets/GlobalNavMenu";
 
 export default function Home() {
@@ -58,6 +59,10 @@ export default function Home() {
         }}
       />
     );
+  }
+
+  if (view === 'bus-stop-scrollytelling') {
+    return <BusStopScrollytelling onNavigate={handleNavigate} />;
   }
 
   if (view === 'scrollytelling') {

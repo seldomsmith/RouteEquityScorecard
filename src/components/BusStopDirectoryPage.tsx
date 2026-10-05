@@ -287,7 +287,7 @@ export const BusStopDirectoryPage: React.FC<BusStopDirectoryPageProps> = ({
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onNavigate={onNavigate}
-        activeItemIndex={5}
+        activeItemIndex={6}
       />
 
       {/* Header Bar */}

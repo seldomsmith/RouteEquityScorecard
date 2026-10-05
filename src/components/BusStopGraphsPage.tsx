@@ -379,7 +379,7 @@ export const BusStopGraphsPage: React.FC<BusStopGraphsPageProps> = ({
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onNavigate={onNavigate}
-        activeItemIndex={6}
+        activeItemIndex={7}
       />
 
       <header className="bg-white border-b border-slate-200 px-6 py-3 shadow-xs z-10 flex items-center justify-between flex-shrink-0">

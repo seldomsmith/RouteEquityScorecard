@@ -215,7 +215,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onNavigate={onNavigate}
-        activeItemIndex={4}
+        activeItemIndex={5}
       />
 
       {/* Full-Page Bus Stop Directory Modal */}

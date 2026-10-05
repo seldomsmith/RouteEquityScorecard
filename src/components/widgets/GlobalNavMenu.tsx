@@ -8,6 +8,7 @@ export type PageView =
   | 'scrollytelling' 
   | 'scrollytelling-two-pillar' 
   | 'directory' 
+  | 'bus-stop-scrollytelling'
   | 'bus-stop-analysis'
   | 'bus-stop-directory'
   | 'bus-stop-graphs';
@@ -30,10 +31,11 @@ export const STRUCTURED_MENU_ITEMS: NavMenuItem[] = [
   { label: 'Explain this to me!', code: '1.1', indent: true, page: 'scrollytelling' },
   { label: 'Route Equity Scorecard Dashboard', code: '1.2', indent: true, page: 'dashboard' },
   { label: 'Route Directory', code: '1.3', indent: true, page: 'directory' },
-  { label: 'Bus Stop Equity Scorecard', code: '2.0', isHeader: true, page: 'bus-stop-analysis' },
-  { label: 'Bus Stop Equity Dashboard', code: '2.1', indent: true, page: 'bus-stop-analysis' },
-  { label: 'Bus Stop Directory', code: '2.2', indent: true, page: 'bus-stop-directory' },
-  { label: 'Bus Stop Graphs and Figures', code: '2.3', indent: true, page: 'bus-stop-graphs' }
+  { label: 'Bus Stop Equity Scorecard', code: '2.0', isHeader: true, page: 'bus-stop-scrollytelling' },
+  { label: 'Explain the Bus Stop Equity Scorecard to Me!', code: '2.1', indent: true, page: 'bus-stop-scrollytelling' },
+  { label: 'Bus Stop Equity Dashboard', code: '2.2', indent: true, page: 'bus-stop-analysis' },
+  { label: 'Bus Stop Directory', code: '2.3', indent: true, page: 'bus-stop-directory' },
+  { label: 'Bus Stop Graphs and Figures', code: '2.4', indent: true, page: 'bus-stop-graphs' }
 ];
 
 export const MENU_ITEMS = STRUCTURED_MENU_ITEMS.map(i => i.label);
@@ -57,15 +59,16 @@ export const GlobalNavMenu: React.FC<GlobalNavMenuProps> = ({
 
   const legacyIndexMap: Record<number, number> = {
     0: 0, // Landing Page
-    1: 2, // Explain this to me!
-    2: 3, // Route Equity Scorecard Dashboard
-    3: 4, // Route Directory
-    4: 6, // Bus Stop Equity Dashboard
-    5: 7, // Bus Stop Directory
-    6: 8  // Bus Stop Graphs and Figures
+    1: 2, // Explain this to me! (1.1)
+    2: 3, // Route Equity Scorecard Dashboard (1.2)
+    3: 4, // Route Directory (1.3)
+    4: 6, // Explain the Bus Stop Equity Scorecard to Me! (2.1)
+    5: 7, // Bus Stop Equity Dashboard (2.2)
+    6: 8, // Bus Stop Directory (2.3)
+    7: 9  // Bus Stop Graphs and Figures (2.4)
   };
 
-  const computedActiveIndex = (activeItemIndex in legacyIndexMap && activeItemIndex < 7) 
+  const computedActiveIndex = (activeItemIndex in legacyIndexMap && activeItemIndex < 8) 
     ? legacyIndexMap[activeItemIndex] 
     : activeItemIndex;
 
