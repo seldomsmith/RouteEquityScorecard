@@ -28,11 +28,11 @@ export interface NavMenuItem extends SidebarItemObject {
 export const STRUCTURED_MENU_ITEMS: NavMenuItem[] = [
   { label: 'Landing Page', page: 'landing' },
   { label: 'Route Equity Score Card', code: '1.0', isHeader: true, page: 'scrollytelling' },
-  { label: 'Explain this to me!', code: '1.1', indent: true, page: 'scrollytelling' },
+  { label: 'Explain the Route Equity Scorecard to Me!', code: '1.1', indent: true, page: 'scrollytelling' },
   { label: 'Route Equity Scorecard Dashboard', code: '1.2', indent: true, page: 'dashboard' },
   { label: 'Route Directory', code: '1.3', indent: true, page: 'directory' },
   { label: 'Bus Stop Equity Scorecard', code: '2.0', isHeader: true, page: 'bus-stop-scrollytelling' },
-  { label: 'Explain the Bus Stop Equity Scorecard to Me!', code: '2.1', indent: true, page: 'bus-stop-scrollytelling' },
+  { label: 'Explain the Bus Stop Equity Dashboard to me!', code: '2.1', indent: true, page: 'bus-stop-scrollytelling' },
   { label: 'Bus Stop Equity Dashboard', code: '2.2', indent: true, page: 'bus-stop-analysis' },
   { label: 'Bus Stop Directory', code: '2.3', indent: true, page: 'bus-stop-directory' },
   { label: 'Bus Stop Graphs and Figures', code: '2.4', indent: true, page: 'bus-stop-graphs' }
