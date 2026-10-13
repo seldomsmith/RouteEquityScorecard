@@ -69,48 +69,57 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn,
 
           <div className="relative z-10 flex flex-col items-center w-full gap-8">
             <header className="flex flex-col gap-3 w-full justify-center">
-              <span className="text-xs sm:text-sm font-black tracking-widest text-blue-200 uppercase">
-                Edmonton Transit Service Equity Platform
-              </span>
               <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-center w-full pb-2 text-white title-lift-effect cursor-default">
-                Transit Equity<br />Scorecard
+                ETS Transit Equity<br />Scorecard
               </h1>
             </header>
 
             {/* Tiered Hub Navigation Container */}
-            <div className="w-full max-w-3xl mt-4 flex flex-col gap-6">
+            <div className="w-full max-w-4xl mt-4 flex flex-col gap-6">
               {/* Primary Dashboards Tier */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Route Dashboard Column */}
-                <div className="flex flex-col gap-2.5">
-                  <button
-                    onClick={() => handleGo('dashboard')}
-                    className="w-full py-4 px-6 rounded-2xl bg-white text-blue-900 font-extrabold text-base sm:text-lg hover:bg-slate-50 transition-all duration-200 shadow-xl border border-white/80 focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-[0.98] text-center"
-                  >
-                    Route Report and Dashboard
-                  </button>
-                  <button
-                    onClick={() => handleGo('scrollytelling')}
-                    className="text-xs sm:text-sm font-semibold text-blue-100 hover:text-white underline underline-offset-4 decoration-blue-300/60 hover:decoration-white transition-colors py-1 px-2 rounded focus:outline-none focus:ring-2 focus:ring-white/30"
-                  >
-                    Explain the Route Equity Scorecard to Me!
-                  </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Route Dashboard Bracket Enclosure */}
+                <div className="relative pt-0 pb-4 px-3 rounded-3xl border-2 border-white/40 border-t-0 shadow-lg">
+                  {/* Top Button extending across the top */}
+                  <div className="-mt-1">
+                    <button
+                      onClick={() => handleGo('dashboard')}
+                      className="w-full py-4 px-6 rounded-2xl bg-white text-blue-900 font-extrabold text-base sm:text-lg hover:bg-slate-50 transition-all duration-200 shadow-xl border border-white focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-[0.98] text-center"
+                    >
+                      Route Equity Report Card Dashboard
+                    </button>
+                  </div>
+                  {/* Secondary Explainer Link inside bracket */}
+                  <div className="pt-4 pb-2 px-2 flex justify-center items-center">
+                    <button
+                      onClick={() => handleGo('scrollytelling')}
+                      className="text-sm sm:text-base font-bold text-white hover:text-blue-200 transition-colors py-2 px-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/40 text-center"
+                    >
+                      Explain the Route Equity Scorecard to Me!
+                    </button>
+                  </div>
                 </div>
 
-                {/* Bus Stop Dashboard Column */}
-                <div className="flex flex-col gap-2.5">
-                  <button
-                    onClick={() => handleGo('bus-stop-analysis')}
-                    className="w-full py-4 px-6 rounded-2xl bg-blue-950 text-white font-extrabold text-base sm:text-lg hover:bg-blue-900 transition-all duration-200 shadow-xl border border-blue-800/80 focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-[0.98] text-center"
-                  >
-                    Bus Stop Dashboard
-                  </button>
-                  <button
-                    onClick={() => handleGo('bus-stop-scrollytelling')}
-                    className="text-xs sm:text-sm font-semibold text-blue-100 hover:text-white underline underline-offset-4 decoration-blue-300/60 hover:decoration-white transition-colors py-1 px-2 rounded focus:outline-none focus:ring-2 focus:ring-white/30"
-                  >
-                    Explain the Bus Stop Equity Dashboard to me!
-                  </button>
+                {/* Bus Stop Dashboard Bracket Enclosure */}
+                <div className="relative pt-0 pb-4 px-3 rounded-3xl border-2 border-white/40 border-t-0 shadow-lg">
+                  {/* Top Button extending across the top */}
+                  <div className="-mt-1">
+                    <button
+                      onClick={() => handleGo('bus-stop-analysis')}
+                      className="w-full py-4 px-6 rounded-2xl bg-blue-950 text-white font-extrabold text-base sm:text-lg hover:bg-blue-900 transition-all duration-200 shadow-xl border border-blue-800/80 focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-[0.98] text-center"
+                    >
+                      Bus Stop Equity Dashboard
+                    </button>
+                  </div>
+                  {/* Secondary Explainer Link inside bracket */}
+                  <div className="pt-4 pb-2 px-2 flex justify-center items-center">
+                    <button
+                      onClick={() => handleGo('bus-stop-scrollytelling')}
+                      className="text-sm sm:text-base font-bold text-white hover:text-blue-200 transition-colors py-2 px-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/40 text-center"
+                    >
+                      Explain the Bus Stop Equity Dashboard to me!
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
