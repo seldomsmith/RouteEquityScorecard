@@ -191,8 +191,8 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
           </p>
         </div>
 
-      {/* Simulator Controls & Weight Sweep Panel */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 border border-slate-200 p-5 rounded-2xl mb-8 items-center">
+      {/* Simulator Controls & Weight Sweep Panel - Borderless Clean Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 mb-6 border-b border-slate-150 items-center">
         
         {/* Play/Reset buttons */}
         <div className="flex flex-col gap-3 justify-center">
@@ -200,7 +200,7 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
             <button
               onClick={startSimulation}
               disabled={isSimulating}
-              className={`flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm shadow-md transition-all duration-155 active:scale-95 ${
+              className={`flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm shadow-sm transition-all duration-155 active:scale-95 ${
                 isSimulating 
                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
                   : 'bg-blue-600 hover:bg-blue-750 text-white'
@@ -210,7 +210,7 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
             </button>
             <button
               onClick={handleReset}
-              className="p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-955 text-slate-600 transition-colors shadow-sm active:scale-95"
+              className="p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 text-slate-600 transition-colors shadow-2xs active:scale-95"
               title="Reset Simulation"
             >
               <RotateCcw className="w-4 h-4" />
@@ -218,9 +218,9 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden relative shadow-inner">
+          <div className="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden relative">
             <div 
-              className="bg-blue-500 h-full transition-all duration-75"
+              className="bg-blue-600 h-full transition-all duration-75"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -230,8 +230,8 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
           </div>
         </div>
 
-        {/* Dynamic Weight Dashboard */}
-        <div className={`md:col-span-2 grid gap-4 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm ${twoPillar ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
+        {/* Dynamic Weight Dashboard - Clean without double nested border */}
+        <div className={`md:col-span-2 grid gap-4 ${twoPillar ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
           {(twoPillar
             ? [
                 { label: 'Vulnerability', val: currentWeights.vulnerability, color: 'bg-fuchsia-500' },
@@ -246,8 +246,8 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
           ).map(w => (
             <div key={w.label} className="flex flex-col">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{w.label}</span>
-              <span className="text-lg font-black text-slate-800 font-mono mt-0.5">{w.val}%</span>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full mt-1.5 overflow-hidden">
+              <span className="text-xl font-black text-slate-900 font-mono mt-0.5">{w.val}%</span>
+              <div className="w-full bg-slate-200/70 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div className={`h-full ${w.color} transition-all duration-75`} style={{ width: `${w.val}%` }} />
               </div>
             </div>
@@ -255,26 +255,26 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
         </div>
       </div>
 
-      {/* Graphs Row */}
+      {/* Graphs Row - Borderless Typographic Hierarchy */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
         
         {/* Route 002 (Left) */}
-        <div className="border border-slate-200 rounded-2xl p-4 flex flex-col bg-white shadow-sm relative">
-          <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
+        <div className="flex flex-col relative">
+          <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-100 min-h-[52px]">
             <div>
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-150">
-                Route 002: Essential Equity
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-700">
+                Route 002 &bull; Essential Equity
               </span>
-              <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Highlands — Downtown — Clareview</h4>
+              <h4 className="font-extrabold text-slate-900 mt-0.5 font-sans text-sm sm:text-base">Highlands — Downtown — Clareview</h4>
             </div>
-            <div className="text-right flex flex-col">
+            <div className="text-right flex flex-col pl-2">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
-              <span className="text-sm font-black text-blue-600 font-mono leading-none mt-1">{r2Stats.std.toFixed(1)}</span>
+              <span className="text-base font-black text-blue-600 font-mono leading-none mt-1">{r2Stats.std.toFixed(1)}</span>
             </div>
           </div>
 
           {/* Graph Container */}
-          <div className={`relative w-full bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
+          <div className={`relative w-full bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
             <svg viewBox="0 0 340 200" width="100%" height="100%" className="block" preserveAspectRatio="none">
               {/* Grids */}
               <line x1={40} y1={20} x2={40} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
@@ -315,31 +315,31 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
             </svg>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans min-h-[60px]">
+          <div className="mt-3 flex items-start gap-2 pt-2 text-[11px] text-slate-600 leading-relaxed font-sans min-h-[48px]">
             <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
             <p>
-              <strong>Analysis:</strong> Composite score stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
+              <strong className="text-slate-800">Analysis:</strong> Composite score stays locked at ≈99 (volatility 0.5). Its high priority status remains unchanged regardless of weight adjustments.
             </p>
           </div>
         </div>
 
         {/* Route 003 (Right) */}
-        <div className="border border-slate-200 rounded-2xl p-4 flex flex-col bg-white shadow-sm relative">
-          <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2 min-h-[56px]">
+        <div className="flex flex-col relative">
+          <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-100 min-h-[52px]">
             <div>
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-150">
-                Route 003: High Swing
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-700">
+                Route 003 &bull; High Swing
               </span>
-              <h4 className="font-bold text-slate-900 mt-1 font-sans text-xs sm:text-sm">Westmount — Stadium</h4>
+              <h4 className="font-extrabold text-slate-900 mt-0.5 font-sans text-sm sm:text-base">Westmount — Stadium</h4>
             </div>
-            <div className="text-right flex flex-col">
+            <div className="text-right flex flex-col pl-2">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Volatility (σ)</span>
-              <span className="text-sm font-black text-orange-600 font-mono leading-none mt-1">{r3Stats.std.toFixed(1)}</span>
+              <span className="text-base font-black text-orange-600 font-mono leading-none mt-1">{r3Stats.std.toFixed(1)}</span>
             </div>
           </div>
 
           {/* Graph Container */}
-          <div className={`relative w-full bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
+          <div className={`relative w-full bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden transition-all duration-300 ${isFullscreen ? 'h-64' : 'h-48'}`}>
             <svg viewBox="0 0 340 200" width="100%" height="100%" className="block" preserveAspectRatio="none">
               {/* Grids */}
               <line x1={40} y1={20} x2={40} y2={180} stroke="#E2E8F0" strokeDasharray="2 2" />
@@ -380,10 +380,10 @@ export const MonteCarloPlinko: React.FC<{ twoPillar?: boolean }> = ({ twoPillar 
             </svg>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 bg-slate-55 border border-slate-200 p-2.5 rounded-xl text-[10px] text-slate-550 leading-relaxed font-sans min-h-[60px]">
+          <div className="mt-3 flex items-start gap-2 pt-2 text-[11px] text-slate-600 leading-relaxed font-sans min-h-[48px]">
             <Info className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
             <p>
-              <strong>Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to pillar focus.
+              <strong className="text-slate-800">Analysis:</strong> Composite scores vary widely between 30 and 98 (volatility 16.6). Its priority ranking is highly sensitive to pillar focus.
             </p>
           </div>
         </div>
