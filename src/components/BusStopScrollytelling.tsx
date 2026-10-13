@@ -108,7 +108,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
   };
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] text-slate-800 font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="h-screen w-full flex flex-col bg-[#fafbfc] text-slate-800 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-y-auto custom-scrollbar scroll-smooth">
       {/* Navigation Menu Modal */}
       <GlobalNavMenu
         isOpen={isNavMenuOpen}
