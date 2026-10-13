@@ -437,8 +437,8 @@ export const InteractiveToggleMap: React.FC<InteractiveToggleMapProps> = ({
           <div>
             <span className="text-xs font-black text-blue-900 uppercase tracking-widest block">
               {mode === 'vulnerability' && 'Vulnerability demographic mapping'}
-              {mode === 'opportunity' && 'Opportunities walk catchment mapping'}
-              {mode === 'monopoly' && 'Alternative transit options mapping'}
+              {mode === 'opportunity' && 'Opportunities walk catchment'}
+              {mode === 'monopoly' && 'Alternative transit options'}
             </span>
           </div>
 

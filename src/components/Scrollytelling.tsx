@@ -1452,7 +1452,7 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
               </button>
 
               <div className="flex flex-col items-center">
-                <Zap className="w-8 h-8 text-teal-600 mb-1" />
+                <Zap className="w-8 h-8 text-[#2563eb] mb-1" />
                 <span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Pillar Weights Simulator</span>
                 <span className="text-xs text-slate-400 mt-0.5 text-center">Adjust weights to see how route scores shift instantly</span>
               </div>
