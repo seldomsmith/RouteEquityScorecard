@@ -15,6 +15,13 @@
   - Replace generic schematic background curves with actual GTFS corridor alignments (e.g. Route 2, Route 3, Route 727, Capital/Metro LRT Lines)
   - Color-code transit line segments to match official ETS brand hues or equity stability classifications
   - Align station node dots with actual Edmonton transit transfer hubs (e.g. Clareview, Downtown, University, Westmount)
+- [ ] Structure 20-Minute Executive Presentation (No Coding):
+  - 0:00 - 3:00 | The Problem: City-wide transit equity vs. micro-scale stop realities
+  - 3:00 - 7:00 | Route Equity Framework: The Four Pillars and Monte Carlo stability testing
+  - 7:00 - 12:00 | Bus Stop Equity Framework: 400m DA catchments, CIMD indicators, and grade distributions
+  - 12:00 - 16:00 | Live Platform Walkthrough: Command Centre & Bus Stop Spatial Analytics
+  - 16:00 - 20:00 | Policy Decisions & Implementation: Resource allocation, service protection, and Q&A
+
 
 
 
