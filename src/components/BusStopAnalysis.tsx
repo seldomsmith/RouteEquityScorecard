@@ -374,7 +374,7 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                     </div>
                   ) : (
                     <div className="text-lg font-mono font-bold text-[#1e3a8a]">
-                      {(selectedStop.equal_percentile ?? 0).toFixed(0)}th %ile
+                      {(selectedStop.equal_percentile ?? 0).toFixed(0)}th percentile
                       <span className="text-xs font-normal text-slate-500 ml-1.5 font-sans">
                         (Score: {selectedStop.equal_score.toFixed(1)})
                       </span>

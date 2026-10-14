@@ -336,7 +336,7 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
                             </span>
                           ) : (
                             <span className={`px-2.5 py-1 rounded-lg border font-mono font-bold text-xs shadow-2xs ${cfg?.bg}`}>
-                              {stop.dynamicPercentile !== null ? `${stop.dynamicPercentile.toFixed(1)}th %ile` : 'N/A'}
+                              {stop.dynamicPercentile !== null ? `${stop.dynamicPercentile.toFixed(1)}th percentile` : 'N/A'}
                             </span>
                           )}
                         </td>

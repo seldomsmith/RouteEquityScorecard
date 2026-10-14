@@ -86,7 +86,7 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
                 Grade {grade}
               </span>
               <span className="text-[11px] font-mono font-bold text-slate-500">
-                {percentile.toFixed(1)}th %ile
+                {percentile.toFixed(1)}th percentile
               </span>
             </div>
             <div className="text-right">

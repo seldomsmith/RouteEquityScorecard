@@ -467,7 +467,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                         <div class="font-mono font-bold text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Regional</div>
                         <div class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold mt-0.5">Outside City</div>
                       ` : `
-                        <div class="font-mono font-bold text-sm text-[#1e3a8a]">${percentile !== null ? `${percentile.toFixed(0)}th %ile` : score.toFixed(1)}</div>
+                        <div class="font-mono font-bold text-sm text-[#1e3a8a]">${percentile !== null ? `${percentile.toFixed(0)}th percentile` : score.toFixed(1)}</div>
                         <div class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Score: ${score.toFixed(1)}</div>
                       `}
                     </div>

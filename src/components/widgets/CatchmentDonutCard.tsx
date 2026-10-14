@@ -97,7 +97,7 @@ export const CatchmentDonutCard: React.FC<CatchmentDonutCardProps> = ({
         </span>
         <div className="text-right">
           <span className="font-black text-sm text-[#1e3a8a]">
-            {percentile.toFixed(0)}th %ile
+            {percentile.toFixed(0)}th percentile
           </span>
           {grade && (
             <span className="ml-1 text-[11px] font-bold text-slate-500">
