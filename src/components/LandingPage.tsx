@@ -74,39 +74,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onTellMeHow, onJumpIn,
               </h1>
             </header>
 
-            {/* Tiered Hub Navigation Container - Clean Proximity Pairing */}
+            {/* Two-Column Themed Action Area */}
             <div className="w-full max-w-4xl mt-4 flex flex-col gap-6">
-              {/* Primary Dashboards Tier */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                {/* Route Column */}
-                <div className="flex flex-col items-center gap-2.5 w-full">
-                  <button
-                    onClick={() => handleGo('dashboard')}
-                    className="w-full py-4 px-6 rounded-2xl bg-white text-blue-900 font-extrabold text-base sm:text-lg hover:bg-slate-50 transition-all duration-200 shadow-xl border border-white focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-[0.98] text-center"
-                  >
-                    Route Equity Report Card Dashboard
-                  </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                {/* Column 1: Route Equity (Dark Navy Theme) */}
+                <div className="flex flex-col items-center w-full">
+                  {/* Crisp White Sub-card Frame */}
+                  <div className="w-full bg-white p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl shadow-xl flex items-center justify-center">
+                    <button
+                      onClick={() => handleGo('dashboard')}
+                      className="w-full py-4 px-6 rounded-xl sm:rounded-2xl bg-[#141E3C] hover:bg-[#0f172e] text-white font-extrabold text-base sm:text-lg transition-all duration-150 focus:outline-none focus:ring-4 focus:ring-[#141E3C]/40 active:scale-[0.98] text-center"
+                    >
+                      Route Equity Dashboard
+                    </button>
+                  </div>
+                  {/* Secondary Plain Text Link */}
                   <button
                     onClick={() => handleGo('scrollytelling')}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-bold text-sm sm:text-base backdrop-blur-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-white/40 text-center shadow-xs"
+                    className="mt-3.5 sm:mt-4 text-sm sm:text-base font-medium text-white/90 hover:text-white transition-opacity duration-150 focus:outline-none focus:ring-2 focus:ring-white/40 rounded-md py-1 px-2 text-center"
                   >
-                    Explain the Route Equity Scorecard to Me!
+                    Explain the Route Equity Dashboard
                   </button>
                 </div>
 
-                {/* Bus Stop Column */}
-                <div className="flex flex-col items-center gap-2.5 w-full">
-                  <button
-                    onClick={() => handleGo('bus-stop-analysis')}
-                    className="w-full py-4 px-6 rounded-2xl bg-blue-950 text-white font-extrabold text-base sm:text-lg hover:bg-blue-900 transition-all duration-200 shadow-xl border border-blue-800/80 focus:outline-none focus:ring-4 focus:ring-blue-950/50 active:scale-[0.98] text-center"
-                  >
-                    Bus Stop Equity Dashboard
-                  </button>
+                {/* Column 2: Bus Stop Equity (Rich Forest Green Theme) */}
+                <div className="flex flex-col items-center w-full">
+                  {/* Crisp White Sub-card Frame */}
+                  <div className="w-full bg-white p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl shadow-xl flex items-center justify-center">
+                    <button
+                      onClick={() => handleGo('bus-stop-analysis')}
+                      className="w-full py-4 px-6 rounded-xl sm:rounded-2xl bg-[#14452F] hover:bg-[#0f3624] text-white font-extrabold text-base sm:text-lg transition-all duration-150 focus:outline-none focus:ring-4 focus:ring-[#14452F]/40 active:scale-[0.98] text-center"
+                    >
+                      Bus Stop Equity Dashboard
+                    </button>
+                  </div>
+                  {/* Secondary Plain Text Link */}
                   <button
                     onClick={() => handleGo('bus-stop-scrollytelling')}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-bold text-sm sm:text-base backdrop-blur-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-white/40 text-center shadow-xs"
+                    className="mt-3.5 sm:mt-4 text-sm sm:text-base font-medium text-white/90 hover:text-white transition-opacity duration-150 focus:outline-none focus:ring-2 focus:ring-white/40 rounded-md py-1 px-2 text-center"
                   >
-                    Explain the Bus Stop Equity Dashboard to me!
+                    Explain the Bus Stop Equity Dashboard
                   </button>
                 </div>
               </div>
