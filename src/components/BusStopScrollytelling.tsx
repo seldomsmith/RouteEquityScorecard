@@ -108,7 +108,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-[#fafbfc] text-slate-800 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-y-auto custom-scrollbar scroll-smooth">
+    <div className="h-screen w-full flex flex-col bg-[#fafbfc] text-slate-800 font-sans selection:bg-emerald-100 selection:text-emerald-900 overflow-y-auto custom-scrollbar scroll-smooth">
       {/* Navigation Menu Modal */}
       <GlobalNavMenu
         isOpen={isNavMenuOpen}
@@ -128,7 +128,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#1e3a8a]">
+            <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#059669]">
               ETS EQUITY FRAMEWORK &bull; PAGE 2.1
             </div>
             <h1 className="text-sm md:text-base font-black text-slate-900 tracking-tight">
@@ -142,13 +142,13 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             onClick={() => onNavigate('bus-stop-analysis')}
             className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-2xs transition-all"
           >
-            <LayoutDashboard className="w-3.5 h-3.5 text-[#1e3a8a]" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-[#059669]" />
             <span>Open Dashboard (2.2)</span>
           </button>
 
           <button
             onClick={() => setIsNavMenuOpen(true)}
-            className="px-3 py-1.5 text-[11px] font-bold text-[#1e3a8a] bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-all uppercase tracking-wider flex items-center gap-1.5"
+            className="px-3 py-1.5 text-[11px] font-bold text-[#059669] bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-all uppercase tracking-wider flex items-center gap-1.5"
           >
             <span>MENU</span>
             <ChevronDown className="w-3.5 h-3.5" />
@@ -158,7 +158,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
 
       {/* Hero Narrative Intro */}
       <div className="max-w-4xl mx-auto px-6 pt-16 pb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-[#1e3a8a] text-xs font-mono font-bold mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[#059669] text-xs font-mono font-bold mb-6">
           <MapPin className="w-3.5 h-3.5" />
           <span>MICRO-SCALE SPATIAL EQUITY IN TRANSIT</span>
         </div>
@@ -181,7 +181,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 1: THE TWO STOPS (SUBJECT TICKETS) */}
         <section id="chapter-1" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 1</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 1</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Two Bus Stops, Two Realities
             </h3>
@@ -224,7 +224,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 2: THE 400M CATCHMENT */}
         <section id="chapter-2" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 2</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 2</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               The 400-Metre Catchment: Defining the Pedestrian Walk Shed
             </h3>
@@ -242,7 +242,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 3: CANADIAN INDEX OF MULTIPLE DEPRIVATION */}
         <section id="chapter-3" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 3</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 3</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Decoding the Canadian Index of Multiple Deprivation (CIMD)
             </h3>
@@ -253,7 +253,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 4: PROPORTIONAL OVERLAP (THE USER'S DONUT CARD REFERENCE) */}
         <section id="chapter-4" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 4</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 4</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Proportional Area Overlap: Slicing the Census Geography
             </h3>
@@ -304,7 +304,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 5: THE QUINTILE GRADING SCALE */}
         <section id="chapter-5" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 5</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 5</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               The Quintile Grading Scale: What Grades A Through E Mean
             </h3>
@@ -315,7 +315,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 6: SPATIAL MAPBOX INTEGRATION (SIDE-BY-SIDE & TOGGLE) */}
         <section id="chapter-6" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 6</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 6</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Mapping the Divide: Side-by-Side and Toggled Spatial Comparisons
             </h3>
@@ -334,7 +334,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 7: SUPPLY VS NEED */}
         <section id="chapter-7" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 7</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 7</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Supply vs. Need: Daily Trips Compared Against Demographic Need
             </h3>
@@ -365,7 +365,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 8: METHODOLOGICAL HONESTY & CATCHMENT BARRIERS */}
         <section id="chapter-8" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 8</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 8</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Methodological Realities: Physical Barriers and Spatial Boundaries
             </h3>
@@ -396,7 +396,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         {/* CHAPTER 9: HOW DECISION MAKERS CAN ACT */}
         <section id="chapter-9" className="space-y-6">
           <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#1e3a8a] uppercase tracking-wider">Chapter 9</span>
+            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 9</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
               Policy Actions for Transit Planners and Decision Makers
             </h3>
@@ -408,7 +408,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#1e3a8a] uppercase">1. Capital Amenities</div>
+                <div className="text-xs font-mono font-bold text-[#059669] uppercase">1. Capital Amenities</div>
                 <h4 className="font-bold text-slate-900 text-sm">Shelters and Heaters</h4>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   Direct capital grants toward Grade A stops to fund weather enclosures, benches, and radiant overhead heaters for cold-weather waits.
@@ -416,7 +416,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               </div>
 
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#1e3a8a] uppercase">2. Operations</div>
+                <div className="text-xs font-mono font-bold text-[#059669] uppercase">2. Operations</div>
                 <h4 className="font-bold text-slate-900 text-sm">Sidewalk Snow Clearing</h4>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   Prioritise sidewalk and boarding pad snow removal near Grade A stops where elderly riders, children, and people using mobility devices face slip risks.
@@ -424,7 +424,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               </div>
 
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#1e3a8a] uppercase">3. Service Planning</div>
+                <div className="text-xs font-mono font-bold text-[#059669] uppercase">3. Service Planning</div>
                 <h4 className="font-bold text-slate-900 text-sm">Off-Peak Frequency</h4>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   Protect 15-to-20-minute off-peak and weekend headways on feeder routes serving Grade A stops rather than cutting service to hourly frequencies.
@@ -446,7 +446,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('bus-stop-analysis')}
-              className="px-6 py-3 rounded-xl bg-[#1e3a8a] hover:bg-[#152e6f] text-white font-bold text-sm shadow-md transition-all flex items-center gap-2"
+              className="px-6 py-3 rounded-xl bg-[#059669] hover:bg-[#152e6f] text-white font-bold text-sm shadow-md transition-all flex items-center gap-2"
             >
               <LayoutDashboard className="w-4 h-4" />
               <span>Launch Bus Stop Dashboard (2.2)</span>
@@ -456,7 +456,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               onClick={() => onNavigate('bus-stop-directory')}
               className="px-6 py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-sm shadow-xs transition-all flex items-center gap-2"
             >
-              <BookOpen className="w-4 h-4 text-[#1e3a8a]" />
+              <BookOpen className="w-4 h-4 text-[#059669]" />
               <span>Browse Bus Stop Directory (2.3)</span>
             </button>
           </div>
