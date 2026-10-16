@@ -70,6 +70,7 @@ export default function Home() {
       <Scrollytelling 
         onBack={() => setView('landing')} 
         onJumpIn={() => setView('dashboard')} 
+        onNavigate={handleNavigate}
         onToggleVersion={() => setView('scrollytelling-two-pillar')}
       />
     );

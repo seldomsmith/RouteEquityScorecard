@@ -43,6 +43,7 @@ import { mapStabilityClass } from '@/utils/stability';
 interface ScrollytellingProps {
   onBack: () => void;
   onJumpIn: () => void;
+  onNavigate?: (page: PageView) => void;
   onToggleVersion?: () => void;
 }
 
@@ -144,7 +145,7 @@ const CustomChartTooltip = ({ active, payload }: any) => {
 };
 
 
-export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: ScrollytellingProps) => {
+export const Scrollytelling = ({ onBack, onJumpIn, onNavigate, onToggleVersion }: ScrollytellingProps) => {
   const containerRef = useRef(null as HTMLDivElement | null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isSplitScreen, setIsSplitScreen] = useState(false);
@@ -365,9 +366,11 @@ export const Scrollytelling = ({ onBack, onJumpIn, onToggleVersion }: Scrollytel
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
           onNavigate={(page) => {
-            if (page === 'landing') onBack();
-            else if (page === 'dashboard') onJumpIn();
-            else if (page === 'bus-stop-analysis') {
+            if (onNavigate) {
+              onNavigate(page);
+            } else if (page === 'landing') {
+              onBack();
+            } else if (page === 'dashboard') {
               onJumpIn();
             }
           }}
