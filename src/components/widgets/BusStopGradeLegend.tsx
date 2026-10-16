@@ -6,6 +6,31 @@ import { useRouteStore } from '@/store/routeStore';
 
 export type BusStopGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'Regional';
 
+export type BusStopColorMode = 'grade' | 'stability';
+
+export type StabilityClass = 
+  | 'Essential Equity Bus Stop' 
+  | 'High Swing Bus Stop' 
+  | 'Low Swing Bus Stop' 
+  | 'Always Low Equity Bus Stop' 
+  | 'Regional';
+
+export const STABILITY_CLASSES: StabilityClass[] = [
+  'Essential Equity Bus Stop',
+  'High Swing Bus Stop',
+  'Low Swing Bus Stop',
+  'Always Low Equity Bus Stop',
+  'Regional',
+];
+
+export const STABILITY_CONFIG: Record<StabilityClass, { label: string; shortLabel: string; color: string; bg: string; border: string }> = {
+  'Essential Equity Bus Stop': { label: 'Essential Equity', shortLabel: 'Essential', color: '#7C3AED', bg: 'bg-purple-50 text-purple-700 border-purple-200', border: 'border-purple-500' },
+  'High Swing Bus Stop': { label: 'High Swing', shortLabel: 'High Swing', color: '#EF4444', bg: 'bg-red-50 text-red-700 border-red-200', border: 'border-red-500' },
+  'Low Swing Bus Stop': { label: 'Low Swing', shortLabel: 'Low Swing', color: '#F59E0B', bg: 'bg-amber-50 text-amber-700 border-amber-200', border: 'border-amber-500' },
+  'Always Low Equity Bus Stop': { label: 'Always Low Equity', shortLabel: 'Always Low', color: '#EA580C', bg: 'bg-orange-50 text-orange-700 border-orange-200', border: 'border-orange-500' },
+  'Regional': { label: 'Regional', shortLabel: 'Regional', color: '#94A3B8', bg: 'bg-slate-100 text-slate-600 border-slate-200', border: 'border-slate-400' },
+};
+
 interface BusStopGradeLegendProps {
   selectedGrades: BusStopGrade[];
   onToggleGrade: (grade: BusStopGrade) => void;
@@ -19,6 +44,13 @@ interface BusStopGradeLegendProps {
   onToggleRoutes?: () => void;
   showStops?: boolean;
   onToggleStops?: () => void;
+
+  // Stability Class toggles
+  colorMode?: BusStopColorMode;
+  onToggleColorMode?: (mode: BusStopColorMode) => void;
+  selectedStabilityClasses?: StabilityClass[];
+  onToggleStabilityClass?: (cls: StabilityClass) => void;
+  stabilityCounts?: Record<StabilityClass, number>;
 }
 
 export const GRADE_CONFIG: Record<BusStopGrade, { label: string; color: string; bg: string; border: string }> = {
@@ -55,6 +87,11 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
   onToggleRoutes,
   showStops = true,
   onToggleStops,
+  colorMode = 'grade',
+  onToggleColorMode,
+  selectedStabilityClasses = STABILITY_CLASSES,
+  onToggleStabilityClass,
+  stabilityCounts,
 }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const grades: BusStopGrade[] = ['A', 'B', 'C', 'D', 'E', 'Regional'];
@@ -229,43 +266,111 @@ export const BusStopGradeLegend: React.FC<BusStopGradeLegendProps> = ({
             )}
           </div>
 
-          {/* Sub-panel: Bus Stop Grade Filters */}
           {showStops && (
-            <div className="space-y-1.5 pt-1.5 border-t border-slate-200/60 animate-in fade-in duration-150">
-              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-0.5">
-                Stop Vulnerability Grades ({selectedGrades.length}/6)
+            <div className="space-y-2 pt-1 border-t border-slate-200/60 animate-in fade-in duration-150">
+              {/* Mode Switcher: Scorecard Grade vs. Stability Class */}
+              <div className="flex rounded-lg bg-slate-200/70 p-0.5 text-[10px] font-bold">
+                <button
+                  onClick={() => onToggleColorMode?.('grade')}
+                  className={`flex-1 py-1 rounded-md transition-all text-center ${
+                    colorMode === 'grade'
+                      ? 'bg-white text-slate-900 shadow-2xs font-black'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  Scorecard Grade
+                </button>
+                <button
+                  onClick={() => onToggleColorMode?.('stability')}
+                  className={`flex-1 py-1 rounded-md transition-all text-center ${
+                    colorMode === 'stability'
+                      ? 'bg-purple-700 text-white shadow-2xs font-black'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  Stability Class
+                </button>
               </div>
-              {grades.map((g) => {
-                const cfg = GRADE_CONFIG[g];
-                const isSelected = selectedGrades.includes(g);
-                const count = gradeCounts ? gradeCounts[g] : undefined;
 
-                return (
-                  <button
-                    key={`stop-g-${g}`}
-                    onClick={() => onToggleGrade(g)}
-                    className={`w-full flex items-center justify-between px-2 py-1 rounded-lg border text-[11px] font-semibold transition-all ${
-                      isSelected
-                        ? 'bg-white border-slate-200 shadow-2xs text-slate-900'
-                        : 'bg-slate-50/60 border-slate-100 text-slate-400 opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white"
-                        style={{ backgroundColor: cfg.color }}
-                      />
-                      <span>{cfg.label}</span>
-                    </div>
+              {/* View 1: Scorecard Grade Filters */}
+              {colorMode === 'grade' && (
+                <div className="space-y-1.5 animate-in fade-in duration-150">
+                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-0.5">
+                    Stop Vulnerability Grades ({selectedGrades.length}/6)
+                  </div>
+                  {grades.map((g) => {
+                    const cfg = GRADE_CONFIG[g];
+                    const isSelected = selectedGrades.includes(g);
+                    const count = gradeCounts ? gradeCounts[g] : undefined;
 
-                    {count !== undefined && (
-                      <span className="font-mono text-[9px] font-bold opacity-75">
-                        {count.toLocaleString()}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+                    return (
+                      <button
+                        key={`stop-g-${g}`}
+                        onClick={() => onToggleGrade(g)}
+                        className={`w-full flex items-center justify-between px-2 py-1 rounded-lg border text-[11px] font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-white border-slate-200 shadow-2xs text-slate-900'
+                            : 'bg-slate-50/60 border-slate-100 text-slate-400 opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white"
+                            style={{ backgroundColor: cfg.color }}
+                          />
+                          <span>{cfg.label}</span>
+                        </div>
+
+                        {count !== undefined && (
+                          <span className="font-mono text-[9px] font-bold opacity-75">
+                            {count.toLocaleString()}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* View 2: Stability Class Filters */}
+              {colorMode === 'stability' && (
+                <div className="space-y-1.5 animate-in fade-in duration-150">
+                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-0.5">
+                    Stop Stability Class ({selectedStabilityClasses.length}/5)
+                  </div>
+                  {STABILITY_CLASSES.map((cls) => {
+                    const cfg = STABILITY_CONFIG[cls];
+                    const isSelected = selectedStabilityClasses.includes(cls);
+                    const count = stabilityCounts ? stabilityCounts[cls] : undefined;
+
+                    return (
+                      <button
+                        key={`stop-stability-${cls}`}
+                        onClick={() => onToggleStabilityClass?.(cls)}
+                        className={`w-full flex items-center justify-between px-2 py-1 rounded-lg border text-[11px] font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-white border-slate-200 shadow-2xs text-slate-900'
+                            : 'bg-slate-50/60 border-slate-100 text-slate-400 opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white"
+                            style={{ backgroundColor: cfg.color }}
+                          />
+                          <span>{cfg.label}</span>
+                        </div>
+
+                        {count !== undefined && (
+                          <span className="font-mono text-[9px] font-bold opacity-75">
+                            {count.toLocaleString()}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>

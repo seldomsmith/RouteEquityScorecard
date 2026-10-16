@@ -93,4 +93,10 @@
   - [x] Task 5: Create interactive `BusStopStabilityScatter.tsx` plotting Mean Score vs Volatility with key stops highlighted, normal distribution sparkline tooltips, and fullscreen mode
   - [x] Task 6: Integrate Section 8 (`8. Bus Stop Stability and Volatility: Equity Sensitivity Analysis`) into `BusStopScrollytelling.tsx`, expand progress rail to 10 stations, and renumber subsequent sections
   - [x] Task 7: Integrate Stability Filter and expanded stability profile into `BusStopDirectoryModal.tsx` and `BusStopDirectory.tsx`
+- [x] Phase 39: Interactive Map Stability Class Layer Toggle:
+  - [x] Task 1: Update `BusStopGradeLegend.tsx` with segmented mode toggle (`Scorecard Grade` vs `Stability Class`), stability class toggle filters, and live category counts
+  - [x] Task 2: Update `BusStopMap.tsx` with dynamic `colorMode` support ('grade' vs 'stability'), paint property switching, and enhanced hover popup with stability badge
+  - [x] Task 3: Update `BusStopAnalysis.tsx` state management for color mode, stability class filtering, category count computation, and selected stop stability banner
+  - [x] Task 4: Enhance `BusStopTicket.tsx` with optional stability class badge and volatility metrics
+  - [x] Task 5: Verify build, test interactions, and document results
 

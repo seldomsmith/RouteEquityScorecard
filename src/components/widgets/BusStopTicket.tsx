@@ -14,6 +14,9 @@ interface BusStopTicketProps {
   routesServed: string[];
   daCount: number;
   tagline: string;
+  stabilityClass?: string;
+  stabilityMean?: number;
+  stabilityStd?: number;
 }
 
 function formatOrdinal(val: number): string {
@@ -38,6 +41,9 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
   routesServed,
   daCount,
   tagline,
+  stabilityClass,
+  stabilityMean,
+  stabilityStd,
 }) => {
   const themeStyles = {
     purple: {
@@ -109,6 +115,20 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
               <span className={`px-2 py-0.5 text-xs font-mono font-black rounded border ${themeStyles.badge}`}>
                 Grade {grade}
               </span>
+              {stabilityClass && (
+                <span 
+                  className="px-2 py-0.5 text-[10px] font-mono font-black uppercase rounded text-white tracking-wider"
+                  style={{
+                    backgroundColor:
+                      stabilityClass === 'Essential Equity Bus Stop' ? '#7C3AED' :
+                      stabilityClass === 'High Swing Bus Stop' ? '#EF4444' :
+                      stabilityClass === 'Low Swing Bus Stop' ? '#F59E0B' : '#EA580C'
+                  }}
+                  title={stabilityMean !== undefined && stabilityStd !== undefined ? `Mean: ${stabilityMean.toFixed(1)}, Volatility (σ): ${stabilityStd.toFixed(1)}` : stabilityClass}
+                >
+                  {stabilityClass.replace(' Bus Stop', '')}
+                </span>
+              )}
               <span className="text-[11px] font-mono tabular-nums font-bold text-slate-500">
                 {formatOrdinal(percentile)} percentile
               </span>

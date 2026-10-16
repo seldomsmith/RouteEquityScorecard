@@ -4,7 +4,13 @@ import {
   BusStopRecord 
 } from '@/components/widgets/BusStopDirectory';
 import { GlobalNavMenu } from '@/components/widgets/GlobalNavMenu';
-import { BusStopGradeLegend, BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
+import { 
+  BusStopGradeLegend, 
+  BusStopGrade, 
+  BusStopColorMode, 
+  StabilityClass, 
+  STABILITY_CLASSES 
+} from '@/components/widgets/BusStopGradeLegend';
 import { BusStopDirectoryModal, CimdDimensionKey } from '@/components/widgets/BusStopDirectoryModal';
 import { 
   Layers, 
@@ -44,6 +50,8 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedGrades, setSelectedGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
   const [selectedRouteGrades, setSelectedRouteGrades] = useState<BusStopGrade[]>(['A', 'B', 'C', 'D', 'E', 'Regional']);
+  const [colorMode, setColorMode] = useState<BusStopColorMode>('grade');
+  const [selectedStabilityClasses, setSelectedStabilityClasses] = useState<StabilityClass[]>(STABILITY_CLASSES);
   
   // Subscribe to global CIMD activeDimensions from routeStore
   const activeDimensions = useRouteStore((s) => s.activeDimensions);
@@ -199,12 +207,45 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
     return counts;
   }, [processedStops]);
 
+  // Calculate dynamic stability class counts
+  const stabilityCounts = useMemo(() => {
+    const counts: Record<StabilityClass, number> = {
+      'Essential Equity Bus Stop': 0,
+      'High Swing Bus Stop': 0,
+      'Low Swing Bus Stop': 0,
+      'Always Low Equity Bus Stop': 0,
+      'Regional': 0,
+    };
+    processedStops.forEach((s) => {
+      if (s.is_regional) {
+        counts['Regional']++;
+      } else {
+        const cls = (s.stability?.stability_class || 'High Swing Bus Stop') as StabilityClass;
+        if (counts[cls] !== undefined) {
+          counts[cls]++;
+        } else {
+          counts['High Swing Bus Stop']++;
+        }
+      }
+    });
+    return counts;
+  }, [processedStops]);
+
   const handleToggleGrade = (grade: BusStopGrade) => {
     setSelectedGrades((prev) => {
       if (prev.includes(grade)) {
         return prev.filter((g) => g !== grade);
       }
       return [...prev, grade];
+    });
+  };
+
+  const handleToggleStabilityClass = (cls: StabilityClass) => {
+    setSelectedStabilityClasses((prev) => {
+      if (prev.includes(cls)) {
+        return prev.filter((c) => c !== cls);
+      }
+      return [...prev, cls];
     });
   };
 
@@ -325,6 +366,8 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                 showHeatmap={showHeatmap}
                 showRoutes={showRoutes}
                 showStops={showStops}
+                colorMode={colorMode}
+                selectedStabilityClasses={selectedStabilityClasses}
                 onSelectStop={(id) => setSelectedStopId(id)}
               />
 
@@ -342,6 +385,11 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                   onToggleRoutes={() => setShowRoutes(!showRoutes)}
                   showStops={showStops}
                   onToggleStops={() => setShowStops(!showStops)}
+                  colorMode={colorMode}
+                  onToggleColorMode={setColorMode}
+                  selectedStabilityClasses={selectedStabilityClasses}
+                  onToggleStabilityClass={handleToggleStabilityClass}
+                  stabilityCounts={stabilityCounts}
                 />
               </div>
             </>
@@ -364,6 +412,26 @@ export const BusStopAnalysis: React.FC<BusStopAnalysisProps> = ({ onNavigate, in
                   <X className="w-4 h-4" />
                 </button>
               </div>
+
+              {/* Stability Classification Profile */}
+              {selectedStop.stability && (
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between text-[11px]">
+                  <span 
+                    className="px-2 py-0.5 rounded text-[10px] font-black uppercase text-white tracking-wider"
+                    style={{
+                      backgroundColor:
+                        selectedStop.stability.stability_class === 'Essential Equity Bus Stop' ? '#7C3AED' :
+                        selectedStop.stability.stability_class === 'High Swing Bus Stop' ? '#EF4444' :
+                        selectedStop.stability.stability_class === 'Low Swing Bus Stop' ? '#F59E0B' : '#EA580C'
+                    }}
+                  >
+                    {selectedStop.stability.stability_class.replace(' Bus Stop', '')}
+                  </span>
+                  <span className="font-mono text-slate-500 font-semibold text-[10px]">
+                    Mean: <strong className="text-slate-800">{selectedStop.stability.score_mean.toFixed(1)}</strong> &bull; &sigma;: <strong className="text-slate-800">{selectedStop.stability.score_std.toFixed(1)}</strong>
+                  </span>
+                </div>
+              )}
 
               <div className="flex items-center justify-between border-t border-slate-100 pt-2">
                 <div>

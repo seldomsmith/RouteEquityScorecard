@@ -281,6 +281,9 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               peakTripsPerHour={stop6586.peak_trips_per_hour}
               routesServed={stop6586.routes_served}
               daCount={stop6586.das.length}
+              stabilityClass="Essential Equity Bus Stop"
+              stabilityMean={82.1}
+              stabilityStd={9.1}
               tagline="High socio-demographic need in North Edmonton with modest bus service frequency (53 trips per day)."
             />
 
@@ -295,6 +298,9 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               peakTripsPerHour={stop1745.peak_trips_per_hour}
               routesServed={stop1745.routes_served}
               daCount={stop1745.das.length}
+              stabilityClass="Always Low Equity Bus Stop"
+              stabilityMean={43.3}
+              stabilityStd={5.9}
               tagline="Low socio-demographic need along Westmount's 107th Avenue corridor, receiving five times more transit service (264 trips per day)."
             />
           </div>

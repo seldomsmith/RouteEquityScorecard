@@ -25,6 +25,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Interactive Map Stability Class Layer Toggle (Phase 39)**:
+  - Enhanced [BusStopGradeLegend.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopGradeLegend.tsx) with a tactile segmented mode toggle: `Scorecard Grade (A–E)` vs `Stability Class`.
+  - Added filter pills and real-time stop counts for all four stability classifications: **Essential Equity** (822 stops, `#7C3AED` Purple), **High Swing** (4,045 stops, `#EF4444` Red), **Low Swing** (642 stops, `#F59E0B` Amber), and **Always Low Equity** (215 stops, `#EA580C` Orange), plus Regional (Slate).
+  - Updated [BusStopMap.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/map/BusStopMap.tsx) with dynamic Mapbox `circle-color` switching when toggling modes, filtering by active stability classes, and displaying the stability class badge and ($\mu, \sigma$) in stop hover popups.
+  - Updated [BusStopAnalysis.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopAnalysis.tsx) state machine to calculate live stability class counts, handle multi-selection filters, and render the stability classification banner on selected stops.
+  - Enhanced [BusStopTicket.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopTicket.tsx) and [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx) candidate tickets with stability badges.
 - **Bus Stop CIMD Combinations Monte Carlo & Stability Analysis (Phase 38)**:
   - Formulated and executed [scripts/run_bus_stop_sensitivity_analysis.py](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/scripts/run_bus_stop_sensitivity_analysis.py) evaluating all 15 active binary toggle combinations ($2^4 - 1$) across 5,724 municipal Edmonton bus stops.
   - Derived empirical sensitivity metrics: mean score, standard deviation (volatility $\sigma$), score range ($\Delta$), grade spread, grade distribution counts, and top drivers.

@@ -10,7 +10,12 @@ mapboxgl.accessToken =
   'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' +
   '.55Khr0Cuwie_8YBv_QPfsA';
 
-import { BusStopGrade } from '@/components/widgets/BusStopGradeLegend';
+import { 
+  BusStopGrade, 
+  BusStopColorMode, 
+  StabilityClass, 
+  STABILITY_CLASSES 
+} from '@/components/widgets/BusStopGradeLegend';
 
 export type CimdDimensionKey = 'econ' | 'res' | 'eth' | 'sit';
 
@@ -45,6 +50,8 @@ interface BusStopMapProps {
   showHeatmap?: boolean;
   showRoutes?: boolean;
   showStops?: boolean;
+  colorMode?: BusStopColorMode;
+  selectedStabilityClasses?: StabilityClass[];
   onSelectStop: (stopId: string | null) => void;
 }
 
@@ -63,6 +70,8 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   showHeatmap = true,
   showRoutes = false,
   showStops = true,
+  colorMode = 'grade',
+  selectedStabilityClasses = STABILITY_CLASSES,
   onSelectStop
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -74,21 +83,71 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
   // Selected Route state for interactive highlighting
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 
+  // Expression generator for circle-color based on active colorMode
+  const getStopCircleColor = (currentColorMode: BusStopColorMode = 'grade'): any => {
+    if (currentColorMode === 'stability') {
+      return [
+        'case',
+        ['==', ['get', 'is_regional'], 1], '#94A3B8',
+        [
+          'match',
+          ['get', 'stability_class'],
+          'Essential Equity Bus Stop', '#7C3AED',
+          'High Swing Bus Stop', '#EF4444',
+          'Low Swing Bus Stop', '#F59E0B',
+          'Always Low Equity Bus Stop', '#EA580C',
+          'Regional', '#94A3B8',
+          '#7C3AED'
+        ]
+      ];
+    }
+    return [
+      'case',
+      ['==', ['get', 'is_regional'], 1], '#94A3B8',
+      [
+        'match',
+        ['get', 'grade'],
+        'A', '#10B981',
+        'B', '#3B82F6',
+        'C', '#F59E0B',
+        'D', '#F97316',
+        'E', '#EF4444',
+        '#10B981'
+      ]
+    ];
+  };
+
   // Helper to push stops data into Mapbox source
-  const updateStopsSource = (map: mapboxgl.Map, currentStops: BusStopRecord[], currentMode: 'equal' | 'economic', currentGrades: BusStopGrade[] = []) => {
+  const updateStopsSource = (
+    map: mapboxgl.Map, 
+    currentStops: BusStopRecord[], 
+    currentMode: 'equal' | 'economic', 
+    currentGrades: BusStopGrade[] = [],
+    currentColorMode: BusStopColorMode = 'grade',
+    currentStabilityClasses: StabilityClass[] = STABILITY_CLASSES
+  ) => {
     const source = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
     if (!source || currentStops.length === 0) return;
 
-    // Filter stops by selectedGrades
+    // Filter stops by selectedGrades OR selectedStabilityClasses based on currentColorMode
     const filteredStops = currentStops.filter((s: any) => {
-      const grade = s.is_regional ? 'Regional' : (s.dynamicGrade || 'C');
-      return currentGrades ? currentGrades.includes(grade as BusStopGrade) : true;
+      if (currentColorMode === 'stability') {
+        if (s.is_regional) return currentStabilityClasses.includes('Regional');
+        const cls = s.stability?.stability_class || 'High Swing Bus Stop';
+        return currentStabilityClasses.includes(cls as StabilityClass);
+      } else {
+        const grade = s.is_regional ? 'Regional' : (s.dynamicGrade || 'C');
+        return currentGrades ? currentGrades.includes(grade as BusStopGrade) : true;
+      }
     });
 
     const features: GeoJSON.Feature[] = filteredStops.map((s: any) => {
       const score = s.is_regional ? 0 : (s.dynamicScore ?? s.equal_score);
       const percentile = s.is_regional ? 0 : (s.dynamicPercentile ?? s.equal_percentile ?? score);
       const grade = s.is_regional ? 'Regional' : (s.dynamicGrade || 'C');
+      const stabilityClass = s.is_regional ? 'Regional' : (s.stability?.stability_class || 'High Swing Bus Stop');
+      const scoreMean = s.stability?.score_mean ?? score;
+      const scoreStd = s.stability?.score_std ?? 0;
 
       return {
         type: 'Feature',
@@ -99,6 +158,9 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
           percentile,
           grade,
           is_regional: s.is_regional ? 1 : 0,
+          stability_class: stabilityClass,
+          score_mean: scoreMean,
+          score_std: scoreStd,
         },
         geometry: {
           type: 'Point',
@@ -384,20 +446,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
             12, 5,
             15, 8.5,
           ],
-          'circle-color': [
-            'case',
-            ['==', ['get', 'is_regional'], 1], '#94A3B8', // Regional stops grayed out (Slate-400)
-            [
-              'match',
-              ['get', 'grade'],
-              'A', '#10B981', // Grade A: Emerald Green
-              'B', '#3B82F6', // Grade B: Royal Blue
-              'C', '#F59E0B', // Grade C: Amber Yellow
-              'D', '#F97316', // Grade D: Orange
-              'E', '#EF4444', // Grade E: Red
-              '#10B981'       // Fallback Emerald
-            ]
-          ],
+          'circle-color': getStopCircleColor(colorMode),
           'circle-opacity': [
             'case',
             ['==', ['get', 'is_regional'], 1], 0.45,
@@ -425,7 +474,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
 
       // Initial data push on map load
       if (stops.length > 0) {
-        updateStopsSource(map, stops, mode, selectedGrades);
+        updateStopsSource(map, stops, mode, selectedGrades, colorMode, selectedStabilityClasses);
         updateDaHeatmap(map, daScores, mode);
       }
 
@@ -455,6 +504,14 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
               const daList = targetStop.das;
               const pieSvg = generatePieChartSvg(daList);
 
+              const stabilityInfo = targetStop.stability;
+              const stabilityClass = targetStop.is_regional ? 'Regional' : (stabilityInfo?.stability_class || 'High Swing Bus Stop');
+              const stabilityColor = 
+                stabilityClass === 'Essential Equity Bus Stop' ? '#7C3AED' :
+                stabilityClass === 'High Swing Bus Stop' ? '#EF4444' :
+                stabilityClass === 'Low Swing Bus Stop' ? '#F59E0B' :
+                stabilityClass === 'Always Low Equity Bus Stop' ? '#EA580C' : '#94A3B8';
+
               const contentHtml = `
                 <div class="p-3 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl text-slate-900 shadow-xl space-y-2 text-xs">
                   <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
@@ -472,6 +529,17 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
                       `}
                     </div>
                   </div>
+
+                  ${stabilityInfo ? `
+                    <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-lg px-2 py-1 text-[10px]">
+                      <span class="px-1.5 py-0.5 rounded font-black uppercase text-[9px] text-white" style="background-color: ${stabilityColor}">
+                        ${stabilityClass.replace(' Bus Stop', '')}
+                      </span>
+                      <span class="font-mono text-slate-500 font-semibold">
+                        Mean: <strong class="text-slate-800">${stabilityInfo.score_mean.toFixed(1)}</strong> &bull; &sigma;: <strong class="text-slate-800">${stabilityInfo.score_std.toFixed(1)}</strong>
+                      </span>
+                    </div>
+                  ` : ''}
 
                   <div class="space-y-1">
                     <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">400m DA Catchment Overlap</div>
@@ -642,9 +710,10 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
       // 1. Update Bus Stops Layer & Visibility
       if (map.getLayer('bus-stop-points')) {
         map.setLayoutProperty('bus-stop-points', 'visibility', showStops ? 'visible' : 'none');
+        map.setPaintProperty('bus-stop-points', 'circle-color', getStopCircleColor(colorMode));
       }
       if (showStops) {
-        updateStopsSource(map, stops, mode, selectedGrades);
+        updateStopsSource(map, stops, mode, selectedGrades, colorMode, selectedStabilityClasses);
       } else {
         const sSource = map.getSource('bus-stops') as mapboxgl.GeoJSONSource;
         if (sSource) sSource.setData({ type: 'FeatureCollection', features: [] });
@@ -791,7 +860,7 @@ export const BusStopMap: React.FC<BusStopMapProps> = ({
     } else {
       map.once('load', applyUpdates);
     }
-  }, [stops, mode, daScores, selectedGrades, selectedRouteGrades, selectedStopId, selectedRouteId, activeDimensions, showHeatmap, showRoutes, showStops, heatmapPalette]);
+  }, [stops, mode, daScores, selectedGrades, selectedRouteGrades, selectedStopId, selectedRouteId, activeDimensions, showHeatmap, showRoutes, showStops, heatmapPalette, colorMode, selectedStabilityClasses]);
 
   // Handle Selected Stop & 400m Buffer Circle Rendering
   useEffect(() => {
