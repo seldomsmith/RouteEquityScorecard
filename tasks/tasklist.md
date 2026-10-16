@@ -74,3 +74,8 @@
   - [x] Task 2: Implement interactive Subway Map Scroll Progress Rail with 9 chapter station dots and active emerald fill
   - [x] Task 3: Add green `View Scorecard ->` pill navigation button linking to Bus Stop Analysis
   - [x] Task 4: Expand `BusStopWaterfall` canvas across both hero title and narrative intro, increasing stop dot size, ripple frequency, and road grid contrast
+- [x] Phase 36: Align Bus Stop Sections to Route Equity Structure:
+  - [x] Task 1: Replace opening question box with direct `1. Introduction` section containing narrative and candidate stops
+  - [x] Task 2: Remove all small "Chapter X" uppercase badges and horizontal divider lines
+  - [x] Task 3: Standardize all 9 section headings to bold emerald green (`text-3xl font-black text-emerald-900`) matching Route Equity
+  - [x] Task 4: Remove redundant `h4` header in `CimdExplainer.tsx` to prevent title duplication in Section 3

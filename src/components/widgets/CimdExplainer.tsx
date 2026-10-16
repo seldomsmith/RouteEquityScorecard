@@ -84,14 +84,9 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
     <div className="w-full space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h4 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-            The Four Dimensions of Demographic Need
-          </h4>
-          <p className="text-xs md:text-sm text-slate-600 mt-1 font-medium max-w-2xl">
-            Statistics Canada normalizes census dissemination areas from 0 to 100 across four distinct dimensions. Each dimension receives equal 25% weight in the baseline scorecard:
-          </p>
-        </div>
+        <p className="text-sm text-slate-600 font-medium max-w-2xl">
+          Statistics Canada normalizes census dissemination areas from 0 to 100 across four distinct dimensions. Each dimension receives equal 25% weight in the baseline scorecard:
+        </p>
 
         <button
           onClick={() => setShowMathModal(true)}

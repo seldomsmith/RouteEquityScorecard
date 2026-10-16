@@ -25,6 +25,11 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Bus Stop Sections Alignment & 1. Introduction Structure (Phase 36)**:
+  - Aligned the section structure in [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx) with the Route Equity scrollytelling page, replacing the nested narrative question box (`Why evaluate transit equity at the individual bus stop scale?`) with a clean `1. Introduction` section.
+  - Formatted all 9 section headers with uniform emerald styling (`text-3xl font-black text-emerald-900 leading-tight`) and updated the chapter navigation tracker to label Chapter 1 as `1. Introduction`.
+  - Removed all small uppercase `Chapter X` badge pills and horizontal border divider lines across the page for a modern, distraction-free reading experience.
+  - Pruned the redundant internal `h4` dimension header from [CimdExplainer.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/CimdExplainer.tsx) to eliminate duplicate headers right under Section 3's main title.
 - **Bus Stop Header Subway Progress Rail & Extended Waterfall Backdrop (Phase 35)**:
   - Re-architected the header in [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx) to match Route Equity, applying green branding (`ETS Bus Stop Equity Scorecard`, `Scroll down to read`) and removing the Two Pillars toggle.
   - Implemented an interactive Subway Map Progress Rail with 9 station nodes corresponding to chapters, tracking real-time scroll progress with an animated emerald line and click-to-scroll navigation.

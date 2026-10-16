@@ -19,7 +19,7 @@ import { BusStopWaterfall } from '@/components/BusStopWaterfall';
 import { BusStopSupplyDisparity } from '@/components/widgets/BusStopSupplyDisparity';
 
 const CHAPTERS = [
-  { id: 'chapter-1', label: '1. Two Stops' },
+  { id: 'chapter-1', label: '1. Introduction' },
   { id: 'chapter-2', label: '2. 400m Walkshed' },
   { id: 'chapter-3', label: '3. Four Dimensions' },
   { id: 'chapter-4', label: '4. Area Overlap' },
@@ -228,15 +228,15 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         </button>
       </header>
 
-      {/* 🚌 Full-Width Hero Container with Bus Stops Waterfall flowing deep into the page */}
-      <div className="w-full relative overflow-hidden bg-gradient-to-b from-emerald-50/50 via-slate-50/30 to-slate-50/10 pt-16 pb-16 px-6">
-        {/* Animated BusStopWaterfall Background spanning the entire hero and intro */}
+      {/* 🚌 Full-Width Hero Container with Bus Stops Waterfall Background */}
+      <div className="w-full relative overflow-hidden bg-gradient-to-b from-emerald-50/50 via-slate-50/25 to-slate-50 pt-20 pb-20 px-6 flex flex-col items-center justify-center text-center">
+        {/* Animated BusStopWaterfall Background spanning the hero */}
         <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-auto">
           <BusStopWaterfall opacity={0.88} />
         </div>
 
-        {/* Gentle Fade Mask at the bottom edge */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50/90 pointer-events-none z-[1]" />
+        {/* Fade Mask Overlay to make lines fade to white/slate-50 seamlessly */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/40 to-slate-50 pointer-events-none z-[1]" />
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
@@ -244,37 +244,27 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             ETS BUS STOP EQUITY <br className="hidden sm:inline" />
             SCORECARD
           </h1>
-
-          {/* Hero Narrative Intro integrated directly into the waterfall background */}
-          <div className="text-left mt-10 space-y-5 bg-white/85 backdrop-blur-xs p-6 md:p-8 rounded-2xl border border-emerald-100/80 shadow-sm">
-            <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight leading-[1.15]">
-              Why evaluate transit equity at the individual bus stop scale?
-            </h2>
-
-            <p className="text-base md:text-lg text-slate-700 leading-relaxed font-medium">
-              Network-level corridor metrics aggregate transit service across kilometres of roadway, but obscure local curb-level disparities. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
-            </p>
-
-            <p className="text-sm md:text-base text-slate-600 leading-relaxed">
-              Evaluating equity at the individual stop focuses on the specific curb where passengers board. Riders experience transit service directly at the pole: waiting in sub-zero winter temperatures, navigating unplowed boarding pads, and connecting to feeder lines. Below, we document the empirical spatial calculations governing Edmonton's 6,755 municipal bus stops.
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* Main Narrative Chapters Container */}
-      <main className="max-w-4xl mx-auto px-6 pb-24 space-y-24">
-        {/* CHAPTER 1: THE TWO STOPS (SUBJECT TICKETS) */}
+      {/* Main Narrative Sections Container */}
+      <main className="max-w-4xl mx-auto px-6 py-10 pb-24 space-y-24">
+        {/* ================= SECTION 1: Introduction ================= */}
         <section id="chapter-1" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 1</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Comparative Analysis: High-Need vs. Low-Need Catchments
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              1. Introduction
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
+              Network-level corridor metrics aggregate transit service across kilometres of roadway, but obscure local curb-level disparities. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
+            </p>
+            <p className="text-slate-600 text-base leading-relaxed">
+              Evaluating equity at the individual stop focuses on the specific curb where passengers board. Riders experience transit service directly at the pole: waiting in sub-zero winter temperatures, navigating unplowed boarding pads, and connecting to feeder lines. Below, we document the empirical spatial calculations governing Edmonton's 6,755 municipal bus stops.
+            </p>
+            <p className="text-slate-600 text-base leading-relaxed font-medium">
+              To evaluate how the scoring methodology functions across distinct urban contexts, compare two stops within the Edmonton Transit Service network:
+            </p>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed font-medium">
-            To evaluate how the scoring methodology functions across distinct urban contexts, compare two stops within the Edmonton Transit Service network:
-          </p>
 
           <div className="grid grid-cols-1 gap-4">
             <BusStopTicket
@@ -307,52 +297,48 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
         </section>
 
-        {/* CHAPTER 2: THE 400M CATCHMENT */}
+        {/* ================= SECTION 2: The 400m Catchment ================= */}
         <section id="chapter-2" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 2</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              The 400-Metre Catchment: Defining the Pedestrian Walk Shed
-            </h3>
-          </div>
-          <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-medium">
-            <p>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              2. The 400-Metre Walking Catchment
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
               In urban transit planning, 400 metres serves as the standard planning benchmark for pedestrian access to local bus service. This corresponds to approximately a five-minute walk at 4.8 km/h.
             </p>
-            <p>
+            <p className="text-slate-600 text-base leading-relaxed">
               Rather than assigning data solely from the land parcel touching the signpost, we calculate a 400-metre radial buffer around each bus stop in Edmonton. This circular catchment outlines the immediate population relying on that stop for transit access.
             </p>
           </div>
         </section>
 
-        {/* CHAPTER 3: CANADIAN INDEX OF MULTIPLE DEPRIVATION */}
+        {/* ================= SECTION 3: Four Dimensions of Demographic Need ================= */}
         <section id="chapter-3" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 3</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Decoding the Canadian Index of Multiple Deprivation (CIMD)
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              3. The Four Dimensions of Demographic Need
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
+              Edmonton's bus stop scores are built on Statistics Canada's Canadian Index of Multiple Deprivation (CIMD). Each dimension captures a distinct facet of socio-economic vulnerability across census dissemination areas.
+            </p>
           </div>
           <CimdExplainer />
         </section>
 
-        {/* CHAPTER 4: PROPORTIONAL OVERLAP (THE USER'S DONUT CARD REFERENCE) */}
+        {/* ================= SECTION 4: Proportional Area Weighting ================= */}
         <section id="chapter-4" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 4</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Proportional Area Weighting: Dissemination Area Overlap
-            </h3>
-          </div>
-          <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-medium">
-            <p>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              4. Proportional Area Weighting: Dissemination Area Overlap
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
               A single bus stop does not serve just one neat city block; people walk in from every direction.
             </p>
-            <p>
-              Statistics Canada divides cities into small neighborhood pockets called Dissemination Areas, each home to about 400 to 700 residents. When you draw a standard five-minute walk around any bus stop (a 400-metre circle), that circle rarely fits inside a single census zone. It almost always slices through three, five, or eight different neighborhood blocks.
+            <p className="text-slate-600 text-base leading-relaxed">
+              Statistics Canada divides cities into small neighbourhood pockets called Dissemination Areas, each home to about 400 to 700 residents. When you draw a standard five-minute walk around any bus stop (a 400-metre circle), that circle rarely fits inside a single census zone. It almost always slices through three, five, or eight different neighbourhood blocks.
             </p>
-            <p>
-              To score a stop fairly, we calculate the exact slice of each neighborhood inside the circle. If half the circle covers an area with high economic need and the other half covers an affluent street, each neighborhood gets an equal 50% say in the final score. No guesswork; just real local geography.
+            <p className="text-slate-600 text-base leading-relaxed">
+              To score a stop fairly, we calculate the exact slice of each neighbourhood inside the circle. If half the circle covers an area with high economic need and the other half covers an affluent street, each neighbourhood gets an equal 50% say in the final score. No guesswork; just real local geography.
             </p>
           </div>
 
@@ -390,28 +376,26 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
         </section>
 
-        {/* CHAPTER 5: THE QUINTILE GRADING SCALE */}
+        {/* ================= SECTION 5: The Quintile Grading Scale ================= */}
         <section id="chapter-5" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 5</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              The Quintile Grading Scale: What Grades A Through E Mean
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              5. The Quintile Grading Scale
+            </h2>
           </div>
           <BusStopGradeDistribution />
         </section>
 
-        {/* CHAPTER 6: SPATIAL MAPBOX INTEGRATION (SIDE-BY-SIDE & TOGGLE) */}
+        {/* ================= SECTION 6: Spatial Distribution ================= */}
         <section id="chapter-6" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 6</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Spatial Distribution: Comparative Catchment Geography
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              6. Spatial Distribution: Comparative Catchment Geography
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
+              Click either stop to fly directly to its 400-metre walking catchment, or toggle both stops on to compare their locations across Edmonton. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
+            </p>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed font-medium">
-            Click either stop to fly directly to its 400-metre walking catchment, or toggle both stops on to compare their locations across Edmonton. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
-          </p>
 
           <BusStopToggleMap
             stopA={stop6586}
@@ -420,24 +404,22 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           />
         </section>
 
-        {/* CHAPTER 7: SUPPLY VS NEED */}
+        {/* ================= SECTION 7: Supply vs. Need ================= */}
         <section id="chapter-7" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 7</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Supply vs. Need: Daily Trips Compared Against Demographic Need
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              7. Supply vs. Need: Daily Trips Compared Against Demographic Need
+            </h2>
           </div>
           <BusStopSupplyDisparity stopA={stop6586} stopB={stop1745} />
         </section>
 
-        {/* CHAPTER 8: METHODOLOGICAL HONESTY & CATCHMENT BARRIERS */}
+        {/* ================= SECTION 8: Spatial Constraints ================= */}
         <section id="chapter-8" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 8</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Spatial Constraints: Physical Barriers and Aggregate Geography
-            </h3>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              8. Spatial Constraints: Physical Barriers and Aggregate Geography
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm text-slate-700">
             <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-2">
@@ -462,11 +444,11 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
         </section>
 
-        {/* CHAPTER 9: CALL TO ACTION & EXPLORER */}
+        {/* ================= SECTION 9: Call to Action & Explorer ================= */}
         <section id="chapter-9" className="pt-8 border-t border-slate-200 text-center space-y-6">
-          <h3 className="text-2xl md:text-3xl font-black text-slate-900">
-            Explore Edmonton's 6,755 Bus Stops
-          </h3>
+          <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+            9. Explore Edmonton's 6,755 Bus Stops
+          </h2>
           <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed font-medium">
             Inspect stop grades across all neighbourhoods, test custom CIMD weighting criteria, and search any stop in the city.
           </p>
