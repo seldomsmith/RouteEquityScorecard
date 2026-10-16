@@ -69,3 +69,8 @@
   - [x] Task 2: Shift CIMD dimension colour palette (Sapphire, Pine Teal, Violet, Amber Bronze) and remove duplicate header text
   - [x] Task 3: Convert `BusStopToggleMap.tsx` buttons to multi-state toggles (allowing both stops to be active simultaneously)
   - [x] Task 4: Remove redundant "View Both Stops" button and update spatial HUD for dual-stop mode
+- [x] Phase 35: Bus Stop Header Subway Progress Rail & Extended Waterfall Backdrop:
+  - [x] Task 1: Replicate Route Equity header structure with emerald green branding (`ETS Bus Stop Equity Scorecard`, `Scroll down to read`)
+  - [x] Task 2: Implement interactive Subway Map Scroll Progress Rail with 9 chapter station dots and active emerald fill
+  - [x] Task 3: Add green `View Scorecard ->` pill navigation button linking to Bus Stop Analysis
+  - [x] Task 4: Expand `BusStopWaterfall` canvas across both hero title and narrative intro, increasing stop dot size, ripple frequency, and road grid contrast

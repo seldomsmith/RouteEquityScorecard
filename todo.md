@@ -25,6 +25,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Bus Stop Header Subway Progress Rail & Extended Waterfall Backdrop (Phase 35)**:
+  - Re-architected the header in [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx) to match Route Equity, applying green branding (`ETS Bus Stop Equity Scorecard`, `Scroll down to read`) and removing the Two Pillars toggle.
+  - Implemented an interactive Subway Map Progress Rail with 9 station nodes corresponding to chapters, tracking real-time scroll progress with an animated emerald line and click-to-scroll navigation.
+  - Styled a rounded pill button for `View Scorecard ->` in primary emerald green (`bg-emerald-600 hover:bg-emerald-700`) linking to the Bus Stop Dashboard (`page 2.2`).
+  - Extended [BusStopWaterfall.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopWaterfall.tsx) deep into the page across both the hero title and the narrative introduction box.
+  - Increased stop node base radius (up to 4.2px for Grade A), boosted canvas opacity to `0.88`, heightened corridor road grid contrast, and increased catchment ripple spawn frequency.
 - **CIMD Four Dimensions Redesign & Multi-Stop Map Toggle (Phase 34)**:
   - Eliminated the nested "bubble inception" in [CimdExplainer.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/CimdExplainer.tsx), replacing tab selectors and multi-level border containers with an open 4-column responsive grid modeled after Route Equity's **Four Pillars**.
   - Implemented the tactile `.pillar-card-lift` 3D hard-shadow hover animations and shifted the palette to four municipal tones: Sapphire Blue (`#1D4ED8`), Pine Teal (`#0F766E`), Royal Violet (`#7C3AED`), and Amber Bronze (`#D97706`).

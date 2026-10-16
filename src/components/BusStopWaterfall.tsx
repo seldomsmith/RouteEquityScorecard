@@ -23,15 +23,15 @@ interface CatchmentRipple {
 }
 
 const GRADE_COLORS: Record<string, string> = {
-  A: '#10b981', // High Equity Need Emerald
-  B: '#3b82f6', // Transit Blue
-  C: '#eab308', // Amber
-  D: '#94a3b8', // Slate
-  E: '#64748b', // Deep Slate
+  A: '#059669', // High Equity Need Emerald
+  B: '#2563eb', // Transit Blue
+  C: '#d97706', // Amber
+  D: '#64748b', // Slate
+  E: '#dc2626', // Deep Rose
 };
 
 export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
-  opacity = 0.28,
+  opacity = 0.85,
   interactive = true,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -52,8 +52,8 @@ export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
     const ripples: CatchmentRipple[] = [];
     let rippleTimer = 0;
 
-    // Filter prominent stops for ripple generation
-    const prominentStops = stops.filter(s => s.grade === 'A' || s.trips >= 150);
+    // Prominent stops for ripple generation
+    const prominentStops = stops.filter(s => s.grade === 'A' || s.trips >= 120);
 
     // Track cursor for hover spotlight
     let mousePos: Point | null = null;
@@ -100,12 +100,19 @@ export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
       ripples.push({
         x: pt.x,
         y: pt.y,
-        radius: 2,
-        maxRadius: Math.min(w, h) * 0.055, // ~400m walk buffer proportional to viewport scale
-        alpha: 0.65,
-        color: GRADE_COLORS[randomStop.grade] || '#10b981',
+        radius: 3,
+        maxRadius: Math.min(w, h) * 0.075, // ~400m walk buffer proportional to viewport scale
+        alpha: 0.85,
+        color: GRADE_COLORS[randomStop.grade] || '#059669',
       });
     };
+
+    // Pre-populate a few ripples for immediate vibrancy
+    const initialW = canvas.width || 1200;
+    const initialH = canvas.height || 600;
+    for (let i = 0; i < 4; i++) {
+      spawnRipple(initialW, initialH);
+    }
 
     const animate = () => {
       const w = canvas.width;
@@ -133,17 +140,17 @@ export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
         }
       }
 
-      // Periodically trigger a subtle walking catchment ripple
+      // Periodically trigger a walking catchment ripple
       rippleTimer++;
-      if (rippleTimer > 50 && ripples.length < 5) {
+      if (rippleTimer > 28 && ripples.length < 8) {
         spawnRipple(w, h);
         rippleTimer = 0;
       }
 
-      // 1. Draw ultra-faint arterial corridor traces
-      ctx.lineWidth = 1.5;
+      // 1. Draw transit arterial corridor road grid
+      ctx.lineWidth = 1.75;
       ctx.strokeStyle = '#059669'; // Emerald corridor tint
-      ctx.globalAlpha = 0.08;
+      ctx.globalAlpha = 0.18;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
 
@@ -161,8 +168,8 @@ export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
       // 2. Animate and draw 400m walking catchment ripples
       for (let i = ripples.length - 1; i >= 0; i--) {
         const r = ripples[i];
-        r.radius += 0.35;
-        r.alpha = Math.max(0, 0.65 * (1 - r.radius / r.maxRadius));
+        r.radius += 0.45;
+        r.alpha = Math.max(0, 0.85 * (1 - r.radius / r.maxRadius));
 
         if (r.radius >= r.maxRadius || r.alpha <= 0.01) {
           ripples.splice(i, 1);
@@ -172,56 +179,63 @@ export const BusStopWaterfall: React.FC<BusStopWaterfallProps> = ({
         ctx.beginPath();
         ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
         ctx.strokeStyle = r.color;
-        ctx.globalAlpha = r.alpha * 0.45;
-        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = r.alpha * 0.55;
+        ctx.lineWidth = 1.75;
         ctx.stroke();
 
         // Soft internal radial glow fill
         ctx.fillStyle = r.color;
-        ctx.globalAlpha = r.alpha * 0.05;
+        ctx.globalAlpha = r.alpha * 0.08;
         ctx.fill();
       }
 
-      // 3. Draw central bus stops
+      // 3. Draw central bus stops with clear visibility
       stops.forEach(s => {
         const pt = getPixelCoords(s.xPct, s.yPct, w, h);
         const isHovered = hoveredStop?.id === s.id;
-        const color = GRADE_COLORS[s.grade] || '#10b981';
+        const color = GRADE_COLORS[s.grade] || '#059669';
 
         ctx.beginPath();
-        const baseRadius = s.grade === 'A' ? 3.0 : 2.2;
-        ctx.arc(pt.x, pt.y, isHovered ? baseRadius * 2.2 : baseRadius, 0, Math.PI * 2);
+        // Prominent sizing for high equity and trunk stops
+        let baseRadius = 2.8;
+        if (s.grade === 'A') baseRadius = 4.2;
+        else if (s.grade === 'B') baseRadius = 3.4;
+        else if (s.grade === 'E') baseRadius = 3.2;
 
+        const currentRadius = isHovered ? baseRadius * 2.2 : baseRadius;
+        ctx.arc(pt.x, pt.y, currentRadius, 0, Math.PI * 2);
+
+        // Core fill
         ctx.fillStyle = isHovered ? '#ffffff' : color;
-        ctx.globalAlpha = isHovered ? 1.0 : s.grade === 'A' ? 0.75 : 0.45;
+        ctx.globalAlpha = isHovered ? 1.0 : s.grade === 'A' ? 0.95 : 0.70;
         ctx.fill();
 
-        if (isHovered || s.grade === 'A') {
-          ctx.strokeStyle = color;
-          ctx.lineWidth = isHovered ? 2 : 1;
-          ctx.stroke();
-        }
+        // Stroke ring
+        ctx.strokeStyle = isHovered ? color : '#ffffff';
+        ctx.lineWidth = isHovered ? 2.5 : s.grade === 'A' ? 1.5 : 1.0;
+        ctx.globalAlpha = isHovered ? 1.0 : 0.90;
+        ctx.stroke();
 
         // Draw hover tooltip catchment highlight
         if (isHovered) {
-          const catchmentRadius = Math.min(w, h) * 0.055;
+          const catchmentRadius = Math.min(w, h) * 0.065;
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, catchmentRadius, 0, Math.PI * 2);
           ctx.strokeStyle = color;
-          ctx.lineWidth = 1.5;
-          ctx.globalAlpha = 0.55;
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.75;
           ctx.stroke();
 
           ctx.fillStyle = color;
-          ctx.globalAlpha = 0.08;
+          ctx.globalAlpha = 0.12;
           ctx.fill();
 
-          // Stop name label
+          // Stop name badge
           ctx.globalAlpha = 0.95;
           ctx.fillStyle = '#0f172a';
-          ctx.font = '600 11px system-ui, sans-serif';
+          ctx.font = 'bold 12px system-ui, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(`${s.name} (Grade ${s.grade})`, pt.x, pt.y - 12);
+          ctx.fillText(`Stop #${s.id} • ${s.name} (Grade ${s.grade})`, pt.x, pt.y - 14);
         }
       });
 

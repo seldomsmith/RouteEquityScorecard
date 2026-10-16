@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { 
-  ArrowLeft, 
-  LayoutDashboard, 
+  Home, 
+  Menu, 
+  ArrowRight, 
   BookOpen, 
-  AlertTriangle, 
-  ChevronDown
+  LayoutDashboard, 
+  AlertTriangle 
 } from 'lucide-react';
 import { GlobalNavMenu, PageView } from '@/components/widgets/GlobalNavMenu';
 import { BusStopTicket } from '@/components/widgets/BusStopTicket';
@@ -16,6 +17,18 @@ import { CimdExplainer } from '@/components/widgets/CimdExplainer';
 import { BusStopGradeDistribution } from '@/components/widgets/BusStopGradeDistribution';
 import { BusStopWaterfall } from '@/components/BusStopWaterfall';
 import { BusStopSupplyDisparity } from '@/components/widgets/BusStopSupplyDisparity';
+
+const CHAPTERS = [
+  { id: 'chapter-1', label: '1. Two Stops' },
+  { id: 'chapter-2', label: '2. 400m Walkshed' },
+  { id: 'chapter-3', label: '3. Four Dimensions' },
+  { id: 'chapter-4', label: '4. Area Overlap' },
+  { id: 'chapter-5', label: '5. Quintile Grades' },
+  { id: 'chapter-6', label: '6. Spatial Map' },
+  { id: 'chapter-7', label: '7. Supply vs Need' },
+  { id: 'chapter-8', label: '8. Spatial Barriers' },
+  { id: 'chapter-9', label: '9. Explore Stops' },
+];
 
 const BusStopToggleMap = dynamic(
   () => import('@/components/widgets/BusStopToggleMap').then((m) => m.BusStopToggleMap),
@@ -31,6 +44,24 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
   const [stopsData, setStopsData] = useState<any[]>([]);
   const [daGeoJson, setDaGeoJson] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const maxScroll = scrollHeight - clientHeight;
+    if (maxScroll > 0) {
+      setScrollProgress(Math.min(Math.max(scrollTop / maxScroll, 0), 1));
+    }
+  };
+
+  const handleScrollToChapter = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   // Load stops and DA boundaries
   useEffect(() => {
@@ -101,7 +132,11 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-[#fafbfc] text-slate-800 font-sans selection:bg-emerald-100 selection:text-emerald-900 overflow-y-auto custom-scrollbar scroll-smooth">
+    <div
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
+      className="h-screen w-full flex flex-col bg-[#fafbfc] text-slate-800 font-sans selection:bg-emerald-100 selection:text-emerald-900 overflow-y-auto custom-scrollbar scroll-smooth"
+    >
       {/* Navigation Menu Modal */}
       <GlobalNavMenu
         isOpen={isNavMenuOpen}
@@ -110,77 +145,121 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         activeItemIndex={4}
       />
 
-      {/* Sticky Top Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-4">
-          <button
+      {/* 🚌 Fixed Scrollytelling Header with Subway Map Scroll Progress Tracker */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 h-16 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-3">
+          <button 
             onClick={() => onNavigate('landing')}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-            title="Return to Landing Page"
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-200"
+            title="Return to Home"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <Home className="w-5 h-5" />
           </button>
-          <div>
-            <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#059669]">
-              ETS EQUITY FRAMEWORK &bull; PAGE 2.1
-            </div>
-            <h1 className="text-sm md:text-base font-black text-slate-900 tracking-tight">
-              Explain the Bus Stop Equity Scorecard to Me!
-            </h1>
+          <button
+            onClick={() => setIsNavMenuOpen(true)}
+            className="px-3 py-1.5 text-[10px] font-bold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-md border border-emerald-200 transition-all uppercase tracking-wider shadow-2xs flex items-center gap-1.5"
+          >
+            <Menu className="w-3.5 h-3.5" />
+            <span>Menu</span>
+          </button>
+          <div className="flex flex-col">
+            <span className="text-xs font-black text-emerald-800 uppercase tracking-widest leading-none">
+              ETS Bus Stop Equity Scorecard
+            </span>
+            <span className="text-[10px] font-semibold text-emerald-600 leading-none mt-1">
+              Scroll down to read
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => onNavigate('bus-stop-analysis')}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-2xs transition-all"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-[#059669]" />
-            <span>Open Dashboard (2.2)</span>
-          </button>
+        {/* Subway Map Progress Bar */}
+        <div className="flex-1 max-w-xl mx-8 relative hidden md:block px-4">
+          {/* Base track */}
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 rounded-full" />
+          {/* Active progress track */}
+          <div 
+            className="absolute top-1/2 left-0 h-1 bg-emerald-600 -translate-y-1/2 rounded-full transition-all duration-75"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
+          {/* Subway dots representing the 9 chapters */}
+          <div className="relative flex justify-between items-center w-full">
+            {CHAPTERS.map((chapter, idx, arr) => {
+              const fraction = idx / (arr.length - 1);
+              const isPassed = scrollProgress >= fraction - 0.02;
 
-          <button
-            onClick={() => setIsNavMenuOpen(true)}
-            className="px-3 py-1.5 text-[11px] font-bold text-[#059669] bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-all uppercase tracking-wider flex items-center gap-1.5"
-          >
-            <span>MENU</span>
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
+              return (
+                <button
+                  key={chapter.id}
+                  type="button"
+                  title={chapter.label}
+                  className="group relative flex items-center justify-center focus:outline-none"
+                  onClick={() => handleScrollToChapter(chapter.id)}
+                >
+                  {/* Outer glow ring on hover or active */}
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 border-2 ${
+                    isPassed 
+                      ? 'border-emerald-600 bg-white hover:bg-emerald-50 ring-2 ring-emerald-600/20' 
+                      : 'border-slate-300 bg-white hover:bg-slate-50'
+                  }`}>
+                    {/* Inner core dot */}
+                    <span className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      isPassed ? 'bg-emerald-600' : 'bg-slate-300'
+                    }`} />
+                  </span>
+                  
+                  {/* Tooltip */}
+                  <span className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold py-1 px-2.5 rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                    {chapter.label}
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-slate-900" />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Right side: View Scorecard button */}
+        <button
+          onClick={() => onNavigate('bus-stop-analysis')}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm shadow-md transition-all duration-200 active:scale-95 whitespace-nowrap"
+        >
+          <span>View Scorecard</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </header>
 
-      {/* 🚌 Full-Width Premium Hero Header */}
-      <div className="w-full relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-slate-50/20 to-slate-50 pt-20 pb-16 px-6 flex flex-col items-center justify-center text-center">
-        {/* Animated BusStopWaterfall Background */}
-        <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <BusStopWaterfall opacity={0.32} />
+      {/* 🚌 Full-Width Hero Container with Bus Stops Waterfall flowing deep into the page */}
+      <div className="w-full relative overflow-hidden bg-gradient-to-b from-emerald-50/50 via-slate-50/30 to-slate-50/10 pt-16 pb-16 px-6">
+        {/* Animated BusStopWaterfall Background spanning the entire hero and intro */}
+        <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-auto">
+          <BusStopWaterfall opacity={0.88} />
         </div>
 
-        {/* Fade Mask Overlay to make lines fade to white/slate-50 seamlessly */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/40 to-slate-50 pointer-events-none z-[1]" />
+        {/* Gentle Fade Mask at the bottom edge */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50/90 pointer-events-none z-[1]" />
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center">
+        <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
           <h1 className="text-[38px] md:text-[50px] lg:text-[62px] font-black text-emerald-700 tracking-tight leading-tight uppercase scrolly-title-lift-effect cursor-default">
             ETS BUS STOP EQUITY <br className="hidden sm:inline" />
             SCORECARD
           </h1>
+
+          {/* Hero Narrative Intro integrated directly into the waterfall background */}
+          <div className="text-left mt-10 space-y-5 bg-white/85 backdrop-blur-xs p-6 md:p-8 rounded-2xl border border-emerald-100/80 shadow-sm">
+            <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight leading-[1.15]">
+              Why evaluate transit equity at the individual bus stop scale?
+            </h2>
+
+            <p className="text-base md:text-lg text-slate-700 leading-relaxed font-medium">
+              Network-level corridor metrics aggregate transit service across kilometres of roadway, but obscure local curb-level disparities. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
+            </p>
+
+            <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+              Evaluating equity at the individual stop focuses on the specific curb where passengers board. Riders experience transit service directly at the pole: waiting in sub-zero winter temperatures, navigating unplowed boarding pads, and connecting to feeder lines. Below, we document the empirical spatial calculations governing Edmonton's 6,755 municipal bus stops.
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Hero Narrative Intro */}
-      <div className="max-w-4xl mx-auto px-6 pt-12 pb-12">
-        <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
-          Why evaluate transit equity at the individual bus stop scale?
-        </h2>
-
-        <p className="mt-6 text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-          Network-level corridor metrics aggregate transit service across kilometres of roadway, but obscure local curb-level disparities. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
-        </p>
-
-        <p className="mt-4 text-base text-slate-600 leading-relaxed">
-          Evaluating equity at the individual stop focuses on the specific curb where passengers board. Riders experience transit service directly at the pole: waiting in sub-zero winter temperatures, navigating unplowed boarding pads, and connecting to feeder lines. Below, we document the empirical spatial calculations governing Edmonton's 6,755 municipal bus stops.
-        </p>
       </div>
 
       {/* Main Narrative Chapters Container */}
