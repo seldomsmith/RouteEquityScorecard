@@ -13,7 +13,6 @@ interface QuintileCut {
   color: string;
   bgLight: string;
   borderColor: string;
-  policyAction: string;
   shelterPriority: string;
 }
 
@@ -28,7 +27,6 @@ const QUINTILE_DATA: QuintileCut[] = [
     color: '#10b981',
     bgLight: 'bg-emerald-50 text-emerald-950',
     borderColor: 'border-emerald-300',
-    policyAction: 'Highest priority for heated shelters, real-time schedule displays, winter snow clearing fast-tracks, and enhanced evening bus frequency.',
     shelterPriority: 'High Priority (Tier 1)'
   },
   {
@@ -41,7 +39,6 @@ const QUINTILE_DATA: QuintileCut[] = [
     color: '#3b82f6',
     bgLight: 'bg-blue-50 text-blue-950',
     borderColor: 'border-blue-300',
-    policyAction: 'Strong candidates for weather enclosures, standard benches, and pedestrian crossing safety upgrades.',
     shelterPriority: 'Moderate-High (Tier 2)'
   },
   {
@@ -54,7 +51,6 @@ const QUINTILE_DATA: QuintileCut[] = [
     color: '#eab308',
     bgLight: 'bg-yellow-50 text-yellow-950',
     borderColor: 'border-yellow-300',
-    policyAction: 'Standard municipal baseline. Capital amenities allocated according to system boarding volume thresholds.',
     shelterPriority: 'Standard Baseline (Tier 3)'
   },
   {
@@ -67,7 +63,6 @@ const QUINTILE_DATA: QuintileCut[] = [
     color: '#f97316',
     bgLight: 'bg-orange-50 text-orange-950',
     borderColor: 'border-orange-300',
-    policyAction: 'Catchments with above-average household income and vehicle ownership. Capital upgrades prioritized if connecting major transfer nodes.',
     shelterPriority: 'Secondary Priority (Tier 4)'
   },
   {
@@ -80,7 +75,6 @@ const QUINTILE_DATA: QuintileCut[] = [
     color: '#ef4444',
     bgLight: 'bg-rose-50 text-rose-950',
     borderColor: 'border-rose-300',
-    policyAction: 'Lowest demographic need. Bus service predominantly serves discretionary commuters rather than captive riders.',
     shelterPriority: 'Low Priority (Tier 5)'
   }
 ];
@@ -137,8 +131,8 @@ export const BusStopGradeDistribution: React.FC = () => {
       </div>
 
       {/* Selected Grade Breakdown Card */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 border border-slate-200/90 rounded-2xl p-6">
-        <div className="flex flex-col justify-between">
+      <div className="mt-6 bg-slate-50 border border-slate-200/90 rounded-2xl p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div className="flex items-center gap-2">
               <span
@@ -155,57 +149,33 @@ export const BusStopGradeDistribution: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 space-y-1.5 text-xs">
-              <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Score Range:</span>
-                <span className="font-mono font-bold text-slate-800">
-                  {activeQuintile.minScore.toFixed(1)} - {activeQuintile.maxScore.toFixed(1)}
-                </span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Stop Count:</span>
-                <span className="font-mono font-bold text-slate-800">
-                  {activeQuintile.count} stops (20.0%)
-                </span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-slate-500 font-medium">Shelter Priority:</span>
-                <span className="font-bold text-[#1e3a8a]">{activeQuintile.shelterPriority}</span>
+            <div className="mt-4 pt-3 border-t border-slate-200/60">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Archetypal Stop Example:
+              </span>
+              <div className="text-xs font-bold text-slate-900 mt-0.5">
+                {activeQuintile.grade === 'A' ? 'Stop #6586 (121 St & 145 Ave)' : activeQuintile.grade === 'E' ? 'Stop #1745 (130 St & 107 Ave)' : 'Representative Corridor Stop'}
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-200/60">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Archetypal Stop Example:
-            </span>
-            <div className="text-xs font-bold text-slate-900 mt-0.5">
-              {activeQuintile.grade === 'A' ? 'Stop #6586 (121 St & 145 Ave)' : activeQuintile.grade === 'E' ? 'Stop #1745 (130 St & 107 Ave)' : 'Representative Corridor Stop'}
+          <div className="space-y-2 text-xs self-center">
+            <div className="flex justify-between py-1 border-b border-slate-200/60">
+              <span className="text-slate-500 font-medium">Score Range:</span>
+              <span className="font-mono font-bold text-slate-800">
+                {activeQuintile.minScore.toFixed(1)} - {activeQuintile.maxScore.toFixed(1)}
+              </span>
             </div>
-          </div>
-        </div>
-
-        {/* Policy Impact Detail */}
-        <div className="md:col-span-2 flex flex-col justify-between bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Actionable Decision Framework
+            <div className="flex justify-between py-1 border-b border-slate-200/60">
+              <span className="text-slate-500 font-medium">Stop Count:</span>
+              <span className="font-mono font-bold text-slate-800">
+                {activeQuintile.count} stops (20.0%)
+              </span>
             </div>
-            <p className="text-xs md:text-sm text-slate-700 leading-relaxed font-medium">
-              {activeQuintile.policyAction}
-            </p>
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
-            <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-[#1e3a8a] text-[11px] font-bold border border-blue-100">
-              Winter Snow Clearance
-            </span>
-            <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-[#1e3a8a] text-[11px] font-bold border border-blue-100">
-              Capital Infrastructure Fund
-            </span>
-            <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-[#1e3a8a] text-[11px] font-bold border border-blue-100">
-              Pedestrian Safety Lighting
-            </span>
+            <div className="flex justify-between py-1">
+              <span className="text-slate-500 font-medium">Shelter Priority:</span>
+              <span className="font-bold text-[#1e3a8a]">{activeQuintile.shelterPriority}</span>
+            </div>
           </div>
         </div>
       </div>
