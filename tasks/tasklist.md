@@ -85,4 +85,12 @@
   - [x] Task 3: Update `BusStopScrollytelling.tsx` candidate stop tickets and case study labels to Purple (#6586) and Orange (#1745)
   - [x] Task 4: Update `BusStopToggleMap.tsx` toggle buttons, map circles, and spatial HUD to Purple (#6586) and Orange (#1745)
   - [x] Task 5: Update `BusStopSupplyDisparity.tsx` timeline markers, cards, and icons to Purple (#6586) and Orange (#1745)
+- [x] Phase 38: Bus Stop CIMD Combinations Monte Carlo & Stability Analysis:
+  - [x] Task 1: Develop `scripts/run_bus_stop_sensitivity_analysis.py` evaluating all 15 active binary toggle combinations across 5,724 municipal stops
+  - [x] Task 2: Compute statistical metrics (score mean, std/volatility, min/max/range, grade counts, top drivers, and 4 classifications with zero 'Bedrock' terminology: Essential Equity Bus Stop, High Swing Bus Stop, Low Swing Bus Stop, Always Low Equity Bus Stop)
+  - [x] Task 3: Export `public/data/bus_stop_sensitivity_summary.csv`, update `public/data/bus_stop_vulnerability.json`, and generate `docs/BUS_STOP_SENSITIVITY_ANALYSIS_REPORT.md`
+  - [x] Task 4: Create interactive `BusStopMonteCarloSimulation.tsx` with animated live weight sampling, progress counter, and Stop #6586 vs Stop #2821 distribution comparison
+  - [x] Task 5: Create interactive `BusStopStabilityScatter.tsx` plotting Mean Score vs Volatility with key stops highlighted, normal distribution sparkline tooltips, and fullscreen mode
+  - [x] Task 6: Integrate Section 8 (`8. Bus Stop Stability and Volatility: Equity Sensitivity Analysis`) into `BusStopScrollytelling.tsx`, expand progress rail to 10 stations, and renumber subsequent sections
+  - [x] Task 7: Integrate Stability Filter and expanded stability profile into `BusStopDirectoryModal.tsx` and `BusStopDirectory.tsx`
 

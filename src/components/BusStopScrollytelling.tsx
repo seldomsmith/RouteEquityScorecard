@@ -17,6 +17,8 @@ import { CimdExplainer } from '@/components/widgets/CimdExplainer';
 import { BusStopGradeDistribution } from '@/components/widgets/BusStopGradeDistribution';
 import { BusStopWaterfall } from '@/components/BusStopWaterfall';
 import { BusStopSupplyDisparity } from '@/components/widgets/BusStopSupplyDisparity';
+import { BusStopMonteCarloSimulation } from '@/components/widgets/BusStopMonteCarloSimulation';
+import { BusStopStabilityScatter } from '@/components/charts/BusStopStabilityScatter';
 
 const CHAPTERS = [
   { id: 'chapter-1', label: '1. Introduction' },
@@ -26,8 +28,9 @@ const CHAPTERS = [
   { id: 'chapter-5', label: '5. Quintile Grades' },
   { id: 'chapter-6', label: '6. Spatial Map' },
   { id: 'chapter-7', label: '7. Supply vs Need' },
-  { id: 'chapter-8', label: '8. Spatial Barriers' },
-  { id: 'chapter-9', label: '9. Explore Stops' },
+  { id: 'chapter-8', label: '8. Stability Analysis' },
+  { id: 'chapter-9', label: '9. Spatial Barriers' },
+  { id: 'chapter-10', label: '10. Explore Stops' },
 ];
 
 const BusStopToggleMap = dynamic(
@@ -414,11 +417,106 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <BusStopSupplyDisparity stopA={stop6586} stopB={stop1745} />
         </section>
 
-        {/* ================= SECTION 8: Spatial Constraints ================= */}
+        {/* ================= SECTION 8: Bus Stop Stability and Volatility ================= */}
         <section id="chapter-8" className="space-y-6">
           <div className="space-y-4">
             <h2 className="text-3xl font-black text-emerald-900 leading-tight">
-              8. Spatial Constraints: Physical Barriers and Aggregate Geography
+              8. Bus Stop Stability and Volatility: Equity Sensitivity Analysis
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed">
+              As shown above, when the demographic indicator weighting changes, the grade assigned to some bus stops shifts dramatically while others remain stable. To better understand and model this dynamic, we ran a sensitivity simulation calculating stop scores across all 15 possible indicator toggle combinations. This allows us to understand which stops are important for the purposes of equity, no matter what weighting model we use. Use the simulation below to compare how the stability of Stop #6586 and Stop #2821 differ.
+            </p>
+            <p className="text-slate-700 text-base leading-relaxed font-bold">
+              This simulation reveals four bus stop stability classifications:
+            </p>
+          </div>
+
+          <BusStopMonteCarloSimulation />
+
+          <div className="space-y-6 pt-2">
+            <div className="flex flex-col gap-6 pl-2 py-2">
+              {/* 1. Essential Equity Bus Stop */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />
+                  <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-purple-50 text-purple-800 border border-purple-200">
+                    Essential Equity Bus Stop (Always High Equity)
+                  </span>
+                </div>
+                <p className="text-slate-700 text-base leading-relaxed pl-3.5 font-medium">
+                  These stops score highly across all demographic scenarios, maintaining ranking stability regardless of the active indicator configuration.
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-purple-300 pl-4 ml-3.5 italic">
+                  <strong className="text-purple-700">Stop #6586</strong> (121 Street & 145 Avenue) consistently receives a high bus stop equity score regardless of how the demographic model is weighted. This classification is due to Stop #6586 scoring exceptionally high on three of the four dimensions: Ethnocultural Composition (100.0), Situational Vulnerability (89.4), and Residential Instability (75.8). It serves a catchment with high concentrations of low-income families and immigrants who rely directly on local feeder lines. Across all 15 possible combinations, Stop #6586 receives Grade A in 12 configurations and Grade B in 3 configurations: 100% of combinations place it in high equity priority. Even if we minimize demographic weights and heavily favor Economic Deprivation (its lowest scoring dimension at 63.2), Stop #6586's scores across the other dimensions ensure it remains an Essential Equity Bus Stop.
+                </p>
+              </div>
+
+              {/* 2. High Swing Bus Stop */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-red-50 text-red-700 border border-red-200">
+                    High Swing Bus Stop
+                  </span>
+                </div>
+                <p className="text-slate-700 text-base leading-relaxed pl-3.5 font-medium">
+                  Scores for stops in this category fluctuate wildly depending on indicator selections, making their funding priority highly sensitive to changing planning objectives.
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-red-300 pl-4 ml-3.5 italic">
+                  <strong className="text-red-700">Stop #2821</strong> (104 Street & 82 Avenue) is a High Swing Bus Stop because its score surges under a Residential Instability focus but collapses when we prioritize Economic Deprivation. Specifically, Stop #2821 serves a corridor along Whyte Avenue in Old Strathcona characterized by multi-family rental apartments and student tenants, scoring an absolute 100.0 in Residential Instability. However, because surrounding residents report higher average incomes, its Economic Deprivation score is just 20.0. When indicator weights shift from tenant concentration to income poverty, Stop #2821's score swings 80 points (from 20.0 to 100.0) across four letter grades from Grade A to Grade E, making its relative funding priority highly sensitive to the chosen weighting model.
+                </p>
+              </div>
+
+              {/* 3. Low Swing Bus Stop */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                  <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+                    Low Swing Bus Stop
+                  </span>
+                </div>
+                <p className="text-slate-700 text-base leading-relaxed pl-3.5 font-medium">
+                  These stops maintain steady, mid-range scores across all scenarios and are not highly sensitive to indicator changes, representing stable baseline operations.
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-amber-300 pl-4 ml-3.5 italic">
+                  For example, <strong className="text-amber-700">Stop #5416</strong> (167 Street & 118 Avenue) does not feature extreme highs or absolute zeros in any single dimension. Under the simulation, its scores remain remarkably steady, maintaining an average score of 50.0 with a volatility of 0.0 across all 15 indicator combinations.
+                </p>
+              </div>
+
+              {/* 4. Always Low Equity Bus Stop */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                  <span className="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-black uppercase tracking-wider bg-orange-50 text-orange-800 border border-orange-200">
+                    Always Low Equity Bus Stop
+                  </span>
+                </div>
+                <p className="text-slate-700 text-base leading-relaxed pl-3.5 font-medium">
+                  These stops consistently receive lower equity scores across all possible indicator combinations, typically running through affluent residential sectors.
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed border-l-2 border-orange-300 pl-4 ml-3.5 italic">
+                  <strong className="text-orange-700">Stop #1745</strong> (130 Street & 107 Avenue in Westmount) falls into this category, receiving Grade E in 12 configurations and Grade D in 2 configurations (93.3% low need rate), averaging a score of 43.3 out of 100.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-slate-600 text-base leading-relaxed">
+              Identifying these classifications for each stop helps transit planners identify which stops should receive permanent infrastructure investments (such as heated shelters, tactile boarding pads, and fast-track winter maintenance) and how policy changes may alter curbside priority.
+            </p>
+            <p className="text-slate-700 text-base leading-relaxed font-bold">
+              There is no perfect mix of demographic weights; they all rely on subjective policy choices. But this analysis demonstrates which bus stops perform a high-equity service no matter how we weight them.
+            </p>
+          </div>
+
+          {/* Interactive Sensitivity Scatter Plot */}
+          <BusStopStabilityScatter />
+        </section>
+
+        {/* ================= SECTION 9: Spatial Constraints ================= */}
+        <section id="chapter-9" className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-emerald-900 leading-tight">
+              9. Spatial Constraints: Physical Barriers and Aggregate Geography
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm text-slate-700">
@@ -444,10 +542,10 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
         </section>
 
-        {/* ================= SECTION 9: Call to Action & Explorer ================= */}
-        <section id="chapter-9" className="pt-8 border-t border-slate-200 text-center space-y-6">
+        {/* ================= SECTION 10: Call to Action & Explorer ================= */}
+        <section id="chapter-10" className="pt-8 border-t border-slate-200 text-center space-y-6">
           <h2 className="text-3xl font-black text-emerald-900 leading-tight">
-            9. Explore Edmonton's 6,755 Bus Stops
+            10. Explore Edmonton's 6,755 Bus Stops
           </h2>
           <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed font-medium">
             Inspect stop grades across all neighbourhoods, test custom CIMD weighting criteria, and search any stop in the city.

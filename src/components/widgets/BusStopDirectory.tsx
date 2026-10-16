@@ -30,6 +30,20 @@ export interface BusStopRecord {
     eth: number;
     sit: number;
   }>;
+  stability?: {
+    stability_class: string;
+    score_mean: number;
+    score_std: number;
+    score_min: number;
+    score_max: number;
+    score_range: number;
+    grade_spread: number;
+    pct_high_equity: number;
+    pct_low_equity: number;
+    grade_counts: { A: number; B: number; C: number; D: number; E: number };
+    top_positive_driver: string;
+    top_negative_driver: string;
+  };
 }
 
 interface BusStopDirectoryProps {

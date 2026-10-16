@@ -39,6 +39,7 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<BusStopGrade | 'ALL'>('ALL');
+  const [selectedStability, setSelectedStability] = useState<string>('ALL');
   const [sortField, setSortField] = useState<'stop_id' | 'name' | 'pop' | 'score' | 'percentile'>('percentile');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
@@ -137,6 +138,10 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
       list = list.filter((s) => s.dynamicGrade === selectedGrade);
     }
 
+    if (selectedStability !== 'ALL') {
+      list = list.filter((s) => s.stability?.stability_class === selectedStability);
+    }
+
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       list = list.filter((s) => 
@@ -204,36 +209,64 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
         {/* Controls & Grade Filter Tabs */}
         <div className="p-4 bg-white border-b border-slate-100 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
           
-          {/* Grade Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-            {gradesList.map((g) => {
-              const count = gradeCounts[g] || 0;
-              const isSelected = selectedGrade === g;
-              const cfg = g !== 'ALL' ? GRADE_CONFIG[g] : null;
+          {/* Grade Tabs & Stability Filters */}
+          <div className="flex flex-col gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+            {/* Row 1: Grade Tabs */}
+            <div className="flex items-center gap-1.5">
+              {gradesList.map((g) => {
+                const count = gradeCounts[g] || 0;
+                const isSelected = selectedGrade === g;
+                const cfg = g !== 'ALL' ? GRADE_CONFIG[g] : null;
 
-              return (
+                return (
+                  <button
+                    key={g}
+                    onClick={() => setSelectedGrade(g)}
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+                      isSelected
+                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a] shadow-sm'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {cfg && (
+                      <span
+                        className="w-2.5 h-2.5 rounded-full border border-white"
+                        style={{ backgroundColor: cfg.color }}
+                      />
+                    )}
+                    <span>{g === 'ALL' ? 'All Stops' : `Grade ${g}`}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                      {count.toLocaleString()}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Row 2: Stability Class Filters */}
+            <div className="flex items-center gap-1.5 pt-1 border-t border-slate-100">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pr-1">Stability:</span>
+              {[
+                { label: 'All', key: 'ALL', color: '#64748B' },
+                { label: 'Essential Equity', key: 'Essential Equity Bus Stop', color: '#7C3AED' },
+                { label: 'High Swing', key: 'High Swing Bus Stop', color: '#EF4444' },
+                { label: 'Low Swing', key: 'Low Swing Bus Stop', color: '#F59E0B' },
+                { label: 'Always Low Equity', key: 'Always Low Equity Bus Stop', color: '#EA580C' },
+              ].map((item) => (
                 <button
-                  key={g}
-                  onClick={() => setSelectedGrade(g)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                    isSelected
-                      ? 'bg-[#1e3a8a] text-white border-[#1e3a8a] shadow-sm'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  key={item.key}
+                  onClick={() => setSelectedStability(item.key)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                    selectedStability === item.key
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
-                  {cfg && (
-                    <span
-                      className="w-2.5 h-2.5 rounded-full border border-white"
-                      style={{ backgroundColor: cfg.color }}
-                    />
-                  )}
-                  <span>{g === 'ALL' ? 'All Stops' : `Grade ${g}`}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                    {count.toLocaleString()}
-                  </span>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span>{item.label}</span>
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
           {/* Search Box */}
@@ -355,11 +388,46 @@ export const BusStopDirectoryModal: React.FC<BusStopDirectoryModalProps> = ({
                         </td>
                       </tr>
 
-                      {/* Nested DA Contribution Expansion Sub-Row */}
+                      {/* Nested DA Contribution & Stability Expansion Sub-Row */}
                       {isExpanded && (
                         <tr className="bg-slate-50/80 border-b border-slate-200">
                           <td colSpan={7} className="p-4 pl-12">
                             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs space-y-3">
+                              {/* Stability & Monte Carlo Profile */}
+                              {stop.stability && (
+                                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider text-white"
+                                      style={{
+                                        backgroundColor:
+                                          stop.stability.stability_class === 'Essential Equity Bus Stop'
+                                            ? '#7C3AED'
+                                            : stop.stability.stability_class === 'High Swing Bus Stop'
+                                            ? '#EF4444'
+                                            : stop.stability.stability_class === 'Low Swing Bus Stop'
+                                            ? '#F59E0B'
+                                            : '#EA580C',
+                                      }}
+                                    >
+                                      {stop.stability.stability_class}
+                                    </span>
+                                    <span className="font-mono text-slate-500 font-semibold">
+                                      Mean: <strong className="text-slate-800">{stop.stability.score_mean.toFixed(1)}</strong> &bull; Volatility (σ): <strong className="text-slate-800">{stop.stability.score_std.toFixed(1)}</strong>
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 font-mono text-[11px] text-slate-600">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400">15-Combo Grades:</span>
+                                    <span className="text-purple-700 font-bold">A:{stop.stability.grade_counts.A}</span>
+                                    <span className="text-blue-700 font-bold">B:{stop.stability.grade_counts.B}</span>
+                                    <span className="text-amber-700 font-bold">C:{stop.stability.grade_counts.C}</span>
+                                    <span className="text-orange-700 font-bold">D:{stop.stability.grade_counts.D}</span>
+                                    <span className="text-red-700 font-bold">E:{stop.stability.grade_counts.E}</span>
+                                  </div>
+                                </div>
+                              )}
+
                               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                 <span className="text-xs font-black uppercase tracking-wider text-[#1e3a8a] flex items-center gap-1.5">
                                   <Layers className="w-3.5 h-3.5" /> Contributing Dissemination Areas (400m Walk Radius)

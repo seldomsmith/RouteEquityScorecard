@@ -25,6 +25,15 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Bus Stop CIMD Combinations Monte Carlo & Stability Analysis (Phase 38)**:
+  - Formulated and executed [scripts/run_bus_stop_sensitivity_analysis.py](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/scripts/run_bus_stop_sensitivity_analysis.py) evaluating all 15 active binary toggle combinations ($2^4 - 1$) across 5,724 municipal Edmonton bus stops.
+  - Derived empirical sensitivity metrics: mean score, standard deviation (volatility $\sigma$), score range ($\Delta$), grade spread, grade distribution counts, and top drivers.
+  - Assigned four standardized stability classifications strictly without 'Bedrock' terminology: **Essential Equity Bus Stop** (822 stops, 14.4%), **High Swing Bus Stop** (4,045 stops, 70.7%), **Low Swing Bus Stop** (642 stops, 11.2%), and **Always Low Equity Bus Stop** (215 stops, 3.8%).
+  - Exported dataset to `public/data/bus_stop_sensitivity_summary.csv`, enriched `public/data/bus_stop_vulnerability.json` with embedded stability objects, and compiled [docs/BUS_STOP_SENSITIVITY_ANALYSIS_REPORT.md](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/docs/BUS_STOP_SENSITIVITY_ANALYSIS_REPORT.md).
+  - Built interactive [BusStopMonteCarloSimulation.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopMonteCarloSimulation.tsx) simulation widget with dynamic weight sampling, progress counter (0/150 runs), and side-by-side score density curves for Stop #6586 (Essential Equity, $\sigma=9.1$) and Stop #2821 (High Swing, $\sigma=20.6$).
+  - Built interactive [BusStopStabilityScatter.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/charts/BusStopStabilityScatter.tsx) plotting Mean Score vs Volatility with key stops highlighted, normal distribution sparkline tooltips, and fullscreen mode.
+  - Recreated Section 8 (`8. Bus Stop Stability and Volatility: Equity Sensitivity Analysis`) in [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx), expanded subway progress rail to 10 stations, and renumbered subsequent sections cleanly.
+  - Integrated Stability Filter tabs and expanded stability profile cards into [BusStopDirectoryModal.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopDirectoryModal.tsx).
 - **Remove Sample Score Footer & Shift Sample Stop Themes to Purple and Orange (Phase 37)**:
   - Removed the `Sample Score: #6586: 100 • #1745: 40` footers and unused score properties from [CimdExplainer.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/CimdExplainer.tsx).
   - Shifted sample bus stop themes entirely away from red and green to Purple and Orange to eliminate the unintended "red = failing/bad" connotation:
