@@ -23,10 +23,11 @@
   - [x] Generate missing 400m corridor walk isochrones in `public/data/isochrones/` (10 new GeoJSONs: `071`, `505`, `F1`, school/regional corridors)
   - [x] Execute Monte Carlo sensitivity simulations (`run_sensitivity_analysis.py` and `run_two_pillar_sensitivity_analysis.py`) refreshing stability classes across all 129 municipal routes
   - [x] Author comprehensive analytical research and audit report in `docs/gtfs_comparison_report.md` documenting 4-pillar shifts, Monte Carlo stability transitions, and policy recommendations
-- [ ] Upcoming: Map Landing Page Subway Lines to Actual Edmonton Routes
-  - Replace generic schematic background curves with actual GTFS corridor alignments (e.g. Route 2, Route 3, Route 727, Capital/Metro LRT Lines)
-  - Color-code transit line segments to match official ETS brand hues or equity stability classifications
-  - Align station node dots with actual Edmonton transit transfer hubs (e.g. Clareview, Downtown, University, Westmount)
+- [x] Landing Page Real Edmonton Route Alignment:
+  - [x] Replaced generic schematic curves with 8 authentic central Edmonton route corridors (Capital Line LRT, Metro Line LRT, Valley Line LRT, Route 1, Route 4, Route 8, Route 2, Route 9)
+  - [x] Constrained routes within the geographic box: 118 Ave (N), 63 Ave (S), 142 St (W), and 75 St (E), reflecting true road and track curves
+  - [x] Positioned authentic Edmonton transit transfer hubs (Churchill, University, Whyte Ave, Government Centre, MacEwan, Stadium, Davies, Corona)
+  - [x] Implemented phased traffic dispatch so only 3-5 vehicles glide concurrently across the viewport rather than crowding all at once
 - [ ] Structure 20-Minute Executive Presentation (No Coding):
   - 0:00 - 3:00 | The Problem: City-wide transit equity vs. micro-scale stop realities
   - 3:00 - 7:00 | Route Equity Framework: The Four Pillars and Monte Carlo stability testing

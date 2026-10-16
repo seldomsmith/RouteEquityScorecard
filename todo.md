@@ -25,7 +25,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
-### Completed:
+- **Edmonton Core Real-Route Alignment for Landing Page Hero Waterfall (Phase 30)**:
+  - Replaced hardcoded synthetic schematic subway paths in `RouteWaterfall.tsx` with 8 authentic central Edmonton route corridors extracted directly from GTFS records: Capital Line LRT (`#22c55e`), Metro Line LRT (`#ef4444`), Valley Line LRT (`#06b6d4`), Route 1 (`#3b82f6`), Route 4 (`#f97316`), Route 8 (`#a855f7`), Route 2 (`#eab308`), and Route 9 (`#10b981`).
+  - Geographically bounded within the core frame: 118 Ave (North), 63 Ave (South), 142 St (West), and 75 St (East), strictly preserving natural road and track curves including the North Saskatchewan River bend, Tawatinâ Bridge, Dudley B. Menzies bridge/tunnel, Jasper Ave, and Whyte Ave.
+  - Positioned authentic Edmonton transit interchange transfer hubs (Churchill, University, Whyte Ave, Government Centre, MacEwan, Stadium, Davies, and Corona/Jasper).
+  - Engineered phased dispatch timing so vehicles cycle gracefully with individual cooldown intervals, maintaining a clean visual balance of 3 to 5 vehicles gliding across the viewport simultaneously without overcrowding.
+  - Retained all existing aesthetic properties: glowing vehicle heads, 30-segment trailing light tails, station proximity pulse activations, and interactive cursor spotlight highlighting.
 - **October 2026 GTFS Live Production Cutover & Dual-Feed Analytics (Phase 29)**:
   - Archived previous baseline assets (`golden_route_record.json`, `golden_route_record.parquet`, `bus_stop_vulnerability.json`, `sensitivity_summary.csv`, and `sensitivity_summary_2_pillar.csv`) to `data/archive_baseline/`.
   - Promoted the October 2026 GTFS dataset (`261002_1029`) as the live production base (`public/data/golden_route_record.json` and `.parquet`) with unified corridors for `001`, `509`, and `918`, bringing active network routes to 178 (129 municipal, 49 regional).

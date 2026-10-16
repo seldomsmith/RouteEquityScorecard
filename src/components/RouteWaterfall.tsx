@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import { EDMONTON_CORE_ROUTES, EDMONTON_INTERCHANGES, PathNode, CoreTransitRoute } from '@/data/edmontonCoreRoutes';
 
 interface RouteWaterfallProps {
   opacity?: number;
@@ -13,31 +14,11 @@ interface Point {
   y: number;
 }
 
-interface Station {
-  id: string;
-  xPct: number;
-  yPct: number;
-  glow: number;
-}
-
-interface PathNode {
-  xPct: number;
-  yPct: number;
-}
-
-interface TransitLine {
-  color: string;
-  strokeWidth: number;
-  path: PathNode[];
-  stations: Station[];
-  trains: {
-    progress: number;
-    speed: number;
-    length: number;
-  }[];
-}
-
-export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, interactive = true, showStations = true }) => {
+export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({
+  opacity = 0.35,
+  interactive = true,
+  showStations = true,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -49,152 +30,9 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
 
     let animationFrameId: number;
 
-    const lines: TransitLine[] = [
-      {
-        color: '#22c55e',
-        strokeWidth: 10,
-        path: [
-          { xPct: -10, yPct: 10 },
-          { xPct: 20, yPct: 25 },
-          { xPct: 35, yPct: 50 },
-          { xPct: 75, yPct: 50 },
-          { xPct: 90, yPct: 75 },
-          { xPct: 110, yPct: 85 },
-        ],
-        stations: [
-          { id: 'g1', xPct: 20, yPct: 25, glow: 0 },
-          { id: 'g2', xPct: 75, yPct: 50, glow: 0 },
-          { id: 'g3', xPct: 90, yPct: 75, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.0, speed: 0.003, length: 0.15 },
-          { progress: 0.5, speed: 0.0025, length: 0.15 },
-        ],
-      },
-      {
-        color: '#eab308',
-        strokeWidth: 10,
-        path: [
-          { xPct: 35, yPct: -10 },
-          { xPct: 35, yPct: 50 },
-          { xPct: 42, yPct: 62 },
-          { xPct: 42, yPct: 110 },
-        ],
-        stations: [
-          { id: 'y1', xPct: 35, yPct: 20, glow: 0 },
-          { id: 'y2', xPct: 42, yPct: 75, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.2, speed: 0.0035, length: 0.18 },
-          { progress: 0.7, speed: 0.003, length: 0.18 },
-        ],
-      },
-      {
-        color: '#ef4444',
-        strokeWidth: 10,
-        path: [
-          { xPct: -10, yPct: 90 },
-          { xPct: 20, yPct: 75 },
-          { xPct: 28, yPct: 50 },
-          { xPct: 83, yPct: 50 },
-          { xPct: 97, yPct: 25 },
-          { xPct: 110, yPct: 15 },
-        ],
-        stations: [
-          { id: 'r1', xPct: 83, yPct: 50, glow: 0 },
-          { id: 'r2', xPct: 97, yPct: 25, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.1, speed: 0.0028, length: 0.15 },
-          { progress: 0.6, speed: 0.0032, length: 0.15 },
-        ],
-      },
-      {
-        color: '#3b82f6',
-        strokeWidth: 10,
-        path: [
-          { xPct: 80, yPct: -10 },
-          { xPct: 69, yPct: 25 },
-          { xPct: 55, yPct: 50 },
-          { xPct: 55, yPct: 75 },
-          { xPct: 42, yPct: 100 },
-          { xPct: -10, yPct: 85 },
-        ],
-        stations: [
-          { id: 'b1', xPct: 69, yPct: 25, glow: 0 },
-          { id: 'b2', xPct: 55, yPct: 75, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.3, speed: 0.0033, length: 0.16 },
-          { progress: 0.8, speed: 0.0027, length: 0.16 },
-        ],
-      },
-      {
-        color: '#f97316',
-        strokeWidth: 10,
-        path: [
-          { xPct: 110, yPct: 15 },
-          { xPct: 85, yPct: 15 },
-          { xPct: 65, yPct: 35 },
-          { xPct: 35, yPct: 35 },
-          { xPct: 15, yPct: 60 },
-          { xPct: -10, yPct: 60 },
-        ],
-        stations: [
-          { id: 'o1', xPct: 65, yPct: 35, glow: 0 },
-          { id: 'o2', xPct: 35, yPct: 35, glow: 0 },
-          { id: 'o3', xPct: 15, yPct: 60, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.15, speed: 0.0032, length: 0.14 },
-          { progress: 0.65, speed: 0.0028, length: 0.14 },
-        ],
-      },
-      {
-        color: '#06b6d4',
-        strokeWidth: 10,
-        path: [
-          { xPct: 85, yPct: -10 },
-          { xPct: 85, yPct: 40 },
-          { xPct: 95, yPct: 60 },
-          { xPct: 95, yPct: 110 },
-        ],
-        stations: [
-          { id: 'c1', xPct: 85, yPct: 40, glow: 0 },
-          { id: 'c2', xPct: 95, yPct: 60, glow: 0 },
-          { id: 'c3', xPct: 95, yPct: 85, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.4, speed: 0.0036, length: 0.17 },
-          { progress: 0.9, speed: 0.0031, length: 0.17 },
-        ],
-      },
-      {
-        color: '#a855f7',
-        strokeWidth: 10,
-        path: [
-          { xPct: 62, yPct: -10 },
-          { xPct: 50, yPct: 45 },
-          { xPct: 20, yPct: 75 },
-          { xPct: 5, yPct: 110 },
-        ],
-        stations: [
-          { id: 'p1', xPct: 50, yPct: 45, glow: 0 },
-        ],
-        trains: [
-          { progress: 0.05, speed: 0.0029, length: 0.15 },
-          { progress: 0.55, speed: 0.0034, length: 0.15 },
-        ],
-      },
-    ];
-
-    const interchanges = [
-      { id: 'int1', xPct: 35, yPct: 50, glow: 0 },
-      { id: 'int2', xPct: 55, yPct: 50, glow: 0 },
-      { id: 'int3', xPct: 20, yPct: 75, glow: 0 },
-      { id: 'int4', xPct: 85, yPct: 15, glow: 0 },
-      { id: 'int5', xPct: 42, yPct: 100, glow: 0 },
-    ];
+    // Clone route configuration into local mutable state for animation
+    const lines: CoreTransitRoute[] = JSON.parse(JSON.stringify(EDMONTON_CORE_ROUTES));
+    const interchanges = JSON.parse(JSON.stringify(EDMONTON_INTERCHANGES));
 
     // Track hover coordinates relative to the canvas
     let mousePos: Point | null = null;
@@ -258,7 +96,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
       const pxPoints = path.map(node => getPixelCoords(node.xPct, node.yPct, width, height));
       let minDistance = Infinity;
       for (let i = 0; i < pxPoints.length - 1; i++) {
-        const dist = getDistanceToSegment(p, pxPoints[i], pxPoints[i+1]);
+        const dist = getDistanceToSegment(p, pxPoints[i], pxPoints[i + 1]);
         if (dist < minDistance) {
           minDistance = dist;
         }
@@ -275,23 +113,24 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
       let totalLength = 0;
       const segmentLengths: number[] = [];
       for (let i = 0; i < pxPoints.length - 1; i++) {
-        const dx = pxPoints[i+1].x - pxPoints[i].x;
-        const dy = pxPoints[i+1].y - pxPoints[i].y;
+        const dx = pxPoints[i + 1].x - pxPoints[i].x;
+        const dy = pxPoints[i + 1].y - pxPoints[i].y;
         const len = Math.sqrt(dx * dx + dy * dy);
         segmentLengths.push(len);
         totalLength += len;
       }
 
-      const targetLen = progress * totalLength;
+      const clampedProgress = Math.max(0, Math.min(1, progress));
+      const targetLen = clampedProgress * totalLength;
       let currentLen = 0;
 
       for (let i = 0; i < pxPoints.length - 1; i++) {
         const segLen = segmentLengths[i];
         if (currentLen + segLen >= targetLen) {
-          const ratio = (targetLen - currentLen) / segLen;
+          const ratio = segLen > 0 ? (targetLen - currentLen) / segLen : 0;
           return {
-            x: pxPoints[i].x + (pxPoints[i+1].x - pxPoints[i].x) * ratio,
-            y: pxPoints[i].y + (pxPoints[i+1].y - pxPoints[i].y) * ratio,
+            x: pxPoints[i].x + (pxPoints[i + 1].x - pxPoints[i].x) * ratio,
+            y: pxPoints[i].y + (pxPoints[i + 1].y - pxPoints[i].y) * ratio,
           };
         }
         currentLen += segLen;
@@ -316,7 +155,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
             bestLineColor = line.color;
           }
         });
-        
+
         // Spotlight active within 60px proximity
         if (minRouteDistance < 60) {
           hoveredLineColor = bestLineColor;
@@ -327,19 +166,32 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
         hoveredLineColor = null;
       }
 
+      // Update vehicle positions and staggered cooldown cycling
       lines.forEach(line => {
         line.trains.forEach(train => {
-          train.progress += train.speed;
-          if (train.progress > 1) {
-            train.progress = 0;
+          if (train.active) {
+            train.progress += train.speed;
+            if (train.progress > 1) {
+              train.progress = 0;
+              train.active = false;
+              train.cooldown = train.maxCooldown;
+            }
+          } else {
+            train.cooldown -= 1;
+            if (train.cooldown <= 0) {
+              train.active = true;
+              train.progress = 0;
+            }
           }
         });
 
+        // Station activation from passing active vehicles
         line.stations.forEach(station => {
           let minDistance = Infinity;
           const sPos = getPixelCoords(station.xPct, station.yPct, w, h);
 
           line.trains.forEach(train => {
+            if (!train.active) return;
             const tPos = getPositionOnPath(line.path, train.progress, w, h);
             const dx = tPos.x - sPos.x;
             const dy = tPos.y - sPos.y;
@@ -351,19 +203,21 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
 
           const activationThreshold = 80;
           if (minDistance < activationThreshold) {
-            station.glow = 1 - (minDistance / activationThreshold);
+            station.glow = 1 - minDistance / activationThreshold;
           } else {
             station.glow = Math.max(0, station.glow - 0.05);
           }
         });
       });
 
-      interchanges.forEach(interchange => {
+      // Interchange station activation
+      interchanges.forEach((interchange: { glow: number; xPct: number; yPct: number }) => {
         let minDistance = Infinity;
         const iPos = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
 
         lines.forEach(line => {
           line.trains.forEach(train => {
+            if (!train.active) return;
             const tPos = getPositionOnPath(line.path, train.progress, w, h);
             const dx = tPos.x - iPos.x;
             const dy = tPos.y - iPos.y;
@@ -376,13 +230,13 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
 
         const activationThreshold = 90;
         if (minDistance < activationThreshold) {
-          interchange.glow = 1 - (minDistance / activationThreshold);
+          interchange.glow = 1 - minDistance / activationThreshold;
         } else {
           interchange.glow = Math.max(0, interchange.glow - 0.05);
         }
       });
 
-      // Draw background track paths with spotlight highlights
+      // 1. Draw background track paths following true Edmonton road/track geography
       lines.forEach(line => {
         const isHovered = hoveredLineColor === line.color;
 
@@ -396,19 +250,21 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
           }
         });
         ctx.strokeStyle = line.color;
-        ctx.globalAlpha = isHovered ? 0.9 : 0.15; // Maintain baseline 0.15 opacity for non-hovered lines
+        ctx.globalAlpha = isHovered ? 0.9 : 0.18;
         ctx.lineWidth = isHovered ? line.strokeWidth * 1.8 : line.strokeWidth;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.stroke();
       });
 
-      // Draw trains with spotlight highlights
+      // 2. Draw vehicles with glowing trailing light tails
       lines.forEach(line => {
         const isHovered = hoveredLineColor === line.color;
 
         line.trains.forEach(train => {
-          const segmentsCount = 30;
+          if (!train.active) return;
+
+          const segmentsCount = 32;
           ctx.lineWidth = isHovered ? line.strokeWidth * 1.8 : line.strokeWidth;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -426,12 +282,13 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
             ctx.moveTo(pt1.x, pt1.y);
             ctx.lineTo(pt2.x, pt2.y);
 
-            const opacityMultiplier = Math.pow(1 - (i / segmentsCount), 2);
+            const opacityMultiplier = Math.pow(1 - i / segmentsCount, 2);
             ctx.globalAlpha = opacityMultiplier * (isHovered ? 1.0 : 0.9);
             ctx.strokeStyle = line.color;
             ctx.stroke();
           }
 
+          // Glowing vehicle head
           const headPos = getPositionOnPath(line.path, train.progress, w, h);
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
@@ -444,7 +301,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
         });
       });
 
-      // Draw stations with spotlight highlights
+      // 3. Draw route stations
       if (showStations) {
         lines.forEach(line => {
           const isHovered = hoveredLineColor === line.color;
@@ -454,10 +311,10 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
             ctx.globalAlpha = 1.0;
 
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, isHovered ? 11 : 8, 0, Math.PI * 2);
+            ctx.arc(pt.x, pt.y, isHovered ? 10 : 7, 0, Math.PI * 2);
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = line.color;
-            ctx.lineWidth = isHovered ? 5 : 4;
+            ctx.lineWidth = isHovered ? 4.5 : 3.5;
             ctx.fill();
             ctx.stroke();
 
@@ -476,16 +333,16 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
         });
       }
 
-      // Draw interchange stations with basic overlay highlights
+      // 4. Draw landmark interchange nodes
       if (showStations) {
-        interchanges.forEach(interchange => {
+        interchanges.forEach((interchange: { glow: number; xPct: number; yPct: number; name?: string }) => {
           const pt = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
           ctx.globalAlpha = 1.0;
 
           ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
+          ctx.arc(pt.x, pt.y, 11, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = '#1f2937';
+          ctx.strokeStyle = '#1e293b';
           ctx.lineWidth = 4;
           ctx.fill();
           ctx.stroke();
@@ -515,7 +372,7 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({ opacity = 0.35, 
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [showStations]);
 
   return (
     <canvas
