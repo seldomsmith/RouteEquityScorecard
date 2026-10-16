@@ -64,3 +64,8 @@
   - [x] Task 5: Refactor `BusStopToggleMap.tsx` to a rock-solid single Mapbox canvas with smooth fly-to and tactile stop switcher cards
   - [x] Task 6: Reimagine Chapter 7 Supply vs. Need with an Hourly Departure Frequency Timeline and 5.0x Disparity visual
   - [x] Task 7: Remove Chapter 9 Operational Allocation Framework completely and renumber chapters
+- [x] Phase 34: CIMD Four Dimensions Redesign & Multi-Stop Map Toggle:
+  - [x] Task 1: Eliminate nested "bubble inception" in `CimdExplainer.tsx`, replacing tab selectors with a 4-card `.pillar-card-lift` grid
+  - [x] Task 2: Shift CIMD dimension colour palette (Sapphire, Pine Teal, Violet, Amber Bronze) and remove duplicate header text
+  - [x] Task 3: Convert `BusStopToggleMap.tsx` buttons to multi-state toggles (allowing both stops to be active simultaneously)
+  - [x] Task 4: Remove redundant "View Both Stops" button and update spatial HUD for dual-stop mode

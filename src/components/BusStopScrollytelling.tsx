@@ -331,7 +331,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             </h3>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed font-medium">
-            Select either stop to fly directly to its 400-metre walking catchment, or choose &ldquo;View Both Stops&rdquo; to compare their citywide distribution. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
+            Click either stop to fly directly to its 400-metre walking catchment, or toggle both stops on to compare their locations across Edmonton. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
           </p>
 
           <BusStopToggleMap

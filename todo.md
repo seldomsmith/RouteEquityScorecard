@@ -25,6 +25,12 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **CIMD Four Dimensions Redesign & Multi-Stop Map Toggle (Phase 34)**:
+  - Eliminated the nested "bubble inception" in [CimdExplainer.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/CimdExplainer.tsx), replacing tab selectors and multi-level border containers with an open 4-column responsive grid modeled after Route Equity's **Four Pillars**.
+  - Implemented the tactile `.pillar-card-lift` 3D hard-shadow hover animations and shifted the palette to four municipal tones: Sapphire Blue (`#1D4ED8`), Pine Teal (`#0F766E`), Royal Violet (`#7C3AED`), and Amber Bronze (`#D97706`).
+  - Purged redundant headings (`STATISTICS CANADA FRAMEWORK` and repetitive boilerplate), and added concrete sample score comparisons directly inside each card footer (`#6586` vs `#1745`).
+  - Transformed the stop switcher in [BusStopToggleMap.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopToggleMap.tsx) into multi-state toggle pills. Activating both stops automatically renders both 400m circles and fits bounds across Edmonton.
+  - Removed the redundant "View Both Stops" button and updated the bottom spatial HUD to reflect dual-stop active status.
 - **Bus Stop Explain Page Refinements & Architecture Fixes (Phase 33)**:
   - Removed `MICRO-SCALE SPATIAL EQUITY IN TRANSIT` pill tag from [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx).
   - Switched the hero title `ETS BUS STOP EQUITY SCORECARD` to `text-emerald-700` to align visually with the green branding of the bus stop scorecard.

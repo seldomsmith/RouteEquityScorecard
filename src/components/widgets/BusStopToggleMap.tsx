@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Maximize2, Minimize2, Navigation, Compass } from 'lucide-react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -39,16 +39,19 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
   stopB,
   daGeoJson,
 }) => {
-  const [activeStopId, setActiveStopId] = useState<string>(stopA.stop_id);
+  // Multi-state selection: stores array of active stop IDs ['6586'] or ['6586', '1745']
+  const [selectedStopIds, setSelectedStopIds] = useState<string[]>([stopA.stop_id]);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
-  const activeStop = activeStopId === stopA.stop_id ? stopA : stopB;
+  const isStopAActive = selectedStopIds.includes(stopA.stop_id);
+  const isStopBActive = selectedStopIds.includes(stopB.stop_id);
+  const areBothActive = isStopAActive && isStopBActive;
 
-  // Initialize Single Map Instance
+  // Initialize Map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
@@ -126,6 +129,9 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
             id: `stop-buffer-${stop.stop_id}`,
             type: 'circle',
             source: `stop-source-${stop.stop_id}`,
+            layout: {
+              visibility: selectedStopIds.includes(stop.stop_id) ? 'visible' : 'none',
+            },
             paint: {
               'circle-radius': [
                 'interpolate',
@@ -149,6 +155,9 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
             id: `stop-dot-${stop.stop_id}`,
             type: 'circle',
             source: `stop-source-${stop.stop_id}`,
+            layout: {
+              visibility: selectedStopIds.includes(stop.stop_id) ? 'visible' : 'none',
+            },
             paint: {
               'circle-radius': 7,
               'circle-color': '#ffffff',
@@ -182,30 +191,71 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
     };
   }, [stopA, stopB, daGeoJson]);
 
-  // Handle fly-to on active stop change
-  const handleSelectStop = (stop: BusStopItem) => {
-    setActiveStopId(stop.stop_id);
+  // Synchronize layer visibility whenever selectedStopIds updates
+  useEffect(() => {
     if (!mapRef.current) return;
-    mapRef.current.flyTo({
-      center: [stop.lon, stop.lat],
-      zoom: 14.4,
-      speed: 1.2,
-      curve: 1.4,
-      essential: true,
-    });
-  };
+    const map = mapRef.current;
 
-  // Fit both stops in view
-  const handleFitBoth = () => {
-    if (!mapRef.current) return;
-    const bounds = new mapboxgl.LngLatBounds();
-    bounds.extend([stopA.lon, stopA.lat]);
-    bounds.extend([stopB.lon, stopB.lat]);
-    mapRef.current.fitBounds(bounds, {
-      padding: { top: 100, bottom: 80, left: 80, right: 80 },
-      maxZoom: 13,
-      speed: 1.2,
+    [stopA, stopB].forEach((stop) => {
+      const isSelected = selectedStopIds.includes(stop.stop_id);
+      const visibility = isSelected ? 'visible' : 'none';
+
+      if (map.getLayer(`stop-buffer-${stop.stop_id}`)) {
+        map.setLayoutProperty(`stop-buffer-${stop.stop_id}`, 'visibility', visibility);
+      }
+      if (map.getLayer(`stop-dot-${stop.stop_id}`)) {
+        map.setLayoutProperty(`stop-dot-${stop.stop_id}`, 'visibility', visibility);
+      }
     });
+  }, [selectedStopIds, stopA, stopB]);
+
+  // Handle Multi-Stop Toggle interaction
+  const handleToggleStop = (targetStopId: string) => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+
+    const isCurrentlyActive = selectedStopIds.includes(targetStopId);
+
+    if (isCurrentlyActive) {
+      // If user clicks a stop that is already active:
+      // If it is the ONLY stop active, re-center on it
+      if (selectedStopIds.length === 1) {
+        const stop = targetStopId === stopA.stop_id ? stopA : stopB;
+        map.flyTo({
+          center: [stop.lon, stop.lat],
+          zoom: 14.4,
+          speed: 1.2,
+          curve: 1.4,
+          essential: true,
+        });
+        return;
+      }
+
+      // Otherwise, toggle it OFF, leaving the other stop active
+      const remainingId = selectedStopIds.find((id) => id !== targetStopId)!;
+      setSelectedStopIds([remainingId]);
+      const remainingStop = remainingId === stopA.stop_id ? stopA : stopB;
+      map.flyTo({
+        center: [remainingStop.lon, remainingStop.lat],
+        zoom: 14.4,
+        speed: 1.2,
+        curve: 1.4,
+        essential: true,
+      });
+    } else {
+      // User clicked the inactive stop -> now BOTH stops are active!
+      setSelectedStopIds([stopA.stop_id, stopB.stop_id]);
+
+      // Automatically fit bounds to show both stops across Edmonton
+      const bounds = new mapboxgl.LngLatBounds();
+      bounds.extend([stopA.lon, stopA.lat]);
+      bounds.extend([stopB.lon, stopB.lat]);
+      map.fitBounds(bounds, {
+        padding: { top: 90, bottom: 80, left: 70, right: 70 },
+        maxZoom: 13,
+        speed: 1.2,
+      });
+    }
   };
 
   // Handle Resize on Fullscreen toggle
@@ -224,21 +274,22 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
       }`}
     >
       {/* Interactive Stop Switcher Controls (Header Bar) */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pointer-events-none">
-        {/* Stop Selector Tabs */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between gap-2.5 pointer-events-none">
+        {/* Toggle Pills Container */}
         <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/90 shadow-sm pointer-events-auto">
-          {/* Stop A Button */}
+          {/* Stop A Toggle Pill */}
           <button
-            onClick={() => handleSelectStop(stopA)}
+            onClick={() => handleToggleStop(stopA.stop_id)}
             className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
-              activeStopId === stopA.stop_id
+              isStopAActive
                 ? 'bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-700'
-                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200/70'
             }`}
+            title={isStopAActive && isStopBActive ? 'Click to focus on Stop #6586 only' : 'Toggle Stop #6586'}
           >
             <span
               className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
-                activeStopId === stopA.stop_id ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-800'
+                isStopAActive ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-800'
               }`}
             >
               A
@@ -248,24 +299,25 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
                 <span>Stop #{stopA.stop_id}</span>
                 <span className="text-[10px] opacity-80">({formatOrdinal(stopA.equal_percentile)})</span>
               </div>
-              <div className="text-[10px] font-normal opacity-85 truncate max-w-[140px]">
+              <div className="text-[10px] font-normal opacity-85 truncate max-w-[130px]">
                 {stopA.stop_name}
               </div>
             </div>
           </button>
 
-          {/* Stop B Button */}
+          {/* Stop B Toggle Pill */}
           <button
-            onClick={() => handleSelectStop(stopB)}
+            onClick={() => handleToggleStop(stopB.stop_id)}
             className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
-              activeStopId === stopB.stop_id
+              isStopBActive
                 ? 'bg-rose-600 text-white shadow-xs ring-1 ring-rose-700'
-                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200/70'
             }`}
+            title={isStopAActive && isStopBActive ? 'Click to focus on Stop #1745 only' : 'Toggle Stop #1745'}
           >
             <span
               className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
-                activeStopId === stopB.stop_id ? 'bg-white text-rose-800' : 'bg-rose-100 text-rose-800'
+                isStopBActive ? 'bg-white text-rose-800' : 'bg-rose-100 text-rose-800'
               }`}
             >
               E
@@ -275,24 +327,15 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
                 <span>Stop #{stopB.stop_id}</span>
                 <span className="text-[10px] opacity-80">({formatOrdinal(stopB.equal_percentile)})</span>
               </div>
-              <div className="text-[10px] font-normal opacity-85 truncate max-w-[140px]">
+              <div className="text-[10px] font-normal opacity-85 truncate max-w-[130px]">
                 {stopB.stop_name}
               </div>
             </div>
           </button>
         </div>
 
-        {/* Right utility controls: Fit Both Stops + Fullscreen */}
-        <div className="flex items-center gap-2 self-end sm:self-auto pointer-events-auto">
-          <button
-            onClick={handleFitBoth}
-            className="px-3 py-2 bg-white/95 backdrop-blur-md hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 shadow-sm text-xs font-bold transition-all flex items-center gap-1.5"
-            title="View both stops on Edmonton map"
-          >
-            <Compass className="w-3.5 h-3.5 text-blue-700" />
-            <span className="hidden md:inline">View Both Stops</span>
-          </button>
-
+        {/* Right utility control: Fullscreen Button only */}
+        <div className="pointer-events-auto">
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="p-2 bg-white/95 backdrop-blur-md hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 shadow-sm transition-all"
@@ -309,16 +352,31 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
       {/* Bottom Floating Spatial HUD Indicator */}
       <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200/90 shadow-md text-xs flex flex-wrap items-center gap-4 text-slate-700 pointer-events-auto">
         <div className="flex items-center gap-2">
-          <span
-            className={`w-3.5 h-3.5 rounded-full border-2 ${
-              activeStopId === stopA.stop_id
-                ? 'border-emerald-600 bg-emerald-500/20'
-                : 'border-rose-600 bg-rose-500/20'
-            }`}
-          />
-          <span className="font-semibold text-[11px]">
-            400m Walking Buffer ({activeStop.equal_grade === 'A' ? 'High Need' : 'Low Need'})
-          </span>
+          {areBothActive ? (
+            <>
+              <div className="flex items-center -space-x-1">
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-600 bg-emerald-500/20" />
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-rose-600 bg-rose-500/20" />
+              </div>
+              <span className="font-semibold text-[11px]">
+                400m Walking Buffers (Both Stops Active)
+              </span>
+            </>
+          ) : isStopAActive ? (
+            <>
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-600 bg-emerald-500/20" />
+              <span className="font-semibold text-[11px]">
+                400m Walking Buffer (Stop #{stopA.stop_id} &bull; High Need)
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-rose-600 bg-rose-500/20" />
+              <span className="font-semibold text-[11px]">
+                400m Walking Buffer (Stop #{stopB.stop_id} &bull; Low Need)
+              </span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3.5 h-0.5 border-t border-dashed border-slate-500" />
