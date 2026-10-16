@@ -3,19 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { 
-  Bus, 
   ArrowLeft, 
   LayoutDashboard, 
   BookOpen, 
-  BarChart3, 
-  HelpCircle, 
-  Layers, 
-  ShieldCheck, 
-  Clock, 
-  MapPin, 
   AlertTriangle, 
-  CheckCircle, 
-  Maximize2,
   ChevronDown
 } from 'lucide-react';
 import { GlobalNavMenu, PageView } from '@/components/widgets/GlobalNavMenu';
@@ -23,6 +14,7 @@ import { BusStopTicket } from '@/components/widgets/BusStopTicket';
 import { CatchmentDonutCard } from '@/components/widgets/CatchmentDonutCard';
 import { CimdExplainer } from '@/components/widgets/CimdExplainer';
 import { BusStopGradeDistribution } from '@/components/widgets/BusStopGradeDistribution';
+import { RouteWaterfall } from '@/components/RouteWaterfall';
 
 const BusStopToggleMap = dynamic(
   () => import('@/components/widgets/BusStopToggleMap').then((m) => m.BusStopToggleMap),
@@ -156,10 +148,28 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         </div>
       </header>
 
+      {/* 🚌 Full-Width Premium Hero Header */}
+      <div className="w-full relative overflow-hidden bg-gradient-to-b from-blue-50/50 via-slate-50/20 to-slate-50 pt-20 pb-16 px-6 flex flex-col items-center justify-center text-center">
+        {/* Animated RouteWaterfall Background */}
+        <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <RouteWaterfall opacity={0.25} showStations={false} />
+        </div>
+
+        {/* Fade Mask Overlay to make lines fade to white/slate-50 seamlessly */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/40 to-slate-50 pointer-events-none z-[1]" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center">
+          <h1 className="text-[38px] md:text-[50px] lg:text-[62px] font-black text-blue-900 tracking-tight leading-tight uppercase scrolly-title-lift-effect cursor-default">
+            ETS BUS STOP EQUITY <br className="hidden sm:inline" />
+            SCORECARD
+          </h1>
+        </div>
+      </div>
+
       {/* Hero Narrative Intro */}
-      <div className="max-w-4xl mx-auto px-6 pt-16 pb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[#059669] text-xs font-mono font-bold mb-6">
-          <MapPin className="w-3.5 h-3.5" />
+      <div className="max-w-4xl mx-auto px-6 pt-12 pb-12">
+        <div className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[#059669] text-xs font-mono font-bold mb-6">
           <span>MICRO-SCALE SPATIAL EQUITY IN TRANSIT</span>
         </div>
 
@@ -168,11 +178,11 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
         </h2>
 
         <p className="mt-6 text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-          Route-level equity scores summarise transit networks well across long distances, but they smooth out local differences over kilometres of roadway. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
+          Network-level corridor metrics aggregate transit service across kilometres of roadway, but obscure local curb-level disparities. A single bus line often connects affluent neighbourhoods and marginalized communities on the same trip.
         </p>
 
         <p className="mt-4 text-base text-slate-600 leading-relaxed">
-          Evaluating equity at the individual stop captures the specific curb where passengers board. This metric reflects where riders wait in sub-zero Edmonton weather, navigate snow-packed sidewalks, and transfer between routes. Below, we document the data and spatial calculations behind Edmonton's 6,755 bus stops.
+          Evaluating equity at the individual stop focuses on the specific curb where passengers board. Riders experience transit service directly at the pole: waiting in sub-zero winter temperatures, navigating unplowed boarding pads, and connecting to feeder lines. Below, we document the empirical spatial calculations governing Edmonton's 6,755 municipal bus stops.
         </p>
       </div>
 
@@ -183,11 +193,11 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="border-b border-slate-200 pb-3">
             <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 1</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Two Bus Stops, Two Realities
+              Comparative Analysis: High-Need vs. Low-Need Catchments
             </h3>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed font-medium">
-            To evaluate how the scoring system functions across distinct urban contexts, compare two stops within the Edmonton Transit Service network:
+            To evaluate how the scoring methodology functions across distinct urban contexts, compare two stops within the Edmonton Transit Service network:
           </p>
 
           <div className="grid grid-cols-1 gap-4">
@@ -255,7 +265,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="border-b border-slate-200 pb-3">
             <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 4</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Proportional Area Overlap: Slicing the Census Geography
+              Proportional Area Weighting: Dissemination Area Overlap
             </h3>
           </div>
           <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-medium">
@@ -317,7 +327,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="border-b border-slate-200 pb-3">
             <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 6</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Mapping the Divide: Side-by-Side and Toggled Spatial Comparisons
+              Spatial Distribution: Comparative Catchment Geography
             </h3>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed font-medium">
@@ -346,14 +356,14 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="bg-emerald-50/70 border border-emerald-200 p-4 rounded-lg">
                 <span className="text-xs font-mono font-bold text-emerald-800 uppercase">Stop #6586 (Grade A)</span>
-                <div className="text-2xl font-mono font-black text-emerald-950 mt-1">53 Daily Trips</div>
+                <div className="text-2xl font-mono tabular-nums font-black text-emerald-950 mt-1">53 Daily Trips</div>
                 <p className="text-xs text-emerald-900 mt-2 font-medium">
                   Passengers in this 94th percentile need catchment wait 30 to 45 minutes between buses during midday and evening hours.
                 </p>
               </div>
               <div className="bg-rose-50/70 border border-rose-200 p-4 rounded-lg">
                 <span className="text-xs font-mono font-bold text-rose-800 uppercase">Stop #1745 (Grade E)</span>
-                <div className="text-2xl font-mono font-black text-rose-950 mt-1">264 Daily Trips</div>
+                <div className="text-2xl font-mono tabular-nums font-black text-rose-950 mt-1">264 Daily Trips</div>
                 <p className="text-xs text-rose-900 mt-2 font-medium">
                   Passengers in this low-need catchment receive frequent trunk service arriving every five to ten minutes throughout the day.
                 </p>
@@ -367,7 +377,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="border-b border-slate-200 pb-3">
             <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 8</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Methodological Realities: Physical Barriers and Spatial Boundaries
+              Spatial Constraints: Physical Barriers and Aggregate Geography
             </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm text-slate-700">
@@ -398,38 +408,51 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="border-b border-slate-200 pb-3">
             <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 9</span>
             <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Policy Actions for Transit Planners and Decision Makers
+              Operational Allocation Framework for Transit Planners
             </h3>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 space-y-6">
             <p className="text-sm text-slate-600 leading-relaxed font-medium">
-              The Bus Stop Equity Scorecard translates diagnostic demographic data into concrete operational decisions:
+              Municipal transit planners apply stop-level equity diagnostics to prioritise physical amenities and timetable allocations:
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#059669] uppercase">1. Capital Amenities</div>
-                <h4 className="font-bold text-slate-900 text-sm">Shelters and Heaters</h4>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  Direct capital grants toward Grade A stops to fund weather enclosures, benches, and radiant overhead heaters for cold-weather waits.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#059669] uppercase">2. Operations</div>
-                <h4 className="font-bold text-slate-900 text-sm">Sidewalk Snow Clearing</h4>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  Prioritise sidewalk and boarding pad snow removal near Grade A stops where elderly riders, children, and people using mobility devices face slip risks.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="text-xs font-mono font-bold text-[#059669] uppercase">3. Service Planning</div>
-                <h4 className="font-bold text-slate-900 text-sm">Off-Peak Frequency</h4>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  Protect 15-to-20-minute off-peak and weekend headways on feeder routes serving Grade A stops rather than cutting service to hourly frequencies.
-                </p>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th className="py-3 px-4">Operational Category</th>
+                    <th className="py-3 px-4">Target Threshold</th>
+                    <th className="py-3 px-4">Mandated Intervention</th>
+                    <th className="py-3 px-4">Resource Mechanism</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tr className="hover:bg-slate-50/50">
+                    <td className="py-3 px-4 font-bold text-slate-900">Capital Amenities</td>
+                    <td className="py-3 px-4 font-mono tabular-nums text-emerald-800 font-bold">Grade A (≥73.5)</td>
+                    <td className="py-3 px-4">Weather enclosures, standard benches, and radiant overhead heaters</td>
+                    <td className="py-3 px-4 text-slate-500">Transit Infrastructure Grant</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/50">
+                    <td className="py-3 px-4 font-bold text-slate-900">Winter Maintenance</td>
+                    <td className="py-3 px-4 font-mono tabular-nums text-blue-800 font-bold">Grade A & B (≥64.9)</td>
+                    <td className="py-3 px-4">Fast-track snow clearing for boarding pads, curb cuts, and sidewalk links within 12 hours</td>
+                    <td className="py-3 px-4 text-slate-500">Priority Snow Clearing Fleet</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/50">
+                    <td className="py-3 px-4 font-bold text-slate-900">Timetable Protection</td>
+                    <td className="py-3 px-4 font-mono tabular-nums text-emerald-800 font-bold">Grade A Corridors</td>
+                    <td className="py-3 px-4">Protected 15-to-20-minute off-peak and evening headways against schedule compression</td>
+                    <td className="py-3 px-4 text-slate-500">Service Hours Guarantee</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/50">
+                    <td className="py-3 px-4 font-bold text-slate-900">Pedestrian Crossings</td>
+                    <td className="py-3 px-4 font-mono tabular-nums text-slate-600 font-bold">Multi-DA Hubs (&gt;3 DAs)</td>
+                    <td className="py-3 px-4">Marked crosswalks, tactile walking surfaces, and pedestrian-actuated beacons</td>
+                    <td className="py-3 px-4 text-slate-500">Vision Zero Capital Allocation</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

@@ -1204,10 +1204,20 @@ const MapInner = ({ systemPopServed, routes }: MapProps) => {
           </label>
         </div>
 
-        {/* Heatmap Legend (only visible when a route is isolated and heatmap is shown) */}
+        {/* Heatmap Legend & Walkshed Indicator (visible when a route is isolated) */}
         {selectedRoute && (
           <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
-            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest truncate">
+            <div className="flex items-center gap-2 text-[9px] font-bold text-slate-700">
+              <span 
+                className="w-3.5 h-2.5 rounded border border-dashed flex-shrink-0" 
+                style={{ 
+                  borderColor: selectedRouteGrade ? (GRADE_COLORS[selectedRouteGrade] || '#0F766E') : '#0F766E',
+                  backgroundColor: selectedRouteGrade ? `${GRADE_COLORS[selectedRouteGrade]}25` : '#0F766E25'
+                }} 
+              />
+              <span className="truncate">400m Walk Catchment</span>
+            </div>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest truncate mt-0.5">
               {METRICS.find((m) => m.key === activeMetric)?.label || 'Served DA Equity'}
             </span>
             <div 

@@ -85,13 +85,13 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
               <span className={`px-2 py-0.5 text-xs font-mono font-black rounded border ${themeStyles.badge}`}>
                 Grade {grade}
               </span>
-              <span className="text-[11px] font-mono font-bold text-slate-500">
+              <span className="text-[11px] font-mono tabular-nums font-bold text-slate-500">
                 {percentile.toFixed(1)}th percentile
               </span>
             </div>
             <div className="text-right">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Equity Score</span>
-              <span className={`ml-2 text-base font-mono font-black ${themeStyles.accent}`}>
+              <span className={`ml-2 text-base font-mono tabular-nums font-black ${themeStyles.accent}`}>
                 {score.toFixed(1)}
               </span>
             </div>
@@ -116,19 +116,19 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
             </div>
             <div>
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Daily Trips</div>
-              <div className="text-xs font-mono font-black text-slate-900 mt-0.5">
+              <div className="text-xs font-mono tabular-nums font-black text-slate-900 mt-0.5">
                 {dailyTrips} trips
               </div>
             </div>
             <div>
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Peak Frequency</div>
-              <div className="text-xs font-mono font-black text-slate-900 mt-0.5">
+              <div className="text-xs font-mono tabular-nums font-black text-slate-900 mt-0.5">
                 {peakTripsPerHour.toFixed(1)}/hr
               </div>
             </div>
             <div>
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">400m Buffer DAs</div>
-              <div className="text-xs font-mono font-black text-slate-900 mt-0.5">
+              <div className="text-xs font-mono tabular-nums font-black text-slate-900 mt-0.5">
                 {daCount} Census DAs
               </div>
             </div>

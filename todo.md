@@ -25,6 +25,24 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Continuous Walkshed Envelope Optimization (Phase 32 / Pathway 2)**:
+  - Developed and executed [scripts/build_unified_walkshed_envelopes.py](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/scripts/build_unified_walkshed_envelopes.py) to resolve the fragmented "disconnected bubbles" visual artifact in route isochrones.
+  - Backed up all 246 raw street-buffer geometries to `data/archive_isochrones_raw/`.
+  - Applied morphological closing (dilation by 85m to bridge street grid block gaps, unary dissolution, and erosion by 85m to strictly preserve the authentic 400m reach boundary) in metric projected space (EPSG:32612 UTM Zone 12N).
+  - Pruned micro-island slivers (< 5,000 m²) and filled minor interior non-walkable voids (< 15,000 m²), transforming fragmented sausage ribbons into clean, contiguous corridor walk envelopes.
+  - Reduced total network polygon fragments from 13,986 to 912 (a 93.5% reduction in disconnected geometry fragments).
+  - Slashed total GeoJSON asset payload across all routes from 71.93 MB to 5.83 MB (a 91.9% bandwidth saving; Route 008 dropped from 922.8 KB with 84 islands down to 53.1 KB with 2 contiguous North/South river corridor envelopes).
+  - Enhanced [Map.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/map/Map.tsx#L1207-L1220) map legend to render a dedicated "400m Walk Catchment" badge with dynamic grade-matching borders and translucent fill whenever a route is selected.
+  - Confirmed zero impact on underlying census statistics, equity pillar scores, or Monte Carlo sensitivity distributions.
+- **Bus Stop Explain This to Me Antiai Audit & Policy Framework Removal (Phase 31)**:
+  - Removed "Actionable Decision Framework", policyAction text, and policy action tags ("Winter Snow Clearance", "Capital Infrastructure Fund", "Pedestrian Safety Lighting") from `BusStopGradeDistribution.tsx`.
+  - Replaced inflated radii (`rounded-3xl` / `rounded-2xl`) with clean structural `rounded-xl` in `BusStopGradeDistribution.tsx` and `CimdExplainer.tsx`.
+  - Enforced `tabular-nums` and font-mono precision across numerical scores, percentile cutoffs, daily trips, and peak frequency counters in `BusStopScrollytelling.tsx`, `BusStopGradeDistribution.tsx`, `BusStopTicket.tsx`, and `CimdExplainer.tsx`.
+  - Eliminated inanimate false agency ("scorecard translates", "metric reflects", "scores summarise") across chapter intros and dimension descriptions in `BusStopScrollytelling.tsx` and `CimdExplainer.tsx`.
+  - Replaced melodramatic AI chapter titles ("Two Bus Stops, Two Realities", "Mapping the Divide") with direct technical titles ("Comparative Analysis: High-Need vs. Low-Need Catchments", "Spatial Distribution: Comparative Catchment Geography").
+  - Restructured Chapter 9 from an arbitrary 3-card symmetrical grid into a high-density operational policy matrix with explicit thresholds, mandated interventions, and funding mechanisms.
+  - Replaced the dark terminal box in the CIMD math modal with clean mathematical typography on neutral surfaces.
+  - Pruned unused decorative Lucide icons from headers and badges while strictly preserving all unselected components and features.
 - **Edmonton Core Real-Route Alignment for Landing Page Hero Waterfall (Phase 30)**:
   - Replaced hardcoded synthetic schematic subway paths in `RouteWaterfall.tsx` with 8 authentic central Edmonton route corridors extracted directly from GTFS records: Capital Line LRT (`#22c55e`), Metro Line LRT (`#ef4444`), Valley Line LRT (`#06b6d4`), Route 1 (`#3b82f6`), Route 4 (`#f97316`), Route 8 (`#a855f7`), Route 2 (`#eab308`), and Route 9 (`#10b981`).
   - Geographically bounded within the core frame: 118 Ave (North), 63 Ave (South), 142 St (West), and 75 St (East), strictly preserving natural road and track curves including the North Saskatchewan River bend, Tawatinâ Bridge, Dudley B. Menzies bridge/tunnel, Jasper Ave, and Whyte Ave.

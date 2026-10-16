@@ -29,7 +29,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       icon: DollarSign,
       color: 'blue',
       badge: 'bg-blue-50 text-blue-800 border-blue-200',
-      description: 'Measures financial capacity and poverty indicators derived from the Canadian census. High deprivation indicates low personal income, dependence on government transfer payments, and lack of discretionary reserves.',
+      description: 'Derived from Canadian census low-income thresholds and financial indicators. High deprivation scores mark Dissemination Areas where low personal income, dependence on social assistance, and limited financial reserves restrict travel alternatives.',
       indicators: [
         'Proportion of population with income below low-income cut-offs (LICO/LIM)',
         'Proportion of households receiving social assistance benefits',
@@ -46,7 +46,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       icon: Home,
       color: 'emerald',
       badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-      description: 'Quantifies housing churn and living precarity. Areas with high residential instability have higher proportions of tenant households, frequent moves, crowded multi-unit buildings, and fewer multi-generational roots.',
+      description: 'Constructed from housing tenure and mobility indicators. Areas with high residential instability have elevated tenant proportions, multi-unit apartment complexes, and high 12-month mobility rates.',
       indicators: [
         'Proportion of households renting their primary dwelling',
         'Proportion of multi-unit residential structures',
@@ -63,7 +63,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       icon: Users,
       color: 'purple',
       badge: 'bg-purple-50 text-purple-800 border-purple-200',
-      description: 'Captures community diversity and potential systemic integration hurdles, including new immigrant cohorts, non-official language speakers, and visible minority populations who frequently rely heavily on public transit.',
+      description: 'Synthesises recent immigrant settlement, language barriers, and visible minority demographics. These populations demonstrate high structural reliance on public transit networks for work and family trips.',
       indicators: [
         'Proportion of recent immigrants (arrived in past 5 years)',
         'Proportion of visible minority residents',
@@ -80,7 +80,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       icon: HeartHandshake,
       color: 'amber',
       badge: 'bg-amber-50 text-amber-800 border-amber-200',
-      description: 'Measures specific socio-demographic barriers and life situations that exacerbate physical travel constraints, such as solo-caregiver obligations, isolated senior citizens, and low vehicle ownership.',
+      description: 'Calculated from socio-demographic indicators linked to daily travel friction, including single-parent family structures, unassisted senior citizens, and zero-vehicle households.',
       indicators: [
         'Proportion of single-parent female-led families',
         'Proportion of seniors aged 65+ living alone',
@@ -95,7 +95,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
   const currentDim = DIMENSIONS.find(d => d.key === activeTab)!;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
@@ -127,7 +127,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
             <button
               key={dim.key}
               onClick={() => setActiveTab(dim.key as any)}
-              className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+              className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between ${
                 isActive
                   ? 'border-[#1e3a8a] bg-blue-50/50 shadow-xs ring-1 ring-[#1e3a8a]'
                   : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
@@ -151,7 +151,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       </div>
 
       {/* Active Tab Detail Card */}
-      <div className="mt-6 bg-slate-50 border border-slate-200/80 rounded-2xl p-5 md:p-6">
+      <div className="mt-6 bg-slate-50 border border-slate-200/80 rounded-xl p-5 md:p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
           <div>
             <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${currentDim.badge}`}>
@@ -163,9 +163,9 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
           {/* Micro-score comparison for the two candidate stops */}
           <div className="flex items-center gap-3 text-xs bg-white px-3 py-1.5 rounded-xl border border-slate-200 self-start md:self-auto">
             <span className="text-[10px] uppercase font-bold text-slate-400">Sample DA Scores:</span>
-            <span className="font-mono text-emerald-700 font-bold">Stop #6586: {currentDim.stop6586Score}</span>
+            <span className="font-mono tabular-nums text-emerald-700 font-bold">Stop #6586: {currentDim.stop6586Score.toFixed(1)}</span>
             <span className="text-slate-300">&bull;</span>
-            <span className="font-mono text-rose-700 font-bold">Stop #1745: {currentDim.stop1745Score}</span>
+            <span className="font-mono tabular-nums text-rose-700 font-bold">Stop #1745: {currentDim.stop1745Score.toFixed(1)}</span>
           </div>
         </div>
 
@@ -191,7 +191,7 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
       {/* Math Modal */}
       {showMathModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowMathModal(false)}
               className="absolute top-5 right-5 p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
@@ -206,10 +206,16 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
               Formula: Aggregating CIMD Scores for Bus Stops
             </h3>
 
-            <div className="mt-4 p-4 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs overflow-x-auto">
-              <code>
-                {`Score_DA = (Econ + Res + Eth + Sit) / 4\n\nScore_Stop = ∑ (Overlap_%_DA_i × Score_DA_i)`}
-              </code>
+            <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs text-slate-900 space-y-2">
+              <div className="font-bold text-[#1e3a8a] text-[11px] uppercase tracking-wider">Formula Definitions</div>
+              <div className="py-1 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span className="text-slate-500 font-sans font-medium text-xs">DA Vulnerability Score:</span>
+                <span className="font-bold tabular-nums">Score_DA = (Econ + Res + Eth + Sit) / 4</span>
+              </div>
+              <div className="py-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span className="text-slate-500 font-sans font-medium text-xs">Stop Catchment Aggregate:</span>
+                <span className="font-bold tabular-nums">Score_Stop = ∑ (Overlap_%_DA_i × Score_DA_i)</span>
+              </div>
             </div>
 
             <div className="mt-5 space-y-3 text-xs text-slate-600 leading-relaxed">

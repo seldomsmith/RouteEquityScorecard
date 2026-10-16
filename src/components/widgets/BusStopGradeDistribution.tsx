@@ -85,7 +85,7 @@ export const BusStopGradeDistribution: React.FC = () => {
   const activeQuintile = QUINTILE_DATA.find(q => q.grade === selectedGrade)!;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-5">
         <div>
           <span className="text-xs font-black uppercase tracking-widest text-[#1e3a8a]">
@@ -120,7 +120,7 @@ export const BusStopGradeDistribution: React.FC = () => {
             );
           })}
         </div>
-        <div className="flex justify-between text-[11px] font-mono text-slate-400 mt-2 px-1">
+        <div className="flex justify-between text-[11px] font-mono tabular-nums text-slate-400 mt-2 px-1">
           <span>0.0 (Min Score)</span>
           <span>Cut: 51.5</span>
           <span>Cut: 58.1</span>
@@ -131,7 +131,7 @@ export const BusStopGradeDistribution: React.FC = () => {
       </div>
 
       {/* Selected Grade Breakdown Card */}
-      <div className="mt-6 bg-slate-50 border border-slate-200/90 rounded-2xl p-6">
+      <div className="mt-6 bg-slate-50 border border-slate-200/90 rounded-xl p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export const BusStopGradeDistribution: React.FC = () => {
               </span>
               <div>
                 <h4 className="font-bold text-slate-900 text-base">{activeQuintile.label}</h4>
-                <span className="text-[11px] font-mono text-slate-500 font-bold">
+                <span className="text-[11px] font-mono tabular-nums text-slate-500 font-bold">
                   {activeQuintile.percentileRange}
                 </span>
               </div>
@@ -162,13 +162,13 @@ export const BusStopGradeDistribution: React.FC = () => {
           <div className="space-y-2 text-xs self-center">
             <div className="flex justify-between py-1 border-b border-slate-200/60">
               <span className="text-slate-500 font-medium">Score Range:</span>
-              <span className="font-mono font-bold text-slate-800">
+              <span className="font-mono tabular-nums font-bold text-slate-800">
                 {activeQuintile.minScore.toFixed(1)} - {activeQuintile.maxScore.toFixed(1)}
               </span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-200/60">
               <span className="text-slate-500 font-medium">Stop Count:</span>
-              <span className="font-mono font-bold text-slate-800">
+              <span className="font-mono tabular-nums font-bold text-slate-800">
                 {activeQuintile.count} stops (20.0%)
               </span>
             </div>

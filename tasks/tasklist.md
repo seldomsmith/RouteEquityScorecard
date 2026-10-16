@@ -39,3 +39,22 @@
 
 
 
+- [x] Initial Removal: Removed Actionable Decision Framework, policyAction text, and policy tags from BusStopGradeDistribution.tsx
+- [x] Bus Stop Explain Antiai Refactoring:
+  - [x] TXT-01: Eliminate inanimate false agency in BusStopScrollytelling.tsx and CimdExplainer.tsx
+  - [x] TXT-02: Replace melodramatic titles ("Two Bus Stops, Two Realities", "Mapping the Divide") with direct technical titles
+  - [x] TXT-03: Break formulaic rule-of-three sentence structures and enforce Canadian English orthography
+  - [x] VIS-01: Replace inflated radii (rounded-3xl) with rounded-xl in BusStopScrollytelling.tsx, CimdExplainer.tsx, BusStopGradeDistribution.tsx
+  - [x] VIS-03: Enforce tabular-nums on scores, frequencies, and cutoffs
+  - [x] VIS-05: Prune decorative Lucide icons from headers, pill chips, and modal badges
+  - [x] VIS-06: Replace dark terminal box in CIMD math modal with clean mathematical typesetting
+  - [x] TXT-04: Restructure Chapter 9 policy actions into a high-density operational matrix
+  - [x] Bus Stop Hero Header: Implemented full-width RouteWaterfall hero banner with two-line title ("ETS BUS STOP EQUITY / SCORECARD") matching the Route Equity Scorecard reference
+
+- [x] Continuous Walkshed Envelope Optimization (Pathway 2):
+  - [x] Create `scripts/build_unified_walkshed_envelopes.py` using Shapely morphological closing (dilation + union + erosion) in projected coordinate space
+  - [x] Test geometry transformation on Route 008, verifying reduction from 84 disconnected polygon islands to a contiguous walk envelope (922.8 KB -> 53.1 KB)
+  - [x] Batch process all 246 route isochrones in `public/data/isochrones/` (13,986 fragments -> 912, 71.93 MB -> 5.83 MB)
+  - [x] Update Mapbox legend in `src/components/map/Map.tsx` with dynamic 400m Walk Catchment badge and grade-matching border
+
+

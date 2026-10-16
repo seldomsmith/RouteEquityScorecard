@@ -10,3 +10,4 @@ ETS_Bus_Schedule_*.csv
 data/*.zip
 public/data/*.zip
 scratch/
+data/archive_isochrones_raw/
