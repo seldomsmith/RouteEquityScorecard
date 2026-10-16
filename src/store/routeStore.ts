@@ -53,6 +53,10 @@ interface RouteState {
   // Heatmap Color Palette Mode
   heatmapPalette: 'purple' | 'teal' | 'emerald' | 'carbon' | 'divergent' | 'sunrise' | 'sunset';
   setHeatmapPalette: (palette: 'purple' | 'teal' | 'emerald' | 'carbon' | 'divergent' | 'sunrise' | 'sunset') => void;
+
+  // GTFS Schedule Feed & Delta Comparison Mode (Route Directory)
+  directoryFeedMode: 'baseline' | 'oct2026' | 'compare';
+  setDirectoryFeedMode: (mode: 'baseline' | 'oct2026' | 'compare') => void;
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
@@ -290,4 +294,8 @@ export const useRouteStore = create<RouteState>((set) => ({
   // Heatmap Palette Mode
   heatmapPalette: 'divergent',
   setHeatmapPalette: (palette) => set({ heatmapPalette: palette }),
+
+  // GTFS Schedule Feed & Delta Comparison Mode (Route Directory)
+  directoryFeedMode: 'baseline',
+  setDirectoryFeedMode: (mode) => set({ directoryFeedMode: mode }),
 }));

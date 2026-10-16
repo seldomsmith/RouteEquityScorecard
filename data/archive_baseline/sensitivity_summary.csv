@@ -1,0 +1,129 @@
+route_id,name,short_name,score_mean,score_std,score_min,score_max,grade_stability_ab,grade_stability_de,stability_class,driver_vulnerability,driver_temporal,driver_monopoly,driver_opportunity
+001,001 — Downtown - Capilano,001,77.08,14.41,28.03,95.46,91.9,0.0,Bedrock Essential,31.79,107.91,75.33,93.28
+002,002 — West Edmonton Mall - Stadium - Clareview,002,99.33,0.69,91.66,99.73,100.0,0.0,Bedrock Essential,99.7,97.77,99.95,99.9
+003,003 — Westmount - Stadium,003,64.8,20.71,21.17,96.93,71.0,3.1,Policy Swing Corridor,18.47,128.66,68.29,43.78
+004,004 — Lewis Farms - University - Capilano,004,87.99,12.03,37.99,98.83,95.4,0.0,Bedrock Essential,55.55,79.56,104.97,111.87
+005,005 — Westmount - Downtown - Coliseum,005,98.45,2.74,70.79,99.67,100.0,0.0,Bedrock Essential,100.6,91.36,100.95,100.88
+006,006 — Davies - Southgate,006,57.01,26.13,7.3,97.48,54.9,20.4,Policy Swing Corridor,-10.39,128.85,30.49,79.08
+007,007 — West Edmonton Mall - Downtown,007,51.36,28.31,6.09,97.98,40.7,33.6,Policy Swing Corridor,-12.77,71.96,12.88,133.38
+008,008 — Abbottsfield - Downtown - University,008,99.34,0.57,93.18,99.73,100.0,0.0,Bedrock Essential,99.41,98.18,99.91,99.87
+009,009 — Southgate - Eaux Claires,009,98.38,1.9,80.86,99.63,100.0,0.0,Bedrock Essential,98.02,93.78,100.87,100.84
+021R,Capital — Capital Line,Capital,97.5,2.82,73.81,99.53,100.0,0.0,Bedrock Essential,97.27,90.3,101.89,100.54
+022R,Metro — Metro Line,Metro,80.24,17.26,34.22,99.12,90.7,0.0,Bedrock Essential,45.8,115.81,48.49,110.85
+023R,Valley — Valley Line,Valley,80.27,9.66,47.55,93.15,94.1,0.0,Bedrock Essential,53.66,71.47,100.62,95.35
+031,031 — Leger - University,031,12.66,8.28,2.82,47.85,0.1,95.1,Policy Swing Corridor,7.52,-5.79,38.24,10.66
+051,051 — Castle Downs - University,051,59.85,19.4,19.97,94.77,59.4,13.9,Policy Swing Corridor,66.82,16.88,119.38,36.33
+052,052 — Northgate - West Edmonton Mall,052,94.4,5.4,59.05,98.87,99.3,0.0,Bedrock Essential,99.42,79.58,104.34,94.28
+053,053 — West Clareview - Mill Woods,053,92.46,4.7,70.68,98.63,100.0,0.0,Bedrock Essential,89.21,92.25,105.63,82.75
+054,054 — West Edmonton Mall - West Clareview,054,90.25,8.85,46.56,98.37,96.0,0.0,Bedrock Essential,84.22,66.79,102.61,107.39
+055,055 — Meadows - Southgate - West Edmonton Mall,055,87.28,4.82,70.89,93.31,100.0,0.0,Bedrock Essential,78.42,100.0,91.01,79.71
+056,056 — Meadows - Leger - West Edmonton Mall,056,94.71,6.84,53.27,99.43,98.7,0.0,Bedrock Essential,104.88,78.36,105.82,89.77
+101,101 — Stadium - Abbottsfield,101,55.86,20.79,16.17,92.28,53.1,10.2,Policy Swing Corridor,26.7,115.46,73.43,7.87
+102,102 — Kingsway - Coliseum - Abbottsfield,102,73.49,10.12,37.14,86.86,98.4,0.0,Bedrock Essential,75.45,85.6,92.64,40.26
+103,103 — Eaux Claires - Castle Downs - Kingsway,103,96.48,6.22,47.65,99.59,100.0,0.0,Bedrock Essential,102.59,100.94,103.36,79.0
+104,104 — Coliseum - East Clareview,104,26.9,8.01,14.68,52.48,1.5,75.8,Policy Swing Corridor,15.64,29.62,51.64,10.7
+106,106 — Dunvegan - Northgate - Belvedere,106,31.9,10.07,15.23,59.44,0.6,54.1,Policy Swing Corridor,8.8,56.94,46.06,15.78
+107,107 — Belvedere - West Clareview,107,71.81,18.06,21.6,94.97,77.5,1.9,Policy Swing Corridor,114.5,57.63,93.84,21.27
+108,108 — Belvedere - East Clareview,108,68.41,16.6,19.78,91.61,77.2,1.9,Policy Swing Corridor,75.53,77.81,105.69,14.59
+109,109 — Northgate - Castle Downs - Hudson,109,82.26,16.21,25.56,98.67,91.2,0.1,Bedrock Essential,119.16,71.9,99.68,38.31
+110X,110X — Eaux Claires - Downtown,110X,65.45,23.49,10.72,97.66,68.7,15.0,Policy Swing Corridor,78.39,0.64,53.47,129.31
+111,111 — Concordia - Westmount,111,70.94,27.29,5.43,99.13,72.6,15.1,Policy Swing Corridor,115.35,-5.22,48.28,125.37
+112,112 — Castle Downs - Eaux Claires,112,21.57,13.04,3.43,59.35,3.1,71.9,Policy Swing Corridor,36.64,-12.27,54.12,7.82
+113,113 — West Clareview - Northgate,113,75.27,15.8,20.93,91.6,90.5,0.3,Bedrock Essential,85.44,97.79,96.45,21.4
+114,114 — West Clareview - Coliseum,114,78.53,19.01,24.01,98.62,83.2,4.1,Policy Swing Corridor,106.52,38.15,121.21,48.25
+116,116 — Abbottsfield - East Clareview,116,15.79,8.38,7.47,55.35,0.0,97.7,Moderate Stability,3.39,42.88,11.93,4.98
+117,117 — Eaux Claires - West Clareview,117,67.68,20.46,12.76,94.6,78.1,5.5,Policy Swing Corridor,73.81,116.57,77.21,3.13
+118,118 — Eaux Claires - West Clareview,118,69.6,21.32,13.11,97.45,73.9,6.8,Policy Swing Corridor,124.2,69.21,78.5,6.48
+119,119 — Eaux Claires - West Clareview,119,74.12,18.45,16.38,93.85,83.1,2.9,Policy Swing Corridor,108.59,76.29,97.49,14.11
+120X,120X — Eaux Claires - Government Centre,120X,57.4,28.81,5.35,98.4,54.4,27.3,Policy Swing Corridor,84.38,-14.13,23.99,135.35
+121,121 — Clareview -  Fraser - Evergreen,121,37.17,15.84,11.48,78.38,4.0,35.3,Policy Swing Corridor,33.37,84.63,35.85,-5.18
+122,122 — Eaux Claires - Lago Lindo - Klarvatten,122,31.13,14.48,11.49,74.78,1.2,58.9,Policy Swing Corridor,34.04,76.43,15.3,-1.27
+124,124 — Westmount - Eaux Claires,124,81.08,14.36,27.93,95.4,94.4,0.0,Bedrock Essential,103.05,77.05,106.88,37.32
+127,127 — Northgate - White Oaks Square - Castle Downs,127,23.73,14.46,4.28,70.12,4.7,70.0,Policy Swing Corridor,66.22,-13.73,24.96,17.46
+128,128 — Northgate - Londonderry,128,7.65,3.45,3.34,19.88,0.0,100.0,Bedrock Resilient,13.75,-2.22,7.91,11.15
+130X,130X — Baturyn - Eaux Claires - Government Centre,130X,66.4,28.66,5.42,98.89,66.2,19.4,Policy Swing Corridor,115.44,-8.28,32.61,125.82
+140X,140X — Palisades - Kingsway Express,140X,32.1,16.07,5.28,68.27,13.6,46.1,Policy Swing Corridor,67.78,-19.3,42.28,37.63
+150X,150X — Dunluce - Castle Downs - Government Centre,150X,68.58,26.28,5.43,98.15,71.5,16.0,Policy Swing Corridor,104.48,-11.14,57.75,123.24
+201,201 — Downtown Edmonton Loop,201,78.74,18.55,25.77,99.23,87.7,0.2,Policy Swing Corridor,35.59,104.53,52.84,121.99
+202,202 — Kingsway Tc Via Nait,202,11.85,6.04,3.84,35.99,0.0,97.6,Moderate Stability,10.84,-5.5,17.02,25.06
+203,203 — Uofa Via Westmount,203,35.07,20.42,13.19,89.84,13.2,57.0,Policy Swing Corridor,14.57,106.33,10.59,8.77
+204,204 — Uofa Express,204,6.36,3.03,2.8,20.18,0.0,100.0,Bedrock Resilient,13.38,-1.27,5.32,8.0
+205,205 — West Edmonton,205,23.93,24.1,2.7,94.46,16.8,72.0,Policy Swing Corridor,-0.98,-10.02,0.68,106.06
+208,208 — Government Centre Express,208,19.62,12.34,4.19,52.22,1.2,76.2,Policy Swing Corridor,44.75,-11.36,4.26,40.83
+211,211 — Downtown Edmonton Express,211,21.04,16.37,3.45,77.22,8.5,74.5,Policy Swing Corridor,27.26,-11.61,-1.9,70.41
+500X,500X — Meadows - Macewan,500X,33.52,19.21,7.9,86.21,20.2,54.9,Policy Swing Corridor,16.66,-7.34,28.07,96.69
+501,501 — Davies - Capilano,501,50.73,13.62,28.24,83.5,36.0,5.9,Policy Swing Corridor,23.33,48.24,95.98,35.38
+502,502 — Davies - South Campus,502,8.57,6.1,1.78,38.79,0.0,97.9,Bedrock Resilient,-1.16,-2.95,14.28,24.13
+503,503 — Davies - Millbourne - Woodvale,503,16.86,16.33,2.19,81.18,7.9,82.5,Policy Swing Corridor,-3.56,-8.24,8.88,70.36
+504,504 — Meadows - Davies,504,14.76,8.76,3.96,51.4,1.1,92.7,Policy Swing Corridor,-6.9,17.09,9.63,39.22
+506,506 — Davies - Meadows - Maple,506,57.18,12.43,30.41,81.13,62.3,0.0,Moderate Stability,43.96,93.66,64.98,26.12
+507,507 — Tamarack - Southgate,507,36.02,21.68,6.74,85.4,20.7,50.4,Policy Swing Corridor,-12.42,86.73,-0.81,70.59
+508,508 — Meadows - Mill Woods,508,61.17,15.4,20.42,85.86,70.3,1.6,Policy Swing Corridor,89.77,86.31,56.57,12.03
+509,509 — Mill Woods - Millbourne,509,19.61,9.47,8.46,59.05,0.0,94.6,Moderate Stability,-0.06,49.62,16.06,12.82
+511,511 — Mill Woods - Downtown,511,35.81,23.3,4.75,90.51,25.3,50.5,Policy Swing Corridor,49.38,-17.87,6.8,104.93
+512,512 — Mill Woods - South Edmonton Common,512,22.11,7.87,12.64,53.67,0.0,93.3,Moderate Stability,4.51,46.05,15.43,22.47
+513,513 — Mill Woods - Knottwood,513,22.03,6.58,12.83,45.69,0.0,96.9,Moderate Stability,30.48,37.83,13.45,6.37
+514,514 — Mill Woods - Millhurst,514,16.35,5.45,10.64,43.24,0.0,100.0,Moderate Stability,15.92,32.75,10.51,6.22
+515,515 — Mill Woods - Meadows,515,49.18,18.77,19.43,91.13,34.2,24.1,Policy Swing Corridor,113.18,30.88,37.69,14.96
+516,516 — Mill Woods - Laurel - Meadows,516,66.59,21.66,23.34,98.67,65.4,3.6,Policy Swing Corridor,135.42,61.98,44.58,24.39
+517,517 — Mill Woods - Southwood,517,49.01,17.77,16.24,85.68,35.6,15.9,Policy Swing Corridor,60.6,100.61,31.27,3.56
+518,518 — Mill Woods - Century Park,518,68.51,16.88,31.19,96.02,75.8,3.5,Policy Swing Corridor,121.06,37.25,72.24,43.47
+519,519 — Mill Woods - Century Park,519,84.58,11.81,43.14,98.86,100.0,0.0,Bedrock Essential,116.53,91.83,72.64,57.34
+521,521 — Mill Woods - Century Park,521,68.37,10.11,43.75,83.71,82.8,0.1,Policy Swing Corridor,93.53,49.1,82.75,48.12
+522,522 — Capilano - Bonnie Doon,522,38.59,14.7,14.66,74.78,9.1,34.8,Policy Swing Corridor,14.06,79.65,53.79,6.88
+523,523 — Mill Woods - Downtown,523,91.34,8.79,45.69,98.99,99.4,0.0,Bedrock Essential,65.08,93.34,98.1,108.83
+524,524 — Bonnie Doon - Holyrood,524,4.61,1.96,1.96,15.56,0.0,100.0,Bedrock Resilient,3.8,-0.03,6.66,8.03
+525,525 — Bonnie Doon - Ritchie,525,4.66,2.13,1.75,15.56,0.0,100.0,Bedrock Resilient,2.62,-0.05,8.06,8.02
+526,526 — Mill Woods - Millbourne Woodvale,526,16.2,11.22,4.26,62.2,2.9,85.9,Policy Swing Corridor,17.62,-8.78,6.16,49.79
+527,527 — Mill Woods - Millbourne,527,63.72,15.73,18.39,84.19,75.1,2.8,Policy Swing Corridor,85.54,85.23,74.99,9.11
+589,589 — Edmonton Waste Management Centre - Coliseum,589,33.26,27.14,6.36,96.93,20.4,61.7,Policy Swing Corridor,5.64,127.22,1.72,-1.53
+700X,700X — Century Park - Heritage Valley,700X,19.54,15.54,6.11,79.23,1.2,86.5,Policy Swing Corridor,0.14,72.04,4.63,1.34
+701,701 — Southgate - Kingsway,701,57.14,24.84,22.39,98.43,46.8,24.8,Policy Swing Corridor,23.85,39.61,24.11,140.97
+702,702 — Southgate - South Campus,702,21.71,14.12,7.14,74.78,0.5,85.1,Policy Swing Corridor,-1.62,68.93,13.06,6.45
+703,703 — Leger - South Campus,703,23.07,9.13,9.6,50.3,0.0,88.8,Moderate Stability,11.46,42.57,38.22,0.03
+704,704 — Southgate - Southpark,704,46.46,25.57,13.14,96.93,34.6,35.1,Policy Swing Corridor,4.04,133.66,17.63,30.51
+705,705 — Century Park - Southgate,705,35.63,16.33,17.18,82.85,6.8,50.1,Policy Swing Corridor,20.92,92.56,12.87,16.16
+706,706 — Leger - Southgate,706,50.94,24.94,12.55,96.93,41.7,24.4,Policy Swing Corridor,12.54,133.23,48.1,9.88
+707,707 — Century Park - Southgate,707,32.44,9.38,17.09,59.85,0.0,50.9,Moderate Stability,23.13,57.83,40.9,7.91
+708,708 — Century Park - Southgate,708,41.83,19.13,16.3,89.03,20.2,35.1,Policy Swing Corridor,20.35,107.51,30.63,8.85
+709,709 — Century Park - Southgate,709,36.32,14.28,15.23,76.64,3.1,43.8,Moderate Stability,10.2,82.08,39.8,13.19
+712,712 — Century Park - Yellowbird,712,13.01,4.27,8.11,34.84,0.0,100.0,Moderate Stability,16.18,23.79,7.38,4.66
+713,713 — Century Park - Twin Brooks,713,24.33,17.29,8.02,83.08,3.4,79.3,Policy Swing Corridor,6.01,83.59,7.48,0.27
+715,715 — Leger - Century Park,715,69.2,21.13,14.67,96.71,79.0,5.1,Policy Swing Corridor,107.86,109.75,49.68,9.52
+716,716 — Leger - Century Park,716,43.27,16.0,21.04,84.24,14.3,17.6,Moderate Stability,29.42,98.03,32.3,13.33
+717,717 — Leger - Century Park,717,51.16,16.73,21.39,88.33,37.3,14.9,Policy Swing Corridor,106.22,39.29,44.71,14.4
+718,718 — Leger - Century Park,718,37.59,9.93,18.98,59.42,3.3,28.9,Moderate Stability,60.63,49.3,32.96,7.48
+719,719 — Century Park - Chappelle,719,19.02,5.02,12.49,40.37,0.0,100.0,Moderate Stability,19.04,31.4,20.32,5.34
+721,721 — Century Park - Rutherford - Desrochers,721,32.29,8.72,16.1,53.67,0.0,44.8,Moderate Stability,37.64,50.33,37.53,3.68
+722,722 — Century Park - Rutherford - Allard,722,36.47,11.36,15.17,59.86,1.6,34.9,Policy Swing Corridor,56.29,56.96,31.38,1.25
+723,723 — University - Parkallen,723,7.71,3.5,3.01,23.16,0.0,99.9,Bedrock Resilient,7.77,-2.24,11.33,13.96
+724,724 — Leger - Brander Gardens - South Campus,724,16.8,11.17,2.71,56.81,0.2,85.7,Policy Swing Corridor,47.05,-8.84,26.64,2.37
+727,727 — Heritage Valley - Chappelle,727,6.85,3.63,2.6,25.09,0.0,100.0,Bedrock Resilient,16.74,-1.6,6.67,5.6
+729,729 — Leger - Century Park,729,24.15,6.89,14.5,48.63,0.0,97.1,Moderate Stability,27.36,41.78,23.0,4.47
+900X,900X — Lewis Farms - Downtown,900X,89.63,15.45,15.88,99.19,90.7,3.0,Bedrock Essential,105.21,41.72,101.23,110.35
+901,901 — Jasper Place - Downtown,901,89.35,8.7,54.46,98.99,99.9,0.0,Bedrock Essential,68.14,99.92,79.83,109.52
+902,902 — Nait - University,902,77.98,4.2,63.39,84.71,97.7,0.0,Bedrock Essential,69.96,71.33,88.51,82.12
+903,903 — Jasper Place - Kingsway,903,65.1,15.52,19.65,85.6,71.0,3.0,Policy Swing Corridor,11.3,80.98,77.6,90.51
+904,904 — West Edmonton Mall - Westmount,904,13.13,8.26,3.83,44.65,0.2,95.4,Policy Swing Corridor,-6.62,23.34,3.64,32.15
+905,905 — Northgate - Westmount,905,18.88,12.5,3.45,64.27,4.3,81.1,Policy Swing Corridor,5.4,-10.59,26.64,54.06
+906,906 — West Edmonton Mall - Westmount,906,24.83,21.15,3.46,89.88,15.2,69.8,Policy Swing Corridor,4.68,-12.27,11.0,95.92
+907,907 — West Edmonton Mall - Westmount,907,62.1,18.14,27.75,94.4,55.2,1.2,Policy Swing Corridor,25.43,66.31,37.31,119.33
+908,908 — Jasper Place - Westmount,908,20.54,19.76,2.54,88.23,11.7,76.8,Policy Swing Corridor,-2.15,-9.85,7.44,86.75
+909,909 — Jasper Place - Westmount,909,41.58,15.79,18.62,82.85,15.6,24.1,Moderate Stability,13.56,94.78,37.92,20.03
+910X,910X — West Lymburn - Lessard - South Campus,910X,24.05,15.71,3.03,70.2,7.1,67.0,Policy Swing Corridor,65.52,-13.51,40.8,3.4
+912,912 — Lewis Farms - Jasper Place,912,43.15,27.2,7.66,96.93,32.3,42.0,Policy Swing Corridor,-7.6,131.15,4.12,44.95
+913,913 — West Edmonton Mall - Jamieson Place,913,34.34,4.09,28.07,48.58,0.0,38.6,Moderate Stability,47.64,33.44,27.91,28.37
+914,914 — West Edmonton Mall - Jasper Place,914,74.94,7.28,61.2,87.49,100.0,0.0,Bedrock Essential,70.11,99.12,63.21,67.31
+915,915 — West Edmonton Mall - Jasper Place,915,39.19,6.25,28.52,55.43,3.1,24.4,Moderate Stability,56.24,24.72,29.83,45.96
+916,916 — West Edmonton Mall - Lewis Farms,916,63.28,12.99,41.99,90.17,71.5,0.0,Moderate Stability,107.83,51.66,50.47,43.15
+917,917 — West Edmonton Mall - Lewis Farms,917,58.29,13.49,32.49,87.25,55.7,0.2,Policy Swing Corridor,102.99,47.24,52.84,30.08
+918,918 — West Edmonton Mall - Lessard,918,55.81,13.61,30.85,83.56,53.7,0.1,Moderate Stability,64.32,97.21,29.42,32.27
+919,919 — Lewis Farms - Secord,919,5.93,1.54,3.56,12.91,0.0,100.0,Bedrock Resilient,8.39,3.97,6.59,4.77
+920X,920X — Lewis Farms - University Express,920X,20.31,9.76,5.03,38.47,0.0,73.8,Moderate Stability,28.73,-12.04,34.62,29.96
+921,921 — Jasper Place - Westview Village,921,38.12,19.67,10.15,86.33,18.8,43.5,Policy Swing Corridor,-5.37,99.0,13.48,45.39
+922,922 — Lewis Farms - Rosenthal,922,11.09,7.62,4.89,52.4,0.0,99.4,Moderate Stability,1.21,35.38,5.3,2.46
+923,923 — West Edmonton Mall - Oleskiw,923,48.89,25.29,11.02,96.93,37.9,27.3,Policy Swing Corridor,28.79,133.47,-0.53,33.85
+924,924 — Jasper Place - Rio Terrace,924,26.95,15.12,4.62,69.91,7.3,58.4,Policy Swing Corridor,67.78,-15.94,33.5,22.45
+925,925 — West Edmonton Mall - Jasper Place,925,29.6,19.59,4.26,79.41,16.8,58.6,Policy Swing Corridor,53.62,-16.55,1.58,79.75
+926,926 — Lewis Farms - Stillwater,926,31.31,21.9,6.99,91.0,11.5,64.4,Policy Swing Corridor,21.02,105.67,-3.37,1.93
+930X,930X — The Grange - South Campus,930X,19.24,13.63,2.74,67.79,2.4,80.4,Policy Swing Corridor,59.55,-10.34,25.83,1.91

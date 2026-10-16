@@ -7,10 +7,22 @@
     - Zero emojis and no ampersand symbols (&)
   - [x] Ensure seamless navigation wiring to `dashboard`, `scrollytelling`, `bus-stop-analysis`, and `bus-stop-scrollytelling` in `page.tsx`
   - [x] Verify code structure and responsive styling across mobile and desktop breakpoints
-- [ ] Upcoming: Update GTFS Feed with Most Recent Release
-  - Ingest the newest Edmonton Transit Service GTFS schedule package
-  - Re-run pipeline scripts (`build_stop_vulnerability_asset.py` and DuckDB route geometry / schedule aggregations)
-  - Verify route alignments, stop IDs, daily trip counts, and headways across both Route and Bus Stop dashboards
+- [x] Update GTFS Feed with Most Recent Release (Phase 1: Non-Destructive Comparative Analysis & Pipeline Readiness)
+  - [x] Audit `ETS_Bus_Schedule_GTFS_Data_Feed_-_Trips_20261016.csv` and official ETS `gtfs.zip` (`261002_1029`), and exclude 795 MB CSV in `.gitignore`
+  - [x] Build `scripts/compare_gtfs_feeds.py` to evaluate all 4 equity pillars (CIMD Vulnerability, Off-Peak Service, Functional Monopoly, Opportunities) without modifying live dashboard assets
+  - [x] Generate `docs/gtfs_route_comparison.csv`, `docs/gtfs_comparison_report.md`, and shadow candidate `scratch/golden_route_record_new.json`
+- [x] Route Directory Dual-Feed Comparative Analysis Mode (Phase 2: Live In-App Exploration)
+  - [x] Update `routeStore.ts` with 3-way directory feed switcher (`baseline`, `oct2026`, `compare`)
+  - [x] Enhance `RouteDirectoryPage.tsx` with live policy weight & CIMD sliders dynamically re-scoring both feeds
+  - [x] Add side-by-side 4-pillar delta columns, sorting by Δ score and pillar shifts, movement filters, and custom CSV download
+  - [x] Fix Summer 2026 baseline geometry truncations in `scratch/golden_route_record_baseline_fixed.json` to eliminate false geometry shifts
+- [x] Production Cutover to October 2026 Feed as Live Base (Phase 3: Execution)
+  - [x] Backup historical baseline assets to `data/archive_baseline/`
+  - [x] Promote October 2026 golden record to `public/data/golden_route_record.json` and `.parquet` (1-row schema, 178 routes)
+  - [x] Sync stop metrics in `public/data/bus_stop_vulnerability.json` (6,755 stops) while maintaining continuous Statistics Canada CIMD scores (10,257 DAs)
+  - [x] Generate missing 400m corridor walk isochrones in `public/data/isochrones/` (10 new GeoJSONs: `071`, `505`, `F1`, school/regional corridors)
+  - [x] Execute Monte Carlo sensitivity simulations (`run_sensitivity_analysis.py` and `run_two_pillar_sensitivity_analysis.py`) refreshing stability classes across all 129 municipal routes
+  - [x] Author comprehensive analytical research and audit report in `docs/gtfs_comparison_report.md` documenting 4-pillar shifts, Monte Carlo stability transitions, and policy recommendations
 - [ ] Upcoming: Map Landing Page Subway Lines to Actual Edmonton Routes
   - Replace generic schematic background curves with actual GTFS corridor alignments (e.g. Route 2, Route 3, Route 727, Capital/Metro LRT Lines)
   - Color-code transit line segments to match official ETS brand hues or equity stability classifications

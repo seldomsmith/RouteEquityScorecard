@@ -26,6 +26,20 @@ Refining analytical modeling, service impact simulations, and advanced research 
 
 ## Review & Completed Work
 ### Completed:
+- **October 2026 GTFS Live Production Cutover & Dual-Feed Analytics (Phase 29)**:
+  - Archived previous baseline assets (`golden_route_record.json`, `golden_route_record.parquet`, `bus_stop_vulnerability.json`, `sensitivity_summary.csv`, and `sensitivity_summary_2_pillar.csv`) to `data/archive_baseline/`.
+  - Promoted the October 2026 GTFS dataset (`261002_1029`) as the live production base (`public/data/golden_route_record.json` and `.parquet`) with unified corridors for `001`, `509`, and `918`, bringing active network routes to 178 (129 municipal, 49 regional).
+  - Maintained DuckDB frontend compatibility using the 1-row `{metadata, routes}` Parquet schema.
+  - Synchronized stop metrics (peak/off-peak trips per hour, daily trips, and routes served) across all 6,755 stops in `public/data/bus_stop_vulnerability.json` while preserving continuous Statistics Canada 4-Dimension CIMD scores across all 10,257 DAs.
+  - Generated 10 missing 400m corridor walk isochrone GeoJSONs in `public/data/isochrones/` (including `071`, `505`, and `F1`) to prevent map click 404 errors.
+  - Ran both 4-pillar (1,771 weight configurations) and 2-pillar (21 weight configurations) Monte Carlo sensitivity simulations, refreshing stability classifications and exporting `public/data/sensitivity_matrix.parquet`.
+  - Provided interactive dual-feed exploration in `RouteDirectoryPage.tsx` with live policy weight and CIMD sliders, 4-pillar delta sorting, movement filters, and custom CSV exports.
+- **October 2026 ETS GTFS Comparative Audit & Zero-Breakage Integration Pipeline (Phase 28)**:
+  - Audited `ETS_Bus_Schedule_GTFS_Data_Feed_-_Trips_20261016.csv` (795 MB Socrata `trips` export) alongside the matching 18.7 MB relational ETS GTFS zip (`261002_1029`, cached at `scratch/gtfs_20261016.zip`), adding `ETS_Bus_Schedule_*.csv` and `*.zip` to `.gitignore` to protect `git push` / `ship.bat`.
+  - Built and executed `scripts/compare_gtfs_feeds.py` to evaluate all 184 active non-6xx routes (132 municipal, 52 regional) against the 170-route production baseline across all 4 equity categories (Statistics Canada 4-Dimension CIMD & 6-indicator Social Gravity Vulnerability, Off-Peak Service, Functional Monopoly, and Opportunities) without touching live `public/data/` assets.
+  - Eliminated offline `H:\` drive dependencies by reconstructing per-stop POI sets (`stop_pois`) via mathematical set intersection of `data/destination_catchments.json` with 100.0% identity across all baseline routes.
+  - Fixed the legacy `trips.drop_duplicates('route_id')` short-turn truncation bug that previously scored early-morning garage pull-out stubs on Routes `004`, `007`, `106`, `116`, `507`, `509`, `701`, and `904`.
+  - Exported route-by-route deltas to `docs/gtfs_route_comparison.csv`, shadow production payload to `scratch/golden_route_record_new.json`, full engineering analysis to `docs/gtfs_comparison_report.md`, and the unexecuted one-command cutover script `scripts/sync_gtfs_to_production.py`.
 - **Menu Standardization & Bus Stop Quintile A-E Filter Integration (Phase 26)**:
   - Created standardized `GlobalNavMenu.tsx` component with header **`ETS ROUTE SCORECARD MENU`** and exact ordered items: `Landing Page`, `Explain this to me!`, `Equity Scorecard Dashboard`, `Route Directory`, and `Bus Stop Analysis`.
   - Embedded `GlobalNavMenu` across all application pages with top-left trigger button for 100% navigation consistency.

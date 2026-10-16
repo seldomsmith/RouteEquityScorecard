@@ -38,16 +38,24 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
   const toggleDimension = useRouteStore((s) => s.toggleDimension);
   const daScores = useRouteStore((s) => s.daScores);
 
+  const directoryFeedMode = useRouteStore((s) => s.directoryFeedMode);
+  const setDirectoryFeedMode = useRouteStore((s) => s.setDirectoryFeedMode);
+  const setWeight = useRouteStore((s) => s.setWeight);
+  const setWeights = useRouteStore((s) => s.setWeights);
+
   const [baseRoutes, setBaseRoutes] = useState<RouteWithDAs[]>([]);
+  const [octRoutes, setOctRoutes] = useState<RouteWithDAs[]>([]);
   const [sensitivityData, setSensitivityData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<string | 'ALL'>('ALL');
   const [selectedStability, setSelectedStability] = useState<string | 'ALL'>('ALL');
-  const [sortField, setSortField] = useState<'short_name' | 'name' | 'score' | 'pop' | 'stability' | 'score_mean' | 'score_std'>('score');
+  const [deltaFilter, setDeltaFilter] = useState<'ALL' | 'UPGRADED' | 'DOWNGRADED' | 'UNCHANGED' | 'NEW_RETIRED'>('ALL');
+  const [sortField, setSortField] = useState<'short_name' | 'name' | 'score' | 'delta_score' | 'delta_p1' | 'delta_p2' | 'delta_p3' | 'delta_p4' | 'pop' | 'stability' | 'score_mean' | 'score_std'>('score');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
+  const [showWeightControls, setShowWeightControls] = useState<boolean>(false);
 
   // Fallback load of daScores if empty
   useEffect(() => {
@@ -93,108 +101,114 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
       .catch((err) => console.error('Failed to load sensitivity summary in directory:', err));
   }, []);
 
-  // Load Main DuckDB Dataset
+  // Helper to map raw JSON route records into RouteWithDAs
+  const mapJsonToRouteWithDAs = (rawRoutes: any[]): RouteWithDAs[] => {
+    return (rawRoutes || []).map((row: any) => ({
+      route_id: String(row.route_id || ''),
+      name: String(row.name || ''),
+      short_name: String(row.short_name || row.route_id || ''),
+      grade: String(row.grade || 'C'),
+      composite_score: Number(row.composite_score || 0),
+      total_pop_served: Number(row.total_pop_served || 0),
+      pillar_1: Number(row.pillar_1_vulnerability || 0),
+      pillar_1_cimd: Number(row.cimd_4dim_exact ?? row.cimd_vuln_score ?? row.pillar_1_vulnerability ?? 0),
+      pillar_2: Number(row.pillar_2_temporal || 0),
+      pillar_3: Number(row.pillar_3_monopoly || 0),
+      pillar_4: Number(row.pillar_4_opportunity || 0),
+      coords: Array.isArray(row.coords) ? row.coords : [],
+      da_data: Array.isArray(row.da_metadata)
+        ? row.da_metadata.map((d: any) => ({
+            id: String(d.id || ''),
+            pop: Number(d.pop || 0),
+            low_income_pct: Number(d.low_income_pct || 0),
+            minority_pct: Number(d.minority_pct || 0),
+            senior_pct: Number(d.senior_pct || 0),
+            lone_parent_pct: Number(d.lone_parent_pct || 0),
+            recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
+            youth_pct: Number(d.youth_pct || 0),
+            vulnerability_index: d.vulnerability_index !== undefined ? Number(d.vulnerability_index) : undefined,
+            neighbourhood: String(d.neighbourhood || ''),
+          }))
+        : [],
+      stability_class: mapStabilityClass(String(row.stability_class || 'Moderate Stability')),
+      stability_class_2_pillar: mapStabilityClass(String(row.stability_class_2_pillar || 'Moderate Stability')),
+      trip_count: Number(row.trip_count || 0),
+      category: String(row.category || 'bus_regular'),
+      route_length_km: Number(row.route_length_km || 0),
+      is_regional: !!row.is_regional,
+    }));
+  };
+
+  // Load Both Clean Bug-Fixed Summer 2026 Baseline & October 2026 GTFS Feeds
   useEffect(() => {
-    if (db) {
-      const loadData = async () => {
-        try {
-          const response = await fetch('/data/golden_route_record.parquet?v=' + Date.now());
-          const buffer = await response.arrayBuffer();
-          await db.registerFileBuffer('dir_data.parquet', new Uint8Array(buffer));
-          
-          const conn = await db.connect();
-          
-          // Ensure table is registered
-          await conn.query(`CREATE TABLE IF NOT EXISTS dir_network_data AS SELECT * FROM read_parquet('dir_data.parquet')`);
-          
-          const routeResult = await conn.query(`
-            SELECT route.*
-            FROM (
-              SELECT UNNEST(routes) as route FROM dir_network_data
-            ) t1
-          `);
+    let isMounted = true;
+    const loadFeeds = async () => {
+      try {
+        const [baseRes, octRes] = await Promise.all([
+          fetch('/data/golden_route_record_baseline_fixed.json?v=' + Date.now()),
+          fetch('/data/golden_route_record_oct2026.json?v=' + Date.now()),
+        ]);
+        const [baseJson, octJson] = await Promise.all([baseRes.json(), octRes.json()]);
+        if (!isMounted) return;
+        setBaseRoutes(mapJsonToRouteWithDAs(baseJson.routes || []));
+        setOctRoutes(mapJsonToRouteWithDAs(octJson.routes || []));
+        setLoading(false);
+      } catch (err) {
+        console.error('❌ Directory Dual-Feed Ingestion Failed:', err);
+        setLoading(false);
+      }
+    };
+    loadFeeds();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-          const rows = routeResult.toArray();
-          const routes: RouteWithDAs[] = rows.map((row: any) => {
-            let coords: number[][] = [];
-            try {
-              const rawCoords = row.coords;
-              if (rawCoords && rawCoords.toArray) {
-                coords = rawCoords.toArray().map((c: any) => {
-                  if (c && c.toArray) return Array.from(c.toArray());
-                  return Array.isArray(c) ? c : [];
-                });
-              } else if (Array.isArray(rawCoords)) {
-                coords = rawCoords;
-              }
-            } catch (e) {}
+  // Reactive Scoring Engine — Runs simultaneously on both feeds so dragging policy weight sliders
+  // recomputes Summer 2026 grades, October 2026 grades, and their 4-pillar deltas in real time!
+  const { scoredRoutes: scoredBaseline } = useReactiveScoring(baseRoutes, weights, cimdMode);
+  const { scoredRoutes: scoredOct } = useReactiveScoring(octRoutes, weights, cimdMode);
 
-            let da_data: DaInfo[] = [];
-            try {
-              const rawDa = row.da_metadata;
-              if (rawDa && rawDa.toArray) {
-                da_data = rawDa.toArray().map((d: any) => ({
-                  id: String(d.id || ''),
-                  pop: Number(d.pop || 0),
-                  low_income_pct: Number(d.low_income_pct || 0),
-                  minority_pct: Number(d.minority_pct || 0),
-                  senior_pct: Number(d.senior_pct || 0),
-                  lone_parent_pct: Number(d.lone_parent_pct || 0),
-                  recent_immigrant_pct: Number(d.recent_immigrant_pct || 0),
-                  youth_pct: Number(d.youth_pct || 0),
-                  vulnerability_index: d.vulnerability_index !== undefined ? Number(d.vulnerability_index) : (d.vulnerability !== undefined ? Number(d.vulnerability) : undefined),
-                  neighbourhood: String(d.neighbourhood || ''),
-                }));
-              }
-            } catch (e) {}
+  // Active Primary Routes based on feed mode
+  const activeScoredRoutes = useMemo(() => {
+    return directoryFeedMode === 'baseline' ? scoredBaseline : scoredOct;
+  }, [directoryFeedMode, scoredBaseline, scoredOct]);
 
-            return {
-              route_id: String(row.route_id || ''),
-              name: String(row.name || ''),
-              short_name: String(row.short_name || ''),
-              grade: String(row.grade || 'C'),
-              composite_score: Number(row.composite_score || 0),
-              total_pop_served: Number(row.total_pop_served || 0),
-              pillar_1: Number(row.pillar_1_vulnerability || 0),
-              pillar_1_cimd: Number(row.cimd_vuln_score || row.pillar_1_vulnerability || 0),
-              pillar_2: Number(row.pillar_2_temporal || 0),
-              pillar_3: Number(row.pillar_3_monopoly || 0),
-              pillar_4: Number(row.pillar_4_opportunity || 0),
-              coords,
-              da_data,
-              stability_class: mapStabilityClass(String(row.stability_class || 'Moderate Stability')),
-              stability_class_2_pillar: mapStabilityClass(String(row.stability_class_2_pillar || 'Moderate Stability')),
-              trip_count: Number(row.trip_count || 0),
-              category: String(row.category || 'bus_regular'),
-              route_length_km: Number(row.route_length_km || 0),
-              is_regional: !!row.is_regional,
-            };
-          });
+  // Fast O(1) lookup maps for Baseline & October feeds
+  const baselineById = useMemo(() => {
+    const map: Record<string, (typeof scoredBaseline)[number]> = {};
+    scoredBaseline.forEach((r) => {
+      map[r.route_id] = r;
+    });
+    return map;
+  }, [scoredBaseline]);
 
-          setBaseRoutes(routes);
-          setLoading(false);
-          await conn.close();
-        } catch (err) {
-          console.error("❌ Directory DuckDB Ingestion Failed:", err);
-          setLoading(false);
-        }
-      };
+  const octById = useMemo(() => {
+    const map: Record<string, (typeof scoredOct)[number]> = {};
+    scoredOct.forEach((r) => {
+      map[r.route_id] = r;
+    });
+    return map;
+  }, [scoredOct]);
 
-      loadData();
+  // Unified row list (in Compare mode, includes both active October routes and retired Summer routes like 522)
+  const displayRoutes = useMemo(() => {
+    if (directoryFeedMode !== 'compare') {
+      return activeScoredRoutes;
     }
-  }, [db]);
-
-  // Reactive Scoring Engine
-  const { scoredRoutes, networkStats } = useReactiveScoring(baseRoutes, weights, cimdMode);
+    const octIds = new Set(scoredOct.map((r) => r.route_id));
+    const retiredFromBase = scoredBaseline.filter((r) => !octIds.has(r.route_id));
+    return [...scoredOct, ...retiredFromBase];
+  }, [directoryFeedMode, activeScoredRoutes, scoredOct, scoredBaseline]);
 
   // Exclude regional routes from city scoring and grade counts
   const cityRoutes = useMemo(() => {
-    return scoredRoutes.filter((r) => !r.is_regional);
-  }, [scoredRoutes]);
+    return activeScoredRoutes.filter((r) => !r.is_regional);
+  }, [activeScoredRoutes]);
 
   const regionalRoutes = useMemo(() => {
-    return scoredRoutes.filter((r) => r.is_regional);
-  }, [scoredRoutes]);
+    return activeScoredRoutes.filter((r) => r.is_regional);
+  }, [activeScoredRoutes]);
 
   // Grade allocations
   const gradeCounts = useMemo(() => {
@@ -208,6 +222,31 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
     return counts;
   }, [cityRoutes, regionalRoutes]);
 
+  // Summary counts for Delta Filter pills in Compare Mode
+  const deltaSummary = useMemo(() => {
+    const GRADE_RANK: Record<string, number> = { A: 5, B: 4, C: 3, D: 2, E: 1 };
+    let upgraded = 0;
+    let downgraded = 0;
+    let unchanged = 0;
+    let newOrRetired = 0;
+
+    displayRoutes.forEach((r) => {
+      if (r.is_regional) return;
+      const oldR = baselineById[r.route_id];
+      const newR = octById[r.route_id];
+      if (!oldR || !newR) {
+        newOrRetired++;
+      } else {
+        const oldRank = GRADE_RANK[oldR.grade] || 0;
+        const newRank = GRADE_RANK[newR.grade] || 0;
+        if (newRank > oldRank) upgraded++;
+        else if (newRank < oldRank) downgraded++;
+        else unchanged++;
+      }
+    });
+    return { upgraded, downgraded, unchanged, newOrRetired };
+  }, [displayRoutes, baselineById, octById]);
+
   // Handle Sort
   const handleSort = (field: typeof sortField) => {
     if (sortField === field) {
@@ -220,7 +259,8 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
 
   // Processed, Filtered & Sorted Routes
   const filteredRoutes = useMemo(() => {
-    let result = [...scoredRoutes];
+    const GRADE_RANK: Record<string, number> = { A: 5, B: 4, C: 3, D: 2, E: 1 };
+    let result = [...displayRoutes];
 
     // 1. Search term filter
     if (searchTerm.trim() !== '') {
@@ -251,13 +291,35 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
       });
     }
 
-    // 4. Sort
+    // 4. Delta movement filter (in Compare Mode)
+    if (directoryFeedMode === 'compare' && deltaFilter !== 'ALL') {
+      result = result.filter((r) => {
+        if (r.is_regional) return false;
+        const oldR = baselineById[r.route_id];
+        const newR = octById[r.route_id];
+        if (deltaFilter === 'NEW_RETIRED') return !oldR || !newR;
+        if (!oldR || !newR) return false;
+        const oldRank = GRADE_RANK[oldR.grade] || 0;
+        const newRank = GRADE_RANK[newR.grade] || 0;
+        if (deltaFilter === 'UPGRADED') return newRank > oldRank;
+        if (deltaFilter === 'DOWNGRADED') return newRank < oldRank;
+        if (deltaFilter === 'UNCHANGED') return newRank === oldRank;
+        return true;
+      });
+    }
+
+    // 5. Sort
     result.sort((a, b) => {
       let valA: any = 0;
       let valB: any = 0;
 
+      const oldA = baselineById[a.route_id];
+      const newA = octById[a.route_id];
+      const oldB = baselineById[b.route_id];
+      const newB = octById[b.route_id];
+
       if (sortField === 'short_name') {
-        return sortOrder === 'asc' 
+        return sortOrder === 'asc'
           ? a.short_name.localeCompare(b.short_name, undefined, { numeric: true })
           : b.short_name.localeCompare(a.short_name, undefined, { numeric: true });
       } else if (sortField === 'name') {
@@ -266,6 +328,21 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
       } else if (sortField === 'score') {
         valA = a.composite_score;
         valB = b.composite_score;
+      } else if (sortField === 'delta_score') {
+        valA = oldA && newA ? newA.composite_score - oldA.composite_score : -999;
+        valB = oldB && newB ? newB.composite_score - oldB.composite_score : -999;
+      } else if (sortField === 'delta_p1') {
+        valA = oldA && newA ? newA.pillar_1_cimd - oldA.pillar_1_cimd : -999;
+        valB = oldB && newB ? newB.pillar_1_cimd - oldB.pillar_1_cimd : -999;
+      } else if (sortField === 'delta_p2') {
+        valA = oldA && newA ? newA.pillar_2 - oldA.pillar_2 : -999;
+        valB = oldB && newB ? newB.pillar_2 - oldB.pillar_2 : -999;
+      } else if (sortField === 'delta_p3') {
+        valA = oldA && newA ? newA.pillar_3 - oldA.pillar_3 : -999;
+        valB = oldB && newB ? newB.pillar_3 - oldB.pillar_3 : -999;
+      } else if (sortField === 'delta_p4') {
+        valA = oldA && newA ? newA.pillar_4 - oldA.pillar_4 : -999;
+        valB = oldB && newB ? newB.pillar_4 - oldB.pillar_4 : -999;
       } else if (sortField === 'pop') {
         valA = a.total_pop_served;
         valB = b.total_pop_served;
@@ -293,10 +370,66 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
     });
 
     return result;
-  }, [scoredRoutes, searchTerm, selectedGrade, selectedStability, sortField, sortOrder, sensitivityData]);
+  }, [displayRoutes, searchTerm, selectedGrade, selectedStability, deltaFilter, directoryFeedMode, sortField, sortOrder, sensitivityData, baselineById, octById]);
 
-  // Export CSV
+  // Export CSV (supports both Single-Feed and Delta Comparison export!)
   const handleExportCSV = () => {
+    if (directoryFeedMode === 'compare') {
+      const headers = [
+        'Route ID',
+        'Route Name',
+        'Status',
+        'Regional',
+        'Summer 2026 Grade',
+        'Oct 2026 Grade',
+        'Summer 2026 Score',
+        'Oct 2026 Score',
+        'Delta Composite Score',
+        'Delta Vuln (CIMD)',
+        'Delta Off-Peak (P2)',
+        'Delta Monopoly (P3)',
+        'Delta Opportunity (P4)',
+        'Summer Weekly Trips',
+        'Oct Weekly Trips',
+        'Delta Trips',
+        'Population Served',
+      ];
+      const rows = filteredRoutes.map((r) => {
+        const oldR = baselineById[r.route_id];
+        const newR = octById[r.route_id];
+        const status = !oldR ? 'New Route (Oct 2026)' : !newR ? 'Retired Route' : ['001', '509', '918'].includes(r.route_id) ? `Merged ${r.route_id}A/${r.route_id}B` : 'Matched';
+        return [
+          r.route_id,
+          r.name,
+          status,
+          r.is_regional ? 'Yes' : 'No',
+          oldR ? oldR.grade : 'N/A',
+          newR ? newR.grade : 'Retired',
+          oldR ? oldR.composite_score.toFixed(1) : '',
+          newR ? newR.composite_score.toFixed(1) : '',
+          oldR && newR ? (newR.composite_score - oldR.composite_score).toFixed(1) : '',
+          oldR && newR ? (newR.pillar_1_cimd - oldR.pillar_1_cimd).toFixed(1) : '',
+          oldR && newR ? (newR.pillar_2 - oldR.pillar_2).toFixed(1) : '',
+          oldR && newR ? (newR.pillar_3 - oldR.pillar_3).toFixed(1) : '',
+          oldR && newR ? (newR.pillar_4 - oldR.pillar_4).toFixed(1) : '',
+          oldR ? oldR.trip_count : '',
+          newR ? newR.trip_count : '',
+          oldR && newR ? newR.trip_count - oldR.trip_count : '',
+          r.total_pop_served,
+        ];
+      });
+      const csvContent =
+        'data:text/csv;charset=utf-8,' +
+        [headers.join(','), ...rows.map((e) => e.map((val) => `"${val}"`).join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `ets_gtfs_comparison_live_weights_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
     const headers = [
       'Route ID',
       'Route Number',
@@ -309,7 +442,7 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
       'Blended Equity Score',
       'Equity Grade',
       'Stability Class',
-      'Population Served'
+      'Population Served',
     ];
 
     const rows = filteredRoutes.map((r) => {
@@ -327,21 +460,54 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
         r.composite_score.toFixed(1),
         r.grade,
         stability,
-        r.total_pop_served
+        r.total_pop_served,
       ];
     });
 
     const csvContent =
       'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((e) => e.map(val => `"${val}"`).join(','))].join('\n');
+      [headers.join(','), ...rows.map((e) => e.map((val) => `"${val}"`).join(','))].join('\n');
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `ets_route_equity_scorecard_${Date.now()}.csv`);
+    link.setAttribute('download', `ets_route_equity_scorecard_${directoryFeedMode}_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Helper to format signed delta badges
+  const renderDeltaPill = (delta: number | null, suffix = '') => {
+    if (delta === null || Number.isNaN(delta)) {
+      return <span className="text-[10px] font-mono text-slate-300">—</span>;
+    }
+    const rounded = Math.round(delta * 10) / 10;
+    if (Math.abs(rounded) < 0.1) {
+      return <span className="text-[10px] font-mono text-slate-400">0.0{suffix}</span>;
+    }
+    const isPos = rounded > 0;
+    return (
+      <span
+        className={`inline-block font-mono text-[10.5px] font-black px-1.5 py-0.5 rounded border ${
+          isPos
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            : 'bg-rose-50 text-rose-700 border-rose-200'
+        }`}
+      >
+        {isPos ? `+${rounded.toFixed(1)}` : rounded.toFixed(1)}
+        {suffix}
+      </span>
+    );
+  };
+
+  const getGradeBadgeClass = (g: string, isRegional?: boolean) => {
+    if (isRegional || g === 'Regional') return 'bg-slate-400';
+    if (g === 'A') return 'bg-[#10B981]';
+    if (g === 'B') return 'bg-[#3B82F6]';
+    if (g === 'C') return 'bg-[#F59E0B]';
+    if (g === 'D') return 'bg-[#F97316]';
+    return 'bg-[#EF4444]';
   };
 
   return (
@@ -355,7 +521,7 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
       />
 
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm z-10">
+      <header className="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-sm z-10">
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavigate?.('dashboard')}
@@ -371,51 +537,73 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
               ETS Route Equity Scorecard Directory
             </h1>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              Live scores calculated using your active policy weights
+              {directoryFeedMode === 'compare'
+                ? 'Live Dual-Feed Comparison: Summer 2026 Baseline (Geometry-Fixed) vs. October 2026 GTFS'
+                : directoryFeedMode === 'oct2026'
+                ? 'Viewing October 2026 ETS GTFS Release (129 Municipal, 52 Regional Routes)'
+                : 'Viewing Summer 2026 Baseline (Geometry-Fixed — 128 Municipal, 42 Regional Routes)'}
             </p>
           </div>
         </div>
 
-        {/* CIMD Criteria Weight Controls */}
-        {cimdMode && (
-          <div className="hidden lg:flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl p-1 shadow-2xs">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
-              Criteria Weights ({activeDimensions.length > 0 ? `${(100 / activeDimensions.length).toFixed(0)}% each` : '0% (Deactivated)'}):
-            </span>
+        {/* Dual-Feed & Delta Mode Switcher */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
             {(
               [
-                { key: 'econ', label: 'Economic' },
-                { key: 'res', label: 'Residential' },
-                { key: 'eth', label: 'Ethnocultural' },
-                { key: 'sit', label: 'Situational' },
+                { id: 'baseline', label: 'Summer 2026 Baseline' },
+                { id: 'oct2026', label: 'Oct 2026 GTFS (New)' },
+                { id: 'compare', label: 'Compare (Δ Delta Mode)' },
               ] as const
-            ).map((dim) => {
-              const isActive = activeDimensions.includes(dim.key);
+            ).map((tab) => {
+              const active = directoryFeedMode === tab.id;
               return (
                 <button
-                  key={dim.key}
-                  onClick={() => toggleDimension(dim.key)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-[#1e3a8a] text-white shadow-xs'
-                      : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
+                  key={tab.id}
+                  onClick={() => {
+                    setDirectoryFeedMode(tab.id);
+                    if (tab.id === 'compare' && sortField === 'score') {
+                      setSortField('delta_score');
+                      setSortOrder('desc');
+                    } else if (tab.id !== 'compare' && sortField.startsWith('delta_')) {
+                      setSortField('score');
+                      setSortOrder('desc');
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                    active
+                      ? tab.id === 'compare'
+                        ? 'bg-[#1e3a8a] text-white shadow-sm'
+                        : 'bg-slate-900 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                   }`}
                 >
-                  {dim.label}
+                  {tab.label}
                 </button>
               );
             })}
           </div>
-        )}
 
-        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowWeightControls(!showWeightControls)}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 ${
+              showWeightControls
+                ? 'bg-blue-50 text-blue-800 border-blue-300 shadow-2xs'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-sm'
+            }`}
+            title="Adjust policy pillar weights in real time across both feeds"
+          >
+            <Filter className="w-3.5 h-3.5" />
+            <span>Policy Weights ({weights.vulnerability}/{weights.resilience}/{weights.monopoly}/{weights.opportunity})</span>
+          </button>
+
           <button
             onClick={handleExportCSV}
             disabled={loading}
             className="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Download CSV</span>
+            <span>{directoryFeedMode === 'compare' ? 'Export Δ CSV' : 'Download CSV'}</span>
           </button>
           <button
             onClick={() => setIsNavMenuOpen(true)}
@@ -426,6 +614,73 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
           </button>
         </div>
       </header>
+
+      {/* Collapsible Live Policy Weights & CIMD Dimension Bar (recomputes both feeds and their deltas live) */}
+      {showWeightControls && (
+        <section className="bg-slate-900 text-white px-6 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-6 z-10 shadow-inner">
+          <div className="flex flex-wrap items-center gap-6">
+            {(
+              [
+                { key: 'vulnerability', label: '1. Vulnerability (CIMD)', val: weights.vulnerability },
+                { key: 'resilience', label: '2. Off-Peak Service', val: weights.resilience },
+                { key: 'monopoly', label: '3. Functional Monopoly', val: weights.monopoly },
+                { key: 'opportunity', label: '4. Opportunities', val: weights.opportunity },
+              ] as const
+            ).map((wItem) => (
+              <div key={wItem.key} className="flex items-center gap-2.5">
+                <span className="text-[11px] font-bold text-slate-300">{wItem.label}:</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={wItem.val}
+                  onChange={(e) => setWeight(wItem.key, Number(e.target.value))}
+                  className="w-24 accent-blue-400 cursor-pointer"
+                />
+                <span className="font-mono text-xs font-black text-blue-300 w-9">{wItem.val}%</span>
+              </div>
+            ))}
+            <button
+              onClick={() => setWeights({ vulnerability: 15, resilience: 40, monopoly: 10, opportunity: 35 })}
+              className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-bold uppercase tracking-wider text-slate-300 border border-slate-700 transition-colors"
+            >
+              Reset (15/40/10/35)
+            </button>
+          </div>
+
+          {cimdMode && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider mr-1">
+                CIMD Sub-Dimensions:
+              </span>
+              {(
+                [
+                  { key: 'econ', label: 'Economic' },
+                  { key: 'res', label: 'Residential' },
+                  { key: 'eth', label: 'Ethnocultural' },
+                  { key: 'sit', label: 'Situational' },
+                ] as const
+              ).map((dim) => {
+                const isActive = activeDimensions.includes(dim.key);
+                return (
+                  <button
+                    key={dim.key}
+                    onClick={() => toggleDimension(dim.key)}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
+                    }`}
+                  >
+                    {dim.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Subheader Toolbar */}
       <section className="bg-white border-b border-slate-200 px-6 py-3 shadow-sm z-10 flex flex-wrap gap-4 items-center justify-between">
@@ -440,6 +695,33 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
             className="w-full text-xs pl-9 pr-4 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
         </div>
+
+        {/* Delta Movement Filter Pills (Shown in Compare Mode) */}
+        {directoryFeedMode === 'compare' && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {(
+              [
+                { id: 'ALL', label: 'All Municipal & Regional' },
+                { id: 'UPGRADED', label: `Grade Upgraded (${deltaSummary.upgraded})` },
+                { id: 'DOWNGRADED', label: `Grade Downgraded (${deltaSummary.downgraded})` },
+                { id: 'UNCHANGED', label: `Same Grade (${deltaSummary.unchanged})` },
+                { id: 'NEW_RETIRED', label: `New / Retired (${deltaSummary.newOrRetired})` },
+              ] as const
+            ).map((pill) => (
+              <button
+                key={pill.id}
+                onClick={() => setDeltaFilter(pill.id)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                  deltaFilter === pill.id
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {pill.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
@@ -464,17 +746,34 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
 
       {/* Grade distribution progress bar */}
       <section className="bg-white px-6 py-3 border-b border-slate-200 flex flex-col gap-2">
-        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Grade Distribution</div>
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            {directoryFeedMode === 'baseline'
+              ? 'Live Grade Distribution (Summer 2026 Baseline)'
+              : 'Live Grade Distribution (October 2026 GTFS)'}
+          </span>
+          {directoryFeedMode === 'compare' && (
+            <span className="text-[10px] font-bold text-slate-500">
+              Short-turn geometry truncation bug fixed on baseline — deltas isolate pure Fall 2026 ETS schedule changes
+            </span>
+          )}
+        </div>
         <div className="w-full h-8 rounded-lg overflow-hidden flex shadow-inner border border-slate-100">
           {(['A', 'B', 'C', 'D', 'E', 'Regional'] as const).map((g) => {
             const count = gradeCounts[g] || 0;
-            const pct = scoredRoutes.length > 0 ? (count / scoredRoutes.length) * 100 : 0;
-            const colorClass = g === 'A' ? 'bg-[#10B981]' 
-              : g === 'B' ? 'bg-[#3B82F6]'
-              : g === 'C' ? 'bg-[#F59E0B]'
-              : g === 'D' ? 'bg-[#F97316]'
-              : g === 'E' ? 'bg-[#EF4444]'
-              : 'bg-[#94A3B8]';
+            const pct = activeScoredRoutes.length > 0 ? (count / activeScoredRoutes.length) * 100 : 0;
+            const colorClass =
+              g === 'A'
+                ? 'bg-[#10B981]'
+                : g === 'B'
+                ? 'bg-[#3B82F6]'
+                : g === 'C'
+                ? 'bg-[#F59E0B]'
+                : g === 'D'
+                ? 'bg-[#F97316]'
+                : g === 'E'
+                ? 'bg-[#EF4444]'
+                : 'bg-[#94A3B8]';
 
             const activeClass = selectedGrade === g ? 'ring-4 ring-black/30 scale-y-105 z-10 shadow-lg' : 'hover:opacity-90';
 
@@ -486,7 +785,9 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                 className={`${colorClass} h-full transition-all duration-200 text-white flex items-center justify-center text-xs font-black relative group ${activeClass}`}
                 title={`Filter by Grade ${g} (${count} routes)`}
               >
-                <span>{g} ({count})</span>
+                <span>
+                  {g} ({count})
+                </span>
               </button>
             );
           })}
@@ -499,65 +800,116 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/70 z-20">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-800 border-t-transparent" />
             <span className="text-xs font-bold text-slate-500 mt-3 uppercase tracking-wider">
-              {isDbLoading ? "Initializing Analytical Database..." : "Securing Route Inventory..."}
+              {isDbLoading ? 'Initializing Analytical Database...' : 'Securing Dual-Feed Route Inventory...'}
             </span>
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden min-w-[900px]">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden min-w-[980px]">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-55/70 border-b border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  <th className="py-3.5 px-4 w-12 text-center">Info</th>
-                  <th className="py-3.5 px-4 w-24 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('short_name')}>
-                    <div className="flex items-center gap-1">
-                      <span>Route</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('name')}>
-                    <div className="flex items-center gap-1">
-                      <span>Description</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score')}>
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Live Score</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_mean')}>
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Simulated Mean</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_std')}>
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Volatility (σ)</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-20 text-center">Grade</th>
-                  <th className="py-3.5 px-4 w-52 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('stability')}>
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Stability Status</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-36 text-right cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('pop')}>
-                    <div className="flex items-center justify-end gap-1">
-                      <span>Pop. Served</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </div>
-                  </th>
-                  <th className="py-3.5 px-4 w-32 text-center">Action</th>
-                </tr>
+                {directoryFeedMode === 'compare' ? (
+                  <tr className="bg-slate-55/70 border-b border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <th className="py-3.5 px-3 w-10 text-center">Info</th>
+                    <th className="py-3.5 px-3 w-20 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('short_name')}>
+                      <div className="flex items-center gap-1">
+                        <span>Route</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('name')}>
+                      <div className="flex items-center gap-1">
+                        <span>Corridor Description</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-28 text-center">Grade (Old → New)</th>
+                    <th className="py-3.5 px-3 w-36 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('delta_score')}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span>Score (Δ)</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-24 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('delta_p1')}>
+                      <div className="flex items-center justify-center gap-1" title="Change in Statistics Canada 4-Dimension CIMD Vulnerability Score">
+                        <span>Δ CIMD</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('delta_p2')}>
+                      <div className="flex items-center justify-center gap-1" title="Change in Pillar 2: Off-Peak & Night Service Score">
+                        <span>Δ Off-Peak</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('delta_p3')}>
+                      <div className="flex items-center justify-center gap-1" title="Change in Pillar 3: Functional Monopoly Score">
+                        <span>Δ Monopoly</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('delta_p4')}>
+                      <div className="flex items-center justify-center gap-1" title="Change in Pillar 4: Critical Opportunities Score">
+                        <span>Δ Opp.</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-3 w-28 text-right">Trips (Δ)</th>
+                    <th className="py-3.5 px-3 w-28 text-center">Action</th>
+                  </tr>
+                ) : (
+                  <tr className="bg-slate-55/70 border-b border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <th className="py-3.5 px-4 w-12 text-center">Info</th>
+                    <th className="py-3.5 px-4 w-24 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('short_name')}>
+                      <div className="flex items-center gap-1">
+                        <span>Route</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('name')}>
+                      <div className="flex items-center gap-1">
+                        <span>Description</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-28 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score')}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span>Live Score</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_mean')}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span>Simulated Mean</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-32 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('score_std')}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span>Volatility (σ)</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-20 text-center">Grade</th>
+                    <th className="py-3.5 px-4 w-52 text-center cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('stability')}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span>Stability Status</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-36 text-right cursor-pointer hover:text-slate-900 transition-colors" onClick={() => handleSort('pop')}>
+                      <div className="flex items-center justify-end gap-1">
+                        <span>Pop. Served</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </th>
+                    <th className="py-3.5 px-4 w-32 text-center">Action</th>
+                  </tr>
+                )}
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
                 {filteredRoutes.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-10 text-slate-400 font-bold uppercase tracking-wider">
+                    <td colSpan={11} className="text-center py-10 text-slate-400 font-bold uppercase tracking-wider">
                       No routes found matching your criteria.
                     </td>
                   </tr>
@@ -567,80 +919,207 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                     const sens = sensitivityData[route.route_id];
                     const stabilityClass = sens ? sens.stability_class : route.stability_class;
 
-                    const gradeColor = route.is_regional ? 'bg-slate-400'
-                      : route.grade === 'A' ? 'bg-[#10B981]'
-                      : route.grade === 'B' ? 'bg-[#3B82F6]'
-                      : route.grade === 'C' ? 'bg-[#F59E0B]'
-                      : route.grade === 'D' ? 'bg-[#F97316]'
-                      : 'bg-[#EF4444]';
+                    const oldR = baselineById[route.route_id];
+                    const newR = octById[route.route_id];
+                    const isMergedAB = ['001', '509', '918'].includes(route.route_id);
 
-                    const stabilityBg = stabilityClass === 'Essential Equity Routes' ? 'bg-blue-50 text-blue-700 border-blue-100'
-                      : stabilityClass === 'Low Equity-Priority Routes' ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                      : stabilityClass === 'High Swing Routes' ? 'bg-red-50 text-red-700 border-red-100'
-                      : 'bg-amber-50 text-amber-700 border-amber-100';
+                    const gradeColor = getGradeBadgeClass(route.grade, route.is_regional);
+
+                    const stabilityBg =
+                      stabilityClass === 'Essential Equity Routes'
+                        ? 'bg-blue-50 text-blue-700 border-blue-100'
+                        : stabilityClass === 'Low Equity-Priority Routes'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                        : stabilityClass === 'High Swing Routes'
+                        ? 'bg-red-50 text-red-700 border-red-100'
+                        : 'bg-amber-50 text-amber-700 border-amber-100';
 
                     return (
                       <React.Fragment key={route.route_id}>
-                        <tr className={`hover:bg-slate-50/80 transition-colors duration-100 ${isExpanded ? 'bg-slate-50/50' : ''}`}>
-                          <td className="py-3 px-4 text-center">
-                            <button
-                              onClick={() => setExpandedRouteId(isExpanded ? null : route.route_id)}
-                              className="p-1 hover:bg-slate-200 rounded text-slate-500 transition-colors"
-                            >
-                              <ChevronRight className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                            </button>
-                          </td>
-                          <td className="py-3 px-4 font-mono font-black text-slate-900">
-                            {route.short_name}
-                          </td>
-                          <td className="py-3 px-4 text-slate-700 font-bold truncate max-w-md">
-                            {route.name}
-                          </td>
-                          <td className="py-3 px-4 text-center font-mono font-black text-slate-800 text-sm">
-                            {route.composite_score.toFixed(1)}
-                          </td>
-                          <td className="py-3 px-4 text-center font-mono font-bold text-slate-700">
-                            {sens ? sens.score_mean.toFixed(1) : route.composite_score.toFixed(1)}
-                          </td>
-                          <td className="py-3 px-4 text-center font-mono font-semibold text-slate-500">
-                            {sens ? sens.score_std.toFixed(2) : '0.00'}
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white shadow-sm border ${gradeColor}`}>
-                              {route.grade}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-md border shadow-sm ${stabilityBg}`}>
-                              {stabilityClass}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right font-mono font-bold text-slate-600">
-                            {route.total_pop_served.toLocaleString()}
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            <button
-                              onClick={() => {
-                                setSelectedRouteStore(route.route_id);
-                                onNavigate?.('dashboard');
-                              }}
-                              className="px-2.5 py-1 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-slate-800 transition-colors shadow-sm"
-                            >
-                              Select Route
-                            </button>
-                          </td>
-                        </tr>
+                        {directoryFeedMode === 'compare' ? (
+                          <tr className={`hover:bg-slate-50/80 transition-colors duration-100 ${isExpanded ? 'bg-slate-50/50' : ''}`}>
+                            <td className="py-3 px-3 text-center">
+                              <button
+                                onClick={() => setExpandedRouteId(isExpanded ? null : route.route_id)}
+                                className="p-1 hover:bg-slate-200 rounded text-slate-500 transition-colors"
+                              >
+                                <ChevronRight className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              </button>
+                            </td>
+                            <td className="py-3 px-3 font-mono font-black text-slate-900">
+                              <div className="flex items-center gap-1.5">
+                                <span>{route.short_name}</span>
+                                {isMergedAB && (
+                                  <span
+                                    className="text-[9px] font-bold px-1 py-0.2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded"
+                                    title={`Joined ${route.route_id}A + ${route.route_id}B branches`}
+                                  >
+                                    A+B
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-slate-700 font-bold truncate max-w-xs">
+                              <div className="flex items-center gap-2">
+                                <span className="truncate">{route.name}</span>
+                                {!oldR && (
+                                  <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                    New in Oct
+                                  </span>
+                                )}
+                                {!newR && (
+                                  <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300">
+                                    Retired
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {route.is_regional ? (
+                                <span className="inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-slate-400">
+                                  Regional
+                                </span>
+                              ) : oldR && newR ? (
+                                <div className="flex items-center justify-center gap-1">
+                                  <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white ${getGradeBadgeClass(oldR.grade)}`}>
+                                    {oldR.grade}
+                                  </span>
+                                  <span className="text-slate-400 text-[10px]">→</span>
+                                  <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white ${getGradeBadgeClass(newR.grade)}`}>
+                                    {newR.grade}
+                                  </span>
+                                </div>
+                              ) : newR ? (
+                                <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white ${getGradeBadgeClass(newR.grade)}`}>
+                                  New: {newR.grade}
+                                </span>
+                              ) : (
+                                <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full text-slate-500 bg-slate-100 border border-slate-200">
+                                  Was {oldR?.grade}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {route.is_regional ? (
+                                <span className="text-slate-300 font-mono text-[10px]">—</span>
+                              ) : oldR && newR ? (
+                                <div className="flex items-center justify-center gap-1.5 font-mono">
+                                  <span className="text-slate-400 text-[11px]">{oldR.composite_score.toFixed(0)}→</span>
+                                  <span className="text-slate-900 font-black text-xs">{newR.composite_score.toFixed(0)}</span>
+                                  {renderDeltaPill(newR.composite_score - oldR.composite_score)}
+                                </div>
+                              ) : newR ? (
+                                <span className="font-mono font-black text-slate-900">{newR.composite_score.toFixed(1)}</span>
+                              ) : (
+                                <span className="font-mono text-slate-400 line-through">{oldR?.composite_score.toFixed(1)}</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {!route.is_regional && oldR && newR ? renderDeltaPill(newR.pillar_1_cimd - oldR.pillar_1_cimd) : <span className="text-slate-300">—</span>}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {!route.is_regional && oldR && newR ? renderDeltaPill(newR.pillar_2 - oldR.pillar_2) : <span className="text-slate-300">—</span>}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {!route.is_regional && oldR && newR ? renderDeltaPill(newR.pillar_3 - oldR.pillar_3) : <span className="text-slate-300">—</span>}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              {!route.is_regional && oldR && newR ? renderDeltaPill(newR.pillar_4 - oldR.pillar_4) : <span className="text-slate-300">—</span>}
+                            </td>
+                            <td className="py-3 px-3 text-right font-mono text-[11px]">
+                              {oldR && newR ? (
+                                <div className="flex flex-col items-end leading-tight">
+                                  <span className="text-slate-700 font-bold">{newR.trip_count.toLocaleString()}</span>
+                                  <span className={`text-[9.5px] ${newR.trip_count - oldR.trip_count >= 0 ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                    ({newR.trip_count - oldR.trip_count >= 0 ? '+' : ''}
+                                    {newR.trip_count - oldR.trip_count})
+                                  </span>
+                                </div>
+                              ) : (
+                                <span>{route.trip_count.toLocaleString()}</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              <button
+                                onClick={() => {
+                                  setSelectedRouteStore(route.route_id);
+                                  onNavigate?.('dashboard');
+                                }}
+                                className="px-2.5 py-1 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-slate-800 transition-colors shadow-sm"
+                              >
+                                Select Route
+                              </button>
+                            </td>
+                          </tr>
+                        ) : (
+                          <tr className={`hover:bg-slate-50/80 transition-colors duration-100 ${isExpanded ? 'bg-slate-50/50' : ''}`}>
+                            <td className="py-3 px-4 text-center">
+                              <button
+                                onClick={() => setExpandedRouteId(isExpanded ? null : route.route_id)}
+                                className="p-1 hover:bg-slate-200 rounded text-slate-500 transition-colors"
+                              >
+                                <ChevronRight className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              </button>
+                            </td>
+                            <td className="py-3 px-4 font-mono font-black text-slate-900">
+                              <div className="flex items-center gap-1.5">
+                                <span>{route.short_name}</span>
+                                {isMergedAB && directoryFeedMode === 'oct2026' && (
+                                  <span className="text-[9px] font-bold px-1 py-0.2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded">
+                                    A+B
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-slate-700 font-bold truncate max-w-md">
+                              {route.name}
+                            </td>
+                            <td className="py-3 px-4 text-center font-mono font-black text-slate-800 text-sm">
+                              {route.composite_score.toFixed(1)}
+                            </td>
+                            <td className="py-3 px-4 text-center font-mono font-bold text-slate-700">
+                              {sens ? sens.score_mean.toFixed(1) : route.composite_score.toFixed(1)}
+                            </td>
+                            <td className="py-3 px-4 text-center font-mono font-semibold text-slate-500">
+                              {sens ? sens.score_std.toFixed(2) : '0.00'}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full text-white shadow-sm border ${gradeColor}`}>
+                                {route.grade}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-md border shadow-sm ${stabilityBg}`}>
+                                {stabilityClass}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-right font-mono font-bold text-slate-600">
+                              {route.total_pop_served.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <button
+                                onClick={() => {
+                                  setSelectedRouteStore(route.route_id);
+                                  onNavigate?.('dashboard');
+                                }}
+                                className="px-2.5 py-1 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-slate-800 transition-colors shadow-sm"
+                              >
+                                Select Route
+                              </button>
+                            </td>
+                          </tr>
+                        )}
 
                         {/* Nested Dropdown */}
                         {isExpanded && (
                           <tr className="bg-slate-50/40">
-                            <td colSpan={8} className="py-4 px-6 border-l-2 border-slate-300">
+                            <td colSpan={11} className="py-4 px-6 border-l-2 border-slate-300">
                               <div className="grid grid-cols-3 gap-6">
                                 {/* Contributing DAs Table */}
                                 <div className="col-span-2 bg-white rounded-lg border border-slate-200 shadow-sm p-4">
                                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                     <Layers className="w-3.5 h-3.5 text-slate-400" />
-                                    <span>Served Dissemination Areas (DAs)</span>
+                                    <span>Served Dissemination Areas (DAs) — {route.da_data?.length || 0} Catchments</span>
                                   </h4>
                                   <div className="max-h-60 overflow-y-auto custom-scrollbar">
                                     <table className="w-full text-left text-xs">
@@ -658,10 +1137,10 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                                             .map((da) => (
                                               <tr key={da.id} className="hover:bg-slate-50/50">
                                                 <td className="py-1.5 font-bold text-slate-700">
-                                                  {da.neighbourhood || `DA ${da.id}`}
+                                                  {da.neighbourhood || `DA ${da.id}`} <span className="text-[10px] text-slate-400 font-mono">({da.id})</span>
                                                 </td>
                                                 <td className="py-1.5 text-center font-mono font-bold text-slate-800">
-                                                  {(da.vulnerability_index ?? 2.5).toFixed(1)} / 5.0
+                                                  {(da.vulnerability_index ?? 2.5).toFixed(1)}
                                                 </td>
                                                 <td className="py-1.5 text-right font-mono">
                                                   {da.pop.toLocaleString()}
@@ -680,28 +1159,64 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                                   </div>
                                 </div>
 
-                                {/* Analytical Metrics Column */}
+                                {/* Analytical Metrics Column (Side-by-Side Summer vs Oct in Compare Mode) */}
                                 <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 flex flex-col gap-4">
                                   <div>
                                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                                      Pillar Contribution
+                                      {directoryFeedMode === 'compare' && oldR && newR
+                                        ? 'Pillar Comparison (Summer 2026 → Oct 2026)'
+                                        : 'Pillar Contribution'}
                                     </h4>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2.5">
                                       {[
-                                        { name: 'Vulnerability (CIMD)', val: route.pillar_1_cimd, color: '#C084FC' },
-                                        { name: 'Temporal Resilience', val: route.pillar_2, color: '#60A5FA' },
-                                        { name: 'Monopoly Index', val: route.pillar_3, color: '#FBBF24' },
-                                        { name: 'Opportunity Catchment', val: route.pillar_4, color: '#F472B6' }
+                                        {
+                                          name: 'Vulnerability (CIMD)',
+                                          oldVal: oldR?.pillar_1_cimd,
+                                          newVal: newR?.pillar_1_cimd,
+                                          val: route.pillar_1_cimd,
+                                          color: '#C084FC',
+                                        },
+                                        {
+                                          name: 'Off-Peak Service (P2)',
+                                          oldVal: oldR?.pillar_2,
+                                          newVal: newR?.pillar_2,
+                                          val: route.pillar_2,
+                                          color: '#60A5FA',
+                                        },
+                                        {
+                                          name: 'Functional Monopoly (P3)',
+                                          oldVal: oldR?.pillar_3,
+                                          newVal: newR?.pillar_3,
+                                          val: route.pillar_3,
+                                          color: '#FBBF24',
+                                        },
+                                        {
+                                          name: 'Opportunities (P4)',
+                                          oldVal: oldR?.pillar_4,
+                                          newVal: newR?.pillar_4,
+                                          val: route.pillar_4,
+                                          color: '#F472B6',
+                                        },
                                       ].map((item) => (
-                                        <div key={item.name} className="flex flex-col gap-0.5">
-                                          <div className="flex justify-between text-[10px] font-bold">
+                                        <div key={item.name} className="flex flex-col gap-1">
+                                          <div className="flex justify-between text-[10px] font-bold items-center">
                                             <span className="text-slate-500">{item.name}</span>
-                                            <span className="text-slate-800 font-mono">{item.val.toFixed(1)}</span>
+                                            {directoryFeedMode === 'compare' && item.oldVal !== undefined && item.newVal !== undefined ? (
+                                              <span className="text-slate-800 font-mono">
+                                                {item.oldVal.toFixed(1)} → {item.newVal.toFixed(1)}{' '}
+                                                <span className={item.newVal - item.oldVal >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
+                                                  ({item.newVal - item.oldVal >= 0 ? '+' : ''}
+                                                  {(item.newVal - item.oldVal).toFixed(1)})
+                                                </span>
+                                              </span>
+                                            ) : (
+                                              <span className="text-slate-800 font-mono">{item.val.toFixed(1)}</span>
+                                            )}
                                           </div>
                                           <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                            <div 
-                                              style={{ width: `${item.val}%`, backgroundColor: item.color }} 
-                                              className="h-full rounded-full" 
+                                            <div
+                                              style={{ width: `${Math.min(100, Math.max(0, item.val))}%`, backgroundColor: item.color }}
+                                              className="h-full rounded-full"
                                             />
                                           </div>
                                         </div>
@@ -722,9 +1237,17 @@ export const RouteDirectoryPage: React.FC<RouteDirectoryPageProps> = ({ onNaviga
                                         <span className="text-slate-400">Category: </span>
                                         <span className="font-bold text-slate-700 capitalize">{route.category.replace('bus_', '')}</span>
                                       </div>
-                                      <div>
+                                      <div className="col-span-2">
                                         <span className="text-slate-400">Weekly Trips: </span>
-                                        <span className="font-bold text-slate-700">{route.trip_count.toLocaleString()}</span>
+                                        {directoryFeedMode === 'compare' && oldR && newR ? (
+                                          <span className="font-bold text-slate-700 font-mono">
+                                            {oldR.trip_count.toLocaleString()} → {newR.trip_count.toLocaleString()} (
+                                            {newR.trip_count - oldR.trip_count >= 0 ? '+' : ''}
+                                            {newR.trip_count - oldR.trip_count})
+                                          </span>
+                                        ) : (
+                                          <span className="font-bold text-slate-700 font-mono">{route.trip_count.toLocaleString()}</span>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

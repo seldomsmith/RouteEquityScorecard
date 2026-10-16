@@ -6,12 +6,12 @@
 ## EXECUTIVE SUMMARY
 The Route Equity Scorecard defines equity priority by weighting four operational and socio-demographic pillars. These pillars are Vulnerability (socio-economic demographics) at 15 percent, Off Peak Service at 40 percent, Service Monopoly at 10 percent, and Opportunity Access at 35 percent. We conducted this analysis because choosing one specific default set of weighting introduces a potential policy vulnerability or weakness, as the prioritization of specific weights will shift the scoring of different routes depending on the policy orientations and definitions of “equity”.
 
-To evaluate how sensitive the route equity scoring is to weight changes, a weight sensitivity Monte Carlo simulation was performed. The evaluation simulated 1,771 valid zero-sum policy weight configurations in 5 percent increments across all 128 transit routes in Edmonton, generating 226,688 analytical records.
+To evaluate how sensitive the route equity scoring is to weight changes, a weight sensitivity Monte Carlo simulation was performed. The evaluation simulated 1,771 valid zero-sum policy weight configurations in 5 percent increments across all 129 transit routes in Edmonton, generating 228,459 analytical records.
 
 ### 1.2 Summary of Findings:
-First, **Bedrock Essentials**: Out of 128 routes, 25 corridors representing 19.5 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity, off peak service, or vulnerability of the area, or monopoly service are emphasized.
+First, **Bedrock Essentials**: Out of 129 routes, 27 corridors representing 20.9 percent of the total are classified as Bedrock Essentials. These routes maintain an A or B Grade in 90 percent or more of all simulated policy configurations. Their Route Equity Score is consistently high regardless of whether opportunity, off peak service, or vulnerability of the area, or monopoly service are emphasized.
 
-Second, **Policy Swing Corridors**: There are 72 corridors representing 56.2 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
+Second, **Policy Swing Corridors**: There are 62 corridors representing 48.1 percent of the total classified as highly sensitive Policy Swing Corridors. These routes experience significant grade variations, such as swinging from Grade A to Grade D depending on the weight configuration, indicating that their prioritization depends heavily on the chosen policy weights.
 
 Third, **Pillar Dominance**: Regression driver coefficients indicate that Opportunity Access and Off Peak Service serve as the primary drivers of score variation, while Monopoly exerts a highly localized, corridor-specific influence.
 
@@ -49,10 +49,10 @@ This reduces the search space by 99.1 percent relative to a full grid search, wh
 
 ### Figure 3A: Network Stability Class Distribution
 Edmonton transit corridors are classified into the following categories:
-- **Bedrock Essentials:** 25 routes
-- **Bedrock Resilient:** 8 routes
-- **Policy Swing Corridors:** 72 routes
-- **Moderate Stability:** 23 routes
+- **Bedrock Essentials:** 27 routes
+- **Bedrock Resilient:** 10 routes
+- **Policy Swing Corridors:** 62 routes
+- **Moderate Stability:** 30 routes
 
 *(Note: Visual representation coordinates and trends are detailed in Appendix A)*
 
@@ -68,42 +68,42 @@ The details below list the Route ID, Name, Mean Score, Robustness, AB Stability 
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | Primary Driver |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| `008` | 008 — 008 — Abbottsfield - Downtown - University | 99.3 | 0.57 | 100.0% | Monopoly |
-| `002` | 002 — 002 — West Edmonton Mall - Stadium - Clareview | 99.3 | 0.69 | 100.0% | Monopoly |
-| `005` | 005 — 005 — Westmount - Downtown - Coliseum | 98.5 | 2.74 | 100.0% | Monopoly |
-| `009` | 009 — 009 — Southgate - Eaux Claires | 98.4 | 1.90 | 100.0% | Monopoly |
-| `021R` | Capital — Capital — Capital Line | 97.5 | 2.82 | 100.0% | Monopoly |
-| `103` | 103 — 103 — Eaux Claires - Castle Downs - Kingsway | 96.5 | 6.22 | 100.0% | Monopoly |
-| `056` | 056 — 056 — Meadows - Leger - West Edmonton Mall | 94.7 | 6.84 | 98.7% | Monopoly |
-| `052` | 052 — 052 — Northgate - West Edmonton Mall | 94.4 | 5.40 | 99.3% | Monopoly |
-| `053` | 053 — 053 — West Clareview - Mill Woods | 92.5 | 4.70 | 100.0% | Monopoly |
-| `523` | 523 — 523 — Mill Woods - Downtown | 91.3 | 8.79 | 99.4% | Opportunity |
-| `054` | 054 — 054 — West Edmonton Mall - West Clareview | 90.2 | 8.85 | 96.0% | Opportunity |
-| `900X` | 900X — 900X — Lewis Farms - Downtown | 89.6 | 15.45 | 90.7% | Opportunity |
-| `901` | 901 — 901 — Jasper Place - Downtown | 89.3 | 8.70 | 99.9% | Opportunity |
-| `004` | 004 — 004 — Lewis Farms - University - Capilano | 88.0 | 12.03 | 95.4% | Opportunity |
-| `055` | 055 — 055 — Meadows - Southgate - West Edmonton Mall | 87.3 | 4.82 | 100.0% | Temporal |
+| `002` | 002 — 002 — West Edmonton Mall - Stadium - Clareview | 99.3 | 0.50 | 100.0% | Opportunity |
+| `008` | 008 — 008 — Abbottsfield - Downtown - University | 99.2 | 0.54 | 100.0% | Opportunity |
+| `005` | 005 — 005 — Westmount - Downtown - Coliseum | 98.4 | 2.22 | 100.0% | Opportunity |
+| `009` | 009 — 009 — Southgate - Eaux Claires | 98.0 | 2.16 | 100.0% | Opportunity |
+| `021R` | Capital — Capital — Capital Line | 97.8 | 1.53 | 100.0% | Monopoly |
+| `004` | 004 — 004 — Lewis Farms - University - Capilano | 96.9 | 3.68 | 100.0% | Monopoly |
+| `056` | 056 — 056 — Meadows - Leger - West Edmonton Mall | 94.6 | 5.73 | 99.7% | Monopoly |
+| `103` | 103 — 103 — Eaux Claires - Castle Downs - Kingsway | 94.2 | 7.51 | 100.0% | Monopoly |
+| `007` | 007 — 007 — West Edmonton Mall - Downtown | 94.1 | 5.69 | 100.0% | Opportunity |
+| `901` | 901 — 901 — Jasper Place - Downtown | 93.0 | 4.24 | 100.0% | Opportunity |
+| `052` | 052 — 052 — Northgate - West Edmonton Mall | 92.3 | 4.53 | 99.8% | Monopoly |
+| `071` | CapRep — CapRep — Capital Line Replacement Service | 91.4 | 8.65 | 100.0% | Opportunity |
+| `507` | 507 — 507 — Tamarack - Southgate | 90.5 | 3.90 | 100.0% | Monopoly |
+| `054` | 054 — 054 — West Edmonton Mall - West Clareview | 89.5 | 7.28 | 98.6% | Opportunity |
+| `701` | 701 — 701 — Southgate - Kingsway | 89.2 | 9.88 | 94.8% | Opportunity |
 
 ### B. Highly Sensitive Policy Swing Corridors, Top 15 Corridors
 These corridors are sensitive to weight adjustments. Depending on the weight configuration, they may receive either high or low priority rankings.
 
 | Route ID | Name | Mean Score | Robustness ($R_r$) | AB Stability (%) | Grade Swing | Best Weight Mix |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| `120X` | 120X — 120X — Eaux Claires - Government Centre | 57.4 | 28.81 | 54.4% | Volatile | Opp-heavy |
-| `130X` | 130X — 130X — Baturyn - Eaux Claires - Government Centre | 66.4 | 28.66 | 66.2% | Volatile | Opp-heavy |
-| `007` | 007 — 007 — West Edmonton Mall - Downtown | 51.4 | 28.31 | 40.7% | Volatile | Opp-heavy |
-| `111` | 111 — 111 — Concordia - Westmount | 70.9 | 27.29 | 72.6% | Volatile | Opp-heavy |
-| `912` | 912 — 912 — Lewis Farms - Jasper Place | 43.1 | 27.20 | 32.3% | Volatile | Temp-heavy |
-| `589` | 589 — 589 — Edmonton Waste Management Centre - Coliseum | 33.3 | 27.14 | 20.4% | Volatile | Temp-heavy |
-| `150X` | 150X — 150X — Dunluce - Castle Downs - Government Centre | 68.6 | 26.28 | 71.5% | Volatile | Opp-heavy |
-| `006` | 006 — 006 — Davies - Southgate | 57.0 | 26.13 | 54.9% | Volatile | Temp-heavy |
-| `704` | 704 — 704 — Southgate - Southpark | 46.5 | 25.57 | 34.6% | Volatile | Temp-heavy |
-| `923` | 923 — 923 — West Edmonton Mall - Oleskiw | 48.9 | 25.29 | 37.9% | Volatile | Temp-heavy |
-| `706` | 706 — 706 — Leger - Southgate | 50.9 | 24.94 | 41.7% | Volatile | Temp-heavy |
-| `701` | 701 — 701 — Southgate - Kingsway | 57.1 | 24.84 | 46.8% | Volatile | Opp-heavy |
-| `205` | 205 — 205 — West Edmonton | 23.9 | 24.10 | 16.8% | Volatile | Opp-heavy |
-| `110X` | 110X — 110X — Eaux Claires - Downtown | 65.5 | 23.49 | 68.7% | Volatile | Opp-heavy |
-| `511` | 511 — 511 — Mill Woods - Downtown | 35.8 | 23.30 | 25.3% | Volatile | Opp-heavy |
+| `130X` | 130X — 130X — Baturyn - Eaux Claires - Government Centre | 62.6 | 28.18 | 61.5% | Volatile | Opp-heavy |
+| `120X` | 120X — 120X — Eaux Claires - Government Centre | 53.1 | 27.91 | 47.2% | Volatile | Opp-heavy |
+| `006` | 006 — 006 — Davies - Southgate | 50.8 | 27.48 | 45.5% | Volatile | Temp-heavy |
+| `589` | 589 — 589 — Edmonton Waste Management Centre - Coliseum | 31.6 | 26.83 | 19.1% | Volatile | Temp-heavy |
+| `111` | 111 — 111 — Concordia - Westmount | 71.3 | 26.43 | 72.9% | Volatile | Opp-heavy |
+| `704` | 704 — 704 — Southgate - Southpark | 43.3 | 25.98 | 30.9% | Volatile | Temp-heavy |
+| `706` | 706 — 706 — Leger - Southgate | 47.6 | 25.29 | 36.9% | Volatile | Temp-heavy |
+| `150X` | 150X — 150X — Dunluce - Castle Downs - Government Centre | 73.6 | 24.67 | 76.4% | Volatile | Opp-heavy |
+| `110X` | 110X — 110X — Eaux Claires - Downtown | 60.6 | 23.44 | 58.3% | Volatile | Opp-heavy |
+| `124` | 124 — 124 — Westmount - Eaux Claires | 61.0 | 22.90 | 61.5% | Volatile | Vuln-heavy |
+| `205` | 205 — 205 — West Edmonton | 22.1 | 22.60 | 15.2% | Volatile | Opp-heavy |
+| `118` | 118 — 118 — Eaux Claires - West Clareview | 59.1 | 22.51 | 56.8% | Volatile | Vuln-heavy |
+| `003` | 003 — 003 — Westmount - Stadium | 60.7 | 22.15 | 61.9% | Volatile | Temp-heavy |
+| `722` | 722 — 722 — Century Park - Rutherford - Allard | 56.5 | 21.90 | 46.6% | Volatile | Vuln-heavy |
+| `923` | 923 — 923 — West Edmonton Mall - Oleskiw | 57.5 | 21.82 | 49.4% | Volatile | Temp-heavy |
 
 ### C. Bedrock Resilient Corridors, Top 15 Low-Priority Corridors
 These corridors consistently score in the bottom 40 percent, representing Grades D and E, under almost all weight configurations, typically representing commuter expresses or low-dependency suburban feeders.
@@ -112,14 +112,16 @@ The details below list the Route ID, Name, Mean Score, Robustness, and DE Stabil
 
 | Route ID | Name | Mean Score | Robustness | DE Stability (%) |
 | :--- | :--- | :---: | :---: | :---: |
-| `524` | 524 — 524 — Bonnie Doon - Holyrood | 4.6 | 1.96 | 100.0% |
-| `525` | 525 — 525 — Bonnie Doon - Ritchie | 4.7 | 2.13 | 100.0% |
-| `919` | 919 — 919 — Lewis Farms - Secord | 5.9 | 1.54 | 100.0% |
-| `204` | 204 — 204 — Uofa Express | 6.4 | 3.03 | 100.0% |
-| `727` | 727 — 727 — Heritage Valley - Chappelle | 6.8 | 3.63 | 100.0% |
-| `128` | 128 — 128 — Northgate - Londonderry | 7.7 | 3.45 | 100.0% |
-| `723` | 723 — 723 — University - Parkallen | 7.7 | 3.50 | 99.9% |
-| `502` | 502 — 502 — Davies - South Campus | 8.6 | 6.10 | 97.9% |
+| `505` | 505 — 505 — Davies - Pylypow Industrial | 4.7 | 3.47 | 99.8% |
+| `525` | 525 — 525 — Bonnie Doon - Ritchie | 4.7 | 1.91 | 100.0% |
+| `524` | 524 — 524 — Bonnie Doon - Holyrood | 5.5 | 2.16 | 100.0% |
+| `919` | 919 — 919 — Lewis Farms - Secord | 5.9 | 1.15 | 100.0% |
+| `204` | 204 — 204 — Uofa Express | 7.0 | 2.97 | 100.0% |
+| `723` | 723 — 723 — University - Parkallen | 7.3 | 3.06 | 100.0% |
+| `128` | 128 — 128 — Northgate - Londonderry | 7.3 | 2.76 | 100.0% |
+| `502` | 502 — 502 — Davies - South Campus | 8.1 | 5.72 | 98.3% |
+| `727` | 727 — 727 — Heritage Valley - Chappelle | 8.2 | 4.14 | 100.0% |
+| `700X` | 700X — 700X — Century Park - Heritage Valley | 9.1 | 4.23 | 100.0% |
 
 ---
 

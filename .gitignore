@@ -6,3 +6,7 @@ dist
 .DS_Store
 *.log
 data/raw
+ETS_Bus_Schedule_*.csv
+data/*.zip
+public/data/*.zip
+scratch/
