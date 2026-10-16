@@ -14,7 +14,7 @@ import { BusStopTicket } from '@/components/widgets/BusStopTicket';
 import { CatchmentDonutCard } from '@/components/widgets/CatchmentDonutCard';
 import { CimdExplainer } from '@/components/widgets/CimdExplainer';
 import { BusStopGradeDistribution } from '@/components/widgets/BusStopGradeDistribution';
-import { RouteWaterfall } from '@/components/RouteWaterfall';
+import { BusStopWaterfall } from '@/components/BusStopWaterfall';
 
 const BusStopToggleMap = dynamic(
   () => import('@/components/widgets/BusStopToggleMap').then((m) => m.BusStopToggleMap),
@@ -149,10 +149,10 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
       </header>
 
       {/* 🚌 Full-Width Premium Hero Header */}
-      <div className="w-full relative overflow-hidden bg-gradient-to-b from-blue-50/50 via-slate-50/20 to-slate-50 pt-20 pb-16 px-6 flex flex-col items-center justify-center text-center">
-        {/* Animated RouteWaterfall Background */}
+      <div className="w-full relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-slate-50/20 to-slate-50 pt-20 pb-16 px-6 flex flex-col items-center justify-center text-center">
+        {/* Animated BusStopWaterfall Background */}
         <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <RouteWaterfall opacity={0.25} showStations={false} />
+          <BusStopWaterfall opacity={0.32} />
         </div>
 
         {/* Fade Mask Overlay to make lines fade to white/slate-50 seamlessly */}
