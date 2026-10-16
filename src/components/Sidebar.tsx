@@ -114,6 +114,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, onViewDirectory, onNav
     return counts;
   }, [routes]);
 
+  const stabilityCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {
+      'Essential Equity Routes': 0,
+      'Low Equity-Priority Routes': 0,
+      'High Swing Routes': 0,
+      'Moderate Swing Routes': 0,
+    };
+    routes.forEach((r) => {
+      const cls = getStabilityClass(r);
+      if (counts[cls] !== undefined) {
+        counts[cls]++;
+      }
+    });
+    return counts;
+  }, [routes, getStabilityClass]);
+
+
   return (
     <div className="h-full flex flex-col bg-white relative">
       {/* Standardized Global Navigation Menu */}
