@@ -30,8 +30,6 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
         'Working-age unemployment rate',
         'Adults without high school diploma',
       ],
-      stop6586Score: 40.0,
-      stop1745Score: 20.0,
     },
     {
       key: 'res',
@@ -45,8 +43,6 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
         'Single-person living arrangements',
         '1-year mobility and relocation rate',
       ],
-      stop6586Score: 80.0,
-      stop1745Score: 20.0,
     },
     {
       key: 'eth',
@@ -60,8 +56,6 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
         'Official language limitations',
         'Temporary study / work visa holders',
       ],
-      stop6586Score: 100.0,
-      stop1745Score: 20.0,
     },
     {
       key: 'sit',
@@ -75,8 +69,6 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
         'Age-based dependency ratio',
         'Zero-vehicle household prevalence',
       ],
-      stop6586Score: 100.0,
-      stop1745Score: 40.0,
     },
   ];
 
@@ -145,16 +137,6 @@ export const CimdExplainer: React.FC<CimdExplainerProps> = () => {
                       </li>
                     ))}
                   </ul>
-                </div>
-
-                {/* Sample DA Scores comparison footer */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono font-bold bg-slate-50/80 -mx-5 -mb-5 px-5 py-3 rounded-b-xl border-t border-slate-100">
-                  <span className="text-slate-400 uppercase text-[9px] tracking-wider font-semibold">Sample Score:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-700">#6586: {dim.stop6586Score.toFixed(0)}</span>
-                    <span className="text-slate-300">&bull;</span>
-                    <span className="text-rose-700">#1745: {dim.stop1745Score.toFixed(0)}</span>
-                  </div>
                 </div>
               </div>
             </div>

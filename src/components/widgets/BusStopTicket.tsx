@@ -4,7 +4,7 @@ import React from 'react';
 
 interface BusStopTicketProps {
   stopId: string;
-  theme: 'emerald' | 'rose' | 'blue' | 'amber';
+  theme: 'purple' | 'orange' | 'emerald' | 'rose' | 'blue' | 'amber';
   stopName: string;
   grade: string;
   score: number;
@@ -40,6 +40,20 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
   tagline,
 }) => {
   const themeStyles = {
+    purple: {
+      stripe: 'bg-purple-600',
+      badge: 'bg-purple-50 text-purple-800 border-purple-200',
+      title: 'text-purple-950',
+      accent: 'text-purple-700',
+      ring: 'border-purple-200',
+    },
+    orange: {
+      stripe: 'bg-orange-600',
+      badge: 'bg-orange-50 text-orange-800 border-orange-200',
+      title: 'text-orange-950',
+      accent: 'text-orange-700',
+      ring: 'border-orange-200',
+    },
     emerald: {
       stripe: 'bg-emerald-600',
       badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',

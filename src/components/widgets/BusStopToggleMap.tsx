@@ -97,9 +97,9 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
 
       // 2. Add both stops to the map
       [stopA, stopB].forEach((stop) => {
-        const isGradeA = stop.equal_grade === 'A';
-        const circleColor = isGradeA ? '#10b981' : '#ef4444';
-        const circleStroke = isGradeA ? '#059669' : '#dc2626';
+        const isStopA = stop.stop_id === stopA.stop_id;
+        const circleColor = isStopA ? '#7c3aed' : '#ea580c';
+        const circleStroke = isStopA ? '#6d28d9' : '#c2410c';
 
         if (!map.getSource(`stop-source-${stop.stop_id}`)) {
           map.addSource(`stop-source-${stop.stop_id}`, {
@@ -282,14 +282,14 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
             onClick={() => handleToggleStop(stopA.stop_id)}
             className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
               isStopAActive
-                ? 'bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-700'
+                ? 'bg-purple-600 text-white shadow-xs ring-1 ring-purple-700'
                 : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200/70'
             }`}
             title={isStopAActive && isStopBActive ? 'Click to focus on Stop #6586 only' : 'Toggle Stop #6586'}
           >
             <span
               className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
-                isStopAActive ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-800'
+                isStopAActive ? 'bg-white text-purple-800' : 'bg-purple-100 text-purple-800'
               }`}
             >
               A
@@ -310,14 +310,14 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
             onClick={() => handleToggleStop(stopB.stop_id)}
             className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
               isStopBActive
-                ? 'bg-rose-600 text-white shadow-xs ring-1 ring-rose-700'
+                ? 'bg-orange-600 text-white shadow-xs ring-1 ring-orange-700'
                 : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200/70'
             }`}
             title={isStopAActive && isStopBActive ? 'Click to focus on Stop #1745 only' : 'Toggle Stop #1745'}
           >
             <span
               className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
-                isStopBActive ? 'bg-white text-rose-800' : 'bg-rose-100 text-rose-800'
+                isStopBActive ? 'bg-white text-orange-800' : 'bg-orange-100 text-orange-800'
               }`}
             >
               E
@@ -355,8 +355,8 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
           {areBothActive ? (
             <>
               <div className="flex items-center -space-x-1">
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-600 bg-emerald-500/20" />
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-rose-600 bg-rose-500/20" />
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-purple-600 bg-purple-500/20" />
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-orange-600 bg-orange-500/20" />
               </div>
               <span className="font-semibold text-[11px]">
                 400m Walking Buffers (Both Stops Active)
@@ -364,14 +364,14 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
             </>
           ) : isStopAActive ? (
             <>
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-600 bg-emerald-500/20" />
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-purple-600 bg-purple-500/20" />
               <span className="font-semibold text-[11px]">
                 400m Walking Buffer (Stop #{stopA.stop_id} &bull; High Need)
               </span>
             </>
           ) : (
             <>
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-rose-600 bg-rose-500/20" />
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-orange-600 bg-orange-500/20" />
               <span className="font-semibold text-[11px]">
                 400m Walking Buffer (Stop #{stopB.stop_id} &bull; Low Need)
               </span>

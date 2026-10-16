@@ -79,3 +79,10 @@
   - [x] Task 2: Remove all small "Chapter X" uppercase badges and horizontal divider lines
   - [x] Task 3: Standardize all 9 section headings to bold emerald green (`text-3xl font-black text-emerald-900`) matching Route Equity
   - [x] Task 4: Remove redundant `h4` header in `CimdExplainer.tsx` to prevent title duplication in Section 3
+- [x] Phase 37: Remove Sample Score Footer & Shift Sample Stop Themes to Purple and Orange:
+  - [x] Task 1: Remove "Sample Score: #6586: 100 • #1745: 40" footers and unused properties from `CimdExplainer.tsx`
+  - [x] Task 2: Add `purple` and `orange` themes to `BusStopTicket.tsx`
+  - [x] Task 3: Update `BusStopScrollytelling.tsx` candidate stop tickets and case study labels to Purple (#6586) and Orange (#1745)
+  - [x] Task 4: Update `BusStopToggleMap.tsx` toggle buttons, map circles, and spatial HUD to Purple (#6586) and Orange (#1745)
+  - [x] Task 5: Update `BusStopSupplyDisparity.tsx` timeline markers, cards, and icons to Purple (#6586) and Orange (#1745)
+

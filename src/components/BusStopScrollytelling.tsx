@@ -269,7 +269,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           <div className="grid grid-cols-1 gap-4">
             <BusStopTicket
               stopId={stop6586.stop_id}
-              theme="emerald"
+              theme="purple"
               stopName={stop6586.stop_name}
               grade={stop6586.equal_grade}
               score={stop6586.equal_score}
@@ -283,7 +283,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
 
             <BusStopTicket
               stopId={stop1745.stop_id}
-              theme="rose"
+              theme="orange"
               stopName={stop1745.stop_name}
               grade={stop1745.equal_grade}
               score={stop1745.equal_score}
@@ -345,7 +345,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           {/* Side-by-Side Donut Cards (Recreating user's reference) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-3">
-              <span className="text-xs font-mono font-bold text-emerald-700 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-purple-700 uppercase tracking-wider">
                 High Need Case Study: Stop #6586
               </span>
               <CatchmentDonutCard
@@ -360,7 +360,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             </div>
 
             <div className="space-y-3">
-              <span className="text-xs font-mono font-bold text-rose-700 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-orange-700 uppercase tracking-wider">
                 Low Need Case Study: Stop #1745
               </span>
               <CatchmentDonutCard
