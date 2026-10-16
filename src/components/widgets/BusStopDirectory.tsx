@@ -230,7 +230,13 @@ export const BusStopDirectory: React.FC<BusStopDirectoryProps> = ({
                       <div className={`px-2.5 py-1 rounded-lg border ${cfg.bg} text-right font-mono font-bold text-xs shadow-xs`}>
                         <div>{cfg.text}</div>
                         <div className="text-[8px] uppercase tracking-wider font-semibold opacity-90">
-                          {percentile !== null && percentile !== undefined ? `${percentile.toFixed(0)}th percentile` : `Score: ${score.toFixed(1)}`}
+                          {percentile !== null && percentile !== undefined ? `${(() => {
+                            const r = Math.round(percentile);
+                            const j = r % 10;
+                            const k = r % 100;
+                            const s = (j === 1 && k !== 11) ? 'st' : (j === 2 && k !== 12) ? 'nd' : (j === 3 && k !== 13) ? 'rd' : 'th';
+                            return `${r}${s}`;
+                          })()} percentile` : `Score: ${score.toFixed(1)}`}
                         </div>
                       </div>
                     );

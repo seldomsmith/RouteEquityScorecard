@@ -16,6 +16,16 @@ interface BusStopTicketProps {
   tagline: string;
 }
 
+function formatOrdinal(val: number): string {
+  const rounded = Math.round(val);
+  const j = rounded % 10;
+  const k = rounded % 100;
+  if (j === 1 && k !== 11) return `${rounded}st`;
+  if (j === 2 && k !== 12) return `${rounded}nd`;
+  if (j === 3 && k !== 13) return `${rounded}rd`;
+  return `${rounded}th`;
+}
+
 export const BusStopTicket: React.FC<BusStopTicketProps> = ({
   stopId,
   theme,
@@ -86,7 +96,7 @@ export const BusStopTicket: React.FC<BusStopTicketProps> = ({
                 Grade {grade}
               </span>
               <span className="text-[11px] font-mono tabular-nums font-bold text-slate-500">
-                {percentile.toFixed(1)}th percentile
+                {formatOrdinal(percentile)} percentile
               </span>
             </div>
             <div className="text-right">

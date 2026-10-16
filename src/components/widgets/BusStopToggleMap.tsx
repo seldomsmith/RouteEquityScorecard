@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Maximize2, Minimize2, Split, Eye } from 'lucide-react';
+import { Maximize2, Minimize2, Navigation, Compass } from 'lucide-react';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2VsZG9tc21pdGgiLCJhIjoiY21wNGoya2o5MDNvbTJ1cHFjcmI4djRudCJ9' + '.55Khr0Cuwie_8YBv_QPfsA';
 
@@ -24,28 +24,42 @@ interface BusStopToggleMapProps {
   daGeoJson?: any;
 }
 
+function formatOrdinal(val: number): string {
+  const rounded = Math.round(val);
+  const j = rounded % 10;
+  const k = rounded % 100;
+  if (j === 1 && k !== 11) return `${rounded}st`;
+  if (j === 2 && k !== 12) return `${rounded}nd`;
+  if (j === 3 && k !== 13) return `${rounded}rd`;
+  return `${rounded}th`;
+}
+
 export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
   stopA,
   stopB,
   daGeoJson,
 }) => {
-  const [viewMode, setViewMode] = useState<'toggle' | 'split'>('toggle');
   const [activeStopId, setActiveStopId] = useState<string>(stopA.stop_id);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const singleMapContainerRef = useRef<HTMLDivElement>(null);
-  const splitMapContainerA = useRef<HTMLDivElement>(null);
-  const splitMapContainerB = useRef<HTMLDivElement>(null);
-
-  const singleMapRef = useRef<mapboxgl.Map | null>(null);
-  const mapARef = useRef<mapboxgl.Map | null>(null);
-  const mapBRef = useRef<mapboxgl.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   const activeStop = activeStopId === stopA.stop_id ? stopA : stopB;
 
-  // Helper to add DA boundaries and stop buffer to a mapbox instance
-  const setupStopMapLayers = (map: mapboxgl.Map, stop: BusStopItem) => {
+  // Initialize Single Map Instance
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [stopA.lon, stopA.lat],
+      zoom: 14.2,
+      attributionControl: false,
+    });
+
     map.on('load', () => {
       // 1. Add DA boundaries if available
       if (daGeoJson) {
@@ -78,207 +92,210 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
         }
       }
 
-      // 2. Add 400m Buffer circle & Stop point
-      const isGradeA = stop.equal_grade === 'A';
-      const circleColor = isGradeA ? '#10b981' : '#ef4444';
-      const circleStroke = isGradeA ? '#059669' : '#dc2626';
+      // 2. Add both stops to the map
+      [stopA, stopB].forEach((stop) => {
+        const isGradeA = stop.equal_grade === 'A';
+        const circleColor = isGradeA ? '#10b981' : '#ef4444';
+        const circleStroke = isGradeA ? '#059669' : '#dc2626';
 
-      if (!map.getSource(`stop-source-${stop.stop_id}`)) {
-        map.addSource(`stop-source-${stop.stop_id}`, {
-          type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: [
-              {
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [stop.lon, stop.lat],
+        if (!map.getSource(`stop-source-${stop.stop_id}`)) {
+          map.addSource(`stop-source-${stop.stop_id}`, {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [stop.lon, stop.lat],
+                  },
+                  properties: {
+                    stop_id: stop.stop_id,
+                    name: stop.stop_name,
+                    grade: stop.equal_grade,
+                    score: stop.equal_score,
+                  },
                 },
-                properties: {
-                  stop_id: stop.stop_id,
-                  name: stop.stop_name,
-                },
-              },
-            ],
-          },
-        });
+              ],
+            },
+          });
 
-        // 400m circle buffer approximation
-        map.addLayer({
-          id: `stop-buffer-${stop.stop_id}`,
-          type: 'circle',
-          source: `stop-source-${stop.stop_id}`,
-          paint: {
-            'circle-radius': [
-              'interpolate',
-              ['exponential', 2],
-              ['zoom'],
-              11, 14,
-              12, 28,
-              13, 56,
-              14, 112,
-              15, 224,
-            ],
-            'circle-color': circleColor,
-            'circle-opacity': 0.22,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': circleStroke,
-          },
-        });
+          // 400m radius walking buffer approximation
+          map.addLayer({
+            id: `stop-buffer-${stop.stop_id}`,
+            type: 'circle',
+            source: `stop-source-${stop.stop_id}`,
+            paint: {
+              'circle-radius': [
+                'interpolate',
+                ['exponential', 2],
+                ['zoom'],
+                11, 14,
+                12, 28,
+                13, 56,
+                14, 112,
+                15, 224,
+              ],
+              'circle-color': circleColor,
+              'circle-opacity': 0.22,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': circleStroke,
+            },
+          });
 
-        // Center dot
-        map.addLayer({
-          id: `stop-dot-${stop.stop_id}`,
-          type: 'circle',
-          source: `stop-source-${stop.stop_id}`,
-          paint: {
-            'circle-radius': 6,
-            'circle-color': '#ffffff',
-            'circle-stroke-width': 3,
-            'circle-stroke-color': circleStroke,
-          },
-        });
-      }
+          // Center stop marker
+          map.addLayer({
+            id: `stop-dot-${stop.stop_id}`,
+            type: 'circle',
+            source: `stop-source-${stop.stop_id}`,
+            paint: {
+              'circle-radius': 7,
+              'circle-color': '#ffffff',
+              'circle-stroke-width': 3,
+              'circle-stroke-color': circleStroke,
+            },
+          });
+
+          // Click handler to open popup
+          map.on('click', `stop-dot-${stop.stop_id}`, () => {
+            new mapboxgl.Popup({ offset: 12, closeButton: false })
+              .setLngLat([stop.lon, stop.lat])
+              .setHTML(
+                `<div style="font-family: sans-serif; padding: 4px 6px;">
+                  <strong style="color: #0f172a; font-size: 12px;">Stop #${stop.stop_id}</strong><br/>
+                  <span style="font-size: 11px; color: #475569;">${stop.stop_name}</span><br/>
+                  <span style="font-size: 11px; font-weight: bold; color: ${circleStroke};">Grade ${stop.equal_grade} • ${stop.equal_score.toFixed(1)} Score</span>
+                </div>`
+              )
+              .addTo(map);
+          });
+        }
+      });
+    });
+
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, [stopA, stopB, daGeoJson]);
+
+  // Handle fly-to on active stop change
+  const handleSelectStop = (stop: BusStopItem) => {
+    setActiveStopId(stop.stop_id);
+    if (!mapRef.current) return;
+    mapRef.current.flyTo({
+      center: [stop.lon, stop.lat],
+      zoom: 14.4,
+      speed: 1.2,
+      curve: 1.4,
+      essential: true,
     });
   };
 
-  // Mount/Update Single Toggle Map
-  useEffect(() => {
-    if (viewMode !== 'toggle' || !singleMapContainerRef.current) return;
+  // Fit both stops in view
+  const handleFitBoth = () => {
+    if (!mapRef.current) return;
+    const bounds = new mapboxgl.LngLatBounds();
+    bounds.extend([stopA.lon, stopA.lat]);
+    bounds.extend([stopB.lon, stopB.lat]);
+    mapRef.current.fitBounds(bounds, {
+      padding: { top: 100, bottom: 80, left: 80, right: 80 },
+      maxZoom: 13,
+      speed: 1.2,
+    });
+  };
 
-    if (!singleMapRef.current) {
-      const map = new mapboxgl.Map({
-        container: singleMapContainerRef.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [activeStop.lon, activeStop.lat],
-        zoom: 14.2,
-        attributionControl: false,
-      });
-
-      setupStopMapLayers(map, stopA);
-      setupStopMapLayers(map, stopB);
-      singleMapRef.current = map;
-    } else {
-      singleMapRef.current.flyTo({
-        center: [activeStop.lon, activeStop.lat],
-        zoom: 14.2,
-        speed: 1.2,
-        curve: 1.4,
-      });
-    }
-  }, [viewMode, activeStopId, activeStop]);
-
-  // Mount Split Maps
-  useEffect(() => {
-    if (viewMode !== 'split') return;
-
-    if (splitMapContainerA.current && !mapARef.current) {
-      const mapA = new mapboxgl.Map({
-        container: splitMapContainerA.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [stopA.lon, stopA.lat],
-        zoom: 14,
-        attributionControl: false,
-      });
-      setupStopMapLayers(mapA, stopA);
-      mapARef.current = mapA;
-    }
-
-    if (splitMapContainerB.current && !mapBRef.current) {
-      const mapB = new mapboxgl.Map({
-        container: splitMapContainerB.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [stopB.lon, stopB.lat],
-        zoom: 14,
-        attributionControl: false,
-      });
-      setupStopMapLayers(mapB, stopB);
-      mapBRef.current = mapB;
-    }
-  }, [viewMode]);
-
-  // Handle Resize on Mode / Fullscreen toggle
+  // Handle Resize on Fullscreen toggle
   useEffect(() => {
     const timer = setTimeout(() => {
-      singleMapRef.current?.resize();
-      mapARef.current?.resize();
-      mapBRef.current?.resize();
+      mapRef.current?.resize();
     }, 200);
     return () => clearTimeout(timer);
-  }, [viewMode, isFullscreen]);
+  }, [isFullscreen]);
 
   return (
     <div
       ref={containerRef}
-      className={`relative w-full bg-slate-900 border border-slate-200 rounded-3xl overflow-hidden shadow-xl transition-all duration-300 ${
-        isFullscreen ? 'fixed inset-4 z-50 rounded-2xl' : 'h-[520px]'
+      className={`relative w-full bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-sm transition-all duration-300 ${
+        isFullscreen ? 'fixed inset-4 z-50 rounded-xl shadow-2xl' : 'h-[540px]'
       }`}
     >
-      {/* Control Bar Overlay */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-        {/* Toggle Mode & Stop Switcher */}
-        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-md pointer-events-auto">
+      {/* Interactive Stop Switcher Controls (Header Bar) */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pointer-events-none">
+        {/* Stop Selector Tabs */}
+        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/90 shadow-sm pointer-events-auto">
+          {/* Stop A Button */}
           <button
-            onClick={() => setViewMode('toggle')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              viewMode === 'toggle'
-                ? 'bg-[#1e3a8a] text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            onClick={() => handleSelectStop(stopA)}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
+              activeStopId === stopA.stop_id
+                ? 'bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-700'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <Eye className="w-3.5 h-3.5" /> Toggled View
+            <span
+              className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
+                activeStopId === stopA.stop_id ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-800'
+              }`}
+            >
+              A
+            </span>
+            <div className="text-left leading-tight">
+              <div className="flex items-center gap-1.5">
+                <span>Stop #{stopA.stop_id}</span>
+                <span className="text-[10px] opacity-80">({formatOrdinal(stopA.equal_percentile)})</span>
+              </div>
+              <div className="text-[10px] font-normal opacity-85 truncate max-w-[140px]">
+                {stopA.stop_name}
+              </div>
+            </div>
           </button>
+
+          {/* Stop B Button */}
           <button
-            onClick={() => setViewMode('split')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              viewMode === 'split'
-                ? 'bg-[#1e3a8a] text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            onClick={() => handleSelectStop(stopB)}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2.5 ${
+              activeStopId === stopB.stop_id
+                ? 'bg-rose-600 text-white shadow-xs ring-1 ring-rose-700'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <Split className="w-3.5 h-3.5" /> Side-by-Side View
+            <span
+              className={`w-5 h-5 rounded flex items-center justify-center font-mono font-black text-[10px] ${
+                activeStopId === stopB.stop_id ? 'bg-white text-rose-800' : 'bg-rose-100 text-rose-800'
+              }`}
+            >
+              E
+            </span>
+            <div className="text-left leading-tight">
+              <div className="flex items-center gap-1.5">
+                <span>Stop #{stopB.stop_id}</span>
+                <span className="text-[10px] opacity-80">({formatOrdinal(stopB.equal_percentile)})</span>
+              </div>
+              <div className="text-[10px] font-normal opacity-85 truncate max-w-[140px]">
+                {stopB.stop_name}
+              </div>
+            </div>
           </button>
         </div>
 
-        {/* If in Toggle Mode, show Stop Selection Pills */}
-        {viewMode === 'toggle' && (
-          <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-md pointer-events-auto">
-            <button
-              onClick={() => setActiveStopId(stopA.stop_id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                activeStopId === stopA.stop_id
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>Stop #{stopA.stop_id}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/15 font-mono">
-                Grade {stopA.equal_grade}
-              </span>
-            </button>
+        {/* Right utility controls: Fit Both Stops + Fullscreen */}
+        <div className="flex items-center gap-2 self-end sm:self-auto pointer-events-auto">
+          <button
+            onClick={handleFitBoth}
+            className="px-3 py-2 bg-white/95 backdrop-blur-md hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 shadow-sm text-xs font-bold transition-all flex items-center gap-1.5"
+            title="View both stops on Edmonton map"
+          >
+            <Compass className="w-3.5 h-3.5 text-blue-700" />
+            <span className="hidden md:inline">View Both Stops</span>
+          </button>
 
-            <button
-              onClick={() => setActiveStopId(stopB.stop_id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                activeStopId === stopB.stop_id
-                  ? 'bg-rose-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>Stop #{stopB.stop_id}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/15 font-mono">
-                Grade {stopB.equal_grade}
-              </span>
-            </button>
-          </div>
-        )}
-
-        {/* Fullscreen Button */}
-        <div className="pointer-events-auto">
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-2 bg-white/95 backdrop-blur-md hover:bg-slate-100 text-slate-700 rounded-2xl border border-slate-200 shadow-md transition-all"
+            className="p-2 bg-white/95 backdrop-blur-md hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 shadow-sm transition-all"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -286,32 +303,22 @@ export const BusStopToggleMap: React.FC<BusStopToggleMapProps> = ({
         </div>
       </div>
 
-      {/* Map Viewports */}
-      {viewMode === 'toggle' ? (
-        <div ref={singleMapContainerRef} className="w-full h-full relative" />
-      ) : (
-        <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-300">
-          <div className="relative w-full h-full">
-            <div className="absolute top-16 left-4 z-10 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm text-xs font-bold text-slate-900">
-              Stop #{stopA.stop_id} ({stopA.stop_name}) &bull; <span className="text-emerald-600">Grade {stopA.equal_grade}</span>
-            </div>
-            <div ref={splitMapContainerA} className="w-full h-full" />
-          </div>
-
-          <div className="relative w-full h-full">
-            <div className="absolute top-16 left-4 z-10 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm text-xs font-bold text-slate-900">
-              Stop #{stopB.stop_id} ({stopB.stop_name}) &bull; <span className="text-rose-600">Grade {stopB.equal_grade}</span>
-            </div>
-            <div ref={splitMapContainerB} className="w-full h-full" />
-          </div>
-        </div>
-      )}
+      {/* Mapbox Viewport */}
+      <div ref={mapContainerRef} className="w-full h-full" />
 
       {/* Bottom Floating Spatial HUD Indicator */}
-      <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-lg text-xs flex items-center gap-4 text-slate-700">
+      <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200/90 shadow-md text-xs flex flex-wrap items-center gap-4 text-slate-700 pointer-events-auto">
         <div className="flex items-center gap-2">
-          <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-500 bg-emerald-500/20" />
-          <span className="font-semibold text-[11px]">400m Walking Buffer</span>
+          <span
+            className={`w-3.5 h-3.5 rounded-full border-2 ${
+              activeStopId === stopA.stop_id
+                ? 'border-emerald-600 bg-emerald-500/20'
+                : 'border-rose-600 bg-rose-500/20'
+            }`}
+          />
+          <span className="font-semibold text-[11px]">
+            400m Walking Buffer ({activeStop.equal_grade === 'A' ? 'High Need' : 'Low Need'})
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3.5 h-0.5 border-t border-dashed border-slate-500" />

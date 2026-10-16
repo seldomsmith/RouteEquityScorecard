@@ -37,6 +37,16 @@ const SLICE_COLORS = [
   '#64748b', // Slate-500
 ];
 
+function formatOrdinal(val: number): string {
+  const rounded = Math.round(val);
+  const j = rounded % 10;
+  const k = rounded % 100;
+  if (j === 1 && k !== 11) return `${rounded}st`;
+  if (j === 2 && k !== 12) return `${rounded}nd`;
+  if (j === 3 && k !== 13) return `${rounded}rd`;
+  return `${rounded}th`;
+}
+
 export const CatchmentDonutCard: React.FC<CatchmentDonutCardProps> = ({
   stopId,
   stopName,
@@ -97,7 +107,7 @@ export const CatchmentDonutCard: React.FC<CatchmentDonutCardProps> = ({
         </span>
         <div className="text-right">
           <span className="font-black text-sm text-[#1e3a8a]">
-            {percentile.toFixed(0)}th percentile
+            {formatOrdinal(percentile)} percentile
           </span>
           {grade && (
             <span className="ml-1 text-[11px] font-bold text-slate-500">

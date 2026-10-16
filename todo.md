@@ -25,6 +25,14 @@ Refining analytical modeling, service impact simulations, and advanced research 
 ---
 
 ## Review & Completed Work
+- **Bus Stop Explain Page Refinements & Architecture Fixes (Phase 33)**:
+  - Removed `MICRO-SCALE SPATIAL EQUITY IN TRANSIT` pill tag from [BusStopScrollytelling.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/BusStopScrollytelling.tsx).
+  - Switched the hero title `ETS BUS STOP EQUITY SCORECARD` to `text-emerald-700` to align visually with the green branding of the bus stop scorecard.
+  - Rewrote Chapter 4 ("Proportional Area Weighting: Dissemination Area Overlap") body text to Grade 10 plain language with varied sentence structures, eliminating academic jargon while keeping the mathematical explanation clear.
+  - Fixed the ordinal suffix calculation across `CatchmentDonutCard.tsx`, `BusStopTicket.tsx`, and `BusStopDirectory.tsx`, correctly formatting values like `1st` instead of `1th`.
+  - Re-architected `BusStopToggleMap.tsx` from two simultaneous vertical WebGL canvases into a unified single-canvas Mapbox instance with smooth camera fly-to, Stop A (`#6586`) and Stop B (`#1745`) selector cards, "View Both Stops" boundary fit, and a non-overlapping spatial HUD.
+  - Replaced the Chapter 7 static two-card layout with [BusStopSupplyDisparity.tsx](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/src/components/widgets/BusStopSupplyDisparity.tsx), featuring a 5.0× disparity ratio banner, an hourly midday departure timeline (8 departures vs 1 departure), and a winter wait-time exposure comparison.
+  - Completely removed the Chapter 9 "Operational Allocation Framework for Transit Planners" table and cleanly renumbered the explorer call-to-action to Chapter 9.
 - **Continuous Walkshed Envelope Optimization (Phase 32 / Pathway 2)**:
   - Developed and executed [scripts/build_unified_walkshed_envelopes.py](file:///c:/Antigravity%20Projects%20in%20C/Route%20Equity%20Scorecard/scripts/build_unified_walkshed_envelopes.py) to resolve the fragmented "disconnected bubbles" visual artifact in route isochrones.
   - Backed up all 246 raw street-buffer geometries to `data/archive_isochrones_raw/`.

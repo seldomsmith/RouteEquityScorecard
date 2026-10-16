@@ -56,5 +56,11 @@
   - [x] Test geometry transformation on Route 008, verifying reduction from 84 disconnected polygon islands to a contiguous walk envelope (922.8 KB -> 53.1 KB)
   - [x] Batch process all 246 route isochrones in `public/data/isochrones/` (13,986 fragments -> 912, 71.93 MB -> 5.83 MB)
   - [x] Update Mapbox legend in `src/components/map/Map.tsx` with dynamic 400m Walk Catchment badge and grade-matching border
-
-
+- [x] Bus Stop Explain Page Refinements & Architecture Fixes:
+  - [x] Task 1: Remove `MICRO-SCALE SPATIAL EQUITY IN TRANSIT` pill tag
+  - [x] Task 2: Make `ETS BUS STOP EQUITY SCORECARD` hero title green
+  - [x] Task 3: Rewrite Chapter 4 Proportional Area Overlap to Grade 10 plain language
+  - [x] Task 4: Fix ordinal suffix bug (`1th` -> `1st`) in `CatchmentDonutCard.tsx`, `BusStopTicket.tsx`, and `BusStopDirectory.tsx`
+  - [x] Task 5: Refactor `BusStopToggleMap.tsx` to a rock-solid single Mapbox canvas with smooth fly-to and tactile stop switcher cards
+  - [x] Task 6: Reimagine Chapter 7 Supply vs. Need with an Hourly Departure Frequency Timeline and 5.0x Disparity visual
+  - [x] Task 7: Remove Chapter 9 Operational Allocation Framework completely and renumber chapters

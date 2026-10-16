@@ -15,6 +15,7 @@ import { CatchmentDonutCard } from '@/components/widgets/CatchmentDonutCard';
 import { CimdExplainer } from '@/components/widgets/CimdExplainer';
 import { BusStopGradeDistribution } from '@/components/widgets/BusStopGradeDistribution';
 import { BusStopWaterfall } from '@/components/BusStopWaterfall';
+import { BusStopSupplyDisparity } from '@/components/widgets/BusStopSupplyDisparity';
 
 const BusStopToggleMap = dynamic(
   () => import('@/components/widgets/BusStopToggleMap').then((m) => m.BusStopToggleMap),
@@ -160,7 +161,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center">
-          <h1 className="text-[38px] md:text-[50px] lg:text-[62px] font-black text-blue-900 tracking-tight leading-tight uppercase scrolly-title-lift-effect cursor-default">
+          <h1 className="text-[38px] md:text-[50px] lg:text-[62px] font-black text-emerald-700 tracking-tight leading-tight uppercase scrolly-title-lift-effect cursor-default">
             ETS BUS STOP EQUITY <br className="hidden sm:inline" />
             SCORECARD
           </h1>
@@ -169,10 +170,6 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
 
       {/* Hero Narrative Intro */}
       <div className="max-w-4xl mx-auto px-6 pt-12 pb-12">
-        <div className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[#059669] text-xs font-mono font-bold mb-6">
-          <span>MICRO-SCALE SPATIAL EQUITY IN TRANSIT</span>
-        </div>
-
         <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
           Why evaluate transit equity at the individual bus stop scale?
         </h2>
@@ -270,10 +267,13 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
           <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-medium">
             <p>
-              Census Dissemination Areas (DAs) are irregular polygons populated with 400 to 700 residents. A 400-metre circular walkshed rarely lands entirely inside a single administrative polygon; it commonly intersects four, seven, or nine distinct DAs.
+              A single bus stop does not serve just one neat city block; people walk in from every direction.
             </p>
             <p>
-              To maintain spatial accuracy without boundary distortions, we compute polygon intersections in GIS. Each intersecting DA contributes to the stop score in direct proportion to the percentage of the 400m circle it occupies:
+              Statistics Canada divides cities into small neighborhood pockets called Dissemination Areas, each home to about 400 to 700 residents. When you draw a standard five-minute walk around any bus stop (a 400-metre circle), that circle rarely fits inside a single census zone. It almost always slices through three, five, or eight different neighborhood blocks.
+            </p>
+            <p>
+              To score a stop fairly, we calculate the exact slice of each neighborhood inside the circle. If half the circle covers an area with high economic need and the other half covers an affluent street, each neighborhood gets an equal 50% say in the final score. No guesswork; just real local geography.
             </p>
           </div>
 
@@ -331,7 +331,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
             </h3>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed font-medium">
-            Toggle between the two stops or inspect them side by side. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
+            Select either stop to fly directly to its 400-metre walking catchment, or choose &ldquo;View Both Stops&rdquo; to compare their citywide distribution. Stop #6586 borders rental multi-family subdivisions in North Edmonton, whereas Stop #1745 serves single-family residential streets in Westmount:
           </p>
 
           <BusStopToggleMap
@@ -349,27 +349,7 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
               Supply vs. Need: Daily Trips Compared Against Demographic Need
             </h3>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 space-y-4 text-sm text-slate-700">
-            <p className="leading-relaxed font-medium">
-              When transit networks allocate trips based primarily on legacy downtown corridors, stops in high-need catchments frequently receive minimal off-peak frequency.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="bg-emerald-50/70 border border-emerald-200 p-4 rounded-lg">
-                <span className="text-xs font-mono font-bold text-emerald-800 uppercase">Stop #6586 (Grade A)</span>
-                <div className="text-2xl font-mono tabular-nums font-black text-emerald-950 mt-1">53 Daily Trips</div>
-                <p className="text-xs text-emerald-900 mt-2 font-medium">
-                  Passengers in this 94th percentile need catchment wait 30 to 45 minutes between buses during midday and evening hours.
-                </p>
-              </div>
-              <div className="bg-rose-50/70 border border-rose-200 p-4 rounded-lg">
-                <span className="text-xs font-mono font-bold text-rose-800 uppercase">Stop #1745 (Grade E)</span>
-                <div className="text-2xl font-mono tabular-nums font-black text-rose-950 mt-1">264 Daily Trips</div>
-                <p className="text-xs text-rose-900 mt-2 font-medium">
-                  Passengers in this low-need catchment receive frequent trunk service arriving every five to ten minutes throughout the day.
-                </p>
-              </div>
-            </div>
-          </div>
+          <BusStopSupplyDisparity stopA={stop6586} stopB={stop1745} />
         </section>
 
         {/* CHAPTER 8: METHODOLOGICAL HONESTY & CATCHMENT BARRIERS */}
@@ -403,62 +383,8 @@ export const BusStopScrollytelling: React.FC<BusStopScrollytellingProps> = ({ on
           </div>
         </section>
 
-        {/* CHAPTER 9: HOW DECISION MAKERS CAN ACT */}
-        <section id="chapter-9" className="space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-mono font-bold text-[#059669] uppercase tracking-wider">Chapter 9</span>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
-              Operational Allocation Framework for Transit Planners
-            </h3>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 space-y-6">
-            <p className="text-sm text-slate-600 leading-relaxed font-medium">
-              Municipal transit planners apply stop-level equity diagnostics to prioritise physical amenities and timetable allocations:
-            </p>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px] tracking-wider">
-                  <tr>
-                    <th className="py-3 px-4">Operational Category</th>
-                    <th className="py-3 px-4">Target Threshold</th>
-                    <th className="py-3 px-4">Mandated Intervention</th>
-                    <th className="py-3 px-4">Resource Mechanism</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  <tr className="hover:bg-slate-50/50">
-                    <td className="py-3 px-4 font-bold text-slate-900">Capital Amenities</td>
-                    <td className="py-3 px-4 font-mono tabular-nums text-emerald-800 font-bold">Grade A (≥73.5)</td>
-                    <td className="py-3 px-4">Weather enclosures, standard benches, and radiant overhead heaters</td>
-                    <td className="py-3 px-4 text-slate-500">Transit Infrastructure Grant</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50/50">
-                    <td className="py-3 px-4 font-bold text-slate-900">Winter Maintenance</td>
-                    <td className="py-3 px-4 font-mono tabular-nums text-blue-800 font-bold">Grade A & B (≥64.9)</td>
-                    <td className="py-3 px-4">Fast-track snow clearing for boarding pads, curb cuts, and sidewalk links within 12 hours</td>
-                    <td className="py-3 px-4 text-slate-500">Priority Snow Clearing Fleet</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50/50">
-                    <td className="py-3 px-4 font-bold text-slate-900">Timetable Protection</td>
-                    <td className="py-3 px-4 font-mono tabular-nums text-emerald-800 font-bold">Grade A Corridors</td>
-                    <td className="py-3 px-4">Protected 15-to-20-minute off-peak and evening headways against schedule compression</td>
-                    <td className="py-3 px-4 text-slate-500">Service Hours Guarantee</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50/50">
-                    <td className="py-3 px-4 font-bold text-slate-900">Pedestrian Crossings</td>
-                    <td className="py-3 px-4 font-mono tabular-nums text-slate-600 font-bold">Multi-DA Hubs (&gt;3 DAs)</td>
-                    <td className="py-3 px-4">Marked crosswalks, tactile walking surfaces, and pedestrian-actuated beacons</td>
-                    <td className="py-3 px-4 text-slate-500">Vision Zero Capital Allocation</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* CHAPTER 10: CALL TO ACTION & EXPLORER */}
-        <section id="chapter-10" className="pt-8 border-t border-slate-200 text-center space-y-6">
+        {/* CHAPTER 9: CALL TO ACTION & EXPLORER */}
+        <section id="chapter-9" className="pt-8 border-t border-slate-200 text-center space-y-6">
           <h3 className="text-2xl md:text-3xl font-black text-slate-900">
             Explore Edmonton's 6,755 Bus Stops
           </h3>
