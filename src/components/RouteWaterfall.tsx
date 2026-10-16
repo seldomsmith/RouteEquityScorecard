@@ -17,7 +17,7 @@ interface Point {
 export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({
   opacity = 0.35,
   interactive = true,
-  showStations = true,
+  showStations = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -185,56 +185,60 @@ export const RouteWaterfall: React.FC<RouteWaterfallProps> = ({
           }
         });
 
-        // Station activation from passing active vehicles
-        line.stations.forEach(station => {
-          let minDistance = Infinity;
-          const sPos = getPixelCoords(station.xPct, station.yPct, w, h);
+        // Station activation from passing active vehicles (if stations enabled)
+        if (showStations) {
+          line.stations.forEach(station => {
+            let minDistance = Infinity;
+            const sPos = getPixelCoords(station.xPct, station.yPct, w, h);
 
-          line.trains.forEach(train => {
-            if (!train.active) return;
-            const tPos = getPositionOnPath(line.path, train.progress, w, h);
-            const dx = tPos.x - sPos.x;
-            const dy = tPos.y - sPos.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < minDistance) {
-              minDistance = dist;
+            line.trains.forEach(train => {
+              if (!train.active) return;
+              const tPos = getPositionOnPath(line.path, train.progress, w, h);
+              const dx = tPos.x - sPos.x;
+              const dy = tPos.y - sPos.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < minDistance) {
+                minDistance = dist;
+              }
+            });
+
+            const activationThreshold = 80;
+            if (minDistance < activationThreshold) {
+              station.glow = 1 - minDistance / activationThreshold;
+            } else {
+              station.glow = Math.max(0, station.glow - 0.05);
             }
           });
-
-          const activationThreshold = 80;
-          if (minDistance < activationThreshold) {
-            station.glow = 1 - minDistance / activationThreshold;
-          } else {
-            station.glow = Math.max(0, station.glow - 0.05);
-          }
-        });
-      });
-
-      // Interchange station activation
-      interchanges.forEach((interchange: { glow: number; xPct: number; yPct: number }) => {
-        let minDistance = Infinity;
-        const iPos = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
-
-        lines.forEach(line => {
-          line.trains.forEach(train => {
-            if (!train.active) return;
-            const tPos = getPositionOnPath(line.path, train.progress, w, h);
-            const dx = tPos.x - iPos.x;
-            const dy = tPos.y - iPos.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < minDistance) {
-              minDistance = dist;
-            }
-          });
-        });
-
-        const activationThreshold = 90;
-        if (minDistance < activationThreshold) {
-          interchange.glow = 1 - minDistance / activationThreshold;
-        } else {
-          interchange.glow = Math.max(0, interchange.glow - 0.05);
         }
       });
+
+      // Interchange station activation (if stations enabled)
+      if (showStations) {
+        interchanges.forEach((interchange: { glow: number; xPct: number; yPct: number }) => {
+          let minDistance = Infinity;
+          const iPos = getPixelCoords(interchange.xPct, interchange.yPct, w, h);
+
+          lines.forEach(line => {
+            line.trains.forEach(train => {
+              if (!train.active) return;
+              const tPos = getPositionOnPath(line.path, train.progress, w, h);
+              const dx = tPos.x - iPos.x;
+              const dy = tPos.y - iPos.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < minDistance) {
+                minDistance = dist;
+              }
+            });
+          });
+
+          const activationThreshold = 90;
+          if (minDistance < activationThreshold) {
+            interchange.glow = 1 - minDistance / activationThreshold;
+          } else {
+            interchange.glow = Math.max(0, interchange.glow - 0.05);
+          }
+        });
+      }
 
       // 1. Draw background track paths following true Edmonton road/track geography
       lines.forEach(line => {
